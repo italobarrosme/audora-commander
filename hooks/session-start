@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Hook SessionStart do plugin audora-commander.
+# Injeta ponteiro CURTO para a porta de entrada — nunca o framework inteiro
+# (princípio do próprio framework: contexto é o gargalo).
+
+set -euo pipefail
+
+contexto="Framework audora-commander ativo. Ao receber demanda de software (criar, alterar, corrigir), invoque a skill \`audora-commander:audora-commander\` ANTES de agir. Fluxos de fase: grafo, escopo, plano, executar, e2e, validar. Instrução direta do usuário vale mais que o framework."
+
+printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$contexto"
+
+exit 0
