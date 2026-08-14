@@ -1,0 +1,14 @@
+{
+  "name": "audora-commander-dev",
+  "description": "Marketplace local de desenvolvimento do audora-commander",
+  "owner": { "name": "Italo Barros", "email": "italobarros.me@gmail.com" },
+  "plugins": [
+    {
+      "name": "audora-commander",
+      "description": "Framework de desenvolvimento assistido por IA: 5 princípios, GRAFO vivo, processo proporcional ao risco, TDD e portões humanos",
+      "version": "0.1.0",
+      "source": "./",
+      "author": { "name": "Italo Barros", "email": "italobarros.me@gmail.com" }
+    }
+  ]
+}
