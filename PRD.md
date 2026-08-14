@@ -40,8 +40,10 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
-Fase de design. Fundamentos v2 aprovados pelo usuário; spec de design escrita e
-em revisão. Nenhuma skill implementada ainda.
+v0.1.0 implementada (2026-08-14) — 7 skills, hook SessionStart, templates
+canônicos, marketplace local, README com checklist, GRAFO.md do próprio repo
+(dogfooding). Verificações estruturais e de JSON verdes. Aguardando validação
+de instalação pelo usuário em sessão interativa (checklist no README).
 
 ## Metas futuras de implementação
 
