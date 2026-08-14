@@ -31,7 +31,7 @@ test "$(wc -l < "$f")" -le 250 \
   && grep -q "Lei de Ferro" "$f" \
   && grep -q "Anuncie ao começar" "$f" \
   && grep -qiE "red flags|racionaliza" "$f" \
-  && ! grep -qiE "\bTBD\b|\bTODO\b" "$f" \
+  && ! grep -qE "\bTBD\b|\bTODO\b" "$f" \
   && echo "ESTRUTURA OK"
 ```
 
@@ -281,7 +281,7 @@ for s in audora-commander grafo escopo plano executar e2e validar; do
   grep -q "^description: Use quando" "$f" || ok=0
   grep -q "Lei de Ferro" "$f" || ok=0
   grep -qiE "red flags|racionaliza" "$f" || ok=0
-  grep -qiE "\bTBD\b|\bTODO\b" "$f" && ok=0
+  grep -qE "\bTBD\b|\bTODO\b" "$f" && ok=0
   test $ok -eq 1 && echo "$s: OK" || echo "$s: FALHOU"
 done
 ```
