@@ -30,6 +30,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | em-curso | Plugin funcional com 7 skills, hook, templates e marketplace
+- skill-depurar | em-curso | Skill de debug: causa raiz com sintoma, caçada sem sintoma
 - porte-multi-harness | planejada | Porte para outros harnesses (Codex, Cursor)
 - marketplace-publico | planejada | Publicação em marketplace público
 - agentes-dedicados | planejada | Subagent types customizados por fase
@@ -69,6 +70,42 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 - **delta**:
 - **e2e**: pendente — critérios 1, 2 e 5 dependem de sessão interativa do
   humano (checklist do README).
+- **feedback-reprovacao**:
+- **atualizado-em**: 2026-08-14
+
+### skill-depurar
+
+- **id**: skill-depurar
+- **estado**: em-curso
+- **origem**: humano
+- **depende-de**: [plugin-v0.1.0]
+- **objetivo**: Skill `depurar` no plugin: debug sistemático com causa raiz
+  demonstrada quando há sintoma, e caçada de bugs por classes de defeito
+  quando não há. Testada rodando a caçada no próprio repositório.
+- **criterios-aceite**:
+  - QUANDO a skill depurar for invocada com sintoma conhecido O SISTEMA DEVE
+    conduzir reprodução → hipóteses → causa raiz demonstrada ANTES de qualquer
+    correção
+  - QUANDO a skill depurar for invocada sem sintoma (caçada) O SISTEMA DEVE
+    varrer classes de defeito definidas e verificar cada achado antes de
+    reportar
+  - QUANDO a caçada rodar no repositório audora-commander O SISTEMA DEVE
+    produzir relatório com achados verificados (ou lista vazia comprovada) e
+    correção dos confirmados
+  - QUANDO a verificação estrutural padrão rodar O SISTEMA DEVE aprovar a
+    skill (frontmatter, Lei de Ferro, red flags, ≤ 250 linhas, sem
+    placeholder)
+  - QUANDO as referências do plugin forem varridas O SISTEMA DEVE refletir a
+    nova skill (hook, README, contagem de skills) sem menção órfã
+- **fora-de-escopo**: profiling/performance; debug de infraestrutura externa
+  ao repo; renumerar a spec histórica de v0.1.0 (nota de adendo basta).
+- **decisoes**:
+  - 2026-08-14 (humano): criar a skill e testá-la rodando no próprio projeto
+    (instrução direta = portão de escopo aprovado).
+  - 2026-08-14 (IA): nome `depurar`, dois modos (sintoma/caçada), posição de
+    skill-ferramenta (como grafo), não fase do roteamento.
+- **delta**:
+- **e2e**: a caçada no próprio repo É o teste de ponta a ponta desta demanda
 - **feedback-reprovacao**:
 - **atualizado-em**: 2026-08-14
 
