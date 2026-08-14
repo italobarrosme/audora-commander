@@ -45,8 +45,8 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
    |---|---|---|---|
 
    Veredito por critério: `passou` / `falhou` / `não-automatizável` (vai para
-   validação humana manual). Critério `falhou` → voltar à skill executar
-   (é bug, com reprodução pronta).
+   validação humana manual). Critério `falhou` → skill depurar (modo sintoma;
+   o passo do e2e já é a reprodução pronta), fix via executar.
 6. **Persistir como regressão**:
    - Projeto TEM infra de e2e (Playwright, Cypress, etc.) → salvar o cenário
      como teste permanente no padrão do projeto. Demanda futura ganha

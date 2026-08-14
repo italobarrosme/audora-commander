@@ -32,7 +32,7 @@ Dentro da sessão:
 Reinicie a sessão após instalar (o hook de SessionStart passa a injetar o
 ponteiro do framework).
 
-## As 7 skills
+## As 8 skills
 
 | Skill | Papel |
 |---|---|
@@ -43,6 +43,7 @@ ponteiro do framework).
 | `executar` | TDD red-green com evidência real; commit por etapa verde |
 | `e2e` | Levanta o projeto e exercita a demanda de ponta a ponta (opcional, fortemente recomendada) |
 | `validar` | Portão humano final: evidência 1:1 com critérios, sync GRAFO → PRD |
+| `depurar` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
 
 ## Fluxo de uso (exemplo: demanda MÉDIA)
 
@@ -69,7 +70,7 @@ ponteiro do framework).
 Rode na sessão interativa após instalar:
 
 - [ ] 1. QUANDO o marketplace for adicionado e o plugin instalado, o Claude
-  Code DEVE listar as 7 skills com prefixo `audora-commander:` (verifique com
+  Code DEVE listar as 8 skills com prefixo `audora-commander:` (verifique com
   a listagem de skills da sessão).
 - [ ] 2. QUANDO uma sessão nova iniciar, o contexto DEVE conter o ponteiro
   "Framework audora-commander ativo" (pergunte ao Claude o que o hook

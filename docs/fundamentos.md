@@ -265,6 +265,7 @@ Regras:
 | Plano-arquivo com passos 2-5 min sem placeholder (Superpowers) | plano |
 | Red-green com evidência real (Superpowers + regra do usuário) | executar |
 | E2E da demanda com produto rodando (pedido do usuário) | e2e |
+| Debug em fases com causa raiz antes de fix (Superpowers systematic-debugging) | depurar |
 | Gate de evidência 1:1 com critérios (crítica adversarial) | validar |
 | Revisão adversarial por subagente (Superpowers/Anthropic) | validar |
 | Leis de Ferro + tabelas de racionalização (Superpowers) | todas |

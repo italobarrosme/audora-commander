@@ -55,8 +55,9 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 
 ## Quando algo dá errado
 
-- **Teste falha por bug seu** → debug, não replanejamento. Investigue a causa
-  raiz antes de mexer; chute empilhado vira pântano.
+- **Teste falha por motivo desconhecido** → skill **depurar** (modo sintoma):
+  causa raiz demonstrada antes de qualquer correção. Chute empilhado vira
+  pântano.
 - **Gatilho de replanejamento** (arquivo sumiu, teste impossível como
   especificado) → skill plano, replanejar SÓ a etapa afetada.
 - **Falha irrecuperável** (dependência quebrada, etapa sem saída) → PARAR.
