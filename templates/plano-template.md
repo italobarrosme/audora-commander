@@ -1,4 +1,4 @@
-# Plano — <id-demanda>: <título>
+# Plano — <id>: <título>
 
 > Plano é descartável após a validação (vai para docs/audora/planos/arquivo/),
 > mas obrigatório enquanto a demanda vive. Reler no início de CADA sessão de
@@ -6,7 +6,7 @@
 
 **Objetivo:** <1 frase — o que esta demanda entrega>
 
-**Nó do GRAFO:** `<id-demanda>` (GRAFO.md)
+**Nó do GRAFO:** `<id>` (GRAFO.md)
 
 **Arquitetura da mudança:** <2-3 frases: abordagem escolhida e por quê>
 
