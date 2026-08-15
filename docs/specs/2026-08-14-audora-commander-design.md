@@ -1,7 +1,11 @@
 # Spec de design — plugin audora-commander
 
+> **Adendo 2026-08-15:** o plugin ganhou a 8ª skill `depurar` (debug com causa
+> raiz + modo caçada) após esta spec — nó `skill-depurar` no GRAFO.md. As
+> menções a "7 skills" abaixo são o retrato histórico da v0.1.0 original.
+
 Data: 2026-08-14
-Status: em revisão pelo usuário
+Status: implementada (v0.1.0)
 Fundamentos: ver [docs/fundamentos.md](../fundamentos.md) — este documento define
 COMO os fundamentos viram um plugin de Claude Code; os fundamentos definem O QUÊ
 cada regra significa e por quê.
