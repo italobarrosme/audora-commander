@@ -61,6 +61,8 @@ Uma linha por nó ativo. Formato: `- <id> | <estado> | <título curto>`
 - **atualizado-em**: 2026-08-14
 
 <!-- Regras de manutenção (skill grafo):
+0. Nó `planejada` pode viver SÓ no índice (sem corpo) até ser detalhado —
+   expansão sob demanda. A partir de `em-curso`, corpo completo é obrigatório.
 1. Validar schema antes de escrever — delta que quebra schema é rejeitado.
 2. Nó `entregue` no sync: compactar para 1 linha e mover para
    docs/audora/GRAFO-ARQUIVO.md; promover resumo ao PRD.md.
