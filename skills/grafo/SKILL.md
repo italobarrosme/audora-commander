@@ -13,8 +13,9 @@ LEI DE FERRO: REQUISITO NÃO ESCRITO NO GRAFO É REQUISITO QUE NÃO EXISTE
 
 O GRAFO.md é a memória externa durável do produto: requisitos, estado e
 decisões. O código guarda o "como"; o GRAFO guarda o "o quê / por quê /
-estado". Schema canônico: `${CLAUDE_PLUGIN_ROOT}/templates/GRAFO-template.md`
-— única fonte de verdade do formato. Nunca invente campos.
+estado". Schema canônico: `templates/GRAFO-template.md` na raiz do plugin
+(dois níveis acima desta skill) — única fonte de verdade do formato. Nunca
+invente campos.
 
 ## Regra de leitura seletiva (vale para TODAS as operações)
 

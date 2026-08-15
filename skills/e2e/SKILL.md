@@ -39,7 +39,7 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 4. **Executar e coletar evidência** por critério: screenshot (web), resposta
    crua (API), saída de terminal (CLI). Evidência é o que foi visto, não o
    que deveria acontecer.
-5. **Relatório** em `docs/audora/e2e/e2e-<id-demanda>.md`:
+5. **Relatório** em `docs/audora/e2e/e2e-<id>.md`:
 
    | Critério (EARS) | Passo executado | Evidência | Veredito |
    |---|---|---|---|

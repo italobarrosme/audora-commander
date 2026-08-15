@@ -12,9 +12,9 @@ LEI DE FERRO: PLANO SEM LEITURA DO CÓDIGO ATUAL É PLANO INVÁLIDO
 **Anuncie ao começar:** "Usando plano para planejar [demanda]."
 
 Plano cobre UMA demanda — nunca o projeto inteiro. Formato canônico:
-`${CLAUDE_PLUGIN_ROOT}/templates/plano-template.md`. Saída obrigatória:
-`docs/audora/planos/plano-<id-demanda>.md`. Plano que vive só na conversa
-morre no primeiro /clear — por isso é ARQUIVO.
+`templates/plano-template.md` na raiz do plugin (dois níveis acima desta
+skill). Saída obrigatória: `docs/audora/planos/plano-<id>.md`. Plano que vive
+só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 
 ## Fluxo
 
