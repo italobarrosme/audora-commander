@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-14
+> Última atualização: 2026-08-15
 
 ## O que é e para que serve
 
@@ -45,9 +45,16 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 v0.1.0 implementada (2026-08-14) — 8 skills (7 originais + `depurar` em
 2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
 com checklist, GRAFO.md do próprio repo (dogfooding). Verificações estruturais
-e de JSON verdes; caçada de defeitos executada com a skill depurar. Aguardando
-validação de instalação pelo usuário em sessão interativa (checklist no
-README).
+e de JSON verdes.
+
+Nó `skill-depurar` entregue em 2026-08-15: a skill `depurar` foi testada com
+uma caçada de defeitos real no próprio repositório
+(`docs/audora/depuracao/cacada-2026-08-15.md`), que confirmou e corrigiu 6
+divergências de documentação viva (contagem de skills desatualizada em
+PRD/GRAFO/spec, referências e placeholders inconsistentes entre skills e
+templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
+Aguardando validação de instalação pelo usuário em sessão interativa
+(checklist no README).
 
 ## Metas futuras de implementação
 
