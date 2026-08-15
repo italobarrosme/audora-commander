@@ -29,7 +29,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 
 ## Índice de nós [carga: sempre]
 
-- plugin-v0.1.0 | em-curso | Plugin funcional com 7 skills, hook, templates e marketplace
+- plugin-v0.1.0 | em-curso | Plugin funcional com 8 skills, hook, templates e marketplace
 - skill-depurar | em-curso | Skill de debug: causa raiz com sintoma, caçada sem sintoma
 - porte-multi-harness | planejada | Porte para outros harnesses (Codex, Cursor)
 - marketplace-publico | planejada | Publicação em marketplace público
@@ -68,6 +68,9 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
   - 2026-08-14 (IA): verificação de placeholder case-sensitive com exceção
     para listas de proibição (falso positivo com "todo" em português).
 - **delta**:
+  - MODIFICADO (2026-08-15): critério 1 — "listar as 7 skills" → "listar as
+    8 skills" (skill depurar adicionada pelo nó skill-depurar); objetivo
+    idem. Motivo: caçada A3, divergência nó vs README.
 - **e2e**: pendente — critérios 1, 2 e 5 dependem de sessão interativa do
   humano (checklist do README).
 - **feedback-reprovacao**:
