@@ -31,7 +31,7 @@ integral conhecido.
 - **arquivos**: Criar `skills/depurar/SKILL.md`
 - **done quando**: verificação estrutural padrão imprime ESTRUTURA OK
 
-- [ ] 1. Escrever SKILL.md: frontmatter (`name: depurar`; description "Use
+- [x] 1. Escrever SKILL.md: frontmatter (`name: depurar`; description "Use
   quando..."), Lei de Ferro `NENHUMA CORREÇÃO SEM CAUSA RAIZ DEMONSTRADA`,
   modo sintoma (reproduzir determinístico → evidência completa → hipóteses
   ordenadas, UMA testada por vez → causa raiz explica TODOS os sintomas →
@@ -41,8 +41,8 @@ integral conhecido.
   antes de entrar no relatório `docs/audora/depuracao/cacada-<data>.md`),
   escalada (3 hipóteses falharam → parar e apresentar evidência ao humano),
   red flags, PRÓXIMA SKILL (fix → executar; achados → validar ou nó).
-- [ ] 2. Rodar verificação estrutural (`<nome>=depurar`) → `ESTRUTURA OK`.
-- [ ] 3. Commit `feat: skill depurar`.
+- [x] 2. Rodar verificação estrutural (`<nome>=depurar`) → `ESTRUTURA OK`.
+- [x] 3. Commit `feat: skill depurar`.
 
 ## Tarefa 2: integração nas skills vizinhas e no hook
 
@@ -55,11 +55,11 @@ integral conhecido.
   mapa acerto → skill), `GRAFO.md` constituição (nada a mudar — conferir).
 - **done quando**: greps confirmam referências novas e ausência de contagem
   velha; hook re-testado verde
-- [ ] 1. Aplicar as edições listadas.
-- [ ] 2. Verificar: `grep -q depurar` em executar, e2e, session-start, README;
+- [x] 1. Aplicar as edições listadas.
+- [x] 2. Verificar: `grep -q depurar` em executar, e2e, session-start, README;
   `CLAUDE_PLUGIN_ROOT=. bash hooks/session-start | python -m json.tool` OK;
   `grep -rn "7 skills"` só onde for histórico legítimo (spec/plano antigos).
-- [ ] 3. Commit `feat: integração da skill depurar no plugin`.
+- [x] 3. Commit `feat: integração da skill depurar no plugin`.
 
 ## Tarefa 3: caçada no próprio repositório (o teste da skill)
 
@@ -71,10 +71,10 @@ integral conhecido.
 - **done quando**: relatório existe, cada achado tem verificação registrada,
   confirmados corrigidos com re-verificação verde, suíte estrutural completa
   verde
-- [ ] 1. Executar a caçada seguindo a skill recém-criada, classe por classe.
-- [ ] 2. Corrigir achados confirmados (um commit por correção).
-- [ ] 3. Re-rodar varredura estrutural completa + JSONs + hook → tudo verde.
-- [ ] 4. Commit do relatório.
+- [x] 1. Executar a caçada seguindo a skill recém-criada, classe por classe.
+- [x] 2. Corrigir achados confirmados (um commit por correção).
+- [x] 3. Re-rodar varredura estrutural completa + JSONs + hook → tudo verde.
+- [x] 4. Commit do relatório.
 
 ## Tarefa 4: validar e sincronizar
 
