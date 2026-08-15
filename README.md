@@ -64,6 +64,7 @@ ponteiro do framework).
 - `docs/audora/planos/` — planos ativos; `arquivo/` para os encerrados.
 - `docs/audora/e2e/` — relatórios E2E por demanda.
 - `docs/audora/specs/` — specs de escopo de demandas ALTA.
+- `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill depurar).
 
 ## Checklist de validação da instalação
 
