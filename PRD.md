@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-15
+> Última atualização: 2026-08-16
 
 ## O que é e para que serve
 
@@ -55,6 +55,14 @@ PRD/GRAFO/spec, referências e placeholders inconsistentes entre skills e
 templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
 Aguardando validação de instalação pelo usuário em sessão interativa
 (checklist no README).
+
+Instalador adicionado em 2026-08-16: `install.sh` (bash) + `install.cmd`
+(wrapper polyglot Windows, mesmo padrão de `hooks/run-hook.cmd`) automatizam
+`claude plugin marketplace add` + `claude plugin install` via CLI
+não-interativa, dispensando sessão interativa para o passo de instalação em
+si. Testados de ponta a ponta neste repositório (idempotentes). README
+reorganizado com seção "Para que serve", pré-requisitos e instalação
+automática (recomendada) vs. manual.
 
 ## Metas futuras de implementação
 

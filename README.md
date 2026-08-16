@@ -14,9 +14,58 @@ IA, guiado por 5 princípios:
 5. **IA executa, humano decide** — portões explícitos, evidência fresca antes
    de qualquer "pronto".
 
+## Para que serve
+
+`audora-commander` transforma o Claude Code num processo de desenvolvimento
+guiado, não só um autocomplete poderoso. Ele ataca um problema comum de codar
+com IA sem estrutura: requisito que se perde entre conversas, plano que vira
+código sem ninguém aprovar o escopo antes, e "pronto" que ninguém verificou
+de verdade.
+
+Instalado num projeto, o plugin adiciona 8 skills encadeadas — da
+classificação de risco da demanda até o portão de validação final — que
+mantêm um mapa vivo do produto (`GRAFO.md`), transformam escopo em artefato
+escrito antes do código, e cobram evidência real (testes rodados, e2e
+exercitado) antes de qualquer coisa ser dada como concluída.
+
+Público-alvo: dev solo ou time pequeno construindo web/mobile/api com Claude
+Code, que quer rigor de processo sem a burocracia de um processo pesado.
+
 Fundamentos completos: [docs/fundamentos.md](docs/fundamentos.md).
 
-## Instalação (sessão interativa do Claude Code)
+## Pré-requisitos
+
+- Claude Code CLI instalada (comando `claude` disponível no PATH).
+- Git, para clonar o repositório. No Windows, use o
+  [Git for Windows](https://git-scm.com/download/win) — ele fornece o bash
+  usado pelo instalador e pelos hooks do plugin.
+
+## Instalação
+
+### Opção A — script automático (recomendado)
+
+Clone o repositório e rode o instalador de dentro da pasta clonada:
+
+```bash
+git clone <URL-deste-repositório>
+cd audora-commander
+./install.sh
+```
+
+No Windows, sem precisar abrir o Git Bash manualmente, dá pra rodar
+`install.cmd` direto (ele mesmo acha o Git Bash e delega para o
+`install.sh`):
+
+```
+install.cmd
+```
+
+O script adiciona esta pasta como marketplace local
+(`audora-commander-dev`) e instala o plugin `audora-commander`, tudo via CLI
+não-interativa — sem precisar abrir uma sessão do Claude Code antes. Rodar
+de novo depois de já instalado é seguro (idempotente).
+
+### Opção B — manual (sessão interativa do Claude Code)
 
 ```bash
 claude
@@ -25,12 +74,15 @@ claude
 Dentro da sessão:
 
 ```
-/plugin marketplace add C:\Users\Italo Barros\workspace\audora-commander
+/plugin marketplace add <pasta-onde-clonou-o-repo>
 /plugin install audora-commander@audora-commander-dev
 ```
 
-Reinicie a sessão após instalar (o hook de SessionStart passa a injetar o
-ponteiro do framework).
+### Depois de instalar
+
+Reinicie a sessão (ou rode `/clear`) — o hook de SessionStart passa a
+injetar o ponteiro do framework. Em seguida, rode o "Checklist de validação
+da instalação" mais abaixo neste README.
 
 ## As 8 skills
 
