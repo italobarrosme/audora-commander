@@ -47,7 +47,7 @@ Fundamentos completos: [docs/fundamentos.md](docs/fundamentos.md).
 Clone o repositório e rode o instalador de dentro da pasta clonada:
 
 ```bash
-git clone <URL-deste-repositório>
+git clone https://github.com/italobarrosme/audora-commander.git
 cd audora-commander
 ./install.sh
 ```
