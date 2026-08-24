@@ -93,15 +93,22 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
   em tokens, com base no estudo de mercado
   (docs/specs/2026-08-24-estudo-grafo-mercado.md), preservando os pontos
   fortes do v1 e com caminho de migração a partir do schema v1.
-- **criterios-aceite**: em definição — spec dedicada (ALTA):
-  docs/audora/specs/grafo-v2-escopo.md
-- **fora-de-escopo**: em definição na spec.
+- **criterios-aceite**: 14 critérios numerados (grafo-v2/1.1 a 7.2) na spec
+  dedicada docs/audora/specs/grafo-v2-escopo.md — estrutura
+  índice-mestre + nó-por-arquivo, travessia por grep, ciclo de vida com
+  decisoes-vivas.md e arquivamento por mv, EARS numerado, migração gradual
+  dual v1/v2, hooks com degradação graciosa, limites.
+- **fora-de-escopo**: federação (só sintaxe chave:id reservada); benchmark;
+  .claude/rules geradas; TSV/scripts de consulta; prefixo NNN-; skill MEMORY
+  e grafo-inicio-fim; script de migração em lote. Detalhe na spec.
 - **decisoes**:
   - 2026-08-24 (humano): demanda classificada ALTA (toca dado persistido —
     GRAFO.md com versao-schema em todo projeto instalado).
   - 2026-08-24 (IA): estudo multi-agente executado; 4 candidatos (A v1.5,
     B v2-derivado, C v2-híbrido, D federação); síntese recomenda C como alvo
     sequenciado em 3 passos reutilizando A e B, com portão de benchmark.
+  - 2026-08-24 (humano): direção = Candidato C COMPLETO direto, sem
+    benchmark intermediário, com migração gradual (fallback duas camadas).
 - **delta**:
 - **e2e**: pendente
 - **feedback-reprovacao**:
