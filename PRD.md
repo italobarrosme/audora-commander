@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-16
+> Última atualização: 2026-08-24
 
 ## O que é e para que serve
 
@@ -55,6 +55,12 @@ PRD/GRAFO/spec, referências e placeholders inconsistentes entre skills e
 templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
 Aguardando validação de instalação pelo usuário em sessão interativa
 (checklist no README).
+
+Documentação bilíngue entregue em 2026-08-24 (nó `docs-bilingues`): README.md
+principal em inglês na raiz + README.pt-BR.md em português, com links
+cruzados no topo. Comandos e blocos de código idênticos entre os dois;
+exceção de idioma registrada na constituição do GRAFO (README em inglês,
+demais docs do repositório seguem em português).
 
 Instalador adicionado em 2026-08-16: `install.sh` (bash) + `install.cmd`
 (wrapper polyglot Windows, mesmo padrão de `hooks/run-hook.cmd`) automatizam
