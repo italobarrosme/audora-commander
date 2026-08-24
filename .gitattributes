@@ -1,0 +1,5 @@
+# Hooks rodam no bash do Git for Windows — LF obrigatório.
+hooks/* text eol=lf
+install.sh text eol=lf
+# Wrappers cmd.exe precisam de CRLF (última regra vence para hooks/*.cmd).
+*.cmd text eol=crlf

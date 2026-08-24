@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Hook PostToolUse (Edit|Write): teto de linhas do GRAFO v2.
+# Índice mestre > ~300 linhas ou arquivo de nó > ~100 → exit 2 + stderr
+# (mensagem chega ao modelo no mesmo turno). Fora do GRAFO → exit 0 imediato.
+# Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
+set -uo pipefail
+
+input="$(cat)"
+file_path="$(printf '%s' "$input" | perl -MJSON::PP -0777 -ne '
+  my $d = eval { decode_json($_) } or exit 0;
+  print $d->{tool_input}{file_path} // "";' 2>/dev/null)" || exit 0
+[ -n "$file_path" ] || exit 0
+file_path="${file_path//\\//}"
+[ -f "$file_path" ] || exit 0
+
+base="$(basename "$file_path")"
+case "$file_path" in
+  *GRAFO.md)
+    head -1 "$file_path" | tr -d '\r' | grep -q 'versao-schema: 2' || exit 0
+    n=$(wc -l < "$file_path" | tr -d ' ')
+    if [ "$n" -gt 300 ]; then
+      echo "grafo-guard: GRAFO.md (índice mestre) com $n linhas — teto ~300. Compactar agora: arquivar nós entregues e encurtar resumos (skill grafo, operação compactar)." >&2
+      exit 2
+    fi
+    ;;
+  *docs/audora/nos/*.md)
+    case "$base" in *-historico.md) exit 0 ;; esac
+    n=$(wc -l < "$file_path" | tr -d ' ')
+    if [ "$n" -gt 100 ]; then
+      echo "grafo-guard: nó $base com $n linhas — teto ~100. Mover histórico frio (delta consolidado, decisões antigas) para ${base%.md}-historico.md (skill grafo, operação compactar)." >&2
+      exit 2
+    fi
+    ;;
+esac
+exit 0
