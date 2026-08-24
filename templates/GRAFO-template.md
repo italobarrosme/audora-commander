@@ -1,9 +1,11 @@
-versao-schema: 1
+versao-schema: 2
 
 # GRAFO — <nome do projeto>
 
 > Memória externa do produto. Requisito não escrito aqui é requisito que não
-> existe. Atualizado por delta durante a demanda; sincronizado na validação.
+> existe. Schema v2: este arquivo é o ÍNDICE MESTRE; o corpo de cada nó vive
+> em `docs/audora/nos/<id>.md` (1 nó = 1 arquivo, ver
+> templates/no-template.md).
 
 ## Propósito [carga: sempre]
 
@@ -24,48 +26,33 @@ cumpre, ou documenta exceção no nó.
 
 ## Índice de nós [carga: sempre]
 
-Uma linha por nó ativo. Formato: `- <id> | <estado> | <título curto>`
+Uma linha rica por nó — decide relevância SEM abrir o corpo. Formato:
+`- <id> | <estado> | <título curto> | <resumo 1 frase> | <keywords> | <arquivos-chave>`
 
-- exemplo-login | planejada | Autenticação de usuário por e-mail e senha
-
-## Nós [carga: auto — carregar somente os nós tocados pela demanda]
-
-### exemplo-login
-
-- **id**: exemplo-login
-- **estado**: planejada
-  <!-- estados válidos: planejada | em-curso | bloqueada | entregue | descartada
-       (+ hotfix-pendente-registro, transitório) -->
-- **origem**: humano
-  <!-- humano = requisito confirmado pelo humano; inferido = deduzido no
-       bootstrap brownfield, NÃO vale como verdade até humano confirmar -->
-- **depende-de**: []
-- **objetivo**: Usuário entra no sistema com e-mail e senha para acessar a
-  área logada.
-- **criterios-aceite**:
-  - QUANDO o usuário submete e-mail e senha válidos O SISTEMA DEVE redirecionar
-    para o painel com sessão criada
-  - QUANDO o usuário submete senha incorreta O SISTEMA DEVE exibir erro genérico
-    sem revelar qual campo falhou
-  - QUANDO o usuário erra a senha 5 vezes seguidas O SISTEMA DEVE bloquear
-    novas tentativas por 15 minutos
-- **fora-de-escopo**: login social; recuperação de senha (nó próprio).
-- **decisoes**:
-  - 2026-08-14 (humano): sessão via cookie httpOnly, não localStorage.
-- **delta**: <!-- preenchido durante a demanda; consolidado no sync da validação
-  - ADICIONADO: <novo requisito + data>
-  - MODIFICADO: <requisito alterado: antes → depois + data>
-  - REMOVIDO: <requisito removido + motivo + data> -->
-- **e2e**: <!-- pendente | relatorio: docs/audora/e2e/e2e-<id>.md | pulado-pelo-humano -->
-- **feedback-reprovacao**: <!-- preenchido se portão final reprovar -->
-- **atualizado-em**: 2026-08-14
+- exemplo-login | planejada | Autenticação e-mail/senha | Usuário entra com e-mail e senha para acessar a área logada | auth, login, sessao | src/auth/
 
 <!-- Regras de manutenção (skill grafo):
-0. Nó `planejada` pode viver SÓ no índice (sem corpo) até ser detalhado —
-   expansão sob demanda. A partir de `em-curso`, corpo completo é obrigatório.
-1. Validar schema antes de escrever — delta que quebra schema é rejeitado.
-2. Nó `entregue` no sync: compactar para 1 linha e mover para
-   docs/audora/GRAFO-ARQUIVO.md; promover resumo ao PRD.md.
-3. GRAFO ativo acima de ~300 linhas → compactação obrigatória.
-4. Em branch: editar somente nós da demanda daquela branch.
-5. Máximo 3 nós em-curso simultâneos. -->
+0. Nó `planejada` pode viver SÓ na linha do índice (sem arquivo) até ser
+   detalhado. A partir de `em-curso`, arquivo docs/audora/nos/<id>.md
+   obrigatório (templates/no-template.md).
+1. A linha do índice é editada NA MESMA EDIÇÃO que cria/altera o nó — índice
+   e pasta divergentes = memória inconsistente, PARAR (hook grafo-validate
+   acusa; sem hook, a skill verifica).
+2. Consulta estrutural via grep, sem carregar corpos: estado →
+   `grep -l '^estado: em-curso' docs/audora/nos/*.md`; deps reversas →
+   `grep -l 'depende-de:.*<id>' docs/audora/nos/*.md`; nó por arquivo de
+   código → `grep -l '<caminho>' docs/audora/nos/*.md`.
+3. Nó entregue (sync da validar): promover decisões ainda válidas para
+   docs/audora/decisoes-vivas.md (templates/decisoes-vivas-template.md),
+   depois `git mv docs/audora/nos/<id>.md
+   docs/audora/arquivo/AAAA-MM-DD-<id>.md` e trocar a linha do índice para
+   `- <id> | entregue | <título> → arquivo/AAAA-MM-DD-<id>.md`. Movimento,
+   nunca reescrita.
+4. Teto do índice mestre: ~300 linhas → compactar (arquivar entregues,
+   encurtar resumos). Teto por nó: ver no-template.
+5. Máximo 3 nós em-curso, contados globalmente por este índice.
+6. `depende-de` reserva a sintaxe `chave:id` para federação futura — `:` é
+   PROIBIDO em id de nó. Caminhos sempre relativos ao arquivo que os contém.
+7. Schema v1 (arquivo único, templates/GRAFO-template-v1.md) é caso
+   degenerado VÁLIDO: detecção por `versao-schema` na linha 1; migração
+   on-touch pela skill grafo, nunca em lote forçado. -->
