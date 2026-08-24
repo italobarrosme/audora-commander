@@ -56,6 +56,15 @@ templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
 Aguardando validação de instalação pelo usuário em sessão interativa
 (checklist no README).
 
+Skill e2e evoluída em 2026-08-24 (nó `e2e-playwright-docker`): Playwright
+como ferramenta default para projetos web (não-web pergunta ao usuário, com
+escolha registrada na Constituição do projeto-alvo); docker compose como
+infra default do teste (compose existente usado, ausente é gerado pela
+stack via `templates/e2e-infra-template.md`, Docker indisponível cai para o
+como-rodar com aviso); artefatos de e2e versionados no projeto-alvo como
+regressão reaproveitável; falha de infra nunca segue parcial; teardown
+sempre.
+
 Documentação bilíngue entregue em 2026-08-24 (nó `docs-bilingues`): README.md
 principal em inglês na raiz + README.pt-BR.md em português, com links
 cruzados no topo. Comandos e blocos de código idênticos entre os dois;

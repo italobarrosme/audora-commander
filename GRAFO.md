@@ -32,10 +32,10 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 
 - plugin-v0.1.0 | em-curso | Plugin funcional com 8 skills, hook, templates e marketplace
 - docs-bilingues | entregue | README bilíngue (inglês na raiz + pt-BR linkado) → ver GRAFO-ARQUIVO.md
-- grafo-v2 | planejada | Redesenho do GRAFO para travessia rápida (estudo de mercado)
+- grafo-v2 | em-curso | Redesenho do GRAFO para travessia rápida (estudo de mercado)
 - grafo-inicio-fim | planejada | GRAFO escrito/atualizado no início e no fim de toda demanda
 - skill-memory | planejada | Skill MEMORY: memória inteligente da audora por projeto
-- e2e-playwright-docker | em-curso | e2e com Playwright + docker compose como infra default
+- e2e-playwright-docker | entregue | e2e com Playwright default web + compose como infra → ver GRAFO-ARQUIVO.md
 - skill-poc | planejada | Skill POC: ≥3 POCs por demanda exploratória, usuário escolhe 1
 - skill-depurar | entregue | Skill de debug (sintoma/caçada) → ver GRAFO-ARQUIVO.md
 - porte-multi-harness | planejada | Porte para outros harnesses (Codex, Cursor)
@@ -83,53 +83,25 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 - **feedback-reprovacao**:
 - **atualizado-em**: 2026-08-14
 
-### e2e-playwright-docker
+### grafo-v2
 
-- **id**: e2e-playwright-docker
+- **id**: grafo-v2
 - **estado**: em-curso
 - **origem**: humano
 - **depende-de**: []
-- **objetivo**: A skill e2e passa a adotar Playwright como ferramenta padrão
-  para exercitar a demanda e docker compose como infra default para levantar
-  o projeto durante o teste de ponta a ponta.
-- **criterios-aceite**:
-  - QUANDO a demanda validada tiver interface web O SISTEMA DEVE usar
-    Playwright como ferramenta default para exercitar os critérios no e2e
-  - QUANDO o projeto-alvo não for web (API pura, CLI, worker) O SISTEMA DEVE
-    perguntar ao usuário qual ferramenta usar antes de exercitar — nunca
-    escolher sozinho
-  - QUANDO o e2e for iniciado e o projeto tiver docker compose O SISTEMA
-    DEVE levantar a infra do teste por ele (default)
-  - QUANDO o projeto não tiver docker compose O SISTEMA DEVE gerar um
-    compose de e2e a partir da stack/constituição (app + dependências) e
-    usá-lo como default
-  - QUANDO Docker não estiver disponível na máquina O SISTEMA DEVE cair para
-    o como-rodar da constituição, com aviso explícito ao usuário
-  - QUANDO o e2e gerar artefatos (compose de e2e, specs Playwright) O SISTEMA
-    DEVE versioná-los no projeto-alvo, e QUANDO já existirem O SISTEMA DEVE
-    estendê-los/reaproveitá-los em vez de recriar do zero
-  - QUANDO a infra do compose falhar ao subir (porta ocupada, imagem
-    indisponível, serviço unhealthy) O SISTEMA DEVE reportar o log do erro e
-    perguntar ao usuário (corrigir, fallback como-rodar, ou abortar) — nunca
-    silenciar a falha nem seguir com infra parcial
-  - QUANDO o e2e terminar (sucesso ou falha) O SISTEMA DEVE derrubar a infra
-    que ele mesmo levantou (compose down), deixando a máquina limpa
-- **fora-de-escopo**: rodar e2e em CI/CD (pipeline); testes de
-  carga/performance; mobile nativo; geração de compose de produção (só infra
-  de teste); instalar Docker/Playwright na máquina do usuário (pré-requisito
-  — a skill só avisa); alterar o fluxo das demais skills (a validar continua
-  oferecendo o e2e como hoje).
+- **objetivo**: Redesenhar o GRAFO para travessia mais rápida e mais barata
+  em tokens, com base no estudo de mercado
+  (docs/specs/2026-08-24-estudo-grafo-mercado.md), preservando os pontos
+  fortes do v1 e com caminho de migração a partir do schema v1.
+- **criterios-aceite**: em definição — spec dedicada (ALTA):
+  docs/audora/specs/grafo-v2-escopo.md
+- **fora-de-escopo**: em definição na spec.
 - **decisoes**:
-  - 2026-08-24 (humano): demanda aberta com prioridade máxima da fila nova
-    (escopo em paralelo ao estudo do grafo-v2).
-  - 2026-08-24 (humano): Playwright é default SÓ para web; projeto não-web →
-    a skill pergunta ao usuário qual ferramenta usar no passo do e2e.
-  - 2026-08-24 (humano): sem compose no projeto → a skill GERA compose de
-    e2e pela stack/constituição; Docker indisponível → fallback como-rodar
-    com aviso.
-  - 2026-08-24 (humano): artefatos de e2e (compose de teste, specs
-    Playwright) versionados no projeto-alvo — regressão reaproveitável.
-  - 2026-08-24 (humano): escopo aprovado no portão (8 critérios EARS).
+  - 2026-08-24 (humano): demanda classificada ALTA (toca dado persistido —
+    GRAFO.md com versao-schema em todo projeto instalado).
+  - 2026-08-24 (IA): estudo multi-agente executado; 4 candidatos (A v1.5,
+    B v2-derivado, C v2-híbrido, D federação); síntese recomenda C como alvo
+    sequenciado em 3 passos reutilizando A e B, com portão de benchmark.
 - **delta**:
 - **e2e**: pendente
 - **feedback-reprovacao**:

@@ -3,6 +3,29 @@
 Nós entregues, compactados pela skill validar no sync pós-merge. Leitura
 manual — não é carregado automaticamente em contexto.
 
+## e2e-playwright-docker (entregue 2026-08-24)
+
+- **origem**: humano | **depende-de**: []
+- **objetivo**: Skill e2e com Playwright como ferramenta default para
+  projetos web e docker compose como infra default do teste, artefatos
+  versionados no projeto-alvo.
+- **criterios-aceite** (8/8 mapeados 1:1 em trechos da skill no portão):
+  Playwright default web; não-web pergunta ao humano (nunca sozinho);
+  compose existente usado; ausente → gerado pela stack/constituição via
+  `templates/e2e-infra-template.md`; Docker indisponível → aviso + fallback
+  como-rodar; artefatos versionados e estendidos (nunca recriados); falha de
+  infra → log + pergunta (nunca infra parcial); teardown sempre (compose
+  down).
+- **decisoes**:
+  - 2026-08-24 (humano): Playwright só para web; não-web pergunta; compose
+    gerado quando ausente; artefatos versionados; escopo aprovado no portão.
+  - 2026-08-24 (IA): `docker-compose.e2e.yml` na raiz do alvo; specs em
+    `e2e/`; escolha não-web registrada na Constituição (pergunta única);
+    description do frontmatter menciona os defaults.
+- **e2e**: pendente-humano — exercício real exige sessão interativa com o
+  plugin instalado (mesmo checklist do nó plugin-v0.1.0).
+- **entregue-em**: 2026-08-24 (commit e70b578)
+
 ## docs-bilingues (entregue 2026-08-24)
 
 - **origem**: humano | **depende-de**: []
