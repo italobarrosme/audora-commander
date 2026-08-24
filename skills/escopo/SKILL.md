@@ -27,8 +27,10 @@ funções, banco, biblioteca — isso é a fase plano. Se o humano puxar para o
    consegue obter agora → escrever `[PRECISA-CLARIFICAR: <a dúvida exata>]` no
    artefato. É PROIBIDO substituir o marcador por uma suposição plausível — a
    suposição plausível é exatamente o bug que esta skill existe para matar.
-4. **Critérios de aceite em EARS**, sempre:
-   `QUANDO <condição> O SISTEMA DEVE <comportamento observável>`.
+4. **Critérios de aceite em EARS, numerados**, sempre:
+   `QUANDO <condição> O SISTEMA DEVE <comportamento observável>`, cada um com
+   endereço estável `<id-do-nó>/<n>` (número nunca reutilizado) — teste,
+   commit, e2e e roteiro de validação citam o endereço.
    Cobrir também erro e borda: entrada inválida, falha de rede, estado vazio,
    limite. Critério que não cabe na sintaxe EARS é critério ambíguo — reescreva.
 5. **Fechar os três campos** no nó do GRAFO: `objetivo` (1-2 frases),

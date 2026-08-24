@@ -24,8 +24,9 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
    concluídas. Tarefa marcada `expandir: sim` → quebrar em subtarefas AGORA
    (chegou a vez dela), pelo formato do template.
 3. **Ciclo por tarefa**:
-   - **RED**: escrever UM teste mínimo do comportamento (nome claro, uma
-     coisa só, código real — mock apenas se inevitável). Rodar. Confirmar na
+   - **RED**: escrever UM teste mínimo do comportamento (nome claro citando o
+     endereço do critério `<id>/<n>` quando houver, uma coisa só, código real
+     — mock apenas se inevitável). Rodar. Confirmar na
      SAÍDA REAL que falha pelo motivo certo (feature ausente, não typo).
      Passou de primeira? Você testou comportamento existente — conserte o
      teste. Erro em vez de falha? Conserte até falhar direito.
@@ -34,8 +35,9 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
      verde E saída limpa (sem warning novo).
    - **REFACTOR**: só depois do green — duplicação, nomes, extração. Testes
      continuam verdes. Sem comportamento novo.
-   - **COMMIT**: etapa verde → `git add <arquivos> && git commit`. Cada commit
-     é checkpoint de rollback barato.
+   - **COMMIT**: etapa verde → `git add <arquivos> && git commit`; a mensagem
+     cita o(s) endereço(s) de critério cobertos (ex.: `feat(no-x/2): ...`).
+     Cada commit é checkpoint de rollback barato.
 4. **Profundidade de teste** (regra global — inegociável):
    - **Integrações reais**: banco, APIs, filas, SDKs — cubra o caminho de
      integração de verdade sempre que possível, não só unidades com tudo

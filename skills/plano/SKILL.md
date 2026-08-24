@@ -33,7 +33,8 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 5. **Escrever o plano** pelo template:
    - Header: objetivo, nó do GRAFO, arquitetura da mudança, arquivos lidos.
    - Tarefas autossuficientes: cada uma embute requisito (critérios EARS
-     copiados verbatim do nó), decisões relevantes, interfaces
+     copiados verbatim do nó, com seus endereços `<id>/<n>`), decisões
+     relevantes, interfaces
      (consome/produz com assinaturas exatas), arquivos com caminhos exatos,
      critério de done.
    - `depende-de` explícito entre tarefas: "qual a próxima?" é resposta

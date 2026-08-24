@@ -60,7 +60,7 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
    que foi visto, não o que deveria acontecer.
 6. **Relatório** em `docs/audora/e2e/e2e-<id>.md`:
 
-   | Critério (EARS) | Passo executado | Evidência | Veredito |
+   | Critério (`<id>/<n>` + EARS) | Passo executado | Evidência | Veredito |
    |---|---|---|---|
 
    Veredito por critério: `passou` / `falhou` / `não-automatizável` (vai para

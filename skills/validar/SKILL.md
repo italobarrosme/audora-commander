@@ -21,7 +21,8 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
    Aceitou → skill e2e, volte aqui com o relatório. Recusou → registrar no nó
    `e2e: pulado-pelo-humano` e seguir.
-2. **Gate de evidência 1:1** — para CADA critério de aceite do nó:
+2. **Gate de evidência 1:1** — para CADA critério de aceite do nó, citado
+   pelo endereço `<id>/<n>`:
    - evidência automatizada: comando executado agora + saída correspondente
      (teste, chamada, relatório e2e); OU
    - item explícito no roteiro de validação humana (critério
@@ -51,10 +52,17 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
    direto):
    - Consolidar o bloco `delta` no corpo do nó (skill grafo).
-   - Nó → `entregue`; compactar para 1 linha e mover o corpo para
-     `docs/audora/GRAFO-ARQUIVO.md`.
+   - Preencher `arquivos:` do nó via `git diff --name-only` da demanda — do
+     diff real, nunca de memória.
+   - Propor a promoção das decisões ainda válidas do nó para
+     `docs/audora/decisoes-vivas.md` (o humano aprova neste mesmo portão).
+   - Nó → `entregue`; arquivar por movimento (skill grafo, compactar):
+     `git mv docs/audora/nos/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`
+     + linha do índice atualizada. (Projeto ainda no schema v1: compactar
+     para `docs/audora/GRAFO-ARQUIVO.md`, como antes.)
    - **Promover ao PRD.md**: resumo do que foi entregue + data de última
-     atualização. Direção única GRAFO → PRD, sempre.
+     atualização. Direção única GRAFO → PRD, sempre (vale para toda camada
+     derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
    - Arquivar o plano em `docs/audora/planos/arquivo/`.
    - HOTFIX: regularizar o registro retroativo (nó `hotfix-pendente-registro`
      → nó completo).
