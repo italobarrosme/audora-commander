@@ -16,9 +16,10 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 
 - **stack**: Markdown (skills, templates, docs) + JSON (manifests, hook) +
   bash (scripts de hook). Sem código executável além dos hooks.
-- **restricoes**: cada SKILL.md ≤ 250 linhas; conteúdo em português; schemas
-  vivem só em `templates/`; hook injeta ponteiro curto, nunca o framework
-  inteiro; Windows suportado via wrapper polyglot `.cmd`.
+- **restricoes**: cada SKILL.md ≤ 250 linhas; conteúdo em português (exceção
+  aprovada 2026-08-24: README.md principal em inglês, com README.pt-BR.md
+  linkado); schemas vivem só em `templates/`; hook injeta ponteiro curto,
+  nunca o framework inteiro; Windows suportado via wrapper polyglot `.cmd`.
 - **padroes**: toda skill tem frontmatter `name`+`description` ("Use
   quando..."), Lei de Ferro em bloco de código no topo, "Anuncie ao começar",
   fluxo numerado, tabela de red flags e seção "PRÓXIMA SKILL".
@@ -30,6 +31,12 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | em-curso | Plugin funcional com 8 skills, hook, templates e marketplace
+- docs-bilingues | em-curso | README bilíngue: principal em inglês na raiz, README.pt-BR.md em português
+- grafo-v2 | planejada | Redesenho do GRAFO para travessia rápida (estudo de mercado)
+- grafo-inicio-fim | planejada | GRAFO escrito/atualizado no início e no fim de toda demanda
+- skill-memory | planejada | Skill MEMORY: memória inteligente da audora por projeto
+- e2e-playwright-docker | planejada | e2e com Playwright + docker compose como infra default
+- skill-poc | planejada | Skill POC: ≥3 POCs por demanda exploratória, usuário escolhe 1
 - skill-depurar | entregue | Skill de debug (sintoma/caçada) → ver GRAFO-ARQUIVO.md
 - porte-multi-harness | planejada | Porte para outros harnesses (Codex, Cursor)
 - marketplace-publico | planejada | Publicação em marketplace público
@@ -75,5 +82,48 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
   humano (checklist do README).
 - **feedback-reprovacao**:
 - **atualizado-em**: 2026-08-14
+
+### docs-bilingues
+
+- **id**: docs-bilingues
+- **estado**: em-curso
+- **origem**: humano
+- **depende-de**: []
+- **objetivo**: README.md principal reescrito em inglês (idioma padrão do
+  projeto open-source) na raiz, com link para README.pt-BR.md contendo a
+  versão em português.
+- **criterios-aceite**:
+  - QUANDO alguém abrir o README.md na raiz do repositório O SISTEMA DEVE
+    apresentar todo o conteúdo em inglês, com paridade completa ao conteúdo
+    hoje existente em português (propósito, pré-requisitos, instalação,
+    tabela das 8 skills, fluxo de uso, artefatos, checklist de validação,
+    desenvolvimento) — nenhuma seção omitida
+  - QUANDO o README.md em inglês for aberto O SISTEMA DEVE exibir, logo
+    abaixo do título, um link visível para a versão em português apontando
+    para README.pt-BR.md
+  - QUANDO README.pt-BR.md for aberto O SISTEMA DEVE apresentar o mesmo
+    conteúdo em português, com paridade ao README.md em inglês, e um link de
+    volta para a versão em inglês apontando para README.md
+  - QUANDO um comando, nome de arquivo, flag ou trecho de código aparecer em
+    qualquer um dos dois READMEs O SISTEMA DEVE mantê-lo inalterado (só prosa
+    é traduzida, comandos não)
+  - QUANDO o README.md em inglês referenciar outro documento do repositório
+    (ex.: docs/fundamentos.md) O SISTEMA DEVE preservar o link funcional,
+    mesmo que o documento referenciado continue só em português
+- **fora-de-escopo**: tradução de outros documentos do repositório
+  (docs/fundamentos.md, specs, skills, templates); i18n de mensagens de
+  hook/skill; suporte a mais de 2 idiomas.
+- **decisoes**:
+  - 2026-08-24 (humano): inglês é o idioma principal (README.md na raiz);
+    português vira README.pt-BR.md linkado.
+  - 2026-08-24 (IA): nome do arquivo em português segue convenção padrão do
+    GitHub, README.pt-BR.md (decisão de implementação, não de produto —
+    não muda comportamento observável além do já coberto pelos critérios).
+  - 2026-08-24 (humano): escopo aprovado no portão, incluindo exceção da
+    constituição — README em inglês; demais docs do repo seguem em português.
+- **delta**:
+- **e2e**: pendente
+- **feedback-reprovacao**:
+- **atualizado-em**: 2026-08-24
 
 <!-- Regras de manutenção: ver templates/GRAFO-template.md (skill grafo). -->
