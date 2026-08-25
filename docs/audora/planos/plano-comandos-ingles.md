@@ -122,6 +122,23 @@ templates 25 (com `${B}$ST$E`), READMEs 36, hooks 2, PRD 12, `.cmd` 0;
 
 ## Notas de sessão
 
+Rodada adversarial do DIFF (T8, 2026-08-25, 27 agentes: 3 lentes → 24
+achados → verificador cético; 18 confirmados, 6 refutados) — corrigidos no
+commit de fechamento: skill graph prometia que o hook acusa "qualquer
+estado" (hook só lê a coluna 2 do índice — 3.4) → prosa e red flag
+corrigidas; formas onde o estado vive (`estado:`, `- **estado**:`, coluna,
+rótulo de heading arquivado) explicitadas na skill e no no-template;
+detecção de migração pendente trocada por grep positivo (o `grep -L`
+acusava `*-historico.md`); cabeçalho do hook e mensagem (typo/maiúscula ≠
+migração; caminho ABSOLUTO de templates/ do plugin via `$0`, validado via
+run-hook.cmd); READMEs qualificam "migração de SCHEMA on-touch" e citam a
+substring real "fora do enum"; GRAFO-template regra 3 idem; GRAFO-ARQUIVO
+l.3 e nó ativo "(ALTA)" → EN; keyword `instalacao` espelhada no índice;
+reflow de 2 trechos da skill graph. **Decisão pendente para o humano**:
+estender o hook para também validar `estado:` dos arquivos em nos/ (além
+de 3.4 — seria delta ADICIONADO no nó); hoje o alcance é o índice, como a
+spec pede.
+
 Rodada adversarial do PLANO (2026-08-25, 3 lentes, 25 achados confirmados
 por verificadores independentes, 2 refutados) — todos integrados nesta
 versão: exceção de grep para a tabela dos READMEs (por seção, não por
