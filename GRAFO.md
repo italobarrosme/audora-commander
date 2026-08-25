@@ -1,9 +1,10 @@
-versao-schema: 1
+versao-schema: 2
 
 # GRAFO — audora-commander
 
 > Memória externa do produto. Requisito não escrito aqui é requisito que não
-> existe. Atualizado por delta durante a demanda; sincronizado na validação.
+> existe. Schema v2: este arquivo é o ÍNDICE MESTRE; o corpo de cada nó vive
+> em `docs/audora/nos/<id>.md`.
 
 ## Propósito [carga: sempre]
 
@@ -30,88 +31,18 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 
 ## Índice de nós [carga: sempre]
 
-- plugin-v0.1.0 | em-curso | Plugin funcional com 8 skills, hook, templates e marketplace
-- docs-bilingues | entregue | README bilíngue (inglês na raiz + pt-BR linkado) → ver GRAFO-ARQUIVO.md
-- grafo-v2 | em-curso | Redesenho do GRAFO para travessia rápida (estudo de mercado)
-- grafo-inicio-fim | planejada | GRAFO escrito/atualizado no início e no fim de toda demanda
-- skill-memory | planejada | Skill MEMORY: memória inteligente da audora por projeto
-- e2e-playwright-docker | entregue | e2e com Playwright default web + compose como infra → ver GRAFO-ARQUIVO.md
-- skill-poc | planejada | Skill POC: ≥3 POCs por demanda exploratória, usuário escolhe 1
-- skill-depurar | entregue | Skill de debug (sintoma/caçada) → ver GRAFO-ARQUIVO.md
-- porte-multi-harness | planejada | Porte para outros harnesses (Codex, Cursor)
-- marketplace-publico | planejada | Publicação em marketplace público
-- agentes-dedicados | planejada | Subagent types customizados por fase
+- plugin-v0.1.0 | em-curso | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook | skills/, hooks/, templates/
+- grafo-v2 | em-curso | GRAFO v2 | Redesenho: índice mestre + 1 nó = 1 arquivo, travessia por grep, migração gradual | grafo, memoria, travessia, schema | skills/grafo/, templates/, hooks/
+- grafo-inicio-fim | planejada | GRAFO no início e fim | GRAFO escrito/atualizado no início e no fim de toda demanda | grafo, ciclo, enforcement | skills/
+- skill-memory | planejada | Skill MEMORY | Memória inteligente da audora por projeto (preferências e aprendizados, distinta do GRAFO) | memoria, aprendizado, skill | skills/
+- skill-poc | planejada | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
+- porte-multi-harness | planejada | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
+- marketplace-publico | planejada | Marketplace público | Publicação em marketplace público | marketplace, publicacao | —
+- agentes-dedicados | planejada | Agentes dedicados | Subagent types customizados por fase | agentes, subagent | —
+- docs-bilingues | entregue | README bilíngue → ver docs/audora/GRAFO-ARQUIVO.md
+- e2e-playwright-docker | entregue | e2e Playwright + compose → ver docs/audora/GRAFO-ARQUIVO.md
+- skill-depurar | entregue | Skill de debug → ver docs/audora/GRAFO-ARQUIVO.md
 
-## Nós [carga: auto — carregar somente os nós tocados pela demanda]
-
-### plugin-v0.1.0
-
-- **id**: plugin-v0.1.0
-- **estado**: em-curso
-- **origem**: humano
-- **depende-de**: []
-- **objetivo**: Plugin instalável do Claude Code com as 7 skills do framework,
-  hook de SessionStart, templates canônicos e marketplace local de
-  desenvolvimento.
-- **criterios-aceite**:
-  - QUANDO o marketplace local for adicionado e o plugin instalado O SISTEMA
-    DEVE listar as 7 skills com prefixo `audora-commander:`
-  - QUANDO uma sessão nova iniciar com o plugin ativo O SISTEMA DEVE injetar o
-    ponteiro do hook no contexto
-  - QUANDO a skill audora-commander for invocada num projeto sem GRAFO.md
-    O SISTEMA DEVE oferecer bootstrap em vez de travar ou inventar conteúdo
-  - QUANDO cada skill for invocada isoladamente O SISTEMA DEVE carregar seu
-    conteúdo sem erro e sem placeholders
-  - QUANDO uma demanda LEVE e uma MÉDIA forem simuladas O SISTEMA DEVE
-    produzir os artefatos esperados (nó no GRAFO, plano-arquivo na MÉDIA,
-    roteiro de validação)
-- **fora-de-escopo**: porte multi-harness; marketplace público; agentes
-  dedicados; automação de git hooks (nós próprios ou v futura).
-- **decisoes**:
-  - 2026-08-14 (humano): formato plugin padrão Superpowers; 6→7 skills com
-    adição do e2e opcional-recomendado; nomes em português.
-  - 2026-08-14 (humano): fundamentos v2 aprovados (crítica adversarial +
-    acertos do gênero integrados).
-  - 2026-08-14 (IA): verificação de placeholder case-sensitive com exceção
-    para listas de proibição (falso positivo com "todo" em português).
-- **delta**:
-  - MODIFICADO (2026-08-15): critério 1 — "listar as 7 skills" → "listar as
-    8 skills" (skill depurar adicionada pelo nó skill-depurar); objetivo
-    idem. Motivo: caçada A3, divergência nó vs README.
-- **e2e**: pendente — critérios 1, 2 e 5 dependem de sessão interativa do
-  humano (checklist do README).
-- **feedback-reprovacao**:
-- **atualizado-em**: 2026-08-14
-
-### grafo-v2
-
-- **id**: grafo-v2
-- **estado**: em-curso
-- **origem**: humano
-- **depende-de**: []
-- **objetivo**: Redesenhar o GRAFO para travessia mais rápida e mais barata
-  em tokens, com base no estudo de mercado
-  (docs/specs/2026-08-24-estudo-grafo-mercado.md), preservando os pontos
-  fortes do v1 e com caminho de migração a partir do schema v1.
-- **criterios-aceite**: 14 critérios numerados (grafo-v2/1.1 a 7.2) na spec
-  dedicada docs/audora/specs/grafo-v2-escopo.md — estrutura
-  índice-mestre + nó-por-arquivo, travessia por grep, ciclo de vida com
-  decisoes-vivas.md e arquivamento por mv, EARS numerado, migração gradual
-  dual v1/v2, hooks com degradação graciosa, limites.
-- **fora-de-escopo**: federação (só sintaxe chave:id reservada); benchmark;
-  .claude/rules geradas; TSV/scripts de consulta; prefixo NNN-; skill MEMORY
-  e grafo-inicio-fim; script de migração em lote. Detalhe na spec.
-- **decisoes**:
-  - 2026-08-24 (humano): demanda classificada ALTA (toca dado persistido —
-    GRAFO.md com versao-schema em todo projeto instalado).
-  - 2026-08-24 (IA): estudo multi-agente executado; 4 candidatos (A v1.5,
-    B v2-derivado, C v2-híbrido, D federação); síntese recomenda C como alvo
-    sequenciado em 3 passos reutilizando A e B, com portão de benchmark.
-  - 2026-08-24 (humano): direção = Candidato C COMPLETO direto, sem
-    benchmark intermediário, com migração gradual (fallback duas camadas).
-- **delta**:
-- **e2e**: pendente
-- **feedback-reprovacao**:
-- **atualizado-em**: 2026-08-24
-
-<!-- Regras de manutenção: ver templates/GRAFO-template.md (skill grafo). -->
+<!-- Regras de manutenção: ver templates/GRAFO-template.md (skill grafo).
+     Nós entregues acima de 2026-08-24 vivem no legado GRAFO-ARQUIVO.md;
+     entregas novas vão para docs/audora/arquivo/AAAA-MM-DD-<id>.md. -->
