@@ -11,9 +11,8 @@ A Claude Code plugin: an AI-assisted software development framework guided by
    covers one demand, and dies after it.
 3. **"What" separated from "How"** — scope is closed in a written artifact
    before any code.
-4. **Process proportional to risk** — LEVE (light), MÉDIA (medium), ALTA
-   (high) and HOTFIX demands pay different ceremonies; approval gates never
-   scale down.
+4. **Process proportional to risk** — LIGHT, MEDIUM, HIGH and HOTFIX
+   demands pay different ceremonies; approval gates never scale down.
 5. **AI executes, human decides** — explicit gates, fresh evidence before any
    "done".
 
@@ -90,23 +89,23 @@ checklist" further down in this README.
 
 | Skill | Role |
 |---|---|
-| `audora-commander` | Entry point: classifies the demand by risk (LEVE/MÉDIA/ALTA/HOTFIX) and routes it |
-| `grafo` | Creates and maintains GRAFO.md (bootstrap, nodes, deltas, compaction) |
-| `escopo` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
-| `plano` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
-| `executar` | Red-green TDD with real evidence; commit per green step |
+| `audora-commander` | Entry point: classifies the demand by risk (LIGHT/MEDIUM/HIGH/HOTFIX) and routes it |
+| `graph` | Creates and maintains GRAFO.md (bootstrap, nodes, deltas, compaction) |
+| `scope` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
+| `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
+| `execute` | Red-green TDD with real evidence; commit per green step |
 | `e2e` | Boots the project and exercises the demand end to end (optional, strongly recommended) |
-| `validar` | Final human gate: evidence mapped 1:1 to criteria, GRAFO → PRD sync |
-| `depurar` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
+| `validate` | Final human gate: evidence mapped 1:1 to criteria, GRAFO → PRD sync |
+| `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
 
-## Usage flow (example: a MÉDIA demand)
+## Usage flow (example: a MEDIUM demand)
 
 1. You ask: "add a date filter to the orders list".
-2. `audora-commander` classifies it: MÉDIA (new logic; no data/auth/contract).
-3. `escopo` asks what is missing, closes the EARS criteria, you approve (gate).
-4. `plano` reads the current code and generates `docs/audora/planos/plano-<id>.md`.
-5. `executar` implements via TDD, committing at each green step.
-6. `validar` offers `e2e` (recommended): the project boots, the criteria are
+2. `audora-commander` classifies it: MEDIUM (new logic; no data/auth/contract).
+3. `scope` asks what is missing, closes the EARS criteria, you approve (gate).
+4. `plan` reads the current code and generates `docs/audora/planos/plano-<id>.md`.
+5. `execute` implements via TDD, committing at each green step.
+6. `validate` offers `e2e` (recommended): the project boots, the criteria are
    exercised for real, and a report lands in `docs/audora/e2e/`.
 7. Final gate: a validation script with evidence per criterion. You approve;
    the GRAFO syncs and PRD.md receives the summary.
@@ -121,8 +120,8 @@ checklist" further down in this README.
 - `docs/audora/arquivo/` — delivered nodes, archived by move.
 - `docs/audora/planos/` — active plans; `arquivo/` for closed ones.
 - `docs/audora/e2e/` — E2E reports per demand.
-- `docs/audora/specs/` — scope specs for ALTA demands.
-- `docs/audora/depuracao/` — defect hunt reports (depurar skill).
+- `docs/audora/specs/` — scope specs for HIGH demands.
+- `docs/audora/depuracao/` — defect hunt reports (debug skill).
 
 Projects on schema v1 (single-file GRAFO.md + GRAFO-ARQUIVO.md) remain fully
 supported — migration happens on touch, never as a forced big bang.
@@ -142,9 +141,40 @@ Run in the interactive session after installing:
   content.
 - [ ] 4. WHEN each skill is invoked in isolation, it MUST load without errors
   and without placeholders.
-- [ ] 5. WHEN a LEVE and a MÉDIA demand are simulated in a sample project,
+- [ ] 5. WHEN a LIGHT and a MEDIUM demand are simulated in a sample project,
   the flow MUST produce the expected artifacts (node in the GRAFO; plan file
-  for the MÉDIA; validation script).
+  for the MEDIUM; validation script).
+
+## Renamed in 0.3.0 (breaking)
+
+Commands, risk categories and node states are now in English. The old
+command names no longer exist (no aliases). Existing GRAFOs are migrated in
+full by the `graph` skill on the first write in each project — until then,
+`grafo-validate` reports "estado fora do enum". `docs/fundamentos.md` still
+uses the pre-0.3.0 names.
+
+| Command (before) | Command (after) |
+|---|---|
+| grafo | `graph` |
+| escopo | `scope` |
+| plano | `plan` |
+| executar | `execute` |
+| validar | `validate` |
+| depurar | `debug` |
+| audora-commander, e2e | unchanged |
+
+| Risk category (before) | After |
+|---|---|
+| LEVE / MÉDIA / ALTA / HOTFIX | LIGHT / MEDIUM / HIGH / HOTFIX |
+
+| Node state (before) | After |
+|---|---|
+| planejada | `planned` |
+| em-curso | `in-progress` |
+| bloqueada | `blocked` |
+| entregue | `delivered` |
+| descartada | `discarded` |
+| hotfix-pendente-registro | `hotfix-pending-record` |
 
 ## Development
 

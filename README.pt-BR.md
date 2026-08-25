@@ -11,7 +11,7 @@ IA, guiado por 5 princípios:
    demanda, morre depois dela.
 3. **"O Quê" separado do "Como"** — escopo fecha em artefato escrito antes de
    qualquer código.
-4. **Processo proporcional ao risco** — LEVE, MÉDIA, ALTA e HOTFIX pagam
+4. **Processo proporcional ao risco** — LIGHT, MEDIUM, HIGH e HOTFIX pagam
    cerimônias diferentes; portão de aprovação nunca escala para baixo.
 5. **IA executa, humano decide** — portões explícitos, evidência fresca antes
    de qualquer "pronto".
@@ -90,23 +90,23 @@ da instalação" mais abaixo neste README.
 
 | Skill | Papel |
 |---|---|
-| `audora-commander` | Porta de entrada: classifica a demanda por risco (LEVE/MÉDIA/ALTA/HOTFIX) e roteia |
-| `grafo` | Cria e mantém o GRAFO.md (bootstrap, nós, deltas, compactação) |
-| `escopo` | Fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR], portão de escopo |
-| `plano` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
-| `executar` | TDD red-green com evidência real; commit por etapa verde |
+| `audora-commander` | Porta de entrada: classifica a demanda por risco (LIGHT/MEDIUM/HIGH/HOTFIX) e roteia |
+| `graph` | Cria e mantém o GRAFO.md (bootstrap, nós, deltas, compactação) |
+| `scope` | Fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR], portão de escopo |
+| `plan` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
+| `execute` | TDD red-green com evidência real; commit por etapa verde |
 | `e2e` | Levanta o projeto e exercita a demanda de ponta a ponta (opcional, fortemente recomendada) |
-| `validar` | Portão humano final: evidência 1:1 com critérios, sync GRAFO → PRD |
-| `depurar` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
+| `validate` | Portão humano final: evidência 1:1 com critérios, sync GRAFO → PRD |
+| `debug` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
 
-## Fluxo de uso (exemplo: demanda MÉDIA)
+## Fluxo de uso (exemplo: demanda MEDIUM)
 
 1. Você pede: "adiciona filtro por data na listagem de pedidos".
-2. `audora-commander` classifica: MÉDIA (lógica nova, sem dado/auth/contrato).
-3. `escopo` pergunta o que falta, fecha critérios EARS, você aprova (portão).
-4. `plano` lê o código atual e gera `docs/audora/planos/plano-<id>.md`.
-5. `executar` implementa por TDD, commit a cada etapa verde.
-6. `validar` oferece o `e2e` (recomendado): projeto sobe, critérios são
+2. `audora-commander` classifica: MEDIUM (lógica nova, sem dado/auth/contrato).
+3. `scope` pergunta o que falta, fecha critérios EARS, você aprova (portão).
+4. `plan` lê o código atual e gera `docs/audora/planos/plano-<id>.md`.
+5. `execute` implementa por TDD, commit a cada etapa verde.
+6. `validate` oferece o `e2e` (recomendado): projeto sobe, critérios são
    exercitados de verdade, relatório sai em `docs/audora/e2e/`.
 7. Portão final: roteiro de validação com evidência por critério. Você aprova;
    GRAFO sincroniza e PRD.md recebe o resumo.
@@ -121,8 +121,8 @@ da instalação" mais abaixo neste README.
 - `docs/audora/arquivo/` — nós entregues, arquivados por movimento.
 - `docs/audora/planos/` — planos ativos; `arquivo/` para os encerrados.
 - `docs/audora/e2e/` — relatórios E2E por demanda.
-- `docs/audora/specs/` — specs de escopo de demandas ALTA.
-- `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill depurar).
+- `docs/audora/specs/` — specs de escopo de demandas HIGH.
+- `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill debug).
 
 Projetos no schema v1 (GRAFO.md em arquivo único + GRAFO-ARQUIVO.md) seguem
 plenamente suportados — a migração acontece por toque, nunca como big bang
@@ -142,9 +142,40 @@ Rode na sessão interativa após instalar:
   GRAFO.md, ela DEVE oferecer bootstrap em vez de travar ou inventar conteúdo.
 - [ ] 4. QUANDO cada skill for invocada isoladamente, ela DEVE carregar sem
   erro e sem placeholders.
-- [ ] 5. QUANDO uma demanda LEVE e uma MÉDIA forem simuladas num projeto de
+- [ ] 5. QUANDO uma demanda LIGHT e uma MEDIUM forem simuladas num projeto de
   exemplo, o fluxo DEVE produzir os artefatos esperados (nó no GRAFO;
-  plano-arquivo na MÉDIA; roteiro de validação).
+  plano-arquivo na MEDIUM; roteiro de validação).
+
+## Renomeado em 0.3.0 (breaking)
+
+Comandos, categorias de risco e estados de nó agora são em inglês. Os nomes
+antigos de comando deixaram de existir (sem alias). GRAFOs existentes são
+migrados por completo pela skill `graph` na primeira escrita em cada
+projeto — até lá, o `grafo-validate` acusa "estado fora do enum".
+`docs/fundamentos.md` ainda usa os nomes anteriores à 0.3.0.
+
+| Comando (antes) | Comando (depois) |
+|---|---|
+| grafo | `graph` |
+| escopo | `scope` |
+| plano | `plan` |
+| executar | `execute` |
+| validar | `validate` |
+| depurar | `debug` |
+| audora-commander, e2e | inalterados |
+
+| Categoria de risco (antes) | Depois |
+|---|---|
+| LEVE / MÉDIA / ALTA / HOTFIX | LIGHT / MEDIUM / HIGH / HOTFIX |
+
+| Estado do nó (antes) | Depois |
+|---|---|
+| planejada | `planned` |
+| em-curso | `in-progress` |
+| bloqueada | `blocked` |
+| entregue | `delivered` |
+| descartada | `discarded` |
+| hotfix-pendente-registro | `hotfix-pending-record` |
 
 ## Desenvolvimento
 
