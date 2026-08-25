@@ -1,6 +1,6 @@
 ---
 name: e2e
-description: Use quando a execução de uma demanda terminar com testes verdes e for hora de validar de ponta a ponta — levantar o projeto de verdade (docker compose como infra default) e exercitar a demanda como usuário real (Playwright default para web). Opcional, fortemente recomendada.
+description: 'Use quando a execução de uma demanda terminar com testes verdes e for hora de validar de ponta a ponta — levantar o projeto de verdade (docker compose como infra default) e exercitar a demanda como usuário real (Playwright default para web). Opcional, fortemente recomendada.'
 ---
 
 # e2e — a demanda rodando de verdade
@@ -31,7 +31,7 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
    - Docker indisponível na máquina (`docker compose version` falha) →
      avisar o humano EXPLICITAMENTE e cair para o `como-rodar` da
      Constituição. `como-rodar` ausente ou quebrado → perguntar UMA vez e
-     registrar na Constituição (skill grafo) — memória durável.
+     registrar na Constituição (skill graph) — memória durável.
 2. **Levantar e confirmar**: subir a infra
    (`docker compose -f docker-compose.e2e.yml up -d --wait`, ou o
    `como-rodar` em background com log capturado). Confirmar que subiu de
@@ -48,7 +48,7 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
      template.
    - **Não-web (API pura, CLI, worker)** → **perguntar ao humano qual
      ferramenta usar** — nunca escolher sozinho. Registrar a escolha na
-     Constituição (skill grafo): pergunta única por projeto, sessões futuras
+     Constituição (skill graph): pergunta única por projeto, sessões futuras
      leem de lá.
 4. **Traduzir critérios em passos**: cada critério EARS do nó
    (`QUANDO <condição> O SISTEMA DEVE <comportamento>`) vira um passo
@@ -64,8 +64,8 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
    |---|---|---|---|
 
    Veredito por critério: `passou` / `falhou` / `não-automatizável` (vai para
-   validação humana manual). Critério `falhou` → skill depurar (modo sintoma;
-   o passo do e2e já é a reprodução pronta), fix via executar.
+   validação humana manual). Critério `falhou` → skill debug (modo sintoma;
+   o passo do e2e já é a reprodução pronta), fix via execute.
 7. **Persistir como regressão — artefatos são versionados**: o compose de
    e2e e as specs geradas ficam commitados no projeto-alvo junto da demanda.
    Demanda futura estende os artefatos existentes em vez de recriar do zero
@@ -76,7 +76,7 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 
 ## O que esta skill NÃO é
 
-- Não substitui os testes da executar — complementa. Unidade/integração
+- Não substitui os testes da execute — complementa. Unidade/integração
   provam por dentro; e2e prova por fora.
 - Não é suíte completa de regressão do produto — é o corte E2E DA DEMANDA
   atual. Rodar a suíte inteira é decisão do projeto, não desta skill.
@@ -98,5 +98,5 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 
 ## PRÓXIMA SKILL
 
-Relatório pronto (ou pulo registrado) → **validar**, com o relatório anexado
+Relatório pronto (ou pulo registrado) → **validate**, com o relatório anexado
 ao roteiro de validação.
