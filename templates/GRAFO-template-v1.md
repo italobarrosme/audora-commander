@@ -26,16 +26,16 @@ cumpre, ou documenta exceção no nó.
 
 Uma linha por nó ativo. Formato: `- <id> | <estado> | <título curto>`
 
-- exemplo-login | planejada | Autenticação de usuário por e-mail e senha
+- exemplo-login | planned | Autenticação de usuário por e-mail e senha
 
 ## Nós [carga: auto — carregar somente os nós tocados pela demanda]
 
 ### exemplo-login
 
 - **id**: exemplo-login
-- **estado**: planejada
-  <!-- estados válidos: planejada | em-curso | bloqueada | entregue | descartada
-       (+ hotfix-pendente-registro, transitório) -->
+- **estado**: planned
+  <!-- estados válidos: planned | in-progress | blocked | delivered | discarded
+       (+ hotfix-pending-record, transitório) -->
 - **origem**: humano
   <!-- humano = requisito confirmado pelo humano; inferido = deduzido no
        bootstrap brownfield, NÃO vale como verdade até humano confirmar -->
@@ -60,12 +60,12 @@ Uma linha por nó ativo. Formato: `- <id> | <estado> | <título curto>`
 - **feedback-reprovacao**: <!-- preenchido se portão final reprovar -->
 - **atualizado-em**: 2026-08-14
 
-<!-- Regras de manutenção (skill grafo):
-0. Nó `planejada` pode viver SÓ no índice (sem corpo) até ser detalhado —
-   expansão sob demanda. A partir de `em-curso`, corpo completo é obrigatório.
+<!-- Regras de manutenção (skill graph):
+0. Nó `planned` pode viver SÓ no índice (sem corpo) até ser detalhado —
+   expansão sob demanda. A partir de `in-progress`, corpo completo é obrigatório.
 1. Validar schema antes de escrever — delta que quebra schema é rejeitado.
-2. Nó `entregue` no sync: compactar para 1 linha e mover para
+2. Nó `delivered` no sync: compactar para 1 linha e mover para
    docs/audora/GRAFO-ARQUIVO.md; promover resumo ao PRD.md.
 3. GRAFO ativo acima de ~300 linhas → compactação obrigatória.
 4. Em branch: editar somente nós da demanda daquela branch.
-5. Máximo 3 nós em-curso simultâneos. -->
+5. Máximo 3 nós in-progress simultâneos. -->

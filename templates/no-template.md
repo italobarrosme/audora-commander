@@ -1,6 +1,6 @@
 ---
 id: exemplo-login
-estado: planejada
+estado: planned
 origem: humano
 depende-de: []
 arquivos: []
@@ -12,13 +12,18 @@ atualizado-em: 2026-08-24
 # exemplo-login
 
 <!-- Frontmatter: 1 campo = 1 linha — consultável por grep puro, sem parser.
-     estados: planejada | em-curso | bloqueada | entregue | descartada
-       (+ hotfix-pendente-registro, transitório)
+     estados: planned | in-progress | blocked | delivered | discarded
+       (+ hotfix-pending-record, transitório)
+     Migração de estado PT→EN (skill graph, primeira escrita no projeto —
+       converte TODOS: índice, nos/, arquivo/, GRAFO-ARQUIVO.md, inline):
+       planejada→planned | em-curso→in-progress | bloqueada→blocked |
+       entregue→delivered | descartada→discarded |
+       hotfix-pendente-registro→hotfix-pending-record
      origem: humano | inferido (inferido NÃO vale como verdade até o humano
        confirmar)
      depende-de: lista de ids; sintaxe `chave:id` reservada (federação futura)
-     arquivos: paths/globs tocados pela demanda — preenchido no sync da
-       validar via `git diff --name-only`, nunca de memória
+     arquivos: paths/globs tocados pela demanda — preenchido no sync da validate
+       via `git diff --name-only`, nunca de memória
      keywords + resumo: espelham a linha do índice mestre (mesma edição) -->
 
 ## objetivo
@@ -50,7 +55,7 @@ login social; recuperação de senha (nó próprio).
 
 ## delta
 
-<!-- Append-only durante a demanda; consolidado no corpo pela skill validar
+<!-- Append-only durante a demanda; consolidado no corpo pela skill validate
      no sync pós-merge — nunca antes:
      - ADICIONADO (AAAA-MM-DD): <novo requisito>
      - MODIFICADO (AAAA-MM-DD): <antes → depois>
