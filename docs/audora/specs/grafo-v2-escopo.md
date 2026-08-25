@@ -133,6 +133,14 @@ Defaults da IA (revisar no portão desta spec):
   validação já existente (nenhum portão novo).
 - Tetos: ~300 linhas índice mestre; ~100 linhas por arquivo de nó.
 
+## Delta (consolidado no sync de 2026-08-25)
+
+- MODIFICADO (2026-08-25, aprovado no portão final): grafo-v2/1.1 — "linha
+  rica ... linkando `docs/audora/nos/<id>.md`" → "linha rica ... com o corpo
+  resolvido pelo id (id = nome do arquivo em `docs/audora/nos/`), link
+  implícito por construção, sem campo extra". Motivo: campo de link seria
+  redundante e quebraria o parse do id por grep.
+
 ## Riscos anotados
 
 - Suporte dual v1/v2 consome linhas de SKILL.md (limite 250 da constituição

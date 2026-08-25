@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-24
+> Última atualização: 2026-08-25
 
 ## O que é e para que serve
 
@@ -14,8 +14,10 @@ web/mobile/api com Claude Code.
 ## Stack
 
 - Markdown (skills, templates, docs) + JSON (plugin.json, marketplace.json,
-  hooks.json). Sem código executável.
+  hooks.json) + bash (hooks: `session-start`, `grafo-guard`,
+  `grafo-validate`; sem jq — awk/sed/grep/perl do Git for Windows).
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
+  Versão 0.2.0.
 
 ## Arquitetura
 
@@ -23,8 +25,12 @@ web/mobile/api com Claude Code.
 
 - `audora-commander` — porta de entrada: classifica demanda (LEVE / MÉDIA /
   ALTA / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
-- `grafo` — mantém GRAFO.md (memória externa do produto): schema de nó,
-  constituição, bootstrap brownfield, delta/sync.
+- `grafo` — mantém o GRAFO (memória externa do produto) no schema v2:
+  `GRAFO.md` é índice mestre (Propósito, Constituição, linha rica por nó);
+  corpo de cada nó em `docs/audora/nos/<id>.md` com frontmatter grep-ável;
+  decisões duráveis em `docs/audora/decisoes-vivas.md`; arquivamento por
+  `git mv` para `docs/audora/arquivo/`. Schema v1 (arquivo único) segue
+  suportado como caso degenerado, com migração on-touch.
 - `escopo` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
 - `plano` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes.
 - `executar` — TDD red-green com evidência real; commit por etapa verde.
@@ -35,7 +41,11 @@ web/mobile/api com Claude Code.
 - `depurar` — debug com causa raiz demonstrada (modo sintoma) ou caçada de
   defeitos por classes com verificação de cada achado (modo caçada).
 
-Hook SessionStart injeta ponteiro curto para a porta de entrada.
+Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
+PostToolUse (Edit|Write) validam escritas no GRAFO v2: `grafo-guard` (tetos
+de ~300 linhas no índice e ~100 por nó) e `grafo-validate` (índice↔pasta,
+depende-de existente, ciclo) — erro volta ao modelo via exit 2; sem bash, as
+skills seguem sendo a fonte normativa.
 
 Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios)
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
@@ -55,6 +65,19 @@ PRD/GRAFO/spec, referências e placeholders inconsistentes entre skills e
 templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
 Aguardando validação de instalação pelo usuário em sessão interativa
 (checklist no README).
+
+GRAFO v2 entregue em 2026-08-25 (nó `grafo-v2`, ALTA, versão 0.2.0):
+redesenho da memória do produto a partir de estudo de mercado multi-agente
+(`docs/specs/2026-08-24-estudo-grafo-mercado.md`) — índice mestre + 1 nó =
+1 arquivo (Candidato C), travessia por grep no frontmatter, critérios EARS
+numerados e citáveis (`<id>/<n>`) em teste/commit/e2e/roteiro, decisões
+vivas promovidas no sync, arquivamento por movimento, migração gradual com
+compat v1 permanente, e hooks de validação com degradação graciosa. Este
+repositório foi o primeiro projeto migrado (dogfooding). Revisão adversarial
+de 3 lentes encontrou 20 furos antes do portão (wrapper cmd engolindo exit
+code, CRLF em Linux, contagem de critérios), todos corrigidos e re-testados.
+Benchmark de tokens foi pulado por decisão humana — corte de 65-70% é
+estimativa.
 
 Skill e2e evoluída em 2026-08-24 (nó `e2e-playwright-docker`): Playwright
 como ferramenta default para projetos web (não-web pergunta ao usuário, com

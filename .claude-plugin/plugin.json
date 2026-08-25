@@ -1,7 +1,7 @@
 {
   "name": "audora-commander",
   "description": "Framework de desenvolvimento assistido por IA: 5 princípios, GRAFO vivo, processo proporcional ao risco, TDD e portões humanos",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": { "name": "Italo Barros", "email": "italobarros.me@gmail.com" },
   "license": "MIT",
   "keywords": ["workflow", "tdd", "planning", "best-practices", "grafo"]

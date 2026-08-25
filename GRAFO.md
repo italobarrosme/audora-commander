@@ -32,7 +32,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | em-curso | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook | skills/, hooks/, templates/
-- grafo-v2 | em-curso | GRAFO v2 | Redesenho: índice mestre + 1 nó = 1 arquivo, travessia por grep, migração gradual | grafo, memoria, travessia, schema | skills/grafo/, templates/, hooks/
+- grafo-v2 | entregue | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planejada | GRAFO no início e fim | GRAFO escrito/atualizado no início e no fim de toda demanda | grafo, ciclo, enforcement | skills/
 - skill-memory | planejada | Skill MEMORY | Memória inteligente da audora por projeto (preferências e aprendizados, distinta do GRAFO) | memoria, aprendizado, skill | skills/
 - skill-poc | planejada | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
