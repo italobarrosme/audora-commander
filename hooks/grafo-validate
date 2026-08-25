@@ -31,13 +31,24 @@ idx="$(printf '%s\n' "$corpo" | sed -n '/^## Índice de nós/,/^## [^Í]/p' | gr
 idx_ids="$(printf '%s\n' "$idx" | sed 's/^- *\([^ |]*\).*/\1/')"
 inline_ids="$(printf '%s\n' "$corpo" | grep '^### ' | sed 's/^### *//' || true)"
 
-# 1. nó ativo no índice sem arquivo e sem corpo inline (legado transicional)
+# 1. estado fora do enum EN (migração PT→EN pendente), linha sem estado,
+#    e nó ativo sem corpo (arquivo ou inline legado)
 while IFS= read -r linha; do
   [ -n "$linha" ] || continue
   id="$(printf '%s' "$linha" | sed 's/^- *\([^ |]*\).*/\1/')"
   estado="$(printf '%s' "$linha" | awk -F'|' 'NF>1 {gsub(/ /,"",$2); print $2}')"
+  if [ -z "$estado" ]; then
+    erros="$erros
+- linha do índice sem coluna de estado: '$linha' — formato é \`- <id> | <estado> | <título> | <resumo> | <keywords> | <arquivos>\` (templates/GRAFO-template.md)"
+    continue
+  fi
   case "$estado" in
-    em-curso|bloqueada)
+    planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ;;
+    *) erros="$erros
+- nó '$id' com estado '$estado' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) — migração PT→EN pendente: skill graph converte TODOS os estados na primeira escrita (tabela em templates/no-template.md)" ;;
+  esac
+  case "$estado" in
+    in-progress|blocked)
       if [ ! -f "$nos_dir/$id.md" ] && ! printf '%s\n' "$inline_ids" | grep -qx "$id"; then
         erros="$erros
 - nó '$id' ($estado) sem arquivo docs/audora/nos/$id.md e sem corpo inline"

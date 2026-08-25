@@ -19,7 +19,7 @@ case "$file_path" in
     head -1 "$file_path" | tr -d '\r' | grep -q 'versao-schema: 2' || exit 0
     n=$(wc -l < "$file_path" | tr -d ' ')
     if [ "$n" -gt 300 ]; then
-      echo "grafo-guard: GRAFO.md (índice mestre) com $n linhas — teto ~300. Compactar agora: arquivar nós entregues e encurtar resumos (skill grafo, operação compactar)." >&2
+      echo "grafo-guard: GRAFO.md (índice mestre) com $n linhas — teto ~300. Compactar agora: arquivar nós entregues e encurtar resumos (skill graph, operação compactar)." >&2
       exit 2
     fi
     ;;
@@ -27,7 +27,7 @@ case "$file_path" in
     case "$base" in *-historico.md) exit 0 ;; esac
     n=$(wc -l < "$file_path" | tr -d ' ')
     if [ "$n" -gt 100 ]; then
-      echo "grafo-guard: nó $base com $n linhas — teto ~100. Mover histórico frio (delta consolidado, decisões antigas) para ${base%.md}-historico.md (skill grafo, operação compactar)." >&2
+      echo "grafo-guard: nó $base com $n linhas — teto ~100. Mover histórico frio (delta consolidado, decisões antigas) para ${base%.md}-historico.md (skill graph, operação compactar)." >&2
       exit 2
     fi
     ;;

@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-contexto="Framework audora-commander ativo. Ao receber demanda de software (criar, alterar, corrigir), invoque a skill \`audora-commander:audora-commander\` ANTES de agir. Fluxos de fase: grafo, escopo, plano, executar, e2e, validar; bug ou comportamento inesperado: depurar. Instrução direta do usuário vale mais que o framework."
+contexto="Framework audora-commander ativo. Ao receber demanda de software (criar, alterar, corrigir), invoque a skill \`audora-commander:audora-commander\` ANTES de agir. Fluxos de fase: graph, scope, plan, execute, e2e, validate; bug ou comportamento inesperado: debug. Instrução direta do usuário vale mais que o framework."
 
 printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$contexto"
 
