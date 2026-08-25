@@ -1,6 +1,6 @@
 # Decisões vivas — audora-commander
 
-> Decisões técnicas duráveis promovidas de nós entregues no sync da validar
+> Decisões técnicas duráveis promovidas de nós entregues no sync da validate
 > (IA propõe no roteiro, humano aprova no portão). 1 linha por decisão —
 > grep-ável. [carga: auto — consultar quando a demanda tocar a área.]
 

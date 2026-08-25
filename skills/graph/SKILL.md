@@ -37,11 +37,11 @@ Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
 - quem depende de X: `grep -l 'depende-de:.*X' docs/audora/nos/*.md`
 - nó que governa um arquivo: `grep -l 'src/auth' docs/audora/nos/*.md`
 - decisão durável de área: `grep -i '<termo>' docs/audora/decisoes-vivas.md`
-- migração de estado PT→EN pendente: arquivos SEM estado do enum EN —
-  `grep -LE '^estado: (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record)' docs/audora/nos/*.md`
-  — ou coluna 2 do índice fora do enum → ler normalmente e AVISAR que a
-  conversão acontece na primeira escrita (seção "Migração de estado").
-  Leitura NUNCA migra.
+- migração de estado PT→EN pendente: arquivos com `estado:` fora do enum EN —
+  `grep -HE '^estado:' docs/audora/nos/*.md | grep -vE ': (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record)[[:space:]]*$'`
+  (`*-historico.md` não tem frontmatter e não conta) — ou coluna 2 do índice
+  fora do enum → ler normalmente e AVISAR que a conversão acontece na
+  primeira escrita (seção "Migração de estado"). Leitura NUNCA migra.
 
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
 
@@ -82,10 +82,10 @@ as consultas acima são complementadas no GRAFO.md:
    (id, estado, origem, depende-de, arquivos, keywords, resumo,
    atualizado-em), estado no enum EN (`planned | in-progress | blocked |
    delivered | discarded`, + transitório `hotfix-pending-record`), critérios
-   NUMERADOS (`<id>/<n>`, número nunca reutilizado). Escrita que quebra schema é rejeitada. Exceção
-   declarada: nó recém-aberto pela porta de entrada (MEDIUM/HIGH) pode ter
-   `criterios-aceite` vazio ATÉ a fase scope; LIGHT/HOTFIX já entram com
-   ≥1 critério numerado.
+   NUMERADOS (`<id>/<n>`, número nunca reutilizado). Escrita que quebra
+   schema é rejeitada. Exceção declarada: nó recém-aberto pela porta de
+   entrada (MEDIUM/HIGH) pode ter `criterios-aceite` vazio ATÉ a fase scope;
+   LIGHT/HOTFIX já entram com ≥1 critério numerado.
 2. Escrever `docs/audora/nos/<id>.md` E a linha rica do índice NA MESMA
    EDIÇÃO (resumo/keywords espelhados). Índice e pasta divergentes = memória
    inconsistente → PARAR e corrigir (hook grafo-validate acusa; sem hook, a
@@ -114,11 +114,10 @@ as consultas acima são complementadas no GRAFO.md:
 
 ### 5. compactar (manutenção)
 
-0. **Consolidar delta** (sync da validate; antes, migração de estado PT→EN
-   se pendente): aplicar cada ADICIONADO /
-   MODIFICADO / REMOVIDO no corpo (criterios-aceite, decisoes,
-   fora-de-escopo), critério novo recebe o próximo `<id>/<n>`, e esvaziar
-   `## delta`.
+0. **Consolidar delta** (sync da validate; antes, migração de estado
+   PT→EN se pendente): aplicar cada ADICIONADO / MODIFICADO / REMOVIDO no
+   corpo (criterios-aceite, decisoes, fora-de-escopo), critério novo recebe
+   o próximo `<id>/<n>`, e esvaziar `## delta`.
 1. Gatilhos: nó virou `delivered` (sync da validate); índice mestre > ~300
    linhas; arquivo de nó > ~100 linhas.
 2. Nó `delivered`: (a) promover as decisões AINDA VÁLIDAS aprovadas no portão
@@ -141,15 +140,23 @@ escrita (registrar-no, registrar-delta, compactar) que encontrar qualquer
 estado fora do enum EN, converter TODOS de uma vez — índice mestre,
 `docs/audora/nos/*.md`, `docs/audora/arquivo/*.md`, `GRAFO-ARQUIVO.md`
 legado e nós inline — pela tabela de `templates/no-template.md`, ANTES de
-concluir a operação pedida. Só o VALOR de `estado:` muda; chaves, seções e
-prosa ficam. Parcial não existe: depois disso o hook grafo-validate acusa
-qualquer estado fora do enum. Sem bash, esta seção é a regra.
+concluir a operação pedida. Só o valor do estado muda, onde quer que o
+formato o guarde: chave `estado:` (v2), `- **estado**:` (v1 inline ou corpo
+movido ao GRAFO-ARQUIVO.md), coluna `| <estado> |` de linha do índice ou
+compactada, e rótulo `(<estado> DATA)` em heading de nó arquivado (o heading
+fica, só o rótulo converte). Chaves, seções e prosa ficam. Parcial não
+existe: o hook grafo-validate acusa estado fora do enum SÓ na coluna 2 do
+índice mestre; nos/, arquivo/, GRAFO-ARQUIVO.md e nós inline são
+responsabilidade desta seção — conferir com o grep da "Regra de leitura
+seletiva" antes de concluir. Sem bash, esta seção é a regra.
 
 ## Modo compat v1 (`versao-schema: 1`)
 
 1. **Só leitura/contexto** (carregar-contexto em demanda que ainda não
    registra nada): operar o monolito como sempre
-   (`GRAFO-template-v1.md`) — NÃO migrar, não exigir migração.
+   (`GRAFO-template-v1.md`) — NÃO migrar, não exigir migração. Estado em
+   português no monólito → ler normalmente e avisar que converte na
+   primeira escrita (item 5).
 2. **Primeiro toque de escrita** (registrar-no/delta em nó, demanda nova):
    migração on-touch — bump da linha 1 para `versao-schema: 2`, criar
    `docs/audora/nos/`, mover SÓ os nós tocados para arquivos, enriquecer as
@@ -183,7 +190,7 @@ apresente ao humano, ele decide. Nunca escolha em silêncio.
 | "Carrego a pasta nos/ inteira pra garantir" | Contexto é o gargalo. Índice decide; grep consulta; Read só o tocado. |
 | "Edito o nó agora, índice depois" | Índice desatualizado quebra a carga de todo mundo. Mesma edição. |
 | "Migro o SCHEMA v1 inteiro de uma vez, fica limpo" | Schema é on-touch (só nós tocados). Estado PT→EN é o contrário: converte TODOS na primeira escrita. |
-| "Converto só o ESTADO do nó que toquei, o resto depois" | Estado PT→EN é total na primeira escrita; schema é que é on-touch. Parcial = hook acusando para sempre. |
+| "Converto só o ESTADO do nó que toquei, o resto depois" | Estado PT→EN é total na primeira escrita; schema é que é on-touch. Parcial = índice EN calando o hook e nos/ ainda em PT — o hook não lê arquivo de nó; o grep da leitura seletiva é a prova. |
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |
 | "O nó inferido parece certo, sigo com ele" | Inferido é hipótese. Confirme com o humano antes de construir em cima. |
 | "Auto-resolvo o conflito de merge do GRAFO" | GRAFO é memória do sistema. Conflito fora dos seus nós = humano decide. |

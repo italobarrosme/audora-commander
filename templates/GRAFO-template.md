@@ -51,7 +51,7 @@ Uma linha rica por nó — decide relevância SEM abrir o corpo; o corpo vive em
    (caminho a partir da raiz, onde este arquivo vive). Movimento, nunca
    reescrita. Entregas anteriores ao v2 usam a linha legada
    `- <id> | delivered | <título> → ver docs/audora/GRAFO-ARQUIVO.md` e nunca
-   migram.
+   migram de SCHEMA (a coluna de estado converte PT→EN com o resto — regra 7).
 4. Teto do índice mestre: ~300 linhas → compactar (arquivar entregues,
    encurtar resumos). Teto por nó: ver no-template.
 5. Máximo 3 nós in-progress, contados globalmente por este índice.

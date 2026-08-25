@@ -31,7 +31,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 
 ## Índice de nós [carga: sempre]
 
-- plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook | skills/, hooks/, templates/
+- plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - comandos-ingles | in-progress | Comandos em inglês | Nomes das skills (comandos), categorias de risco (LIGHT/MEDIUM/HIGH/HOTFIX) e enum de estado dos nós passam a ser em inglês | ingles, i18n, rename, skills, categorias, contrato | —
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planned | GRAFO no início e fim | GRAFO escrito/atualizado no início e no fim de toda demanda | grafo, ciclo, enforcement | skills/

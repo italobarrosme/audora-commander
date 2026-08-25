@@ -125,8 +125,9 @@ da instalação" mais abaixo neste README.
 - `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill debug).
 
 Projetos no schema v1 (GRAFO.md em arquivo único + GRAFO-ARQUIVO.md) seguem
-plenamente suportados — a migração acontece por toque, nunca como big bang
-forçado.
+plenamente suportados — a migração de schema acontece por toque, nunca como
+big bang forçado. Os estados dos nós, porém, convertem todos de uma vez na
+primeira escrita (ver "Renomeado em 0.3.0").
 
 ## Checklist de validação da instalação
 
@@ -151,8 +152,8 @@ Rode na sessão interativa após instalar:
 Comandos, categorias de risco e estados de nó agora são em inglês. Os nomes
 antigos de comando deixaram de existir (sem alias). GRAFOs existentes são
 migrados por completo pela skill `graph` na primeira escrita em cada
-projeto — até lá, o `grafo-validate` acusa "estado fora do enum".
-`docs/fundamentos.md` ainda usa os nomes anteriores à 0.3.0.
+projeto — até lá, o `grafo-validate` acusa "fora do enum" (estado fora do
+enum EN). `docs/fundamentos.md` ainda usa os nomes anteriores à 0.3.0.
 
 | Comando (antes) | Comando (depois) |
 |---|---|

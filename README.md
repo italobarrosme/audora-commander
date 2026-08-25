@@ -124,7 +124,9 @@ checklist" further down in this README.
 - `docs/audora/depuracao/` — defect hunt reports (debug skill).
 
 Projects on schema v1 (single-file GRAFO.md + GRAFO-ARQUIVO.md) remain fully
-supported — migration happens on touch, never as a forced big bang.
+supported — schema migration happens on touch, never as a forced big bang.
+Node states, however, are converted in full on the first write (see
+"Renamed in 0.3.0").
 
 ## Installation validation checklist
 
@@ -150,7 +152,8 @@ Run in the interactive session after installing:
 Commands, risk categories and node states are now in English. The old
 command names no longer exist (no aliases). Existing GRAFOs are migrated in
 full by the `graph` skill on the first write in each project — until then,
-`grafo-validate` reports "estado fora do enum". `docs/fundamentos.md` still
+`grafo-validate` reports "fora do enum" (state outside the EN enum).
+`docs/fundamentos.md` still
 uses the pre-0.3.0 names.
 
 | Command (before) | Command (after) |

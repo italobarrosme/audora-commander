@@ -15,7 +15,9 @@ atualizado-em: 2026-08-24
      estados: planned | in-progress | blocked | delivered | discarded
        (+ hotfix-pending-record, transitório)
      Migração de estado PT→EN (skill graph, primeira escrita no projeto —
-       converte TODOS: índice, nos/, arquivo/, GRAFO-ARQUIVO.md, inline):
+       converte TODOS: índice, nos/, arquivo/, GRAFO-ARQUIVO.md, inline;
+       onde quer que o estado viva — `estado:`, `- **estado**:`, coluna
+       `| estado |` ou rótulo `(estado DATA)` de heading arquivado):
        planejada→planned | em-curso→in-progress | bloqueada→blocked |
        entregue→delivered | descartada→discarded |
        hotfix-pendente-registro→hotfix-pending-record

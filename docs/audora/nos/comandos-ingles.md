@@ -21,7 +21,7 @@ migram integralmente no primeiro toque de escrita.
 
 ## criterios-aceite
 
-Spec dedicada (ALTA): `../specs/comandos-ingles-escopo.md` — critérios
+Spec dedicada (HIGH): `../specs/comandos-ingles-escopo.md` — critérios
 `comandos-ingles/1.1`–`4.3` (comandos, categorias, estados, docs/versão).
 
 ## fora-de-escopo

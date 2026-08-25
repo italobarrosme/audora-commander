@@ -185,6 +185,15 @@ YAML da description.
 - Commit por tarefa verde, direto na `main` (padrão deste repo), sempre
   `git add <lista exata> && git commit`; commit de abertura com nó + spec +
   plano antes da T1 (precedente 2ec5669/cf1bae8).
+- (execução, T2) padrão `$P` ganhou `(executar|validar) e (executar|validar)`
+  — "executar e validar citam esses endereços" (audora-commander l.46-47)
+  era referência a skill fora do padrão original; corrigido à mão e coberto.
+- (execução, T6) resumo do nó `comandos-ingles` (índice + frontmatter, mesma
+  edição) reescrito para citar as categorias NOVAS — o resumo antigo trazia
+  "(LEVE/MÉDIA/ALTA/HOTFIX)" e entraria no grep global do GRAFO.md.
+- (execução, T3) detecção de migração pendente na skill graph usa
+  `grep -L` pelo enum EN (arquivos SEM estado EN) em vez de listar os nomes
+  PT — evita PT como identificador dentro da própria skill.
 - Fixtures de hook em `SP="$(mktemp -d)"` (path POSIX); `run()` escapa
   backslash antes de montar o JSON — path `C:\...` sem escape faz o hook
   sair 0 em silêncio (falso verde).

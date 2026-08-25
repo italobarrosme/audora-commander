@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
 # Hook PostToolUse (Edit|Write): integridade do GRAFO v2.
-# Acusa: nó ativo sem arquivo (e sem corpo inline legado), arquivo sem linha
-# no índice, depende-de inexistente, ciclo. Erro → exit 2 + stderr.
+# Acusa: estado fora do enum EN (migração PT→EN pendente), linha do índice
+# sem coluna de estado, nó ativo sem arquivo (e sem corpo inline legado),
+# arquivo sem linha no índice, depende-de inexistente, ciclo.
+# Erro → exit 2 + stderr.
 # Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
 set -uo pipefail
+
+# templates/ vive na raiz do PLUGIN, não do projeto-alvo — resolver caminho
+# absoluto a partir de $0 (run-hook.cmd chama "bash <HOOK_DIR>/grafo-validate";
+# no cmd.exe $0 chega com backslash). pwd -W (Git Bash) devolve C:/...
+here="${0//\\//}"
+tpl="$(cd "$(dirname "$here")/../templates" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"
+tpl="${tpl:-<raiz do plugin>/templates}"
 
 input="$(cat)"
 file_path="$(printf '%s' "$input" | perl -MJSON::PP -0777 -ne '
@@ -39,13 +48,13 @@ while IFS= read -r linha; do
   estado="$(printf '%s' "$linha" | awk -F'|' 'NF>1 {gsub(/ /,"",$2); print $2}')"
   if [ -z "$estado" ]; then
     erros="$erros
-- linha do índice sem coluna de estado: '$linha' — formato é \`- <id> | <estado> | <título> | <resumo> | <keywords> | <arquivos>\` (templates/GRAFO-template.md)"
+- linha do índice sem coluna de estado: '$linha' — formato é \`- <id> | <estado> | <título> | <resumo> | <keywords> | <arquivos>\` ($tpl/GRAFO-template.md)"
     continue
   fi
   case "$estado" in
     planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ;;
     *) erros="$erros
-- nó '$id' com estado '$estado' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) — migração PT→EN pendente: skill graph converte TODOS os estados na primeira escrita (tabela em templates/no-template.md)" ;;
+- nó '$id' com estado '$estado' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) — se for estado em português: migração PT→EN pendente, skill graph converte TODOS os estados na primeira escrita (tabela em $tpl/no-template.md); senão (typo, maiúscula): corrija o valor na linha do índice e no arquivo do nó" ;;
   esac
   case "$estado" in
     in-progress|blocked)
