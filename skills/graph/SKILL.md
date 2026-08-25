@@ -37,6 +37,11 @@ Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
 - quem depende de X: `grep -l 'depende-de:.*X' docs/audora/nos/*.md`
 - nó que governa um arquivo: `grep -l 'src/auth' docs/audora/nos/*.md`
 - decisão durável de área: `grep -i '<termo>' docs/audora/decisoes-vivas.md`
+- migração de estado PT→EN pendente: arquivos SEM estado do enum EN —
+  `grep -LE '^estado: (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record)' docs/audora/nos/*.md`
+  — ou coluna 2 do índice fora do enum → ler normalmente e AVISAR que a
+  conversão acontece na primeira escrita (seção "Migração de estado").
+  Leitura NUNCA migra.
 
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
 
@@ -71,10 +76,13 @@ as consultas acima são complementadas no GRAFO.md:
 
 ### 3. registrar-no (criar/atualizar nó)
 
+0. Estado PT→EN pendente? Converter TODOS primeiro (seção "Migração de
+   estado" abaixo) — vale também para registrar-delta e compactar.
 1. Validar contra `no-template.md` ANTES de escrever: frontmatter completo
    (id, estado, origem, depende-de, arquivos, keywords, resumo,
-   atualizado-em), estado no enum, critérios NUMERADOS (`<id>/<n>`, número
-   nunca reutilizado). Escrita que quebra schema é rejeitada. Exceção
+   atualizado-em), estado no enum EN (`planned | in-progress | blocked |
+   delivered | discarded`, + transitório `hotfix-pending-record`), critérios
+   NUMERADOS (`<id>/<n>`, número nunca reutilizado). Escrita que quebra schema é rejeitada. Exceção
    declarada: nó recém-aberto pela porta de entrada (MEDIUM/HIGH) pode ter
    `criterios-aceite` vazio ATÉ a fase scope; LIGHT/HOTFIX já entram com
    ≥1 critério numerado.
@@ -90,6 +98,8 @@ as consultas acima são complementadas no GRAFO.md:
 
 ### 4. registrar-delta (mudança no meio da demanda)
 
+0. Estado PT→EN pendente? Converter TODOS primeiro (seção "Migração de
+   estado").
 1. Mudança NÃO reescreve o nó — append na seção `## delta` do arquivo do nó:
    `ADICIONADO` / `MODIFICADO` (antes → depois) / `REMOVIDO` (+ motivo), com
    data. Zero contato com região compartilhada.
@@ -104,7 +114,8 @@ as consultas acima são complementadas no GRAFO.md:
 
 ### 5. compactar (manutenção)
 
-0. **Consolidar delta** (sync da validate): aplicar cada ADICIONADO /
+0. **Consolidar delta** (sync da validate; antes, migração de estado PT→EN
+   se pendente): aplicar cada ADICIONADO /
    MODIFICADO / REMOVIDO no corpo (criterios-aceite, decisoes,
    fora-de-escopo), critério novo recebe o próximo `<id>/<n>`, e esvaziar
    `## delta`.
@@ -123,6 +134,17 @@ as consultas acima são complementadas no GRAFO.md:
 5. A promoção do resumo ao PRD.md é responsabilidade da skill validate
    (direção única GRAFO → PRD; o PRD nunca alimenta o GRAFO).
 
+## Migração de estado PT→EN (primeira escrita no projeto)
+
+Antes da 0.3.0 o enum de estado era em português. Na PRIMEIRA operação de
+escrita (registrar-no, registrar-delta, compactar) que encontrar qualquer
+estado fora do enum EN, converter TODOS de uma vez — índice mestre,
+`docs/audora/nos/*.md`, `docs/audora/arquivo/*.md`, `GRAFO-ARQUIVO.md`
+legado e nós inline — pela tabela de `templates/no-template.md`, ANTES de
+concluir a operação pedida. Só o VALOR de `estado:` muda; chaves, seções e
+prosa ficam. Parcial não existe: depois disso o hook grafo-validate acusa
+qualquer estado fora do enum. Sem bash, esta seção é a regra.
+
 ## Modo compat v1 (`versao-schema: 1`)
 
 1. **Só leitura/contexto** (carregar-contexto em demanda que ainda não
@@ -138,9 +160,14 @@ as consultas acima são complementadas no GRAFO.md:
    retroativa). Nós não tocados permanecem inline como legado válido.
 3. **Após o bump**, o leitor v2 usa o fallback inline da "Regra de leitura
    seletiva" (estado transicional). Nós entregues no GRAFO-ARQUIVO.md antigo
-   nunca precisam migrar (linha legada `→ ver docs/audora/GRAFO-ARQUIVO.md`).
+   nunca precisam migrar de SCHEMA (linha legada
+   `→ ver docs/audora/GRAFO-ARQUIVO.md`) — mas o estado deles converte
+   PT→EN junto com o resto (seção "Migração de estado").
 4. Projeto pequeno pode ficar no v1 para sempre — caso degenerado válido,
    sem prazo.
+5. Estados em português no monólito v1 → converter TODOS na mesma edição
+   (tabela do no-template), sem exigir migração v1→v2 além da on-touch do
+   item 2.
 
 ## Conflito GRAFO vs código
 
@@ -155,7 +182,8 @@ apresente ao humano, ele decide. Nunca escolha em silêncio.
 | "Eu lembro do requisito, registro depois" | Depois = nunca. Sessão morre, memória morre. Registre agora. |
 | "Carrego a pasta nos/ inteira pra garantir" | Contexto é o gargalo. Índice decide; grep consulta; Read só o tocado. |
 | "Edito o nó agora, índice depois" | Índice desatualizado quebra a carga de todo mundo. Mesma edição. |
-| "Migro o projeto v1 inteiro de uma vez, fica limpo" | On-touch. Migração em lote é big-bang que ninguém pediu. |
+| "Migro o SCHEMA v1 inteiro de uma vez, fica limpo" | Schema é on-touch (só nós tocados). Estado PT→EN é o contrário: converte TODOS na primeira escrita. |
+| "Converto só o ESTADO do nó que toquei, o resto depois" | Estado PT→EN é total na primeira escrita; schema é que é on-touch. Parcial = hook acusando para sempre. |
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |
 | "O nó inferido parece certo, sigo com ele" | Inferido é hipótese. Confirme com o humano antes de construir em cima. |
 | "Auto-resolvo o conflito de merge do GRAFO" | GRAFO é memória do sistema. Conflito fora dos seus nós = humano decide. |
