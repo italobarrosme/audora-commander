@@ -32,6 +32,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | em-curso | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook | skills/, hooks/, templates/
+- comandos-ingles | em-curso | Comandos em inglês | Nomes das skills (comandos) e categorias de risco (LEVE/MÉDIA/ALTA/HOTFIX) passam a ser em inglês | ingles, i18n, rename, skills, categorias, contrato | —
 - grafo-v2 | entregue | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planejada | GRAFO no início e fim | GRAFO escrito/atualizado no início e no fim de toda demanda | grafo, ciclo, enforcement | skills/
 - skill-memory | planejada | Skill MEMORY | Memória inteligente da audora por projeto (preferências e aprendizados, distinta do GRAFO) | memoria, aprendizado, skill | skills/
