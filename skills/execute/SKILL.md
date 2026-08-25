@@ -1,5 +1,5 @@
 ---
-name: executar
+name: execute
 description: Use quando houver plano aprovado (MÉDIA/ALTA) ou demanda LEVE/HOTFIX pronta para código — implementação TDD red-green com evidência real de execução.
 ---
 

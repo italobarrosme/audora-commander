@@ -1,5 +1,5 @@
 ---
-name: validar
+name: validate
 description: Use quando a execução (e o e2e, se rodado) de uma demanda terminar — portão humano final com evidência mapeada aos critérios, e sync de GRAFO e PRD após o merge.
 ---
 

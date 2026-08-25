@@ -1,5 +1,5 @@
 ---
-name: plano
+name: plan
 description: Use quando o escopo de uma demanda MÉDIA ou ALTA estiver aprovado e for hora de planejar o "Como" — ler o código atual, mapear arquivos e gerar o plano-arquivo com tarefas autossuficientes.
 ---
 

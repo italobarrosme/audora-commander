@@ -1,5 +1,5 @@
 ---
-name: escopo
+name: scope
 description: Use quando uma demanda MÉDIA ou ALTA precisar de definição do "O Quê" — objetivo, critérios de aceite e fora-de-escopo — antes de qualquer código, ou quando outra fase reabrir o escopo.
 ---
 

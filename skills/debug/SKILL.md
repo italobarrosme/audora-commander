@@ -1,5 +1,5 @@
 ---
-name: depurar
+name: debug
 description: Use quando houver bug, teste falhando por motivo desconhecido, comportamento inesperado ou critério de e2e reprovado — antes de propor qualquer correção. Sem sintoma específico, use o modo caçada para varrer o projeto atrás de defeitos.
 ---
 

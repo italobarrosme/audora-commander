@@ -1,5 +1,5 @@
 ---
-name: grafo
+name: graph
 description: Use quando precisar criar, consultar ou atualizar o GRAFO de um projeto — bootstrap em projeto sem GRAFO, registro de nó ou delta de demanda, compactação, ou carga de contexto no início de uma demanda. Schema v2 (índice mestre + 1 nó = 1 arquivo) com suporte v1.
 ---
 
