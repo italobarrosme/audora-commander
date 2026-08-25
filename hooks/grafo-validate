@@ -14,17 +14,22 @@ file_path="${file_path//\\//}"
 
 case "$file_path" in
   *GRAFO.md) root="$(dirname "$file_path")" ;;
-  */docs/audora/nos/*.md) root="${file_path%/docs/audora/nos/*}" ;;
+  *docs/audora/nos/*.md)
+    root="${file_path%docs/audora/nos/*}"; root="${root%/}"
+    [ -n "$root" ] || root="." ;;
   *) exit 0 ;;
 esac
 grafo="$root/GRAFO.md"
 [ -f "$grafo" ] || exit 0
-head -1 "$grafo" | tr -d '\r' | grep -q 'versao-schema: 2' || exit 0
+# GRAFO.md lido sempre sem \r (projetos com CRLF)
+corpo="$(tr -d '\r' < "$grafo")"
+printf '%s\n' "$corpo" | head -1 | grep -q 'versao-schema: 2' || exit 0
 nos_dir="$root/docs/audora/nos"
 
 erros=""
-idx="$(sed -n '/^## Índice de nós/,/^## [^Í]/p' "$grafo" | tr -d '\r' | grep '^- ' || true)"
+idx="$(printf '%s\n' "$corpo" | sed -n '/^## Índice de nós/,/^## [^Í]/p' | grep '^- ' || true)"
 idx_ids="$(printf '%s\n' "$idx" | sed 's/^- *\([^ |]*\).*/\1/')"
+inline_ids="$(printf '%s\n' "$corpo" | grep '^### ' | sed 's/^### *//' || true)"
 
 # 1. nó ativo no índice sem arquivo e sem corpo inline (legado transicional)
 while IFS= read -r linha; do
@@ -33,7 +38,7 @@ while IFS= read -r linha; do
   estado="$(printf '%s' "$linha" | awk -F'|' 'NF>1 {gsub(/ /,"",$2); print $2}')"
   case "$estado" in
     em-curso|bloqueada)
-      if [ ! -f "$nos_dir/$id.md" ] && ! grep -q "^### $id\$" "$grafo"; then
+      if [ ! -f "$nos_dir/$id.md" ] && ! printf '%s\n' "$inline_ids" | grep -qx "$id"; then
         erros="$erros
 - nó '$id' ($estado) sem arquivo docs/audora/nos/$id.md e sem corpo inline"
       fi ;;
@@ -53,24 +58,33 @@ if [ -d "$nos_dir" ]; then
   done
 fi
 
-# 3. deps inexistentes + coleta de arestas / 4. ciclo (awk DFS)
+# 3. deps inexistentes + coleta de arestas (arquivos E nós inline legados)
 edges=""
+coletar() { # $1 = id, $2 = lista de deps separada por espaço
+  local b="$1" d
+  for d in $2; do
+    [ -n "$d" ] || continue
+    case "$d" in *:*) continue ;; esac
+    printf '%s\n' "$idx_ids" | grep -qx "$d" || erros="$erros
+- nó '$b' depende de '$d', que não existe no índice"
+    edges="$edges$b $d
+"
+  done
+}
 if [ -d "$nos_dir" ]; then
   for f in "$nos_dir"/*.md; do
     [ -e "$f" ] || continue
     b="$(basename "$f" .md)"
     case "$b" in *-historico) continue ;; esac
-    deps="$(grep -m1 '^depende-de:' "$f" | tr -d '\r' | sed 's/^depende-de: *\[\(.*\)\].*/\1/' | tr ',' ' ')"
-    for d in $deps; do
-      [ -n "$d" ] || continue
-      case "$d" in *:*) continue ;; esac
-      printf '%s\n' "$idx_ids" | grep -qx "$d" || erros="$erros
-- nó '$b' depende de '$d', que não existe no índice"
-      edges="$edges$b $d
-"
-    done
+    coletar "$b" "$(grep -m1 '^depende-de:' "$f" | tr -d '\r' | sed 's/^depende-de: *\[\(.*\)\].*/\1/' | tr ',' ' ')"
   done
 fi
+for b in $inline_ids; do
+  [ -f "$nos_dir/$b.md" ] && continue
+  coletar "$b" "$(printf '%s\n' "$corpo" | sed -n "/^### $b\$/,/^### /p" | grep -m1 'depende-de' | sed 's/.*\[\(.*\)\].*/\1/' | tr ',' ' ')"
+done
+
+# 4. ciclo (awk DFS; portável gawk/mawk/busybox)
 if [ -n "$edges" ]; then
   ciclo="$(printf '%s' "$edges" | awk '
     { adj[$1] = adj[$1] " " $2; nodes[$1]=1; nodes[$2]=1 }
@@ -84,7 +98,7 @@ if [ -n "$edges" ]; then
     }
     END { for (n in nodes) { delete vis; delete stk; if (dfs(n)) { print n; exit } } }')"
   [ -n "$ciclo" ] && erros="$erros
-- ciclo em depende-de envolvendo '$ciclo'"
+- ciclo em depende-de alcançável a partir de '$ciclo' (siga as arestas dele)"
 fi
 
 if [ -n "$erros" ]; then

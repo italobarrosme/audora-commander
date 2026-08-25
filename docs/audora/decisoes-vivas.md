@@ -7,7 +7,6 @@
 Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 
 - 2026-08-15 | skill-depurar | depurar é skill-ferramenta (como grafo), não fase do roteamento; dois modos: sintoma e caçada.
-- 2026-08-15 | skill-depurar | Verificação de placeholder é case-sensitive com exceção para listas de proibição (falso positivo com "todo" em português).
 - 2026-08-24 | docs-bilingues | Placeholders `<...>` em blocos de código são prosa do leitor — traduzem; tokens literais de comando nunca.
 - 2026-08-24 | e2e-playwright-docker | Compose de e2e vive em docker-compose.e2e.yml na raiz do projeto-alvo; specs Playwright em e2e/.
 - 2026-08-24 | e2e-playwright-docker | Escolha de ferramenta e2e não-web é registrada na Constituição do projeto-alvo (pergunta única por projeto).

@@ -20,7 +20,7 @@ de migração a partir do schema v1.
 
 ## criterios-aceite
 
-14 critérios numerados (grafo-v2/1.1 a grafo-v2/7.2) na spec dedicada
+17 critérios numerados (grafo-v2/1.1 a grafo-v2/7.2) na spec dedicada
 (ALTA): ../specs/grafo-v2-escopo.md — estrutura índice-mestre +
 nó-por-arquivo, travessia por grep, ciclo de vida com decisoes-vivas e
 arquivamento por mv, EARS numerado, migração gradual dual v1/v2, hooks com
@@ -42,7 +42,7 @@ script de migração em lote. Detalhe na spec.
   migração gradual (fallback duas camadas).
 - 2026-08-24 (humano): decisões vivas → docs/audora/decisoes-vivas.md;
   EARS numerado citável adotado.
-- 2026-08-24 (humano): escopo (spec, 14 critérios) e plano (7 tarefas)
+- 2026-08-24 (humano): escopo (spec, 17 critérios) e plano (7 tarefas)
   aprovados nos portões.
 
 ## delta

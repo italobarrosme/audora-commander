@@ -41,7 +41,10 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 4. **Anunciar**: "Demanda classificada como [X] porque [respostas às
    perguntas] — me corrija se discordar." Correção do humano vale na hora.
 5. **Registrar o nó** da demanda no GRAFO (skill `grafo`, registrar-no):
-   estado `em-curso`, objetivo em 1 frase (o escopo detalha depois).
+   estado `em-curso`, objetivo em 1 frase. MÉDIA/ALTA: critérios ficam para
+   o escopo. LEVE/HOTFIX (sem escopo): incluir já ≥1 critério EARS numerado
+   (`<id>/1`...) derivado da demanda — executar e validar citam esses
+   endereços.
 6. **Rotear** pela tabela:
 
 | Categoria | Fases (skills, em ordem) | Portões humanos |

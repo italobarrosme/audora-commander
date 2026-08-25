@@ -66,5 +66,6 @@ pendente
 <!-- preenchido se o portão final reprovar -->
 
 <!-- Teto: ~100 linhas por arquivo de nó. Excedeu por histórico frio (delta e
-     decisões antigas consolidados)? Mover o frio para
-     docs/audora/nos/<id>-historico.md e deixar ponteiro de 1 linha aqui. -->
+     decisões antigas consolidados)? Mover o frio para `<id>-historico.md`
+     (mesma pasta — caminho relativo a este arquivo) e deixar ponteiro de
+     1 linha aqui. -->

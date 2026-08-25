@@ -33,6 +33,9 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - **Comportamento** (sempre): comandos para rodar, telas/rotas para abrir,
      casos de erro para provocar — mapeados critério a critério, com a
      evidência já coletada ao lado.
+   - **Decisões vivas propostas** (sempre): quais decisões do nó seguem
+     valendo para demandas futuras (candidatas a `docs/audora/decisoes-vivas.md`)
+     — o humano aprova/corta no portão; o sync (item 6) só executa.
    - **Categoria ALTA** (soma ao anterior): sumário de mudanças por arquivo,
      trechos sensíveis destacados (auth, dinheiro, dados, migração) para
      revisão de código — comportamento E código, não ou.
@@ -54,12 +57,12 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - Consolidar o bloco `delta` no corpo do nó (skill grafo).
    - Preencher `arquivos:` do nó via `git diff --name-only` da demanda — do
      diff real, nunca de memória.
-   - Propor a promoção das decisões ainda válidas do nó para
-     `docs/audora/decisoes-vivas.md` (o humano aprova neste mesmo portão).
+   - Promover para `docs/audora/decisoes-vivas.md` as decisões vivas
+     aprovadas no portão (propostas no roteiro, item 3).
    - Nó → `entregue`; arquivar por movimento (skill grafo, compactar):
      `git mv docs/audora/nos/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`
-     + linha do índice atualizada. (Projeto ainda no schema v1: compactar
-     para `docs/audora/GRAFO-ARQUIVO.md`, como antes.)
+     + linha do índice atualizada. (O nó da demanda já está em arquivo:
+     a migração on-touch da skill grafo aconteceu no registro.)
    - **Promover ao PRD.md**: resumo do que foi entregue + data de última
      atualização. Direção única GRAFO → PRD, sempre (vale para toda camada
      derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).

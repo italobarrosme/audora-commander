@@ -1,5 +1,5 @@
-# Hooks rodam no bash do Git for Windows — LF obrigatório.
+# Hooks e wrappers polyglot rodam no bash (Git for Windows / Unix) — LF
+# obrigatório: CRLF quebra o bash em Linux/macOS (exit 127). cmd.exe aceita LF.
 hooks/* text eol=lf
+*.cmd text eol=lf
 install.sh text eol=lf
-# Wrappers cmd.exe precisam de CRLF (última regra vence para hooks/*.cmd).
-*.cmd text eol=crlf

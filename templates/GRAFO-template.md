@@ -26,7 +26,8 @@ cumpre, ou documenta exceção no nó.
 
 ## Índice de nós [carga: sempre]
 
-Uma linha rica por nó — decide relevância SEM abrir o corpo. Formato:
+Uma linha rica por nó — decide relevância SEM abrir o corpo; o corpo vive em
+`docs/audora/nos/<id>.md` (resolvido pelo id). Formato:
 `- <id> | <estado> | <título curto> | <resumo 1 frase> | <keywords> | <arquivos-chave>`
 
 - exemplo-login | planejada | Autenticação e-mail/senha | Usuário entra com e-mail e senha para acessar a área logada | auth, login, sessao | src/auth/
@@ -46,13 +47,18 @@ Uma linha rica por nó — decide relevância SEM abrir o corpo. Formato:
    docs/audora/decisoes-vivas.md (templates/decisoes-vivas-template.md),
    depois `git mv docs/audora/nos/<id>.md
    docs/audora/arquivo/AAAA-MM-DD-<id>.md` e trocar a linha do índice para
-   `- <id> | entregue | <título> → arquivo/AAAA-MM-DD-<id>.md`. Movimento,
-   nunca reescrita.
+   `- <id> | entregue | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`
+   (caminho a partir da raiz, onde este arquivo vive). Movimento, nunca
+   reescrita. Entregas anteriores ao v2 usam a linha legada
+   `- <id> | entregue | <título> → ver docs/audora/GRAFO-ARQUIVO.md` e nunca
+   migram.
 4. Teto do índice mestre: ~300 linhas → compactar (arquivar entregues,
    encurtar resumos). Teto por nó: ver no-template.
 5. Máximo 3 nós em-curso, contados globalmente por este índice.
 6. `depende-de` reserva a sintaxe `chave:id` para federação futura — `:` é
    PROIBIDO em id de nó. Caminhos sempre relativos ao arquivo que os contém.
 7. Schema v1 (arquivo único, templates/GRAFO-template-v1.md) é caso
-   degenerado VÁLIDO: detecção por `versao-schema` na linha 1; migração
-   on-touch pela skill grafo, nunca em lote forçado. -->
+   degenerado VÁLIDO: detecção por `versao-schema` na linha 1 (linha ausente
+   = v1); migração on-touch pela skill grafo, nunca em lote forçado.
+8. O corpo do nó é resolvido pelo id (id = nome do arquivo em
+   docs/audora/nos/) — link implícito por construção, sem campo extra. -->

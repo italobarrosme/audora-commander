@@ -42,7 +42,20 @@ linha 1); as outras skills ficam agnósticas de versão (falam "nó" e
 
 ## Notas de sessão
 
-<!-- preencher antes de /clear no meio da demanda -->
+Rodada adversarial (3 lentes, 2026-08-25): 20 achados, todos verificados e
+corrigidos antes do portão, exceto 1 que vira decisão humana (abaixo).
+Correções: run-hook.cmd propagava exit 0 (parse-time %ERRORLEVEL% em bloco);
+.gitattributes forçava CRLF em *.cmd (bash morre em Linux); validate cego a
+CRLF/nós inline/caminho relativo; contagem 14→17 critérios; caminho de
+arquivamento no índice; rota v1 morta na validar; promoção de decisões vivas
+antes do portão; LEVE sem critérios numerados; exceção de schema no registro;
+campos sem fonte na migração on-touch; consolidação de delta sem dono;
+proveniência errada em decisoes-vivas.
+
+**Pendência para o humano (portão)**: critério grafo-v2/1.1 diz linha rica
+"linkando docs/audora/nos/<id>.md"; a implementação resolve o corpo pelo id
+(id = nome do arquivo), sem campo de link — grep-ável e sem redundância.
+Proposta: aceitar como delta MODIFICADO do 1.1 ("link implícito por id").
 
 ## Decisões tomadas pela IA (revisar na validação)
 
@@ -199,7 +212,7 @@ Passos:
 ## Tarefa 7: Verificação final + commits
 
 - **depende-de**: [4, 5, 6]
-- **requisito**: mapa 1:1 dos 14 critérios → evidência (grep/execução real).
+- **requisito**: mapa 1:1 dos 17 critérios → evidência (grep/execução real).
 - **done quando**: tabela critério→evidência completa; todas as skills ≤ 250
   linhas; hooks verdes na bateria; commit por tarefa verde feito ao longo do
   caminho (T1-T6), commit final de fechamento.

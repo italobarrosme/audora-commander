@@ -20,8 +20,8 @@ plugin: `GRAFO-template.md` (índice v2), `no-template.md` (arquivo de nó),
 `decisoes-vivas-template.md`, `GRAFO-template-v1.md` (compat). Nunca invente
 campos.
 
-**Detecção de versão**: linha 1 do GRAFO.md. `versao-schema: 1` → modo
-compat (ver seção no fim). `versao-schema: 2` → fluxo abaixo.
+**Detecção de versão**: linha 1 do GRAFO.md. `versao-schema: 1` (ou linha
+ausente) → modo compat (ver seção no fim). `versao-schema: 2` → fluxo abaixo.
 
 ## Regra de leitura seletiva (vale para TODAS as operações)
 
@@ -39,6 +39,12 @@ Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
 - decisão durável de área: `grep -i '<termo>' docs/audora/decisoes-vivas.md`
 
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
+
+**Estado transicional** (projeto migrado on-touch, com nós legados ainda
+inline no GRAFO.md): arquivo ausente em `nos/` + `### <id>` presente no
+GRAFO.md = corpo inline VÁLIDO, não é divergência — ler inline. Nesse estado
+as consultas acima são complementadas no GRAFO.md:
+`grep -n '^### \|^- \*\*estado\*\*\|^- \*\*depende-de\*\*' GRAFO.md`.
 
 ## Operações
 
@@ -68,11 +74,15 @@ Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
 1. Validar contra `no-template.md` ANTES de escrever: frontmatter completo
    (id, estado, origem, depende-de, arquivos, keywords, resumo,
    atualizado-em), estado no enum, critérios NUMERADOS (`<id>/<n>`, número
-   nunca reutilizado). Escrita que quebra schema é rejeitada.
+   nunca reutilizado). Escrita que quebra schema é rejeitada. Exceção
+   declarada: nó recém-aberto pela porta de entrada (MÉDIA/ALTA) pode ter
+   `criterios-aceite` vazio ATÉ a fase escopo; LEVE/HOTFIX já entram com
+   ≥1 critério numerado.
 2. Escrever `docs/audora/nos/<id>.md` E a linha rica do índice NA MESMA
    EDIÇÃO (resumo/keywords espelhados). Índice e pasta divergentes = memória
    inconsistente → PARAR e corrigir (hook grafo-validate acusa; sem hook, a
-   skill confere).
+   skill confere). Corpo inline legado NÃO é divergência (estado
+   transicional, acima).
 3. Máximo 3 nós `em-curso` (contagem global pelo índice). Quarto chegando →
    porta de entrada resolve com o humano.
 4. Em branch de demanda: editar SOMENTE os arquivos dos nós daquela demanda
@@ -86,18 +96,26 @@ Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
 2. Requisito de produto novo (afeta comportamento/critério) → perguntar ao
    humano ANTES. Decisão de implementação → decidir autônomo e listar em
    "Decisões tomadas pela IA" (a validar apresenta).
-3. Delta é consolidado no corpo pela skill validar, no sync pós-merge.
+3. Delta é consolidado no corpo no sync pós-merge (operação compactar,
+   item 0, chamada pela validar) — nunca antes.
+4. **Constituição** (como-rodar descoberto, padrão novo, ferramenta de e2e
+   escolhida): editar o bullet direto no índice mestre, mesma validação — é
+   o que e2e/escopo chamam de "registrar na Constituição".
 
 ### 5. compactar (manutenção)
 
+0. **Consolidar delta** (sync da validar): aplicar cada ADICIONADO /
+   MODIFICADO / REMOVIDO no corpo (criterios-aceite, decisoes,
+   fora-de-escopo), critério novo recebe o próximo `<id>/<n>`, e esvaziar
+   `## delta`.
 1. Gatilhos: nó virou `entregue` (sync da validar); índice mestre > ~300
    linhas; arquivo de nó > ~100 linhas.
-2. Nó `entregue`: (a) propor promoção das decisões AINDA VÁLIDAS para
-   `docs/audora/decisoes-vivas.md` (1 linha: data | nó | decisão; humano
-   aprova no portão); (b) `git mv docs/audora/nos/<id>.md
-   docs/audora/arquivo/AAAA-MM-DD-<id>.md`; (c) linha do índice vira
-   `- <id> | entregue | <título> → arquivo/AAAA-MM-DD-<id>.md`. Movimento,
-   nunca reescrita.
+2. Nó `entregue`: (a) promover as decisões AINDA VÁLIDAS aprovadas no portão
+   para `docs/audora/decisoes-vivas.md` (1 linha: data | nó | decisão);
+   (b) `git mv docs/audora/nos/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`;
+   (c) linha do índice vira
+   `- <id> | entregue | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
+   Movimento, nunca reescrita.
 3. Requisito/decisão superado: NUNCA apagar — anexar
    `[invalidado-em: data] [substituido-por: <ref>]`.
 4. Nó ativo > ~100 linhas: mover histórico frio (delta consolidado, decisões
@@ -112,12 +130,15 @@ Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
    (`GRAFO-template-v1.md`) — NÃO migrar, não exigir migração.
 2. **Primeiro toque de escrita** (registrar-no/delta em nó, demanda nova):
    migração on-touch — bump da linha 1 para `versao-schema: 2`, criar
-   `docs/audora/nos/`, mover SÓ os nós tocados para arquivos (frontmatter a
-   partir dos campos v1), enriquecer as linhas deles no índice. Nós não
-   tocados permanecem inline como legado válido.
-3. **Fallback de leitura no v2**: arquivo ausente em `nos/` mas `### <id>`
-   presente no GRAFO.md → ler o corpo inline (estado transicional legítimo).
-   Nós entregues no GRAFO-ARQUIVO.md antigo nunca precisam migrar.
+   `docs/audora/nos/`, mover SÓ os nós tocados para arquivos, enriquecer as
+   linhas deles no índice. Campos sem fonte no v1: `resumo` = objetivo em
+   1 frase; `keywords` = termos do título/objetivo; `arquivos` = `[]` (o sync
+   preenche via git diff). Critérios v1 ganham número na ordem existente
+   (`<id>/1..n`), registrado no delta como MODIFICADO (numeração
+   retroativa). Nós não tocados permanecem inline como legado válido.
+3. **Após o bump**, o leitor v2 usa o fallback inline da "Regra de leitura
+   seletiva" (estado transicional). Nós entregues no GRAFO-ARQUIVO.md antigo
+   nunca precisam migrar (linha legada `→ ver docs/audora/GRAFO-ARQUIVO.md`).
 4. Projeto pequeno pode ficar no v1 para sempre — caso degenerado válido,
    sem prazo.
 
