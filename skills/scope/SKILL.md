@@ -1,23 +1,23 @@
 ---
 name: scope
-description: Use quando uma demanda MÉDIA ou ALTA precisar de definição do "O Quê" — objetivo, critérios de aceite e fora-de-escopo — antes de qualquer código, ou quando outra fase reabrir o escopo.
+description: 'Use quando uma demanda MEDIUM ou HIGH precisar de definição do "O Quê" — objetivo, critérios de aceite e fora-de-escopo — antes de qualquer código, ou quando outra fase reabrir o escopo.'
 ---
 
-# escopo — a fase "O Quê"
+# scope — a fase "O Quê"
 
 ```
 LEI DE FERRO: NENHUM CÓDIGO ANTES DO ESCOPO FECHADO EM ARTEFATO ESCRITO
 ```
 
-**Anuncie ao começar:** "Usando escopo para definir o O Quê de [demanda]."
+**Anuncie ao começar:** "Usando scope para definir o O Quê de [demanda]."
 
 Esta fase fala SÓ de comportamento observável. Proibido discutir arquivos,
-funções, banco, biblioteca — isso é a fase plano. Se o humano puxar para o
+funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
 "Como", anote a preferência como decisão e volte ao comportamento.
 
 ## Fluxo
 
-1. **Contexto**: carregar constituição + nós relacionados (skill grafo,
+1. **Contexto**: carregar constituição + nós relacionados (skill graph,
    operação carregar-contexto). Nó da demanda já existe (criado pela porta de
    entrada).
 2. **Perguntas — uma por vez.** Só sobre comportamento: o que o usuário vê,
@@ -35,8 +35,8 @@ funções, banco, biblioteca — isso é a fase plano. Se o humano puxar para o
    limite. Critério que não cabe na sintaxe EARS é critério ambíguo — reescreva.
 5. **Fechar os três campos** no nó do GRAFO: `objetivo` (1-2 frases),
    `criterios-aceite` (EARS), `fora-de-escopo` (explícito — o que NÃO entra).
-   - Categoria MÉDIA: os três campos direto no nó.
-   - Categoria ALTA: spec dedicada em `docs/audora/specs/<id>-escopo.md`,
+   - Categoria MEDIUM: os três campos direto no nó.
+   - Categoria HIGH: spec dedicada em `docs/audora/specs/<id>-escopo.md`,
      nó aponta para ela.
 6. **Auto-revisão** (rodar você mesmo, corrigir inline):
    - Zero `[PRECISA-CLARIFICAR]` aberto?
@@ -55,13 +55,13 @@ funções, banco, biblioteca — isso é a fase plano. Se o humano puxar para o
 - Afeta comportamento observável ou critério de aceite → requisito de produto:
   pergunta ao humano AQUI, nesta fase.
 - Não afeta (nome interno, estrutura de código) → decisão de implementação:
-  não pertence a esta fase; a executar decide e lista para revisão.
+  não pertence a esta fase; a execute decide e lista para revisão.
 
 ## Reabertura de escopo (vindo de outra fase)
 
 Teste discriminante: a nova informação muda critérios de aceite ou
 fora-de-escopo?
-- **Sim** → reabertura formal: registrar delta no nó (skill grafo), ajustar
+- **Sim** → reabertura formal: registrar delta no nó (skill graph), ajustar
   critérios, repassar pelo portão humano (item 7).
 - **Não** → é esclarecimento, não reabertura: registrar no nó e devolver à
   fase que chamou. Não reexecutar o fluxo inteiro.
@@ -78,4 +78,4 @@ fora-de-escopo?
 
 ## PRÓXIMA SKILL
 
-Escopo aprovado → **plano**. Reabertura resolvida → devolver à fase chamadora.
+Escopo aprovado → **plan**. Reabertura resolvida → devolver à fase chamadora.
