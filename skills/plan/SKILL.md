@@ -1,15 +1,15 @@
 ---
 name: plan
-description: Use quando o escopo de uma demanda MÉDIA ou ALTA estiver aprovado e for hora de planejar o "Como" — ler o código atual, mapear arquivos e gerar o plano-arquivo com tarefas autossuficientes.
+description: 'Use quando o escopo de uma demanda MEDIUM ou HIGH estiver aprovado e for hora de planejar o "Como" — ler o código atual, mapear arquivos e gerar o plano-arquivo com tarefas autossuficientes.'
 ---
 
-# plano — a fase "Como", just-in-time
+# plan — a fase "Como", just-in-time
 
 ```
 LEI DE FERRO: PLANO SEM LEITURA DO CÓDIGO ATUAL É PLANO INVÁLIDO
 ```
 
-**Anuncie ao começar:** "Usando plano para planejar [demanda]."
+**Anuncie ao começar:** "Usando plan para planejar [demanda]."
 
 Plano cobre UMA demanda — nunca o projeto inteiro. Formato canônico:
 `templates/plano-template.md` na raiz do plugin (dois níveis acima desta
@@ -18,7 +18,7 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 
 ## Fluxo
 
-1. **Contexto**: carregar nó da demanda + constituição (skill grafo). Ler o
+1. **Contexto**: carregar nó da demanda + constituição (skill graph). Ler o
    artefato de escopo aprovado (nó ou spec dedicada).
 2. **Passada 1 — localizar**: a partir do escopo, achar candidatos por busca
    (grep/glob por símbolos, rotas, nomes de domínio). Não ler nada ainda —
@@ -28,7 +28,7 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
    tocar arquivo fora dessa lista invalida o plano naquele ponto → parar,
    ler, atualizar o header, seguir.
 4. **Conflito GRAFO vs código**: leitura contradiz um nó do GRAFO? Parar,
-   registrar a divergência no nó (skill grafo), apresentar ao humano. Ele
+   registrar a divergência no nó (skill graph), apresentar ao humano. Ele
    decide qual é a verdade antes do plano continuar.
 5. **Escrever o plano** pelo template:
    - Header: objetivo, nó do GRAFO, arquitetura da mudança, arquivos lidos.
@@ -52,8 +52,8 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
    - Scan de placeholder (lista do item 6).
    - Consistência: nomes/assinaturas iguais entre tarefa que produz e tarefa
      que consome.
-8. **Portão** (categoria ALTA): apresentar o plano ao humano e ESPERAR
-   aprovação. MÉDIA: plano salvo, seguir direto.
+8. **Portão** (categoria HIGH): apresentar o plano ao humano e ESPERAR
+   aprovação. MEDIUM: plano salvo, seguir direto.
 9. **Fechar a fase**:
    > Fase de plano fechada. Artefato salvo: docs/audora/planos/plano-<id>.md.
    > Seguro dar /clear agora — a execução começa relendo o plano.
@@ -64,8 +64,8 @@ Gatilhos legítimos — SOMENTE estes:
 - (a) arquivo/símbolo que a etapa referencia não existe ou mudou de forma
   incompatível;
 - (b) o teste da etapa é impossível de escrever como especificado;
-- (c) a descoberta altera escopo → isso NÃO é replanejar: volte à skill
-  escopo (reabertura formal).
+- (c) a descoberta altera escopo → isso NÃO é replanejar: volte à skill scope
+  (reabertura formal).
 
 Teste falhando por bug da implementação é DEBUG, não replanejamento. Replaneje
 a etapa afetada, não o plano inteiro.
@@ -88,4 +88,4 @@ próximos passos. A próxima sessão lê isso primeiro.
 
 ## PRÓXIMA SKILL
 
-Plano salvo (e aprovado, se ALTA) → **executar**.
+Plano salvo (e aprovado, se HIGH) → **execute**.
