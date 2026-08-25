@@ -1,15 +1,15 @@
 ---
 name: debug
-description: Use quando houver bug, teste falhando por motivo desconhecido, comportamento inesperado ou critério de e2e reprovado — antes de propor qualquer correção. Sem sintoma específico, use o modo caçada para varrer o projeto atrás de defeitos.
+description: 'Use quando houver bug, teste falhando por motivo desconhecido, comportamento inesperado ou critério de e2e reprovado — antes de propor qualquer correção. Sem sintoma específico, use o modo caçada para varrer o projeto atrás de defeitos.'
 ---
 
-# depurar — causa raiz antes de correção
+# debug — causa raiz antes de correção
 
 ```
 LEI DE FERRO: NENHUMA CORREÇÃO SEM CAUSA RAIZ DEMONSTRADA
 ```
 
-**Anuncie ao começar:** "Usando depurar em modo [sintoma|caçada] para [alvo]."
+**Anuncie ao começar:** "Usando debug em modo [sintoma|caçada] para [alvo]."
 
 Chute empilhado vira pântano: cada "mudo isso e vejo se resolve" adiciona uma
 variável e esconde a causa. Este fluxo proíbe mexer no código antes de PROVAR
@@ -36,10 +36,10 @@ o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
    sintomas observados. Sintoma órfão = causa errada ou segunda causa —
    continue. "O bug sumiu" sem explicação não é vitória: você perdeu a
    reprodução, não achou a causa.
-5. **Corrigir via TDD** (skill executar): teste que reproduz (red, se ainda
+5. **Corrigir via TDD** (skill execute): teste que reproduz (red, se ainda
    não existe) → fix mínimo → suíte TODA verde. O teste de reprodução fica
    permanente.
-6. **Registrar aprendizado no nó** (skill grafo): bug revelou requisito
+6. **Registrar aprendizado no nó** (skill graph): bug revelou requisito
    ausente → delta no GRAFO; revelou lacuna de teste → anotar a classe de
    lacuna nas decisões.
 
@@ -76,7 +76,7 @@ Relatório em `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`:
 |---|---|---|---|---|---|
 
 Veredito: `confirmado` / `falso-positivo` / `melhoria` (não é defeito — vira
-nó `planejada` se o humano quiser). Confirmados → corrigir via modo sintoma
+nó `planned` se o humano quiser). Confirmados → corrigir via modo sintoma
 (passos 4-6; a verificação da caçada já é a reprodução) — um commit por
 correção. Caçada limpa = relatório com as classes varridas e zero confirmados,
 provando O QUE foi checado.
@@ -94,6 +94,6 @@ provando O QUE foi checado.
 
 ## PRÓXIMA SKILL
 
-Causa raiz demonstrada → **executar** (fix via TDD). Achados da caçada
-corrigidos/reportados → **validar** (ou registrar nós novos via **grafo**).
+Causa raiz demonstrada → **execute** (fix via TDD). Achados da caçada
+corrigidos/reportados → **validate** (ou registrar nós novos via **graph**).
 Escalada → decisão humana.
