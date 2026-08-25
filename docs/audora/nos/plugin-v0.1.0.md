@@ -1,12 +1,12 @@
 ---
 id: plugin-v0.1.0
-estado: em-curso
+estado: in-progress
 origem: humano
 depende-de: []
 arquivos: [skills/, hooks/, templates/, .claude-plugin/, README.md]
 keywords: [plugin, skills, marketplace, hook, instalacao]
 resumo: Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local.
-atualizado-em: 2026-08-24
+atualizado-em: 2026-08-25
 ---
 
 # plugin-v0.1.0
@@ -39,7 +39,9 @@ git hooks (nós próprios ou versão futura).
 ## decisoes
 
 - 2026-08-14 (humano): formato plugin padrão Superpowers; 6→7 skills com
-  adição do e2e opcional-recomendado; nomes em português.
+  adição do e2e opcional-recomendado; nomes em português
+  [invalidado-em: 2026-08-25] [substituido-por: comandos-ingles — nomes de
+  skills, categorias e enum de estado em inglês].
 - 2026-08-14 (humano): fundamentos v2 aprovados (crítica adversarial +
   acertos do gênero integrados).
 - 2026-08-14 (IA): verificação de placeholder case-sensitive com exceção
@@ -48,8 +50,11 @@ git hooks (nós próprios ou versão futura).
 ## delta
 
 - MODIFICADO (2026-08-15): critério 1 — "listar as 7 skills" → "listar as
-  8 skills" (skill depurar adicionada pelo nó skill-depurar). Motivo: caçada
+  8 skills" (skill de debug adicionada pelo nó skill-depurar). Motivo: caçada
   A3, divergência nó vs README.
+- MODIFICADO (2026-08-25): critério 5 — "uma demanda LEVE e uma MÉDIA" →
+  "uma demanda LIGHT e uma MEDIUM"; "plano-arquivo na MÉDIA" → "na MEDIUM".
+  Motivo: nó comandos-ingles (categorias de risco em inglês).
 
 ## e2e
 

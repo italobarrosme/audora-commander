@@ -3,7 +3,7 @@
 Nós entregues, compactados pela skill validar no sync pós-merge. Leitura
 manual — não é carregado automaticamente em contexto.
 
-## e2e-playwright-docker (entregue 2026-08-24)
+## e2e-playwright-docker (delivered 2026-08-24)
 
 - **origem**: humano | **depende-de**: []
 - **objetivo**: Skill e2e com Playwright como ferramenta default para
@@ -26,7 +26,7 @@ manual — não é carregado automaticamente em contexto.
   plugin instalado (mesmo checklist do nó plugin-v0.1.0).
 - **entregue-em**: 2026-08-24 (commit e70b578)
 
-## docs-bilingues (entregue 2026-08-24)
+## docs-bilingues (delivered 2026-08-24)
 
 - **origem**: humano | **depende-de**: []
 - **objetivo**: README.md principal em inglês (idioma padrão do projeto
@@ -53,7 +53,7 @@ manual — não é carregado automaticamente em contexto.
 - **e2e**: pulado-pelo-humano (redundante para demanda de documentação).
 - **entregue-em**: 2026-08-24 (commit d62ed98)
 
-## skill-depurar (entregue 2026-08-15)
+## skill-depurar (delivered 2026-08-15)
 
 - **origem**: humano | **depende-de**: [plugin-v0.1.0]
 - **objetivo**: Skill `depurar` no plugin: debug sistemático com causa raiz

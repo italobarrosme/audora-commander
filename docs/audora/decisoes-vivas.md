@@ -15,7 +15,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-25 | grafo-v2 | Índice mestre é editado pelo LLM e VALIDADO por hook, nunca gerado por script — mantém o GRAFO operável sem bash.
 - 2026-08-25 | grafo-v2 | Corte de tokens do v2 (65-70%) é estimativa do estudo — benchmark pulado por decisão humana; medir se a travessia voltar a doer.
 
-<!-- Regras (skill grafo/validar):
+<!-- Regras (skill graph/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
    fica no nó arquivado.
 2. Decisão superada NUNCA é apagada: anexar à linha

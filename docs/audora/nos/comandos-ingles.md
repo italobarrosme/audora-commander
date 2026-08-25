@@ -1,11 +1,11 @@
 ---
 id: comandos-ingles
-estado: em-curso
+estado: in-progress
 origem: humano
 depende-de: [plugin-v0.1.0]
 arquivos: []
 keywords: [ingles, i18n, rename, skills, categorias, contrato]
-resumo: Nomes das skills (comandos) e categorias de risco (LEVE/MÉDIA/ALTA/HOTFIX) passam a ser em inglês.
+resumo: Nomes das skills (comandos), categorias de risco (LIGHT/MEDIUM/HIGH/HOTFIX) e enum de estado dos nós passam a ser em inglês.
 atualizado-em: 2026-08-25
 ---
 
