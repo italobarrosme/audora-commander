@@ -113,12 +113,20 @@ da instalação" mais abaixo neste README.
 
 ## Artefatos nos projetos que usam o framework
 
-- `GRAFO.md` — raiz do projeto (memória viva).
-- `docs/audora/GRAFO-ARQUIVO.md` — nós entregues, compactados.
+- `GRAFO.md` — raiz do projeto: índice mestre da memória viva (schema v2).
+- `docs/audora/nos/` — um arquivo por nó (requisitos, critérios EARS
+  numerados, decisões, delta).
+- `docs/audora/decisoes-vivas.md` — decisões duráveis promovidas de nós
+  entregues.
+- `docs/audora/arquivo/` — nós entregues, arquivados por movimento.
 - `docs/audora/planos/` — planos ativos; `arquivo/` para os encerrados.
 - `docs/audora/e2e/` — relatórios E2E por demanda.
 - `docs/audora/specs/` — specs de escopo de demandas ALTA.
 - `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill depurar).
+
+Projetos no schema v1 (GRAFO.md em arquivo único + GRAFO-ARQUIVO.md) seguem
+plenamente suportados — a migração acontece por toque, nunca como big bang
+forçado.
 
 ## Checklist de validação da instalação
 

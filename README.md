@@ -113,12 +113,19 @@ checklist" further down in this README.
 
 ## Artifacts in projects using the framework
 
-- `GRAFO.md` — project root (living memory).
-- `docs/audora/GRAFO-ARQUIVO.md` — delivered nodes, compacted.
+- `GRAFO.md` — project root: master index of the living memory (schema v2).
+- `docs/audora/nos/` — one file per node (requirements, numbered EARS
+  criteria, decisions, delta).
+- `docs/audora/decisoes-vivas.md` — durable decisions promoted from
+  delivered nodes.
+- `docs/audora/arquivo/` — delivered nodes, archived by move.
 - `docs/audora/planos/` — active plans; `arquivo/` for closed ones.
 - `docs/audora/e2e/` — E2E reports per demand.
 - `docs/audora/specs/` — scope specs for ALTA demands.
 - `docs/audora/depuracao/` — defect hunt reports (depurar skill).
+
+Projects on schema v1 (single-file GRAFO.md + GRAFO-ARQUIVO.md) remain fully
+supported — migration happens on touch, never as a forced big bang.
 
 ## Installation validation checklist
 
