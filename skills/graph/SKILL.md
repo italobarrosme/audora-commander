@@ -1,15 +1,15 @@
 ---
 name: graph
-description: Use quando precisar criar, consultar ou atualizar o GRAFO de um projeto — bootstrap em projeto sem GRAFO, registro de nó ou delta de demanda, compactação, ou carga de contexto no início de uma demanda. Schema v2 (índice mestre + 1 nó = 1 arquivo) com suporte v1.
+description: 'Use quando precisar criar, consultar ou atualizar o GRAFO de um projeto — bootstrap em projeto sem GRAFO, registro de nó ou delta de demanda, compactação, ou carga de contexto no início de uma demanda. Schema v2 (índice mestre + 1 nó = 1 arquivo) com suporte v1.'
 ---
 
-# grafo — o mapa dinâmico do produto
+# graph — o mapa dinâmico do produto
 
 ```
 LEI DE FERRO: REQUISITO NÃO ESCRITO NO GRAFO É REQUISITO QUE NÃO EXISTE
 ```
 
-**Anuncie ao começar:** "Usando grafo para [operação]."
+**Anuncie ao começar:** "Usando graph para [operação]."
 
 O GRAFO é a memória externa durável do produto: requisitos, estado e
 decisões. O código guarda o "como"; o GRAFO guarda o "o quê / por quê /
@@ -33,7 +33,7 @@ Carregue somente:
    (1 salto).
 
 Consulta estrutural NUNCA carrega corpos — grep no frontmatter resolve:
-- nós em-curso: `grep -l '^estado: em-curso' docs/audora/nos/*.md`
+- nós in-progress: `grep -l '^estado: in-progress' docs/audora/nos/*.md`
 - quem depende de X: `grep -l 'depende-de:.*X' docs/audora/nos/*.md`
 - nó que governa um arquivo: `grep -l 'src/auth' docs/audora/nos/*.md`
 - decisão durável de área: `grep -i '<termo>' docs/audora/decisoes-vivas.md`
@@ -75,15 +75,15 @@ as consultas acima são complementadas no GRAFO.md:
    (id, estado, origem, depende-de, arquivos, keywords, resumo,
    atualizado-em), estado no enum, critérios NUMERADOS (`<id>/<n>`, número
    nunca reutilizado). Escrita que quebra schema é rejeitada. Exceção
-   declarada: nó recém-aberto pela porta de entrada (MÉDIA/ALTA) pode ter
-   `criterios-aceite` vazio ATÉ a fase escopo; LEVE/HOTFIX já entram com
+   declarada: nó recém-aberto pela porta de entrada (MEDIUM/HIGH) pode ter
+   `criterios-aceite` vazio ATÉ a fase scope; LIGHT/HOTFIX já entram com
    ≥1 critério numerado.
 2. Escrever `docs/audora/nos/<id>.md` E a linha rica do índice NA MESMA
    EDIÇÃO (resumo/keywords espelhados). Índice e pasta divergentes = memória
    inconsistente → PARAR e corrigir (hook grafo-validate acusa; sem hook, a
    skill confere). Corpo inline legado NÃO é divergência (estado
    transicional, acima).
-3. Máximo 3 nós `em-curso` (contagem global pelo índice). Quarto chegando →
+3. Máximo 3 nós `in-progress` (contagem global pelo índice). Quarto chegando →
    porta de entrada resolve com o humano.
 4. Em branch de demanda: editar SOMENTE os arquivos dos nós daquela demanda
    (+ suas linhas de índice). Conflito de merge fora deles → humano decide.
@@ -95,32 +95,32 @@ as consultas acima são complementadas no GRAFO.md:
    data. Zero contato com região compartilhada.
 2. Requisito de produto novo (afeta comportamento/critério) → perguntar ao
    humano ANTES. Decisão de implementação → decidir autônomo e listar em
-   "Decisões tomadas pela IA" (a validar apresenta).
+   "Decisões tomadas pela IA" (a validate apresenta).
 3. Delta é consolidado no corpo no sync pós-merge (operação compactar,
-   item 0, chamada pela validar) — nunca antes.
+   item 0, chamada pela validate) — nunca antes.
 4. **Constituição** (como-rodar descoberto, padrão novo, ferramenta de e2e
    escolhida): editar o bullet direto no índice mestre, mesma validação — é
-   o que e2e/escopo chamam de "registrar na Constituição".
+   o que e2e/scope chamam de "registrar na Constituição".
 
 ### 5. compactar (manutenção)
 
-0. **Consolidar delta** (sync da validar): aplicar cada ADICIONADO /
+0. **Consolidar delta** (sync da validate): aplicar cada ADICIONADO /
    MODIFICADO / REMOVIDO no corpo (criterios-aceite, decisoes,
    fora-de-escopo), critério novo recebe o próximo `<id>/<n>`, e esvaziar
    `## delta`.
-1. Gatilhos: nó virou `entregue` (sync da validar); índice mestre > ~300
+1. Gatilhos: nó virou `delivered` (sync da validate); índice mestre > ~300
    linhas; arquivo de nó > ~100 linhas.
-2. Nó `entregue`: (a) promover as decisões AINDA VÁLIDAS aprovadas no portão
+2. Nó `delivered`: (a) promover as decisões AINDA VÁLIDAS aprovadas no portão
    para `docs/audora/decisoes-vivas.md` (1 linha: data | nó | decisão);
    (b) `git mv docs/audora/nos/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`;
    (c) linha do índice vira
-   `- <id> | entregue | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
+   `- <id> | delivered | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
    Movimento, nunca reescrita.
 3. Requisito/decisão superado: NUNCA apagar — anexar
    `[invalidado-em: data] [substituido-por: <ref>]`.
 4. Nó ativo > ~100 linhas: mover histórico frio (delta consolidado, decisões
    antigas) para `docs/audora/nos/<id>-historico.md` + ponteiro de 1 linha.
-5. A promoção do resumo ao PRD.md é responsabilidade da skill validar
+5. A promoção do resumo ao PRD.md é responsabilidade da skill validate
    (direção única GRAFO → PRD; o PRD nunca alimenta o GRAFO).
 
 ## Modo compat v1 (`versao-schema: 1`)
@@ -144,7 +144,7 @@ as consultas acima são complementadas no GRAFO.md:
 
 ## Conflito GRAFO vs código
 
-Detecção acontece no escopo da demanda: a skill plano lê os arquivos
+Detecção acontece no escopo da demanda: a skill plan lê os arquivos
 afetados e algo contradiz um nó → sinaliza. Registre a divergência no nó,
 apresente ao humano, ele decide. Nunca escolha em silêncio.
 
