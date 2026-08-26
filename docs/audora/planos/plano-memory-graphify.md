@@ -33,6 +33,7 @@
 - Template do nó mantém o nome `templates/no-template.md` (só paths mudam); índice vira `templates/MEMORY-template.md`; `GRAFO-template.md` e `GRAFO-template-v1.md` removidos.
 - Legado: `docs/audora/GRAFO-ARQUIVO.md` → `git mv` para `docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md` (conteúdo intocado); linhas legadas do índice apontam para lá.
 - Fora do alcance do /1 e intocados: `docs/fundamentos.md`, `docs/specs/*`, `docs/audora/planos/*`, `docs/audora/arquivo/*`, `docs/audora/depuracao/*` (histórico).
+- Critério /1 é `grep -ri grafo` (case-insensitive) → a palavra "grafo" fica proibida TAMBÉM no sentido genérico (índice do Graphify) em skills/hooks/templates/manifests/READMEs/PRD: escrever "índice de código"; status do `graphify-status` `sem-grafo` → `sem-indice` (T3/T4/T7/T8 seguem isto). Descoberto na T2 (GREEN acusou o próprio texto do plano).
 - A skill `memory` chama scripts pelo caminho "raiz do plugin" = dois níveis acima do diretório base da skill (o Skill tool imprime esse diretório) — `${CLAUDE_PLUGIN_ROOT}` só existe para hooks.
 
 ## Notas de sessão
@@ -259,11 +260,11 @@ report
 
 Passos:
 
-- [ ] **1. Escrever teste** `tests/test-templates.sh` (código acima).
-- [ ] **2. RED** — `bash tests/test-templates.sh` → FAIL ≥ 10 (MEMORY-template ausente; GRAFO-template existe).
-- [ ] **3. Implementar** — `git mv templates/GRAFO-template.md templates/MEMORY-template.md`; reescrever com o conteúdo acima; `git rm templates/GRAFO-template-v1.md`; editar `no-template.md`, `decisoes-vivas-template.md`, `plano-template.md`, `e2e-infra-template.md` conforme listado.
-- [ ] **4. GREEN** — `bash tests/test-templates.sh` → `PASS=… FAIL=0`; `grep -ri grafo templates` → vazio.
-- [ ] **5. Commit** — `git add -A templates tests/test-templates.sh && git commit -m "feat(memory-graphify/4,5): templates MEMORY (índice + nó + decisões), remove GRAFO templates"`.
+- [x] **1. Escrever teste** `tests/test-templates.sh` (código acima).
+- [x] **2. RED** — `bash tests/test-templates.sh` → PASS=9 FAIL=12 (MEMORY-template ausente; GRAFO-template existe).
+- [x] **3. Implementar** — `git mv templates/GRAFO-template.md templates/MEMORY-template.md`; reescrever com o conteúdo acima; `git rm templates/GRAFO-template-v1.md`; editar `no-template.md`, `decisoes-vivas-template.md`, `plano-template.md`, `e2e-infra-template.md` conforme listado.
+- [x] **4. GREEN** — `bash tests/test-templates.sh` → `PASS=21 FAIL=0`; `grep -ri grafo templates` → vazio.
+- [x] **5. Commit** — `git add -A templates tests/test-templates.sh && git commit -m "feat(memory-graphify/4,5): templates MEMORY (índice + nó + decisões), remove GRAFO templates"`.
 
 ## Tarefa 3: Hooks memory-guard, memory-validate, session-start, graphify-status
 

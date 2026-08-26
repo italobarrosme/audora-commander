@@ -8,7 +8,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 
 - 2026-08-24 | exemplo-login | Sessão via cookie httpOnly, não localStorage.
 
-<!-- Regras (skill graph/validate):
+<!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
    fica no nó arquivado.
 2. Decisão superada NUNCA é apagada: anexar à linha

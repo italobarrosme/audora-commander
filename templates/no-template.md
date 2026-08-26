@@ -14,13 +14,6 @@ atualizado-em: 2026-08-24
 <!-- Frontmatter: 1 campo = 1 linha — consultável por grep puro, sem parser.
      estados: planned | in-progress | blocked | delivered | discarded
        (+ hotfix-pending-record, transitório)
-     Migração de estado PT→EN (skill graph, primeira escrita no projeto —
-       converte TODOS: índice, nos/, arquivo/, GRAFO-ARQUIVO.md, inline;
-       onde quer que o estado viva — `estado:`, `- **estado**:`, coluna
-       `| estado |` ou rótulo `(estado DATA)` de heading arquivado):
-       planejada→planned | em-curso→in-progress | bloqueada→blocked |
-       entregue→delivered | descartada→discarded |
-       hotfix-pendente-registro→hotfix-pending-record
      origem: humano | inferido (inferido NÃO vale como verdade até o humano
        confirmar)
      depende-de: lista de ids; sintaxe `chave:id` reservada (federação futura)

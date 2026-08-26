@@ -10,7 +10,7 @@ nunca criar estrutura paralela.
 
 ```yaml
 # Gerado pela skill e2e (audora-commander) — infra de teste, NÃO de produção.
-# Preencher a partir da stack/Constituição do GRAFO. Todo serviço que o app
+# Preencher a partir da stack/Constituição do MEMORY. Todo serviço que o app
 # espera precisa de healthcheck — o `up -d --wait` depende disso.
 services:
   app:
@@ -74,7 +74,7 @@ Sem Playwright no projeto (bootstrap mínimo, decisão registrada no nó):
 (porta do compose acima).
 
 <!-- Regras de preenchimento (skill e2e):
-1. Serviços e envs saem da stack/Constituição do GRAFO — não inventar
+1. Serviços e envs saem da stack/Constituição do MEMORY — não inventar
    dependência que o projeto não declara.
 2. Segredo real NUNCA entra no compose versionado — placeholder + .env.
 3. Healthcheck em todo serviço; sem healthcheck o --wait não protege nada.

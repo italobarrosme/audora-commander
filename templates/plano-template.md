@@ -6,7 +6,7 @@
 
 **Objetivo:** <1 frase — o que esta demanda entrega>
 
-**Nó do GRAFO:** `<id>` (GRAFO.md)
+**Nó do MEMORY:** `<id>` (MEMORY.md)
 
 **Arquitetura da mudança:** <2-3 frases: abordagem escolhida e por quê>
 
@@ -16,7 +16,7 @@ o plano naquele ponto. -->
 - `caminho/exato/arquivo1.ts` — <o que foi relevante>
 - `caminho/exato/arquivo2.ts` — <o que foi relevante>
 
-**Conflitos GRAFO vs código encontrados:** <nenhum | descrição + decisão do humano>
+**Conflitos MEMORY vs código encontrados:** <nenhum | descrição + decisão do humano>
 
 ## Notas de sessão
 
