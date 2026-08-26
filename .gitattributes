@@ -3,3 +3,4 @@
 hooks/* text eol=lf
 *.cmd text eol=lf
 install.sh text eol=lf
+tests/* text eol=lf

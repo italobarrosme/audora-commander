@@ -52,8 +52,8 @@ e por quê, estado parcial, próximos passos. Próxima sessão lê isto primeiro
 
 ## Passo 0 (antes da T1): commit de abertura
 
-- [ ] `git add GRAFO.md docs/audora/nos/memory-graphify.md docs/audora/specs/memory-graphify-escopo.md docs/audora/planos/plano-memory-graphify.md && git commit -m "docs(memory-graphify): abrir demanda — no, escopo aprovado e plano"`
-- [ ] `git status --short` → vazio.
+- [x] `git add GRAFO.md docs/audora/nos/memory-graphify.md docs/audora/specs/memory-graphify-escopo.md docs/audora/planos/plano-memory-graphify.md && git commit -m "docs(memory-graphify): abrir demanda — no, escopo aprovado e plano"`
+- [x] `git status --short` → vazio.
 
 ## Tarefa 1: Harness de testes + teste-guarda "zero GRAFO"
 
@@ -128,9 +128,9 @@ report
 
 Passos:
 
-- [ ] **1. Escrever** `tests/lib.sh`, `tests/run.sh`, `tests/test-no-grafo.sh` (código acima); `printf 'tests/* text eol=lf\n' >> .gitattributes`.
-- [ ] **2. RED** — `bash tests/run.sh` → `test-no-grafo.sh: PASS=0 FAIL=4`, saída lista `skills/graph/SKILL.md:...` entre os resíduos; `run.sh: 1 arquivo(s) de teste com falha`, exit 1.
-- [ ] **3. Commit** — `git add tests .gitattributes && git commit -m "test(memory-graphify/1): harness bash + guarda zero-GRAFO (red)"`.
+- [x] **1. Escrever** `tests/lib.sh`, `tests/run.sh`, `tests/test-no-grafo.sh` (código acima); `printf 'tests/* text eol=lf\n' >> .gitattributes`.
+- [x] **2. RED** — `bash tests/run.sh` → `test-no-grafo.sh: PASS=1 FAIL=4` (PASS=1 = guarda "8 skills", já vale hoje), saída lista `skills/graph/SKILL.md:...` entre os resíduos; `run.sh: 1 arquivo(s) de teste com falha`, exit 1.
+- [x] **3. Commit** — `git add tests .gitattributes && git commit -m "test(memory-graphify/1): harness bash + guarda zero-GRAFO (red)"`.
 
 ## Tarefa 2: Templates MEMORY
 
