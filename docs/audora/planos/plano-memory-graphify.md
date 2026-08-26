@@ -585,11 +585,11 @@ report
 
 Passos:
 
-- [ ] **1. Escrever os 4 testes** (código acima).
-- [ ] **2. RED** — `for t in tests/test-memory-guard.sh tests/test-memory-validate.sh tests/test-session-start.sh tests/test-graphify-status.sh; do bash $t; done` → todos com FAIL>0 (hooks `memory-*` não existem: `bash: hooks/memory-validate: No such file` → code 127 ≠ 0/2; session-start sem "memory"; graphify-status ausente).
-- [ ] **3. Implementar** — `git mv hooks/grafo-guard hooks/memory-guard && git mv hooks/grafo-validate hooks/memory-validate`; reescrever com o código acima; criar `hooks/graphify-status`; editar `session-start` e `hooks.json`; `chmod +x hooks/graphify-status` (git: `git update-index --chmod=+x hooks/graphify-status`).
-- [ ] **4. GREEN** — os 4 testes `FAIL=0`; `grep -ri grafo hooks` vazio; `file hooks/*` sem CRLF (`grep -l $'\r' hooks/* || echo LF-ok`).
-- [ ] **5. Commit** — `git add -A hooks tests && git commit -m "feat(memory-graphify/8,10,12,13,15): hooks memory-guard/memory-validate/session-start + graphify-status"`.
+- [x] **1. Escrever os 4 testes** (código acima; `sem-grafo`→`sem-indice`, `yes '- l'`→`yes 'l'`).
+- [x] **2. RED** (guard FAIL=8, validate FAIL=22, session-start FAIL=6, graphify-status FAIL=6) — `for t in tests/test-memory-guard.sh tests/test-memory-validate.sh tests/test-session-start.sh tests/test-graphify-status.sh; do bash $t; done` → todos com FAIL>0 (hooks `memory-*` não existem: `bash: hooks/memory-validate: No such file` → code 127 ≠ 0/2; session-start sem "memory"; graphify-status ausente).
+- [x] **3. Implementar** — `git mv hooks/grafo-guard hooks/memory-guard && git mv hooks/grafo-validate hooks/memory-validate`; reescrever com o código acima; criar `hooks/graphify-status`; editar `session-start` e `hooks.json`; `chmod +x hooks/graphify-status` (git: `git update-index --chmod=+x hooks/graphify-status`).
+- [x] **4. GREEN** (8/22/9/6 PASS) — os 4 testes `FAIL=0`; `grep -ri grafo hooks` vazio; `file hooks/*` sem CRLF (`grep -l $'\r' hooks/* || echo LF-ok`).
+- [x] **5. Commit** — `git add -A hooks tests && git commit -m "feat(memory-graphify/8,10,12,13,15): hooks memory-guard/memory-validate/session-start + graphify-status"`.
 
 ## Tarefa 4: Skill `memory` (substitui `graph`) — dona do MEMORY e do Graphify
 

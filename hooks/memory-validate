@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# Hook PostToolUse (Edit|Write): integridade do MEMORY (memory-schema: 1).
+# Acusa: seção obrigatória ausente no MEMORY.md; linha do índice sem coluna
+# de estado; estado fora do enum; nó in-progress/blocked sem arquivo; arquivo
+# de nó sem linha no índice; depende-de inexistente; ciclo.
+# Erro → exit 2 + stderr. Fora do MEMORY, ou MEMORY.md sem "memory-schema: 1"
+# na linha 1 → exit 0.
+# Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
+set -uo pipefail
+
+# templates/ vive na raiz do PLUGIN — resolver de $0 (run-hook.cmd chama
+# "bash <HOOK_DIR>/memory-validate"; no cmd.exe $0 chega com backslash).
+here="${0//\\//}"
+tpl="$(cd "$(dirname "$here")/../templates" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"
+tpl="${tpl:-<raiz do plugin>/templates}"
+
+input="$(cat)"
+file_path="$(printf '%s' "$input" | perl -MJSON::PP -0777 -ne '
+  my $d = eval { decode_json($_) } or exit 0;
+  print $d->{tool_input}{file_path} // "";' 2>/dev/null)" || exit 0
+[ -n "$file_path" ] || exit 0
+file_path="${file_path//\\//}"
+
+case "$file_path" in
+  *MEMORY.md) root="$(dirname "$file_path")" ;;
+  *docs/audora/memory/*.md)
+    root="${file_path%docs/audora/memory/*}"; root="${root%/}"
+    [ -n "$root" ] || root="." ;;
+  *) exit 0 ;;
+esac
+mem="$root/MEMORY.md"
+[ -f "$mem" ] || exit 0
+corpo="$(tr -d '\r' < "$mem")"
+printf '%s\n' "$corpo" | head -1 | grep -q '^memory-schema: 1' || exit 0
+dir="$root/docs/audora/memory"
+
+erros=""
+for sec in 'Propósito' 'Constituição' 'Aprendizados' 'Índice de nós'; do
+  printf '%s\n' "$corpo" | grep -q "^## $sec" || erros="$erros
+- seção obrigatória ausente no MEMORY.md: '## $sec' (formato em $tpl/MEMORY-template.md)"
+done
+
+idx="$(printf '%s\n' "$corpo" | sed -n '/^## Índice de nós/,/^## [^Í]/p' | grep '^- ' || true)"
+idx_ids="$(printf '%s\n' "$idx" | sed 's/^- *\([^ |]*\).*/\1/')"
+
+# 1. estado fora do enum, linha sem estado, nó ativo sem arquivo
+while IFS= read -r linha; do
+  [ -n "$linha" ] || continue
+  id="$(printf '%s' "$linha" | sed 's/^- *\([^ |]*\).*/\1/')"
+  estado="$(printf '%s' "$linha" | awk -F'|' 'NF>1 {gsub(/ /,"",$2); print $2}')"
+  if [ -z "$estado" ]; then
+    erros="$erros
+- linha do índice sem coluna de estado: '$linha' — formato é \`- <id> | <estado> | <título> | <resumo> | <keywords> | <arquivos>\` ($tpl/MEMORY-template.md)"
+    continue
+  fi
+  case "$estado" in
+    planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ;;
+    *) erros="$erros
+- nó '$id' com estado '$estado' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) — corrija na linha do índice e no arquivo do nó ($tpl/no-template.md)" ;;
+  esac
+  case "$estado" in
+    in-progress|blocked)
+      [ -f "$dir/$id.md" ] || erros="$erros
+- nó '$id' ($estado) sem arquivo docs/audora/memory/$id.md" ;;
+  esac
+done <<EOF_IDX
+$idx
+EOF_IDX
+
+# 2. arquivo sem linha no índice + 3. deps inexistentes (coleta arestas)
+edges=""
+if [ -d "$dir" ]; then
+  for f in "$dir"/*.md; do
+    [ -e "$f" ] || continue
+    b="$(basename "$f" .md)"
+    case "$b" in *-historico) continue ;; esac
+    printf '%s\n' "$idx_ids" | grep -qx "$b" || erros="$erros
+- arquivo docs/audora/memory/$b.md sem linha no índice mestre"
+    for d in $(grep -m1 '^depende-de:' "$f" | tr -d '\r' | sed 's/^depende-de: *\[\(.*\)\].*/\1/' | tr ',' ' '); do
+      [ -n "$d" ] || continue
+      case "$d" in *:*) continue ;; esac
+      printf '%s\n' "$idx_ids" | grep -qx "$d" || erros="$erros
+- nó '$b' depende de '$d', que não existe no índice"
+      edges="$edges$b $d
+"
+    done
+  done
+fi
+
+# 4. ciclo (awk DFS; portável gawk/mawk/busybox)
+if [ -n "$edges" ]; then
+  ciclo="$(printf '%s' "$edges" | awk '
+    { adj[$1] = adj[$1] " " $2; nodes[$1]=1; nodes[$2]=1 }
+    function dfs(u,  m,i,arr) {
+      if (stk[u]) return 1
+      if (vis[u]) return 0
+      vis[u]=1; stk[u]=1
+      m=split(adj[u], arr, " ")
+      for (i=1;i<=m;i++) if (arr[i]!="" && dfs(arr[i])) return 1
+      stk[u]=0; return 0
+    }
+    END { for (n in nodes) { delete vis; delete stk; if (dfs(n)) { print n; exit } } }')"
+  [ -n "$ciclo" ] && erros="$erros
+- ciclo em depende-de alcançável a partir de '$ciclo' (siga as arestas dele)"
+fi
+
+if [ -n "$erros" ]; then
+  echo "memory-validate: memória inconsistente — PARE e corrija antes de seguir:$erros" >&2
+  exit 2
+fi
+exit 0

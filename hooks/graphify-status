@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Script auxiliar (chamado pela skill memory via Bash, não é hook do Claude).
+# Uso: graphify-status [dir]  → stdout: ausente | sem-indice | sem-codigo | ativo
+#   ausente    = comando graphify fora do PATH
+#   sem-indice = graphify presente, mas <dir>/graphify-out/graph.json ausente ou corrompido
+#   sem-codigo = índice existe mas nenhum nó tem file_type "code" (só docs)
+#   ativo      = índice com nós de código
+# Exit 0 sempre (falha do script nunca quebra o fluxo).
+set -uo pipefail
+dir="${1:-.}"
+command -v graphify >/dev/null 2>&1 || { echo ausente; exit 0; }
+g="$dir/graphify-out/graph.json"
+[ -f "$g" ] || { echo sem-indice; exit 0; }
+n="$(perl -MJSON::PP -0777 -ne '
+  my $d = eval { decode_json($_) };
+  if (!$d) { print "-1"; exit 0 }
+  my $c = 0;
+  for my $x (@{ $d->{nodes} || [] }) { $c++ if (($x->{file_type} // "") eq "code") }
+  print $c;' "$g" 2>/dev/null)"
+case "${n:-}" in
+  -1|"") echo sem-indice ;;
+  0)     echo sem-codigo ;;
+  *)     echo ativo ;;
+esac
+exit 0
