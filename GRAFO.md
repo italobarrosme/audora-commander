@@ -34,6 +34,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
+- memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planned | GRAFO no início e fim | GRAFO escrito/atualizado no início e no fim de toda demanda | grafo, ciclo, enforcement | skills/
