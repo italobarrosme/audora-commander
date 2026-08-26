@@ -17,10 +17,12 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 
 - **stack**: Markdown (skills, templates, docs) + JSON (manifests, hook) +
   bash (scripts de hook). Sem código executável além dos hooks.
-- **restricoes**: cada SKILL.md ≤ 250 linhas; conteúdo em português (exceção
-  aprovada 2026-08-24: README.md principal em inglês, com README.pt-BR.md
-  linkado); schemas vivem só em `templates/`; hook injeta ponteiro curto,
-  nunca o framework inteiro; Windows suportado via wrapper polyglot `.cmd`.
+- **restricoes**: cada SKILL.md ≤ 250 linhas; conteúdo em português (exceções
+  aprovadas: 2026-08-24 README.md principal em inglês, com README.pt-BR.md
+  linkado; 2026-08-25 nomes de skills, categorias de risco e enum de estado
+  em inglês — identificadores EN, prosa PT); schemas vivem só em
+  `templates/`; hook injeta ponteiro curto, nunca o framework inteiro;
+  Windows suportado via wrapper polyglot `.cmd`.
 - **padroes**: toda skill tem frontmatter `name`+`description` ("Use
   quando..."), Lei de Ferro em bloco de código no topo, "Anuncie ao começar",
   fluxo numerado, tabela de red flags e seção "PRÓXIMA SKILL".
@@ -32,7 +34,7 @@ Público: dev solo ou time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
-- comandos-ingles | in-progress | Comandos em inglês | Nomes das skills (comandos), categorias de risco (LIGHT/MEDIUM/HIGH/HOTFIX) e enum de estado dos nós passam a ser em inglês | ingles, i18n, rename, skills, categorias, contrato | —
+- comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planned | GRAFO no início e fim | GRAFO escrito/atualizado no início e no fim de toda demanda | grafo, ciclo, enforcement | skills/
 - skill-memory | planned | Skill MEMORY | Memória inteligente da audora por projeto (preferências e aprendizados, distinta do GRAFO) | memoria, aprendizado, skill | skills/

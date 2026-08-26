@@ -14,6 +14,11 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-25 | grafo-v2 | No batch do wrapper, exit /b %ERRORLEVEL% nunca dentro de bloco ( ) — expande em parse-time e engole o exit 2 dos hooks.
 - 2026-08-25 | grafo-v2 | Índice mestre é editado pelo LLM e VALIDADO por hook, nunca gerado por script — mantém o GRAFO operável sem bash.
 - 2026-08-25 | grafo-v2 | Corte de tokens do v2 (65-70%) é estimativa do estudo — benchmark pulado por decisão humana; medir se a travessia voltar a doer.
+- 2026-08-25 | comandos-ingles | Identificadores do framework (nomes de skills, categorias de risco, enum de estado) são em inglês; prosa segue em português.
+- 2026-08-25 | comandos-ingles | Fronteira de palavra em grep = classe ASCII `(^|[^A-Za-z0-9_])` + `LC_ALL=C.UTF-8` — o grep 3.0 do Git for Windows ignora `\b` antes de `→`/`—`.
+- 2026-08-25 | comandos-ingles | `description` de skill sempre entre aspas simples no YAML — `: ` sem aspas quebra o loader (skill carrega com metadata vazia).
+- 2026-08-25 | comandos-ingles | Mensagens de hook citam caminho ABSOLUTO do plugin (resolvido de `$0`), nunca relativo ao projeto-alvo.
+- 2026-08-25 | comandos-ingles | Estado PT→EN converte TODOS na primeira escrita; schema v1→v2 é on-touch — sempre nomear o substantivo (estado vs schema) ao falar de migração.
 
 <!-- Regras (skill graph/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro

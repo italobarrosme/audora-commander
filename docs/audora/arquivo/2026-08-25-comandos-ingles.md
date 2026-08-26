@@ -1,9 +1,9 @@
 ---
 id: comandos-ingles
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [plugin-v0.1.0]
-arquivos: []
+arquivos: [.claude-plugin/, GRAFO.md, README.md, README.pt-BR.md, docs/audora/GRAFO-ARQUIVO.md, docs/audora/arquivo/, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-comandos-ingles.md, docs/audora/nos/plugin-v0.1.0.md, docs/audora/specs/comandos-ingles-escopo.md, hooks/grafo-guard, hooks/grafo-validate, hooks/session-start, skills/, templates/]
 keywords: [ingles, i18n, rename, skills, categorias, contrato]
 resumo: Nomes das skills (comandos), categorias de risco (LIGHT/MEDIUM/HIGH/HOTFIX) e enum de estado dos nós passam a ser em inglês.
 atualizado-em: 2026-08-25
@@ -36,15 +36,20 @@ e `versao-schema` ficam; sem alias; prosa histórica não é reescrita.
   projetos-alvo); Lei de Ferro: na dúvida, a mais pesada.
 - 2026-08-25 (humano): dicionário aprovado — ver spec; migração total de
   estados no primeiro toque; corte seco sem alias; plugin 0.3.0.
+- 2026-08-25 (humano): emenda à Constituição — exceção de idioma para nomes
+  de skills, categorias de risco e enum de estado (aplicada no sync).
+- 2026-08-25 (humano): portão final aprovado; hook `grafo-validate` segue
+  validando estado SÓ no índice (spec 3.4) — estender aos arquivos de nó é
+  nó futuro, não delta desta demanda.
+- 2026-08-25 (IA): `docs/fundamentos.md` fica em português (fora da lista
+  1.3/2.2), com aviso na seção de renomeação dos READMEs.
 
 ## delta
 
-- ADICIONADO (2026-08-25): emenda à Constituição (aplicar no sync) —
-  "conteúdo em português" ganha exceção para nomes de skills, categorias de
-  risco e enum de estado em inglês.
+<!-- consolidado no sync de 2026-08-25 (emenda à Constituição aplicada) -->
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-comandos-ingles.md
 
 ## feedback-reprovacao

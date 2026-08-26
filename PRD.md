@@ -17,47 +17,48 @@ web/mobile/api com Claude Code.
   hooks.json) + bash (hooks: `session-start`, `grafo-guard`,
   `grafo-validate`; sem jq — awk/sed/grep/perl do Git for Windows).
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.2.0.
+  Versão 0.3.0.
 
 ## Arquitetura
 
 8 skills encadeadas por um roteador central:
 
-- `audora-commander` — porta de entrada: classifica demanda (LEVE / MÉDIA /
-  ALTA / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
-- `grafo` — mantém o GRAFO (memória externa do produto) no schema v2:
+- `audora-commander` — porta de entrada: classifica demanda (LIGHT / MEDIUM /
+  HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
+- `graph` — mantém o GRAFO (memória externa do produto) no schema v2:
   `GRAFO.md` é índice mestre (Propósito, Constituição, linha rica por nó);
   corpo de cada nó em `docs/audora/nos/<id>.md` com frontmatter grep-ável;
   decisões duráveis em `docs/audora/decisoes-vivas.md`; arquivamento por
   `git mv` para `docs/audora/arquivo/`. Schema v1 (arquivo único) segue
   suportado como caso degenerado, com migração on-touch.
-- `escopo` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
-- `plano` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes.
-- `executar` — TDD red-green com evidência real; commit por etapa verde.
+- `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
+- `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes.
+- `execute` — TDD red-green com evidência real; commit por etapa verde.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
   fortemente recomendada).
-- `validar` — portão humano final: evidência 1:1 com critérios, sync
+- `validate` — portão humano final: evidência 1:1 com critérios, sync
   GRAFO → PRD no merge.
-- `depurar` — debug com causa raiz demonstrada (modo sintoma) ou caçada de
+- `debug` — debug com causa raiz demonstrada (modo sintoma) ou caçada de
   defeitos por classes com verificação de cada achado (modo caçada).
 
 Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
 PostToolUse (Edit|Write) validam escritas no GRAFO v2: `grafo-guard` (tetos
 de ~300 linhas no índice e ~100 por nó) e `grafo-validate` (índice↔pasta,
-depende-de existente, ciclo) — erro volta ao modelo via exit 2; sem bash, as
-skills seguem sendo a fonte normativa.
+depende-de existente, ciclo, estado do índice dentro do enum EN — estado em
+português = migração PT→EN pendente) — erro volta ao modelo via exit 2; sem
+bash, as skills seguem sendo a fonte normativa.
 
 Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios)
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
-v0.1.0 implementada (2026-08-14) — 8 skills (7 originais + `depurar` em
-2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
+v0.1.0 implementada (2026-08-14) — 8 skills (7 originais + a skill de debug
+em 2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
 com checklist, GRAFO.md do próprio repo (dogfooding). Verificações estruturais
 e de JSON verdes.
 
-Nó `skill-depurar` entregue em 2026-08-15: a skill `depurar` foi testada com
+Nó `skill-depurar` entregue em 2026-08-15: a skill de debug (hoje `debug`) foi testada com
 uma caçada de defeitos real no próprio repositório
 (`docs/audora/depuracao/cacada-2026-08-15.md`), que confirmou e corrigiu 6
 divergências de documentação viva (contagem de skills desatualizada em
@@ -66,7 +67,24 @@ templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
 Aguardando validação de instalação pelo usuário em sessão interativa
 (checklist no README).
 
-GRAFO v2 entregue em 2026-08-25 (nó `grafo-v2`, ALTA, versão 0.2.0):
+Comandos em inglês entregues em 2026-08-25 (nó `comandos-ingles`, HIGH,
+versão 0.3.0, breaking): skills renomeadas por `git mv` para `graph, scope,
+plan, execute, e2e, validate, debug`; categorias de risco LIGHT / MEDIUM /
+HIGH / HOTFIX; enum de estado dos nós `planned | in-progress | blocked |
+delivered | discarded` (+ `hotfix-pending-record`), com migração TOTAL dos
+estados de um projeto na primeira escrita pela skill `graph` (tabela PT→EN em
+`templates/no-template.md`) e leitura tolerante até lá; hook `grafo-validate`
+acusa estado fora do enum na coluna do índice, linha sem coluna de estado, e
+cita o caminho absoluto de `templates/` do plugin; READMEs com seção
+"Renamed in 0.3.0" (comandos, categorias, estados); prosa do framework segue
+em português (`docs/fundamentos.md` mantém os nomes antigos, com aviso).
+Corrigido de quebra um bug pré-existente: `description` do frontmatter sem
+aspas quebrava `claude plugin validate` (skill carregava com metadata vazia).
+Duas rodadas adversariais (plano e diff, 57 agentes, 43 achados confirmados
+e integrados); e2e real com sessão `claude -p` listando as 8 skills EN e o
+ponteiro do hook; este repositório migrado (dogfood).
+
+GRAFO v2 entregue em 2026-08-25 (nó `grafo-v2`, HIGH, versão 0.2.0):
 redesenho da memória do produto a partir de estudo de mercado multi-agente
 (`docs/specs/2026-08-24-estudo-grafo-mercado.md`) — índice mestre + 1 nó =
 1 arquivo (Candidato C), travessia por grep no frontmatter, critérios EARS
@@ -106,6 +124,8 @@ automática (recomendada) vs. manual.
 
 1. v0.1.0: 8 skills + hook + templates + marketplace local + README com
    checklist de validação (spec §6 + adendo).
-2. Dry-run completo de uma demanda LEVE e uma MÉDIA em projeto de exemplo.
+2. Dry-run completo de uma demanda LIGHT e uma MEDIUM em projeto de exemplo.
+4. Estender `grafo-validate` para validar `estado:` também nos arquivos de
+   `docs/audora/nos/` (hoje só a coluna do índice) — nó futuro.
 3. Futuro (fora do v0.1.0): porte para outros harnesses, marketplace público,
    agentes dedicados.
