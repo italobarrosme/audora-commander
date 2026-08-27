@@ -842,6 +842,6 @@ Passos:
 
 Passos:
 
-- [ ] **1.** `bash tests/run.sh` → verde; `for f in skills/*/SKILL.md; do echo "$(wc -l < $f) $f"; done` todos ≤ 250.
-- [ ] **2.** `claude plugin uninstall audora-commander@audora-commander-dev && ./install.sh` → "Instalação concluída"; `diff -r hooks "$HOME/.claude/plugins/cache/audora-commander-dev/audora-commander/0.4.0/hooks"` vazio; `diff -r skills ".../0.4.0/skills"` vazio.
+- [x] **1.** `bash tests/run.sh` → verde (9 arquivos, 0 falhas); `for f in skills/*/SKILL.md; do echo "$(wc -l < $f) $f"; done` todos ≤ 250.
+- [x] **2.** (cache 0.4.0: hooks/skills/templates idênticos) `claude plugin uninstall audora-commander@audora-commander-dev && ./install.sh` → "Instalação concluída"; `diff -r hooks "$HOME/.claude/plugins/cache/audora-commander-dev/audora-commander/0.4.0/hooks"` vazio; `diff -r skills ".../0.4.0/skills"` vazio.
 - [ ] **3.** Seguir para **e2e** (skill): sessão `claude -p` lista 8 skills com `memory`; hook cita `memory, scope, plan…`; projeto fixture em `mktemp -d` sem MEMORY.md e com `GRAFO.md` → porta de entrada avisa e oferece bootstrap (/3); fixture com `src/*.py` → bootstrap roda `graphify update`, gitignore, Constituição `ativo` (/12); fixture só-docs → `sem-codigo` (/13); `PATH` sem graphify → oferta de instalação (/10).

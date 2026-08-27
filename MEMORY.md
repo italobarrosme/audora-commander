@@ -42,6 +42,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-25 | validate | `claude plugin update` só refaz o cache com bump de versão — sem bump: uninstall + `./install.sh`; hooks que rodam na sessão são os do cache, não os do repo.
 - 2026-08-25 | execute | Fixtures de hook em `mktemp -d` (path POSIX) e JSON com backslash escapado — path `C:\...` sem escape faz o hook sair 0 em silêncio (falso verde).
 - 2026-08-26 | execute | Heredoc grande (>~90 linhas, aspas mistas) no Bash tool do Claude Code falha no parse ("unexpected EOF") — gravar o script no scratchpad via Write e executar por caminho.
+- 2026-08-26 | execute | `graphify hook install` grava `_PINNED=''` quando o caminho do Python tem espaço (allowlist do Graphify; usuário "Italo Barros") e o post-commit falha em silêncio ("could not locate a Python") — pinar à mão em `.git/hooks/post-commit` e `post-checkout`, e sempre rodar o hook uma vez (`GIT_DIR=.git bash .git/hooks/post-commit`) para conferir.
 
 ## Índice de nós [carga: sempre]
 

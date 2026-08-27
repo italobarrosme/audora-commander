@@ -89,7 +89,10 @@ Código: nunca "varrer o repo para entender" — operação 7.
    d. `sem-indice` → `graphify update .` (só código, sem API key), rodar o
       status de novo.
    e. `ativo` → `graphify hook install` (post-commit mantém o índice
-      atualizado); `graphify-out/` no `.gitignore`; Constituição
+      atualizado) e CONFERIR rodando `GIT_DIR=.git bash .git/hooks/post-commit`:
+      "could not locate a Python" = hook instalado mas inerte (caminho do
+      Python com espaço zera o `_PINNED`) → avisar, pinar `_PINNED` no hook
+      e registrar aprendizado; `graphify-out/` no `.gitignore`; Constituição
       `graphify: ativo`.
    f. `sem-codigo` → avisar "nenhuma linguagem suportada indexada"; NÃO
       instalar git hook; Constituição `graphify: sem-codigo`.
