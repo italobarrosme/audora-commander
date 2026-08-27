@@ -30,4 +30,22 @@ for s in 'hooks/graphify-status' 'uv tool install graphifyy' 'pipx install graph
 done
 assert_not_contains "$m" 'PT→EN' "memory sem migração PT→EN"
 assert_not_contains "$m" 'versao-schema' "memory sem schema v1/v2"
+for s in plan execute debug; do
+  f="$(cat skills/$s/SKILL.md)"
+  assert_contains "$f" 'consultar-codigo' "/14 $s consulta o índice de código"
+  assert_contains "$f" 'graphify: ativo' "/14 $s condiciona ao estado ativo"
+done
+for s in scope e2e validate audora-commander; do
+  grep -qi 'graphify' "skills/$s/SKILL.md" && ko "/18 $s não deve citar graphify" || ok
+done
+for s in scope execute debug e2e; do
+  assert_contains "$(cat skills/$s/SKILL.md)" 'registrar-aprendizado' "/6 $s registra aprendizado"
+done
+a="$(cat skills/audora-commander/SKILL.md)"
+assert_contains "$a" 'skill `memory`' "/2 porta de entrada usa skill memory"
+assert_contains "$a" 'MEMORY ausente' "/2 porta de entrada oferece bootstrap"
+v="$(cat skills/validate/SKILL.md)"
+assert_contains "$v" 'docs/audora/memory/<id>.md docs/audora/arquivo/' "/7 validate arquiva por git mv"
+assert_contains "$v" 'aprendizados' "/7 validate consolida aprendizados"
+assert_contains "$v" 'MEMORY → PRD' "/7 direção única"
 report

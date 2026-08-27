@@ -25,8 +25,11 @@ o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
    coleta, não investigação.
 2. **Evidência completa.** Ler a MENSAGEM DE ERRO INTEIRA e o stack trace até
    o fim. Ler o código do caminho que falha — o que ele faz, não o que você
-   lembra que fazia. Diff recente (`git log -p` / `git diff`) se o defeito é
-   novo: o que mudou desde que funcionava?
+   lembra que fazia. Constituição `graphify: ativo` → skill memory, operação
+   consultar-codigo (`graphify path "<entrada>" "<símbolo que falha>"`,
+   `graphify affected`) antes de abrir arquivos; senão grep. Diff recente
+   (`git log -p` / `git diff`) se o defeito é novo: o que mudou desde que
+   funcionava?
 3. **Hipóteses — uma por vez.** Listar hipóteses ordenadas por probabilidade.
    Testar SÓ a mais provável, com o experimento mais barato que a
    distinguiria (log direcionado, teste isolado, bisseção do input, `git
@@ -39,9 +42,10 @@ o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
 5. **Corrigir via TDD** (skill execute): teste que reproduz (red, se ainda
    não existe) → fix mínimo → suíte TODA verde. O teste de reprodução fica
    permanente.
-6. **Registrar aprendizado no nó** (skill graph): bug revelou requisito
-   ausente → delta no GRAFO; revelou lacuna de teste → anotar a classe de
-   lacuna nas decisões.
+6. **Registrar o que o bug ensinou** (skill memory): revelou requisito
+   ausente → registrar-delta no nó; revelou lacuna de teste → anotar a
+   classe de lacuna nas decisões do nó; revelou armadilha do projeto ou do
+   ambiente → registrar-aprendizado no `MEMORY.md`, na hora.
 
 **Escalada:** 3 hipóteses testadas e refutadas → PARAR. Apresentar ao humano:
 reprodução, hipóteses testadas, evidência de cada refutação. Padrão repetido
@@ -64,7 +68,7 @@ Classes (adaptar ao tipo de projeto):
    produtor e consumidor).
 3. **Contagens e documentação viva**: números e listas na documentação batem
    com a realidade? (README diz N itens, existem M; índice vs corpo;
-   PRD/GRAFO vs estado real).
+   PRD/MEMORY vs estado real).
 4. **Bordas de erro**: caminhos de falha têm tratamento e teste? (entrada
    inválida, ausência de arquivo/config, timeout, estado vazio).
 5. **Configuração e execução**: o que é executável roda de verdade? (JSONs
@@ -95,5 +99,5 @@ provando O QUE foi checado.
 ## PRÓXIMA SKILL
 
 Causa raiz demonstrada → **execute** (fix via TDD). Achados da caçada
-corrigidos/reportados → **validate** (ou registrar nós novos via **graph**).
+corrigidos/reportados → **validate** (ou registrar nós novos via **memory**).
 Escalada → decisão humana.

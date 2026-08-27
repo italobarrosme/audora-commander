@@ -20,9 +20,11 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 
 ## Fluxo
 
-1. **Contexto**: skill `graph`, operação carregar-contexto (seções `sempre`:
-   propósito + constituição + índice). GRAFO ausente → oferecer bootstrap
-   antes de qualquer outra coisa. Nunca seguir sem GRAFO, nunca inventar um.
+1. **Contexto**: skill `memory`, operação carregar-contexto (Constituição +
+   Aprendizados + índice de nós). MEMORY ausente → oferecer bootstrap antes
+   de qualquer outra coisa (memória de versão anterior do framework sem
+   `MEMORY.md` → a skill memory avisa que não é mais lida e oferece o
+   bootstrap). Nunca seguir sem MEMORY, nunca inventar um.
 2. **Concorrência**: nós `in-progress` no índice ≥ 3 e chegando demanda nova →
    listar os abertos e perguntar: pausar qual, continuar qual, abandonar qual.
    Só então seguir.
@@ -40,7 +42,7 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
      "hotfix"). Você NUNCA seleciona HOTFIX sozinho.
 4. **Anunciar**: "Demanda classificada como [X] porque [respostas às
    perguntas] — me corrija se discordar." Correção do humano vale na hora.
-5. **Registrar o nó** da demanda no GRAFO (skill `graph`, registrar-no):
+5. **Registrar o nó** da demanda no MEMORY (skill `memory`, registrar-no):
    estado `in-progress`, objetivo em 1 frase. MEDIUM/HIGH: critérios ficam
    para o escopo. LIGHT/HOTFIX (sem escopo): incluir já ≥1 critério EARS
    numerado (`<id>/1`...) derivado da demanda — execute e validate citam
@@ -61,7 +63,7 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 - **HOTFIX**: pula scope e plan, mas exige teste que reproduz o defeito
   ANTES do fix (skill execute cobra). Portão único: diff + evidência. Nó
   fica `hotfix-pending-record` até a sessão seguinte regularizar o
-  registro no GRAFO — dívida declarada, não esquecida.
+  registro no MEMORY — dívida declarada, não esquecida.
 - **Catraca de mão única**: complexidade descoberta no meio (a MEDIUM tocou
   migração, a LIGHT virou lógica nova) → SUBIR categoria automaticamente e
   avisar o humano. DESCER categoria → só com aprovação explícita dele.
@@ -83,4 +85,4 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 ## PRÓXIMA SKILL
 
 Roteamento da tabela acima: LIGHT/HOTFIX → **execute**; MEDIUM/HIGH →
-**scope**. Bootstrap pendente → **graph** primeiro.
+**scope**. Bootstrap pendente → **memory** primeiro.

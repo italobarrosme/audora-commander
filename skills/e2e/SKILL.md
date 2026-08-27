@@ -25,13 +25,15 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
      usar como infra do e2e. Compose de e2e dedicado existente
      (`docker-compose.e2e.yml`) tem prioridade sobre o compose geral.
    - NÃO tem → **gerar** `docker-compose.e2e.yml` na raiz do projeto a partir
-     da stack/Constituição do GRAFO (app + banco + dependências), pelo
+     da stack/Constituição do MEMORY (app + banco + dependências), pelo
      esqueleto de `templates/e2e-infra-template.md` (raiz do plugin). Artefato
      é versionado no projeto — entra no commit da demanda.
    - Docker indisponível na máquina (`docker compose version` falha) →
      avisar o humano EXPLICITAMENTE e cair para o `como-rodar` da
      Constituição. `como-rodar` ausente ou quebrado → perguntar UMA vez e
-     registrar na Constituição (skill graph) — memória durável.
+     registrar na Constituição (skill memory) — memória durável. Armadilha
+     descoberta no caminho (porta ocupada, env faltando, serviço lento) →
+     skill memory, registrar-aprendizado, na hora.
 2. **Levantar e confirmar**: subir a infra
    (`docker compose -f docker-compose.e2e.yml up -d --wait`, ou o
    `como-rodar` em background com log capturado). Confirmar que subiu de
@@ -48,7 +50,7 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
      template.
    - **Não-web (API pura, CLI, worker)** → **perguntar ao humano qual
      ferramenta usar** — nunca escolher sozinho. Registrar a escolha na
-     Constituição (skill graph): pergunta única por projeto, sessões futuras
+     Constituição (skill memory): pergunta única por projeto, sessões futuras
      leem de lá.
 4. **Traduzir critérios em passos**: cada critério EARS do nó
    (`QUANDO <condição> O SISTEMA DEVE <comportamento>`) vira um passo

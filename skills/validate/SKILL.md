@@ -1,6 +1,6 @@
 ---
 name: validate
-description: 'Use quando a execução (e o e2e, se rodado) de uma demanda terminar — portão humano final com evidência mapeada aos critérios, e sync de GRAFO e PRD após o merge.'
+description: 'Use quando a execução (e o e2e, se rodado) de uma demanda terminar — portão humano final com evidência mapeada aos critérios, e sync de MEMORY e PRD após o merge.'
 ---
 
 # validate — o portão final
@@ -54,17 +54,19 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
      novas no plano, demanda continua `in-progress`.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
    direto):
-   - Consolidar o bloco `delta` no corpo do nó (skill graph).
+   - Consolidar o bloco `delta` no corpo do nó (skill memory).
    - Preencher `arquivos:` do nó via `git diff --name-only` da demanda — do
      diff real, nunca de memória.
    - Promover para `docs/audora/decisoes-vivas.md` as decisões vivas
      aprovadas no portão (propostas no roteiro, item 3).
-   - Nó → `delivered`; arquivar por movimento (skill graph, compactar):
-     `git mv docs/audora/nos/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`
-     + linha do índice atualizada. (O nó da demanda já está em arquivo:
-     a migração on-touch da skill graph aconteceu no registro.)
+   - Consolidar os aprendizados da demanda na seção Aprendizados do
+     `MEMORY.md` (skill memory, compactar — dedupe por grep; o que já foi
+     registrado na hora pelas fases só é conferido).
+   - Nó → `delivered`; arquivar por movimento (skill memory, compactar):
+     `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`
+     + linha do índice atualizada.
    - **Promover ao PRD.md**: resumo do que foi entregue + data de última
-     atualização. Direção única GRAFO → PRD, sempre (vale para toda camada
+     atualização. Direção única MEMORY → PRD, sempre (vale para toda camada
      derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
    - Arquivar o plano em `docs/audora/planos/arquivo/`.
    - HOTFIX: regularizar o registro retroativo (nó `hotfix-pending-record`
@@ -81,7 +83,7 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
 | "Deve passar" / "provavelmente funciona" | Rode o comando. Leia a saída. Depois fale. |
 | "Evidência de um critério basta, o resto é igual" | 1:1 é 1:1. Critério sem evidência = buraco no portão. |
 | "O humano confia em mim, pulo o roteiro" | Confiança se mantém COM roteiro. Sem ele, drift silencioso. |
-| "Atualizo o PRD e o GRAFO outro dia" | Outro dia a memória já era. Sync faz parte do fechar, não é extra. |
+| "Atualizo o PRD e o MEMORY outro dia" | Outro dia a memória já era. Sync faz parte do fechar, não é extra. |
 | "Reprovou, mas o problema é pequeno, sigo direto" | Reprovação tem fluxo: registrar feedback, voltar à fase certa. |
 | "A migração é pequena, eu mesmo executo" | Irreversível fora do repo = mão do humano. Sem exceção. |
 

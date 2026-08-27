@@ -17,7 +17,7 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
 
 ## Fluxo
 
-1. **Contexto**: carregar constituição + nós relacionados (skill graph,
+1. **Contexto**: carregar constituição + nós relacionados (skill memory,
    operação carregar-contexto). Nó da demanda já existe (criado pela porta de
    entrada).
 2. **Perguntas — uma por vez.** Só sobre comportamento: o que o usuário vê,
@@ -33,7 +33,7 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
    commit, e2e e roteiro de validação citam o endereço.
    Cobrir também erro e borda: entrada inválida, falha de rede, estado vazio,
    limite. Critério que não cabe na sintaxe EARS é critério ambíguo — reescreva.
-5. **Fechar os três campos** no nó do GRAFO: `objetivo` (1-2 frases),
+5. **Fechar os três campos** no nó do MEMORY: `objetivo` (1-2 frases),
    `criterios-aceite` (EARS), `fora-de-escopo` (explícito — o que NÃO entra).
    - Categoria MEDIUM: os três campos direto no nó.
    - Categoria HIGH: spec dedicada em `docs/audora/specs/<id>-escopo.md`,
@@ -56,12 +56,15 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
   pergunta ao humano AQUI, nesta fase.
 - Não afeta (nome interno, estrutura de código) → decisão de implementação:
   não pertence a esta fase; a execute decide e lista para revisão.
+- Vale para TODO o projeto, não só esta demanda (preferência do humano,
+  padrão, armadilha) → aprendizado: skill memory, registrar-aprendizado, na
+  hora — não fica só na conversa nem só no nó.
 
 ## Reabertura de escopo (vindo de outra fase)
 
 Teste discriminante: a nova informação muda critérios de aceite ou
 fora-de-escopo?
-- **Sim** → reabertura formal: registrar delta no nó (skill graph), ajustar
+- **Sim** → reabertura formal: registrar delta no nó (skill memory), ajustar
   critérios, repassar pelo portão humano (item 7).
 - **Não** → é esclarecimento, não reabertura: registrar no nó e devolver à
   fase que chamou. Não reexecutar o fluxo inteiro.

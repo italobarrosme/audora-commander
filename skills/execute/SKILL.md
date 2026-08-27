@@ -17,13 +17,18 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 ## Fluxo
 
 1. **Reancorar**: reler o plano (`docs/audora/planos/plano-<id>.md`) e o nó do
-   GRAFO. MEDIUM/HIGH sem plano-arquivo → volte à skill plan. LIGHT/HOTFIX:
+   MEMORY. MEDIUM/HIGH sem plano-arquivo → volte à skill plan. LIGHT/HOTFIX:
    sem plano; os critérios do nó guiam direto. Repetir esta releitura no
    início de CADA sessão e após qualquer compactação de contexto.
 2. **Ordem mecânica**: próxima tarefa = a que tem todas as `depende-de`
    concluídas. Tarefa marcada `expandir: sim` → quebrar em subtarefas AGORA
    (chegou a vez dela), pelo formato do template.
 3. **Ciclo por tarefa**:
+   - **Localizar** (só quando a tarefa toca código fora dos arquivos que o
+     plano lista — chamador, helper, vizinho): Constituição `graphify: ativo`
+     → skill memory, operação consultar-codigo (`graphify affected "X"` para
+     impacto) ANTES de qualquer Read; senão grep. Nunca varrer o repo "para
+     entender".
    - **RED**: escrever UM teste mínimo do comportamento (nome claro citando o
      endereço do critério `<id>/<n>` quando houver, uma coisa só, código real
      — mock apenas se inevitável). Rodar. Confirmar na
@@ -51,7 +56,8 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
    decidir e ADICIONAR à lista "Decisões tomadas pela IA" no plano. Requisito
    de produto faltante → teste discriminante: muda critérios/fora-de-escopo?
    Sim → skill scope (reabertura). Não → pergunta pontual, registra no nó,
-   segue.
+   segue. Aprendizado (armadilha, como-rodar, preferência do humano, padrão
+   do projeto) → skill memory, registrar-aprendizado, na hora.
 6. **HOTFIX**: escrever ANTES o teste que reproduz o defeito (red), depois o
    fix (green). Sem teste de reprodução não há hotfix — há chute.
 
@@ -63,7 +69,7 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 - **Gatilho de replanejamento** (arquivo sumiu, teste impossível como
   especificado) → skill plan, replanejar SÓ a etapa afetada.
 - **Falha irrecuperável** (dependência quebrada, etapa sem saída) → PARAR.
-  Nó → `blocked` + diagnóstico registrado (skill graph). Apresentar ao
+  Nó → `blocked` + diagnóstico registrado (skill memory). Apresentar ao
   humano: reverter branch, replanejar do último checkpoint, ou abandonar
   (nó → `discarded` com motivo). Nunca forçar caminho pela metade.
 

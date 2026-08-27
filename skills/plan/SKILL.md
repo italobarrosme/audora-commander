@@ -18,20 +18,24 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 
 ## Fluxo
 
-1. **Contexto**: carregar nó da demanda + constituição (skill graph). Ler o
+1. **Contexto**: carregar nó da demanda + constituição (skill memory). Ler o
    artefato de escopo aprovado (nó ou spec dedicada).
-2. **Passada 1 — localizar**: a partir do escopo, achar candidatos por busca
-   (grep/glob por símbolos, rotas, nomes de domínio). Não ler nada ainda —
-   só listar onde a mudança provavelmente mora.
-3. **Passada 2 — ler**: ler os arquivos que o plano vai tocar (e vizinhos de
-   interface direta). Listar TODOS os lidos no header do plano. Etapa que
-   tocar arquivo fora dessa lista invalida o plano naquele ponto → parar,
-   ler, atualizar o header, seguir.
-4. **Conflito GRAFO vs código**: leitura contradiz um nó do GRAFO? Parar,
-   registrar a divergência no nó (skill graph), apresentar ao humano. Ele
+2. **Passada 1 — localizar**: a partir do escopo, achar onde a mudança mora.
+   Constituição com `graphify: ativo` → skill memory, operação
+   consultar-codigo (`graphify query "<símbolo/rota/domínio>"`, `graphify
+   path` entre dois símbolos): os candidatos são os `src=` apontados. Senão
+   (`recusado`, `sem-codigo`, ou consulta degradada com aviso) → grep/glob
+   por símbolos, rotas, nomes de domínio. Não ler nada ainda — só listar.
+3. **Passada 2 — ler**: ler os arquivos que o plano vai tocar (os apontados
+   na passada 1 + vizinhos de interface direta). Read fora do apontado só
+   com exceção declarada ("índice não cobre X porque …"). Listar TODOS os
+   lidos no header do plano. Etapa que tocar arquivo fora dessa lista
+   invalida o plano naquele ponto → parar, ler, atualizar o header, seguir.
+4. **Conflito MEMORY vs código**: leitura contradiz um nó do MEMORY? Parar,
+   registrar a divergência no nó (skill memory), apresentar ao humano. Ele
    decide qual é a verdade antes do plano continuar.
 5. **Escrever o plano** pelo template:
-   - Header: objetivo, nó do GRAFO, arquitetura da mudança, arquivos lidos.
+   - Header: objetivo, nó do MEMORY, arquitetura da mudança, arquivos lidos.
    - Tarefas autossuficientes: cada uma embute requisito (critérios EARS
      copiados verbatim do nó, com seus endereços `<id>/<n>`), decisões
      relevantes, interfaces
@@ -84,6 +88,7 @@ próximos passos. A próxima sessão lê isso primeiro.
 | "Detalho essa tarefa quando chegar nela... mentira, detalho tudo já" | Detalhar tudo agora é especulação. Expanda só quando chegar a vez. |
 | "O plano na conversa basta, arquivo é burocracia" | /clear ou compactação matam a conversa. Arquivo sobrevive. |
 | "Esse arquivo eu não li, mas sei o que tem" | Então o plano é chute. Leia e liste no header. |
+| "Grep no repo inteiro é mais seguro que o índice" | Índice aponta, leitura confirma. Ativo → consulte primeiro; degrade só com aviso. |
 | "Tarefa referencia helper que crio depois" | Referência órfã = plano quebrado. Defina na tarefa que produz. |
 
 ## PRÓXIMA SKILL

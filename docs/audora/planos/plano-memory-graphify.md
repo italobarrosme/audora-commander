@@ -712,11 +712,11 @@ Nota /18 vs porta de entrada: `audora-commander` não cita graphify (o bootstrap
 
 Passos:
 
-- [ ] **1. Estender o teste** (código acima).
-- [ ] **2. RED** — `bash tests/test-skills.sh` → FAIL ≥ 15 (skills citam grafo; plan/execute/debug sem consultar-codigo).
-- [ ] **3. Implementar** — editar as 7 skills nas linhas listadas (expandir aqui).
-- [ ] **4. GREEN** — `bash tests/test-skills.sh` FAIL=0; `for f in skills/*/SKILL.md; do wc -l $f; done` todos ≤ 250; `grep -rli grafo skills` vazio ou só `skills/memory/SKILL.md` (aviso /3).
-- [ ] **5. Commit** — `git add skills tests && git commit -m "feat(memory-graphify/2,3,6,7,14,18): 7 skills falam MEMORY; plan/debug/execute consultam Graphify via memory"`.
+- [x] **1. Estender o teste** (código acima).
+- [x] **2. RED** — `bash tests/test-skills.sh` → PASS=96 FAIL=29 (skills citam grafo; plan/execute/debug sem consultar-codigo).
+- [x] **3. Implementar** — editar as 7 skills nas linhas listadas (script scratchpad `t5-edit-skills.py`, substituições exatas).
+- [x] **4. GREEN** — `bash tests/test-skills.sh` PASS=125 FAIL=0 (maior skill: memory 223); `for f in skills/*/SKILL.md; do wc -l $f; done` todos ≤ 250; `grep -rli grafo skills` vazio ou só `skills/memory/SKILL.md` (aviso /3).
+- [x] **5. Commit** — `git add skills tests && git commit -m "feat(memory-graphify/2,3,6,7,14,18): 7 skills falam MEMORY; plan/debug/execute consultam Graphify via memory"`.
 
 ## Tarefa 6: Manifests 0.4.0, READMEs, PRD (arquitetura)
 
