@@ -50,6 +50,11 @@ de tokens; versionar `graphify-out/`.
   skills/…" → tolera UMA menção a `GRAFO.md` em `skills/memory/SKILL.md`, a
   do aviso exigido pelo /3 (os dois se contradizem ao pé da letra). Aprovado
   junto com o plano.
+- MODIFICADO (2026-08-26, fase execute T6): critério /1 tolera também as
+  3 células de nome antigo (`GRAFO.md`, `GRAFO-ARQUIVO.md`, `grafo-guard`/
+  `grafo-validate`) da tabela "Renamed in 0.4.0" dos dois READMEs — /19
+  exige a tabela "GRAFO → MEMORY" literalmente. Mesma classe de contradição
+  do delta anterior; decisão da IA, a confirmar no portão da validate.
 
 ## e2e
 

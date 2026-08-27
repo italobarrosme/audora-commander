@@ -34,6 +34,9 @@
 - Legado: `docs/audora/GRAFO-ARQUIVO.md` → `git mv` para `docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md` (conteúdo intocado); linhas legadas do índice apontam para lá.
 - Fora do alcance do /1 e intocados: `docs/fundamentos.md`, `docs/specs/*`, `docs/audora/planos/*`, `docs/audora/arquivo/*`, `docs/audora/depuracao/*` (histórico).
 - Critério /1 é `grep -ri grafo` (case-insensitive) → a palavra "grafo" fica proibida TAMBÉM no sentido genérico (índice do Graphify) em skills/hooks/templates/manifests/READMEs/PRD: escrever "índice de código"; status do `graphify-status` `sem-grafo` → `sem-indice` (T3/T4/T7/T8 seguem isto). Descoberto na T2 (GREEN acusou o próprio texto do plano).
+- /1 vs /19 (T6): a tabela "Renamed in 0.4.0" precisa dos nomes antigos (`GRAFO.md`, `GRAFO-ARQUIVO.md`, `grafo-guard`/`grafo-validate`) para ser útil e /19 pede "GRAFO → MEMORY" literal → `test-no-grafo.sh` ganhou exceção estreita (só essas 3 células, ≤3 linhas por README) e o nó recebeu delta em /1. Confirmar no portão.
+- README PT usa o mesmo placeholder do EN no bloco da opção B (`<folder-where-you-cloned-the-repo>`), com frase explicando antes — blocos idênticos EN/PT (decisão viva docs-bilingues).
+- PRD: entradas históricas de "Estado atual" reescritas sem a palavra proibida (nó de 0.2.0 citado pelo caminho do arquivo, spec de mercado pela data), conteúdo preservado; data de última atualização 2026-08-26 (commits entram direto na main).
 - A skill `memory` chama scripts pelo caminho "raiz do plugin" = dois níveis acima do diretório base da skill (o Skill tool imprime esse diretório) — `${CLAUDE_PLUGIN_ROOT}` só existe para hooks.
 
 ## Notas de sessão
@@ -760,11 +763,11 @@ report
 
 Passos:
 
-- [ ] **1. Escrever** `tests/test-docs.sh`.
-- [ ] **2. RED** — `bash tests/test-docs.sh` → FAIL ≥ 12.
-- [ ] **3. Implementar** — edições listadas (EN primeiro, PT espelhando; blocos de código copiados sem tradução).
-- [ ] **4. GREEN** — `bash tests/test-docs.sh` FAIL=0; `bash tests/test-no-grafo.sh` FAIL=0; `diff <(grep -c '^## ' README.md) <(grep -c '^## ' README.pt-BR.md)` vazio (paridade de seções).
-- [ ] **5. Commit** — `git add .claude-plugin README.md README.pt-BR.md PRD.md tests/test-docs.sh && git commit -m "docs(memory-graphify/19): 0.4.0 — READMEs, PRD e manifests descrevem MEMORY + Graphify; Renamed in 0.4.0"`.
+- [x] **1. Escrever** `tests/test-docs.sh`.
+- [x] **2. RED** — `bash tests/test-docs.sh` → PASS=2 FAIL=26.
+- [x] **3. Implementar** — edições listadas (EN primeiro, PT espelhando; blocos de código copiados sem tradução).
+- [x] **4. GREEN** — `bash tests/test-docs.sh` PASS=28 FAIL=0; `bash tests/test-no-grafo.sh` FAIL=0 (com exceção da tabela 0.4.0, ver decisões); `diff <(grep -c '^## ' README.md) <(grep -c '^## ' README.pt-BR.md)` vazio (paridade de seções).
+- [x] **5. Commit** — `git add .claude-plugin README.md README.pt-BR.md PRD.md tests/test-docs.sh && git commit -m "docs(memory-graphify/19): 0.4.0 — READMEs, PRD e manifests descrevem MEMORY + Graphify; Renamed in 0.4.0"`.
 
 ## Tarefa 7: Dogfood — este repositório migra para MEMORY e ativa o Graphify
 

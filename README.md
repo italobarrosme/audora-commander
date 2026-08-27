@@ -5,8 +5,9 @@
 A Claude Code plugin: an AI-assisted software development framework guided by
 5 principles:
 
-1. **Dynamic Map** — GRAFO.md is the product's living memory; a requirement
-   that is not written down does not exist.
+1. **Dynamic Memory** — MEMORY.md is the product's living memory
+   (requirements, decisions, learnings); Graphify indexes the code
+   underneath. A requirement that is not written down does not exist.
 2. **Just-in-Time Planning** — a plan is born by reading the current code,
    covers one demand, and dies after it.
 3. **"What" separated from "How"** — scope is closed in a written artifact
@@ -26,9 +27,9 @@ actually verified.
 
 Installed in a project, the plugin adds 8 chained skills — from risk
 classification of the demand to the final validation gate — that keep a
-living map of the product (`GRAFO.md`), turn scope into a written artifact
-before any code, and demand real evidence (tests actually run, e2e actually
-exercised) before anything is considered complete.
+living memory of the product (`MEMORY.md`), turn scope into a written
+artifact before any code, and demand real evidence (tests actually run, e2e
+actually exercised) before anything is considered complete.
 
 Target audience: solo devs or small teams building web/mobile/api with Claude
 Code, who want process rigor without the bureaucracy of a heavy process.
@@ -41,6 +42,11 @@ Full foundations: [docs/fundamentos.md](docs/fundamentos.md) (in Portuguese).
 - Git, to clone the repository. On Windows, use
   [Git for Windows](https://git-scm.com/download/win) — it provides the bash
   used by the installer and by the plugin's hooks.
+- Optional but recommended:
+  [Graphify](https://github.com/safishamsi/graphify)
+  (`uv tool install graphifyy`, Python 3.10+) — a local code graph, no API
+  key. The `memory` skill offers to install it on the first demand and
+  degrades to grep/Read if you decline.
 
 ## Installation
 
@@ -90,12 +96,12 @@ checklist" further down in this README.
 | Skill | Role |
 |---|---|
 | `audora-commander` | Entry point: classifies the demand by risk (LIGHT/MEDIUM/HIGH/HOTFIX) and routes it |
-| `graph` | Creates and maintains GRAFO.md (bootstrap, nodes, deltas, compaction) |
+| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and drives Graphify: install offer, code graph, `consultar-codigo` for plan/debug/execute |
 | `scope` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
 | `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
 | `execute` | Red-green TDD with real evidence; commit per green step |
 | `e2e` | Boots the project and exercises the demand end to end (optional, strongly recommended) |
-| `validate` | Final human gate: evidence mapped 1:1 to criteria, GRAFO → PRD sync |
+| `validate` | Final human gate: evidence mapped 1:1 to criteria, MEMORY → PRD sync |
 | `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
 
 ## Usage flow (example: a MEDIUM demand)
@@ -103,17 +109,20 @@ checklist" further down in this README.
 1. You ask: "add a date filter to the orders list".
 2. `audora-commander` classifies it: MEDIUM (new logic; no data/auth/contract).
 3. `scope` asks what is missing, closes the EARS criteria, you approve (gate).
-4. `plan` reads the current code and generates `docs/audora/planos/plano-<id>.md`.
+4. `plan` queries the code graph (Graphify), reads only the files it points
+   to, and generates `docs/audora/planos/plano-<id>.md`.
 5. `execute` implements via TDD, committing at each green step.
 6. `validate` offers `e2e` (recommended): the project boots, the criteria are
    exercised for real, and a report lands in `docs/audora/e2e/`.
 7. Final gate: a validation script with evidence per criterion. You approve;
-   the GRAFO syncs and PRD.md receives the summary.
+   the MEMORY syncs (decisions, learnings, archive) and PRD.md receives the
+   summary.
 
 ## Artifacts in projects using the framework
 
-- `GRAFO.md` — project root: master index of the living memory (schema v2).
-- `docs/audora/nos/` — one file per node (requirements, numbered EARS
+- `MEMORY.md` — project root: master index of the living memory (purpose,
+  constitution, learnings, one rich line per node).
+- `docs/audora/memory/` — one file per node (requirements, numbered EARS
   criteria, decisions, delta).
 - `docs/audora/decisoes-vivas.md` — durable decisions promoted from
   delivered nodes.
@@ -122,11 +131,8 @@ checklist" further down in this README.
 - `docs/audora/e2e/` — E2E reports per demand.
 - `docs/audora/specs/` — scope specs for HIGH demands.
 - `docs/audora/depuracao/` — defect hunt reports (debug skill).
-
-Projects on schema v1 (single-file GRAFO.md + GRAFO-ARQUIVO.md) remain fully
-supported — schema migration happens on touch, never as a forced big bang.
-Node states, however, are converted in full on the first write (see
-"Renamed in 0.3.0").
+- `graphify-out/` — the Graphify code graph (gitignored, regenerable with
+  `graphify update .`; a post-commit hook keeps it fresh).
 
 ## Installation validation checklist
 
@@ -139,47 +145,37 @@ Run in the interactive session after installing:
   "Framework audora-commander ativo" pointer (ask Claude what the hook
   injected).
 - [ ] 3. WHEN the `audora-commander` skill is invoked in a project without
-  GRAFO.md, it MUST offer a bootstrap instead of stalling or inventing
+  MEMORY.md, it MUST offer a bootstrap instead of stalling or inventing
   content.
 - [ ] 4. WHEN each skill is invoked in isolation, it MUST load without errors
   and without placeholders.
 - [ ] 5. WHEN a LIGHT and a MEDIUM demand are simulated in a sample project,
-  the flow MUST produce the expected artifacts (node in the GRAFO; plan file
+  the flow MUST produce the expected artifacts (node in the MEMORY; plan file
   for the MEDIUM; validation script).
 
-## Renamed in 0.3.0 (breaking)
+## Renamed in 0.4.0 (breaking)
 
-Commands, risk categories and node states are now in English. The old
-command names no longer exist (no aliases). Existing GRAFOs are migrated in
-full by the `graph` skill on the first write in each project — until then,
-`grafo-validate` reports "fora do enum" (state outside the EN enum).
-`docs/fundamentos.md` still
-uses the pre-0.3.0 names.
+The product memory is now called MEMORY, and Graphify indexes the code
+underneath it. No migration: a project that still has the old memory file
+gets a warning from the entry point and a fresh bootstrap — what to do with
+the old file is up to you.
 
-| Command (before) | Command (after) |
+| Before | After |
 |---|---|
-| grafo | `graph` |
-| escopo | `scope` |
-| plano | `plan` |
-| executar | `execute` |
-| validar | `validate` |
-| depurar | `debug` |
-| audora-commander, e2e | unchanged |
+| `graph` skill | `memory` skill |
+| `GRAFO.md` | `MEMORY.md` (line 1: `memory-schema: 1`; new `## Aprendizados` section) |
+| `docs/audora/nos/` | `docs/audora/memory/` |
+| `GRAFO-ARQUIVO.md` | dropped — history lives in `docs/audora/arquivo/` |
+| hooks `grafo-guard`, `grafo-validate` | `memory-guard`, `memory-validate` |
+| schema v1 / v2, PT→EN state migration | gone — single schema, EN states only |
 
-| Risk category (before) | After |
-|---|---|
-| LEVE / MÉDIA / ALTA / HOTFIX | LIGHT / MEDIUM / HIGH / HOTFIX |
-
-| Node state (before) | After |
-|---|---|
-| planejada | `planned` |
-| em-curso | `in-progress` |
-| bloqueada | `blocked` |
-| entregue | `delivered` |
-| descartada | `discarded` |
-| hotfix-pendente-registro | `hotfix-pending-record` |
+0.3.0 already moved commands, risk categories and node states to English
+(`scope`, `plan`, `execute`, `validate`, `debug`; LIGHT/MEDIUM/HIGH/HOTFIX;
+`planned | in-progress | blocked | delivered | discarded`) — see the git
+history for the old names. `docs/fundamentos.md` still uses pre-0.3.0 names.
 
 ## Development
 
-This repository uses its own framework (dogfooding): see `GRAFO.md`,
-`docs/audora/planos/` and the spec in `docs/specs/`.
+This repository uses its own framework (dogfooding): see `MEMORY.md`,
+`docs/audora/planos/` and the spec in `docs/specs/`. Regression suite:
+`bash tests/run.sh` (pure bash, fixtures in `mktemp -d`).
