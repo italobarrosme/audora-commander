@@ -3,7 +3,7 @@ id: skill-worktree
 estado: in-progress
 origem: humano
 depende-de: [plugin-v0.1.0]
-arquivos: [skills/worktree/, tests/, README.md, README.pt-BR.md, PRD.md]
+arquivos: [skills/worktree/SKILL.md, tests/test-worktree.sh, tests/test-skills.sh, tests/test-no-grafo.sh, tests/test-docs.sh, hooks/session-start, .claude-plugin/, README.md, README.pt-BR.md, PRD.md]
 keywords: [worktree, isolamento, git, paralelismo, branch]
 resumo: Skill de isolamento por git worktree — ciclo de vida de uma demanda mais fan-out de N agentes, com integração em série e portão humano na remoção.
 atualizado-em: 2026-08-27
@@ -95,6 +95,6 @@ Ver `skill-worktree-historico.md` (mesma pasta).
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-skill-worktree.md
 
 ## feedback-reprovacao
