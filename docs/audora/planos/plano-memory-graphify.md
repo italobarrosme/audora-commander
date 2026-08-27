@@ -660,11 +660,11 @@ report
 
 Passos:
 
-- [ ] **1. Escrever** `tests/test-skills.sh` (parte memory) + ajustes de exceção em `test-no-grafo.sh`.
-- [ ] **2. RED** — `bash tests/test-skills.sh` → FAIL>0 (`skills/memory` ausente).
-- [ ] **3. Implementar** — `git mv skills/graph skills/memory`; reescrever `SKILL.md` conforme "Conteúdo obrigatório" (expandir aqui, na vez).
-- [ ] **4. GREEN** — `bash tests/test-skills.sh` → parte memory FAIL=0 (as demais skills ainda falham em "cita grafo" — esperado até T5); `wc -l skills/memory/SKILL.md` ≤ 250.
-- [ ] **5. Commit** — `git add -A skills/memory skills/graph tests && git commit -m "feat(memory-graphify/2-7,10-17): skill memory substitui graph — MEMORY + Graphify (bootstrap, consultar-codigo, aprendizados)"`.
+- [x] **1. Escrever** `tests/test-skills.sh` (parte memory; test-no-grafo já tinha a exceção) + ajustes de exceção em `test-no-grafo.sh`.
+- [x] **2. RED** — `bash tests/test-skills.sh` → PASS=51 FAIL=47 (`skills/memory` ausente).
+- [x] **3. Implementar** — `git mv skills/graph skills/memory`; reescrever `SKILL.md` conforme "Conteúdo obrigatório" (expandir aqui, na vez).
+- [x] **4. GREEN** — `bash tests/test-skills.sh` → PASS=92 FAIL=14, parte memory FAIL=0; 223 linhas (as demais skills ainda falham em "cita grafo" — esperado até T5); `wc -l skills/memory/SKILL.md` ≤ 250.
+- [x] **5. Commit** — `git add -A skills/memory skills/graph tests && git commit -m "feat(memory-graphify/2-7,10-17): skill memory substitui graph — MEMORY + Graphify (bootstrap, consultar-codigo, aprendizados)"`.
 
 ## Tarefa 5: As outras 7 skills — MEMORY no lugar de GRAFO, Graphify em plan/debug/execute
 
