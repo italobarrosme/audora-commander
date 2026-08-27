@@ -55,6 +55,10 @@ git hooks (nós próprios ou versão futura).
 - MODIFICADO (2026-08-25): critério 5 — "uma demanda LEVE e uma MÉDIA" →
   "uma demanda LIGHT e uma MEDIUM"; "plano-arquivo na MÉDIA" → "na MEDIUM".
   Motivo: nó comandos-ingles (categorias de risco em inglês).
+- MODIFICADO (2026-08-26): critério 3 — "projeto sem GRAFO.md" → "projeto
+  sem MEMORY.md"; critério 5 — "nó no GRAFO" → "nó no MEMORY". Motivo: nó
+  memory-graphify (0.4.0, memória do produto vira MEMORY); checklist do
+  README já reflete.
 
 ## e2e
 

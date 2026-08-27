@@ -37,6 +37,8 @@
 - /1 vs /19 (T6): a tabela "Renamed in 0.4.0" precisa dos nomes antigos (`GRAFO.md`, `GRAFO-ARQUIVO.md`, `grafo-guard`/`grafo-validate`) para ser útil e /19 pede "GRAFO → MEMORY" literal → `test-no-grafo.sh` ganhou exceção estreita (só essas 3 células, ≤3 linhas por README) e o nó recebeu delta em /1. Confirmar no portão.
 - README PT usa o mesmo placeholder do EN no bloco da opção B (`<folder-where-you-cloned-the-repo>`), com frase explicando antes — blocos idênticos EN/PT (decisão viva docs-bilingues).
 - PRD: entradas históricas de "Estado atual" reescritas sem a palavra proibida (nó de 0.2.0 citado pelo caminho do arquivo, spec de mercado pela data), conteúdo preservado; data de última atualização 2026-08-26 (commits entram direto na main).
+- T7: nó `plugin-v0.1.0` (in-progress, fora desta demanda) recebeu delta MODIFICADO nos critérios /3 e /5 (GRAFO.md → MEMORY.md) para não divergir do checklist do README — toque mínimo, só `## delta`. Confirmar no portão.
+- T7: terceiro aprendizado inicial registrado no MEMORY.md (heredoc grande no Bash tool falha no parse → script via Write no scratchpad), descoberto nesta execução.
 - A skill `memory` chama scripts pelo caminho "raiz do plugin" = dois níveis acima do diretório base da skill (o Skill tool imprime esse diretório) — `${CLAUDE_PLUGIN_ROOT}` só existe para hooks.
 
 ## Notas de sessão
@@ -823,12 +825,12 @@ report
 
 Passos:
 
-- [ ] **1. Escrever** `tests/test-dogfood.sh`.
-- [ ] **2. RED** — `bash tests/test-dogfood.sh` → FAIL>0 (MEMORY.md ausente…).
-- [ ] **3. Migrar** — `git mv GRAFO.md MEMORY.md && git mv docs/audora/nos docs/audora/memory && git mv docs/audora/GRAFO-ARQUIVO.md docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md`; editar `MEMORY.md` conforme acima; delta no nó; `decisoes-vivas.md` l.14; `printf 'graphify-out/\n' >> .gitignore`.
-- [ ] **4. Graphify** — `bash hooks/graphify-status .` → `sem-grafo`; `graphify update .` → `Rebuilt: N nodes` (N>0, hooks bash são código); `bash hooks/graphify-status .` → `ativo`; `graphify hook install` → `post-commit: installed`; `graphify hook status` confirma.
-- [ ] **5. GREEN** — `bash tests/test-dogfood.sh` FAIL=0; `bash tests/run.sh` → `0 arquivo(s) de teste com falha`.
-- [ ] **6. Commit** — `git add -A && git commit -m "chore(memory-graphify/9,12): dogfood — GRAFO.md vira MEMORY.md, nos/ vira memory/, legado arquivado, Graphify ativo"` (o post-commit do Graphify roda em background — confirmar `git status` limpo; `graphify-out/` ignorado).
+- [x] **1. Escrever** `tests/test-dogfood.sh`.
+- [x] **2. RED** — `bash tests/test-dogfood.sh` → PASS=3 FAIL=27 (MEMORY.md ausente…).
+- [x] **3. Migrar** — `git mv GRAFO.md MEMORY.md && git mv docs/audora/nos docs/audora/memory && git mv docs/audora/GRAFO-ARQUIVO.md docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md`; editar `MEMORY.md` conforme acima; delta no nó; `decisoes-vivas.md` l.14; `printf 'graphify-out/\n' >> .gitignore`.
+- [x] **4. Graphify** (381 nós, 345 arestas, 54 comunidades) — `bash hooks/graphify-status .` → `sem-indice`; `graphify update .` → `Rebuilt: N nodes` (N>0, hooks bash são código); `bash hooks/graphify-status .` → `ativo`; `graphify hook install` → `post-commit: installed`; `graphify hook status` confirma.
+- [x] **5. GREEN** — `bash tests/test-dogfood.sh` PASS=30 FAIL=0; `bash tests/run.sh` → `0 arquivo(s) de teste com falha`.
+- [x] **6. Commit** — `git add -A && git commit -m "chore(memory-graphify/9,12): dogfood — GRAFO.md vira MEMORY.md, nos/ vira memory/, legado arquivado, Graphify ativo"` (o post-commit do Graphify roda em background — confirmar `git status` limpo; `graphify-out/` ignorado).
 
 ## Tarefa 8: Verificação final + preparação do e2e
 

@@ -20,7 +20,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-25 | comandos-ingles | Mensagens de hook citam caminho ABSOLUTO do plugin (resolvido de `$0`), nunca relativo ao projeto-alvo.
 - 2026-08-25 | comandos-ingles | Estado PT→EN converte TODOS na primeira escrita; schema v1→v2 é on-touch — sempre nomear o substantivo (estado vs schema) ao falar de migração.
 
-<!-- Regras (skill graph/validate):
+<!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
    fica no nó arquivado.
 2. Decisão superada NUNCA é apagada: anexar à linha
