@@ -67,7 +67,9 @@ Para cada worktree, relatar os QUATRO campos:
 - caminho e branch;
 - nó do MEMORY associado;
 - limpo? (`git -C <caminho> status --porcelain` vazio);
-- commit não integrado? (`git -C <caminho> log --oneline <base>..HEAD`).
+- commit não integrado? (`git -C <caminho> rev-list --count HEAD --not
+  --remotes` — conta o que não está em nenhuma ref remota e funciona em branch
+  nova SEM upstream, onde `@{u}..HEAD` simplesmente falha).
 
 "Está tudo certo" sem os quatro campos é opinião, não situação.
 
@@ -104,18 +106,34 @@ A ordem é a decisão, não um detalhe.
 
 ### 6. encerrar e limpar
 
-1. **Checar antes de tocar**: `status --porcelain` e `log <base>..HEAD`.
-   Qualquer um não-vazio significa que há trabalho ali.
-2. **Limpo e integrado** → `ExitWorktree({action: "remove"})`.
-3. **Com trabalho** → `ExitWorktree({action: "keep"})`. A ferramenta nativa
+1. **Checar antes de tocar** — TRÊS perguntas, não duas:
+   - sujo? `git -C <caminho> status --porcelain`;
+   - não integrado? `git -C <caminho> rev-list --count HEAD --not --remotes`;
+   - **ignorado que veio do preparo?** rodar, dentro do worktree,
+     `git ls-files --others --ignored --exclude-standard --directory`
+     (`--directory` colapsa a pasta ignorada inteira; sem ele, `node_modules`
+     vira centenas de milhares de linhas — e `-d` NÃO é atalho de
+     `--directory`, é `--deleted`). Arquivo ignorado **não** bloqueia a remoção
+     e **não** aparece no `status --porcelain`: o `.env` que você copiou na
+     operação 2 é apagado em silêncio, com código de saída zero.
+   Qualquer uma não-vazia significa que há trabalho ali.
+2. **Desconectar os links antes de remover**: `find <caminho> -type l`. Havendo
+   junction ou symlink de diretório apontando para FORA do worktree, remover o
+   worktree apaga o CONTEÚDO DO ALVO — dano fora do worktree. É preciso
+   desconectar primeiro, tirando só o link, nunca recursivo.
+3. **Limpo e integrado** → `ExitWorktree({action: "remove"})`.
+4. **Com trabalho** → `ExitWorktree({action: "keep"})`. A ferramenta nativa
    RECUSA remover neste caso a menos que receba `discard_changes: true`. Esse
    parâmetro é do humano, não seu: mostrar o que se perderia (arquivos sujos e
    commits não integrados, nomeados) e ESPERAR decisão explícita. Autorizou →
    remover e confirmar o que foi descartado.
-4. **Órfãos** (diretório sumiu, metadado ficou): `git worktree prune -n` lista
+5. **Órfãos** (diretório sumiu, metadado ficou): `git worktree prune -n` lista
    sem apagar; `git worktree list` marca os `prunable`. Apresentar a lista e
    oferecer a limpeza — nunca executar a remoção por conta própria.
-5. Atualizar o nó do MEMORY ao encerrar (skill `memory`).
+6. A branch **sobrevive** à remoção do worktree — apagá-la é passo separado
+   e é onde commit se perde de verdade. `git branch -d` (recusa não mergeada),
+   nunca `-D` por conveniência.
+7. Atualizar o nó do MEMORY ao encerrar (skill `memory`).
 
 ## Quando NÃO isolar
 
@@ -136,10 +154,24 @@ A ordem é a decisão, não um detalhe.
 - **`.git/hooks` é compartilhado** (ver operação 2, item 3).
 - **Nunca `rm -rf`** para remover worktree — deixa metadado órfão. Diretório
   movido à mão → `git worktree repair`.
-- **Windows**: o caminho de um worktree é mais longo que o do checkout normal,
-  então repo que clona bem pode falhar ao criar worktree ("Filename too
-  long") — mitigar com `core.longpaths` e raiz curta. Caminho com espaço:
-  sempre entre aspas, em todo comando e todo hook.
+- **`--force` nunca é a primeira tentativa.** Com arquivo travado por processo
+  (dev server, watcher, editor, antivírus), o `--force` deleta parte do
+  conteúdo, falha no meio E já desregistra a entrada — sobra um diretório
+  órfão meio-apagado que nem `prune` alcança. Sem `--force`, o git reporta o
+  arquivo travado como "modified or untracked": mate o processo e repita.
+- **Windows / caminho longo**: o caminho de um worktree é mais longo que o do
+  checkout normal, então repo que clona bem pode falhar no worktree. Pior que
+  o erro visível: sem `core.longpaths true`, o `git add` de um caminho profundo
+  falha com um mero *warning* e o commit passa "vazio" — perda silenciosa.
+  Ligar `core.longpaths` (vai no config compartilhado, vale para todos) e usar
+  raiz curta. A chave de registro do Windows sozinha não substitui isso.
+- **Windows / caminho com espaço**: sempre entre aspas, em todo comando e todo
+  hook. Ao parsear `--porcelain`, o caminho vem sem escape: corte pelo prefixo,
+  nunca por espaço.
+- **Hooks e `GIT_DIR`**: no worktree o hook roda com `cwd` na raiz DO WORKTREE
+  e `GIT_DIR` exportado apontando para o diretório privado. Hook que chama git
+  em outro diretório precisa limpar o ambiente (`env -u GIT_DIR -u
+  GIT_WORK_TREE`), senão lê o índice errado.
 - Armadilha nova encontrada aqui → skill `memory`, `registrar-aprendizado`,
   na hora.
 

@@ -74,20 +74,24 @@ porte-multi-harness).
 
 ## decisoes
 
-- 2026-08-27 (humano): fluxo derivado de pesquisa na internet (estado da arte
-  de git worktree + uso com agentes de IA), não de conhecimento prévio.
-- 2026-08-27 (humano): gatilho é pedido explícito do humano — nenhuma categoria
-  de risco isola sozinha. Alinha com a própria ferramenta nativa, que só age
-  "when explicitly instructed by the user or project instructions".
-- 2026-08-27 (humano): alcance inclui fan-out de N agentes em N worktrees, com
-  integração em série. Ressalva registrada pela IA no portão: fan-out aperta o
-  teto de 250 linhas por SKILL.md.
-- 2026-08-27 (IA): a skill orquestra o worktree nativo do harness em vez de
-  embarcar plumbing de git — decorre da Constituição (código executável só em
-  `hooks/` e `tests/`) e da restrição da ferramenta nativa, que só reconhece
-  worktree sob `.claude/worktrees/` do mesmo repositório.
+Ver `skill-worktree-historico.md` (mesma pasta).
 
 ## delta
+
+<!-- Tudo abaixo: verificação empírica, Git 2.52.0.windows.1. -->
+- ADICIONADO: **skill-worktree/15** — QUANDO o worktree contiver junction ou
+  symlink de diretório apontando para fora dele O SISTEMA DEVE desconectar o
+  link ANTES de qualquer remoção. Motivo: `git worktree remove` apaga o
+  conteúdo do ALVO através da junction (3 reproduções) — perda de dados fora
+  do worktree.
+- ADICIONADO: **skill-worktree/16** — QUANDO a checagem de "limpo" for feita
+  antes de remover O SISTEMA DEVE considerar também os arquivos IGNORADOS
+  presentes no worktree. Motivo: ignorado não bloqueia a remoção (exit 0,
+  apaga em silêncio) e `status --porcelain` não os lista — o `.env` do preparo
+  seria destruído.
+- MODIFICADO: /6 e /10 — commit não integrado detectado por `rev-list --count
+  HEAD --not --remotes`, não `<base>..HEAD`. Motivo: `@{u}..HEAD` sai 128 em
+  branch nova sem upstream — o caso exato de um worktree de tarefa.
 
 ## e2e
 

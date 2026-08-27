@@ -28,6 +28,13 @@ assert_contains "$w" 'em série' "/8 e /9 criação e integração em série"
 assert_contains "$w" 'discard_changes' "/10 cita a trava da ferramenta nativa"
 # /12 órfãos
 assert_contains "$w" 'git worktree prune' "/12 limpeza de órfãos"
+# /15 junction/symlink: `git worktree remove` apaga o ALVO (verificado, Git 2.52 Windows)
+assert_contains "$w" 'junction' "/15 avisa sobre junction"
+assert_contains "$w" 'desconect' "/15 manda desconectar o link antes de remover"
+# /16 arquivo ignorado nao bloqueia a remocao e nao aparece em status --porcelain
+assert_contains "$w" 'ls-files --others --ignored' "/16 checa ignorados antes de remover"
+# /6 e /10: deteccao de commit nao integrado sem depender de upstream
+assert_contains "$w" 'rev-list --count HEAD --not --remotes' "/6 /10 unpushed sem upstream"
 # /13 degradação
 assert_contains "$w" 'degrada' "/13 degrada sem travar"
 # ferramentas nativas orquestradas, não plumbing próprio
