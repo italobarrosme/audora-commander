@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-26
+> Última atualização: 2026-08-27
 
 ## O que é e para que serve
 
@@ -25,7 +25,7 @@ Code.
   sem API key). Oferecido pela skill `memory`; ausência degrada para
   grep/Read com aviso.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.4.0.
+  Versão 0.5.0.
 
 ## Arquitetura
 
@@ -78,6 +78,17 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Skill `worktree` entregue em 2026-08-27 (nó `skill-worktree`, MEDIUM, versão
+0.5.0): nona skill, isolamento de demanda em git worktree sob pedido
+explícito, fan-out de N agentes com domínios de arquivo não-sobrepostos, e
+integração em série. Orquestra o worktree nativo do harness
+(`EnterWorktree`/`ExitWorktree`) em vez de embarcar plumbing de git. Portão
+humano obrigatório na remoção; as checagens de "pode apagar?" cobrem sujo,
+não integrado, ignorado copiado no preparo e junction apontando para fora —
+as duas últimas vieram de verificação empírica (`git worktree remove` apaga o
+alvo através de junction e não é bloqueado por arquivo ignorado). Suíte em 295
+asserts; e2e em `docs/audora/e2e/e2e-skill-worktree.md`.
 
 v0.1.0 implementada (2026-08-14) — oito skills (sete originais + a skill de debug
 em 2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
