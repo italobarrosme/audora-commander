@@ -43,6 +43,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-25 | execute | Fixtures de hook em `mktemp -d` (path POSIX) e JSON com backslash escapado — path `C:\...` sem escape faz o hook sair 0 em silêncio (falso verde).
 - 2026-08-26 | execute | Heredoc grande (>~90 linhas, aspas mistas) no Bash tool do Claude Code falha no parse ("unexpected EOF") — gravar o script no scratchpad via Write e executar por caminho.
 - 2026-08-26 | execute | `graphify hook install` grava `_PINNED=''` quando o caminho do Python tem espaço (allowlist do Graphify; usuário "Italo Barros") e o post-commit falha em silêncio ("could not locate a Python") — pinar à mão em `.git/hooks/post-commit` e `post-checkout`, e sempre rodar o hook uma vez (`GIT_DIR=.git bash .git/hooks/post-commit`) para conferir.
+- 2026-08-27 | plan | Claude Code 2.1.247 tem worktree nativo (`-w/--worktree`, ferramentas `EnterWorktree`/`ExitWorktree`, worktree sob `.claude/worktrees/`, `.worktreeinclude` para arquivos ignorados) — skill do framework orquestra o nativo, nunca reimplementa plumbing de git (a Constituição já restringe executável a `hooks/` e `tests/`).
+- 2026-08-27 | execute | Adicionar skill nova toca 8 pontos além de `skills/<nome>/SKILL.md`: `tests/test-no-grafo.sh` (contagem cravada), `tests/test-skills.sh` (loop), `tests/test-docs.sh` (versão), READMEs EN+PT (tabela e checklist), `PRD.md`, os 2 manifests e `hooks/session-start` — mais o delta de contagem no nó `plugin-v0.1.0`.
 
 ## Índice de nós [carga: sempre]
 
