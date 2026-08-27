@@ -4,7 +4,7 @@ source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)' < "$j" 2>/dev/null && ok || ko "$j JSON inválido"
-  assert_contains "$(cat "$j")" '"version": "0.4.0"' "/19 $j versão 0.4.0"
+  assert_contains "$(cat "$j")" '"version": "0.5.0"' "/19 $j versão 0.5.0"
 done
 assert_contains "$(cat .claude-plugin/plugin.json)" '"graphify"' "/19 keyword graphify"
 en="$(cat README.md)"; pt="$(cat README.pt-BR.md)"
@@ -14,6 +14,11 @@ for s in 'MEMORY.md' '`memory`' 'docs/audora/memory/' 'graphify-out/' 'uv tool i
   assert_contains "$en" "$s" "/19 README EN cita $s"; assert_contains "$pt" "$s" "/19 README PT cita $s"
 done
 assert_not_contains "$en" 'Renamed in 0.3.0' "/1 seção 0.3.0 removida (tabela grafo)"
+assert_contains "$en" '| `worktree` |' "skill-worktree/1 README EN lista worktree"
+assert_contains "$pt" '| `worktree` |' "skill-worktree/1 README PT lista worktree"
+assert_contains "$en" 'The 9 skills' "skill-worktree/1 README EN diz 9 skills"
+assert_contains "$pt" 'As 9 skills' "skill-worktree/1 README PT diz 9 skills"
+assert_empty "$(grep -rn '8 skills' README.md README.pt-BR.md PRD.md 2>/dev/null)" "skill-worktree/1 zero '8 skills' residual"
 blocos() { awk '/^```/{f=!f; next} f' "$1"; }
 assert_eq "$(blocos README.md | md5sum)" "$(blocos README.pt-BR.md | md5sum)" "/19 blocos de código idênticos EN/PT"
 p="$(cat PRD.md)"

@@ -25,7 +25,7 @@ com IA sem estrutura: requisito que se perde entre conversas, plano que vira
 código sem ninguém aprovar o escopo antes, e "pronto" que ninguém verificou
 de verdade.
 
-Instalado num projeto, o plugin adiciona 8 skills encadeadas — da
+Instalado num projeto, o plugin adiciona 9 skills encadeadas — da
 classificação de risco da demanda até o portão de validação final — que
 mantêm uma memória viva do produto (`MEMORY.md`), transformam escopo em
 artefato escrito antes do código, e cobram evidência real (testes rodados,
@@ -92,7 +92,7 @@ Reinicie a sessão (ou rode `/clear`) — o hook de SessionStart passa a
 injetar o ponteiro do framework. Em seguida, rode o "Checklist de validação
 da instalação" mais abaixo neste README.
 
-## As 8 skills
+## As 9 skills
 
 | Skill | Papel |
 |---|---|
@@ -104,6 +104,7 @@ da instalação" mais abaixo neste README.
 | `e2e` | Levanta o projeto e exercita a demanda de ponta a ponta (opcional, fortemente recomendada) |
 | `validate` | Portão humano final: evidência 1:1 com critérios, sync MEMORY → PRD |
 | `debug` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
+| `worktree` | Isolamento sob demanda em git worktree: ciclo de vida de uma demanda, fan-out de N agentes, integração em série, portão humano na remoção |
 
 ## Fluxo de uso (exemplo: demanda MEDIUM)
 
@@ -140,7 +141,7 @@ da instalação" mais abaixo neste README.
 Rode na sessão interativa após instalar:
 
 - [ ] 1. QUANDO o marketplace for adicionado e o plugin instalado, o Claude
-  Code DEVE listar as 8 skills com prefixo `audora-commander:` (verifique com
+  Code DEVE listar as 9 skills com prefixo `audora-commander:` (verifique com
   a listagem de skills da sessão).
 - [ ] 2. QUANDO uma sessão nova iniciar, o contexto DEVE conter o ponteiro
   "Framework audora-commander ativo" (pergunte ao Claude o que o hook

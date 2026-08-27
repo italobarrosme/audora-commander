@@ -25,7 +25,7 @@ without structure: requirements lost between conversations, plans that become
 code without anyone approving the scope first, and "done" that nobody
 actually verified.
 
-Installed in a project, the plugin adds 8 chained skills — from risk
+Installed in a project, the plugin adds 9 chained skills — from risk
 classification of the demand to the final validation gate — that keep a
 living memory of the product (`MEMORY.md`), turn scope into a written
 artifact before any code, and demand real evidence (tests actually run, e2e
@@ -91,7 +91,7 @@ Restart the session (or run `/clear`) — the SessionStart hook starts
 injecting the framework pointer. Then run the "Installation validation
 checklist" further down in this README.
 
-## The 8 skills
+## The 9 skills
 
 | Skill | Role |
 |---|---|
@@ -103,6 +103,7 @@ checklist" further down in this README.
 | `e2e` | Boots the project and exercises the demand end to end (optional, strongly recommended) |
 | `validate` | Final human gate: evidence mapped 1:1 to criteria, MEMORY → PRD sync |
 | `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
+| `worktree` | On-demand isolation in a git worktree: lifecycle of one demand, fan-out of N agents, serial integration, human gate on removal |
 
 ## Usage flow (example: a MEDIUM demand)
 
@@ -139,7 +140,7 @@ checklist" further down in this README.
 Run in the interactive session after installing:
 
 - [ ] 1. WHEN the marketplace is added and the plugin installed, Claude Code
-  MUST list the 8 skills with the `audora-commander:` prefix (check the
+  MUST list the 9 skills with the `audora-commander:` prefix (check the
   session's skill listing).
 - [ ] 2. WHEN a new session starts, the context MUST contain the
   "Framework audora-commander ativo" pointer (ask Claude what the hook

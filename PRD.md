@@ -29,7 +29,7 @@ Code.
 
 ## Arquitetura
 
-8 skills encadeadas por um roteador central:
+9 skills encadeadas por um roteador central:
 
 - `audora-commander` — porta de entrada: classifica demanda (LIGHT / MEDIUM /
   HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
@@ -79,7 +79,7 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
-v0.1.0 implementada (2026-08-14) — 8 skills (7 originais + a skill de debug
+v0.1.0 implementada (2026-08-14) — oito skills (sete originais + a skill de debug
 em 2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
 com checklist, memória do produto do próprio repo (dogfooding). Verificações
 estruturais e de JSON verdes.
@@ -108,7 +108,7 @@ com aviso). Corrigido de quebra um bug pré-existente: `description` do
 frontmatter sem aspas quebrava `claude plugin validate` (skill carregava com
 metadata vazia). Duas rodadas adversariais (plano e diff, 57 agentes, 43
 achados confirmados e integrados); e2e real com sessão `claude -p` listando
-as 8 skills EN e o ponteiro do hook; este repositório migrado (dogfood).
+as oito skills EN e o ponteiro do hook; este repositório migrado (dogfood).
 (Migração PT→EN e nomes da 0.3.0 foram substituídos pelo corte seco da 0.4.0.)
 
 Memória do produto v2 entregue em 2026-08-25 (nó arquivado em
@@ -150,7 +150,7 @@ automática (recomendada) vs. manual.
 
 ## Metas futuras de implementação
 
-1. v0.1.0: 8 skills + hook + templates + marketplace local + README com
+1. v0.1.0: oito skills + hook + templates + marketplace local + README com
    checklist de validação (spec §6 + adendo).
 2. Dry-run completo de uma demanda LIGHT e uma MEDIUM em projeto de exemplo.
 3. Estender `memory-validate` para validar `estado:` também nos arquivos de
