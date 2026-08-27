@@ -2,7 +2,7 @@
 # Estrutura das 8 skills + contratos de conteúdo (memory: /2,/3,/6,/10-17; fases: /14,/18).
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
-for s in audora-commander memory scope plan execute e2e validate debug; do
+for s in audora-commander memory scope plan execute e2e validate debug worktree; do
   f="skills/$s/SKILL.md"
   assert_file "$f" "skill $s existe"
   [ -f "$f" ] || continue

@@ -60,6 +60,10 @@ git hooks (nós próprios ou versão futura).
   memory-graphify (0.4.0, memória do produto vira MEMORY); checklist do
   README já reflete.
 
+- MODIFICADO (2026-08-27): critério 1 — "listar as 8 skills" → "listar as
+  9 skills" (skill worktree adicionada pelo nó skill-worktree). Motivo:
+  conflito detectado na auto-revisão do escopo de skill-worktree.
+
 ## e2e
 
 pendente — critérios 1, 2 e 5 dependem de sessão interativa do humano

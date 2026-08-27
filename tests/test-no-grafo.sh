@@ -10,5 +10,5 @@ for r in README.md README.pt-BR.md; do [ "$(grep -ci grafo "$r")" -le 3 ] && ok 
 n="$(grep -c 'GRAFO' skills/memory/SKILL.md 2>/dev/null)"; [ "${n:-99}" -le 1 ] && ok || ko "memory-graphify/1 skill memory cita GRAFO mais de uma vez"
 assert_file "skills/memory/SKILL.md" "memory-graphify/1 skill memory"
 assert_no_file "skills/graph" "memory-graphify/1 skill graph removida"
-assert_eq "8" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "memory-graphify/1 8 skills"
+assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "memory-graphify/1 9 skills"
 report
