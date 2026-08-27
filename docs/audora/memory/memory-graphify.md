@@ -58,6 +58,6 @@ de tokens; versionar `graphify-out/`.
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-memory-graphify.md (2026-08-26; 7 corridas `claude -p`, 11 critérios exercitados, 0 falhou)
 
 ## feedback-reprovacao
