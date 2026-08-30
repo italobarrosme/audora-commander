@@ -1,12 +1,12 @@
 ---
 id: skill-worktree
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [plugin-v0.1.0]
-arquivos: [skills/worktree/SKILL.md, tests/test-worktree.sh, tests/test-skills.sh, tests/test-no-grafo.sh, tests/test-docs.sh, hooks/session-start, .claude-plugin/, README.md, README.pt-BR.md, PRD.md]
+arquivos: [skills/worktree/SKILL.md, tests/test-worktree.sh, tests/test-skills.sh, tests/test-no-grafo.sh, tests/test-docs.sh, hooks/session-start, .claude-plugin/plugin.json, .claude-plugin/marketplace.json, README.md, README.pt-BR.md, PRD.md, MEMORY.md, docs/audora/e2e/e2e-skill-worktree.md]
 keywords: [worktree, isolamento, git, paralelismo, branch]
 resumo: Skill de isolamento por git worktree — ciclo de vida de uma demanda mais fan-out de N agentes, com integração em série e portão humano na remoção.
-atualizado-em: 2026-08-27
+atualizado-em: 2026-08-30
 ---
 
 # skill-worktree
@@ -36,7 +36,7 @@ trabalho não integrado.
   checkout principal e disparam também no worktree
 - **skill-worktree/6** — QUANDO o humano pedir a situação dos worktrees O
   SISTEMA DEVE listar cada um com branch, nó associado, se está limpo e se tem
-  commit não integrado
+  commit não integrado — inclusive em branch sem upstream, sem erro
 - **skill-worktree/7** — QUANDO o humano pedir fan-out de N agentes O SISTEMA
   DEVE recusar despachar enquanto os domínios de arquivo de cada agente não
   forem declarados e não-sobrepostos
@@ -47,7 +47,8 @@ trabalho não integrado.
   antes do próximo
 - **skill-worktree/10** — QUANDO for pedida a remoção de um worktree com
   alteração não commitada ou commit não integrado O SISTEMA DEVE recusar,
-  mostrar o que se perderia e esperar decisão explícita do humano
+  mostrar o que se perderia e esperar decisão explícita do humano — a detecção
+  de não integrado vale também em branch sem upstream
 - **skill-worktree/11** — QUANDO o humano autorizar explicitamente o descarte
   O SISTEMA DEVE remover e confirmar o que foi descartado
 - **skill-worktree/12** — QUANDO existirem worktrees órfãos (diretório sumiu,
@@ -59,6 +60,12 @@ trabalho não integrado.
 - **skill-worktree/14** — QUANDO a demanda for trabalhada dentro de um worktree
   O SISTEMA DEVE editar no MEMORY somente os arquivos dos nós daquela demanda
   e as linhas de índice correspondentes
+- **skill-worktree/15** — QUANDO o worktree contiver junction ou symlink de
+  diretório apontando para fora dele O SISTEMA DEVE desconectar o link ANTES de
+  qualquer remoção
+- **skill-worktree/16** — QUANDO a checagem de "limpo" for feita antes de
+  remover O SISTEMA DEVE considerar também os arquivos IGNORADOS presentes no
+  worktree
 
 ## fora-de-escopo
 
@@ -74,24 +81,13 @@ porte-multi-harness).
 
 ## decisoes
 
-Ver `skill-worktree-historico.md` (mesma pasta).
+Ver `2026-08-27-skill-worktree-historico.md` (mesma pasta).
 
 ## delta
 
-<!-- Tudo abaixo: verificação empírica, Git 2.52.0.windows.1. -->
-- ADICIONADO: **skill-worktree/15** — QUANDO o worktree contiver junction ou
-  symlink de diretório apontando para fora dele O SISTEMA DEVE desconectar o
-  link ANTES de qualquer remoção. Motivo: `git worktree remove` apaga o
-  conteúdo do ALVO através da junction (3 reproduções) — perda de dados fora
-  do worktree.
-- ADICIONADO: **skill-worktree/16** — QUANDO a checagem de "limpo" for feita
-  antes de remover O SISTEMA DEVE considerar também os arquivos IGNORADOS
-  presentes no worktree. Motivo: ignorado não bloqueia a remoção (exit 0,
-  apaga em silêncio) e `status --porcelain` não os lista — o `.env` do preparo
-  seria destruído.
-- MODIFICADO: /6 e /10 — commit não integrado detectado por `rev-list --count
-  HEAD --not --remotes`, não `<base>..HEAD`. Motivo: `@{u}..HEAD` sai 128 em
-  branch nova sem upstream — o caso exato de um worktree de tarefa.
+<!-- Consolidado no corpo em 2026-08-30 (sync da validate): /15 e /16
+     promovidos a criterios-aceite; /6 e /10 absorveram a detecção de commit
+     não integrado em branch sem upstream. -->
 
 ## e2e
 

@@ -46,12 +46,13 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-27 | plan | Claude Code 2.1.247 tem worktree nativo (`-w/--worktree`, ferramentas `EnterWorktree`/`ExitWorktree`, worktree sob `.claude/worktrees/`, `.worktreeinclude` para arquivos ignorados) — skill do framework orquestra o nativo, nunca reimplementa plumbing de git (a Constituição já restringe executável a `hooks/` e `tests/`).
 - 2026-08-27 | execute | Adicionar skill nova toca 8 pontos além de `skills/<nome>/SKILL.md`: `tests/test-no-grafo.sh` (contagem cravada), `tests/test-skills.sh` (loop), `tests/test-docs.sh` (versão), READMEs EN+PT (tabela e checklist), `PRD.md`, os 2 manifests e `hooks/session-start` — mais o delta de contagem no nó `plugin-v0.1.0`.
 - 2026-08-27 | execute | Teste de conteúdo de skill usa `assert_contains` (grep -F): string que quebra de linha no Markdown NUNCA casa. Comando citado num SKILL.md que algum teste afirma deve caber em UMA linha — e o teste falhando assim é sinal de quebra, não de ausência.
+- 2026-08-30 | validate | Arquivar nó que tem `<id>-historico.md`: `git mv` dos DOIS arquivos para `docs/audora/arquivo/` (mesmo prefixo de data) e corrigir o ponteiro relativo no corpo — mover só o nó quebra o link.
 
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
-- skill-worktree | in-progress | Skill worktree | Skill de isolamento por git worktree: ciclo de vida de uma demanda mais fan-out de N agentes, com integracao em serie e portao humano na remocao | worktree, isolamento, git, paralelismo, branch | skills/worktree/, tests/
+- skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planned | GRAFO no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/

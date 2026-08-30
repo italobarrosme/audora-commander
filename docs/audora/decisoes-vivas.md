@@ -19,6 +19,9 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-25 | comandos-ingles | `description` de skill sempre entre aspas simples no YAML — `: ` sem aspas quebra o loader (skill carrega com metadata vazia).
 - 2026-08-25 | comandos-ingles | Mensagens de hook citam caminho ABSOLUTO do plugin (resolvido de `$0`), nunca relativo ao projeto-alvo.
 - 2026-08-25 | comandos-ingles | Estado PT→EN converte TODOS na primeira escrita; schema v1→v2 é on-touch — sempre nomear o substantivo (estado vs schema) ao falar de migração.
+- 2026-08-27 | skill-worktree | `git worktree remove` apaga o conteudo do ALVO atraves de junction/symlink de diretorio — desconectar o link ANTES de remover.
+- 2026-08-27 | skill-worktree | Arquivo ignorado nao bloqueia `git worktree remove` (exit 0, apaga em silencio) e nao aparece em `status --porcelain` — checar ignorados a parte.
+- 2026-08-27 | skill-worktree | Commit nao integrado se detecta com `rev-list --count HEAD --not --remotes`; `@{u}..HEAD` sai 128 em branch sem upstream.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
