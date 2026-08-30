@@ -52,10 +52,14 @@ time pequeno em projetos web/mobile/api.
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
+- memory-fatiada | in-progress | Memory fatiada | Skill memory vira roteador fino + references carregáveis por operação — corta ~17k tokens de overhead fixo por demanda | memory, tokens, references, overhead, performance | skills/memory/
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planned | GRAFO no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
+- scope-batch | planned | Scope em lote | Fase scope agrupa até 4 perguntas independentes por mensagem (AskUserQuestion) em vez de uma-por-vez — corta wall-clock de espera humana | scope, perguntas, wall-clock, latencia | skills/scope/
+- sync-mecanizado | planned | Sync mecanizado | Os 5 passos mecânicos do sync da validate viram hooks/memory-sync; modelo fica só com os 3 de julgamento | validate, sync, hooks, bookkeeping | skills/validate/, hooks/
+- light-enxuto | planned | LIGHT enxuto | Demanda LIGHT deixa de pagar o fechamento completo de MEDIUM — evidência e portão sim, sync de 8 operações não | light, cerimonia, validate, roteamento | skills/audora-commander/, skills/validate/
 - skill-memory | discarded | Skill MEMORY | Absorvido por memory-graphify em 2026-08-26 (memory = memória do produto + aprendizados) | memoria, aprendizado, skill | —
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
