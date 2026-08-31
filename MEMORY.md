@@ -49,6 +49,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-27 | execute | Teste de conteúdo de skill usa `assert_contains` (grep -F): string que quebra de linha no Markdown NUNCA casa. Comando citado num SKILL.md que algum teste afirma deve caber em UMA linha — e o teste falhando assim é sinal de quebra, não de ausência.
 - 2026-08-30 | validate | Arquivar nó que tem `<id>-historico.md`: `git mv` dos DOIS arquivos para `docs/audora/arquivo/` (mesmo prefixo de data) e corrigir o ponteiro relativo no corpo — mover só o nó quebra o link.
 - 2026-08-31 | execute | `bash tests/run.sh 2>&1 | tail -N; echo $?` reporta o exit do **tail**, sempre 0 — falso verde na leitura da evidência. Rodar `run.sh > /dev/null 2>&1; echo $?` (ou `${PIPESTATUS[0]}`) para o código real.
+- 2026-08-31 | validate | `assert_contains`/`grep -qF` é sensível a CAIXA e trata string iniciada por `-` como opção — "Reference ausente" não casa com 'reference ausente', e `grep -lF '--budget'` precisa do separador `--`. Vale para o teste E para o comando de evidência.
 
 ## Índice de nós [carga: sempre]
 
