@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-27
+> Última atualização: 2026-08-31
 
 ## O que é e para que serve
 
@@ -25,7 +25,7 @@ Code.
   sem API key). Oferecido pela skill `memory`; ausência degrada para
   grep/Read com aviso.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.5.0.
+  Versão 0.6.0.
 
 ## Arquitetura
 
@@ -47,7 +47,11 @@ Code.
   registrar-aprendizado (1 linha `data | fase | aprendizado`, na hora, por
   qualquer fase), compactar, e consultar-codigo — protocolo único de consulta
   ao índice (`graphify query/path/affected`, ler só os `src=` apontados,
-  degradação avisada em falha).
+  degradação avisada em falha). A skill é um **roteador**:
+  `carregar-contexto`, `registrar-delta` e `registrar-aprendizado` ficam inline
+  no `SKILL.md` (143 linhas); `bootstrap`, `registrar-no`, `compactar` e
+  `consultar-codigo` vivem em `skills/memory/references/`, lidas UMA por
+  operação — reference ausente avisa e degrada, sem travar a fase.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
 - `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes;
   localiza código via consultar-codigo quando `graphify: ativo`.

@@ -96,7 +96,7 @@ checklist" further down in this README.
 | Skill | Role |
 |---|---|
 | `audora-commander` | Entry point: classifies the demand by risk (LIGHT/MEDIUM/HIGH/HOTFIX) and routes it |
-| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and drives Graphify: install offer, code graph, `consultar-codigo` for plan/debug/execute |
+| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and drives Graphify: install offer, code graph, `consultar-codigo` for plan/debug/execute. Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation |
 | `scope` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
 | `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
 | `execute` | Red-green TDD with real evidence; commit per green step |

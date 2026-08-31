@@ -97,7 +97,7 @@ da instalação" mais abaixo neste README.
 | Skill | Papel |
 |---|---|
 | `audora-commander` | Porta de entrada: classifica a demanda por risco (LIGHT/MEDIUM/HIGH/HOTFIX) e roteia |
-| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e comanda o Graphify: oferta de instalação, índice do código, `consultar-codigo` para plan/debug/execute |
+| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e comanda o Graphify: oferta de instalação, índice do código, `consultar-codigo` para plan/debug/execute. Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação |
 | `scope` | Fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR], portão de escopo |
 | `plan` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
 | `execute` | TDD red-green com evidência real; commit por etapa verde |

@@ -21,7 +21,8 @@ time pequeno em projetos web/mobile/api.
 
 - **stack**: Markdown (skills, templates, docs) + JSON (manifests, hooks) +
   bash (hooks, script `graphify-status`, suíte `tests/`).
-- **restricoes**: cada SKILL.md ≤ 250 linhas; conteúdo em português (exceções
+- **restricoes**: cada SKILL.md e cada arquivo de `skills/*/references/`
+  ≤ 250 linhas; conteúdo em português (exceções
   aprovadas: 2026-08-24 README.md principal em inglês, com README.pt-BR.md
   linkado; 2026-08-25 nomes de skills, categorias de risco e enum de estado
   em inglês — identificadores EN, prosa PT); schemas vivem só em
