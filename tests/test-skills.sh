@@ -95,4 +95,21 @@ v="$(cat skills/validate/SKILL.md)"
 assert_contains "$v" 'docs/audora/memory/<id>.md docs/audora/arquivo/' "/7 validate arquiva por git mv"
 assert_contains "$v" 'aprendizados' "/7 validate consolida aprendizados"
 assert_contains "$v" 'MEMORY → PRD' "/7 direção única"
+# resumo-de-fase/8 — as 7 skills de fase definem o bloco de fechamento
+for s in audora-commander scope plan execute e2e validate debug; do
+  c="$(cat "skills/$s/SKILL.md" 2>/dev/null)"
+  assert_contains "$c" '## Bloco de fechamento' "/8 $s define o bloco"
+  assert_contains "$c" 'bloco-fechamento-template.md' "/8 $s aponta o template"
+done
+# resumo-de-fase/9 — skills-ferramenta NAO definem bloco proprio
+for s in memory worktree; do
+  c="$(cat "skills/$s/SKILL.md" 2>/dev/null)"
+  assert_not_contains "$c" '## Bloco de fechamento' "/9 $s (ferramenta) sem bloco proprio"
+done
+# /3 e /4 — as duas fases com regra propria declaram a regra
+e="$(cat skills/execute/SKILL.md)"
+assert_contains "$e" 'só no fim da fase' "/3 execute imprime tarefas so no fim"
+v="$(cat skills/validate/SKILL.md)"
+assert_contains "$v" 'git diff --name-only' "/4 validate tira arquivos do diff real"
+assert_contains "$v" '**Entrega**' "/4 validate imprime o bloco de entrega"
 report

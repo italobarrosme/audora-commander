@@ -19,4 +19,15 @@ assert_not_contains "$n" 'PT→EN' "/5 sem migração PT→EN"
 assert_no_file templates/GRAFO-template.md "/1 GRAFO-template removido"
 assert_no_file templates/GRAFO-template-v1.md "/1 GRAFO-template-v1 removido"
 assert_empty "$(grep -rli grafo templates || true)" "/1 zero grafo em templates"
+# resumo-de-fase/1,/2,/5,/6,/7 — formato canonico do bloco de fechamento
+assert_file templates/bloco-fechamento-template.md "/1 template do bloco existe"
+b="$(cat templates/bloco-fechamento-template.md 2>/dev/null)"
+for parte in '### <id> · <fase> → <próxima>' '- [x]' '- [ ]' '**Produzido**' '**Arquivos**' '**Próximo**'; do
+  assert_contains "$b" "$parte" "/1 template tem a parte '$parte'"
+done
+assert_contains "$b" '**Entrega**' "/4 template define o bloco de entrega"
+assert_contains "$b" '| critério | veredito | evidência |' "/4 tabela criterio-veredito"
+assert_contains "$b" 'LIGHT' "/5 template trata LIGHT/HOTFIX"
+assert_contains "$b" 'caminho real' "/6 template proibe caminho inventado"
+assert_contains "$b" 'reprovada' "/7 template trata fase interrompida ou reprovada"
 report
