@@ -22,6 +22,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-27 | skill-worktree | `git worktree remove` apaga o conteudo do ALVO atraves de junction/symlink de diretorio — desconectar o link ANTES de remover.
 - 2026-08-27 | skill-worktree | Arquivo ignorado nao bloqueia `git worktree remove` (exit 0, apaga em silencio) e nao aparece em `status --porcelain` — checar ignorados a parte.
 - 2026-08-27 | skill-worktree | Commit nao integrado se detecta com `rev-list --count HEAD --not --remotes`; `@{u}..HEAD` sai 128 em branch sem upstream.
+- 2026-08-31 | memory-fatiada | Skill grande vira roteador + `references/`: operações quentes e curtas inline, grandes ou raras em arquivo próprio, lidas UMA por operação; reference ausente avisa e degrada.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
