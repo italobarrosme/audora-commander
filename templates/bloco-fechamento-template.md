@@ -31,8 +31,9 @@ Regras:
 1. **Título**: id da demanda, fase que acabou, próxima fase. A fase que acabou
    leva `✅` ou nada; a próxima leva `⏳` ou nada — enfeite é opcional, o texto
    não.
-2. **Checkbox**: `[x]` para concluída, `[ ]` para pendente. A fase
-   recém-concluída vai em **negrito**. Cada concluída leva um resumo de até 8
+2. **Checkbox**: `[x]` para concluída, `[ ]` para pendente. A fase **em foco**
+   vai em **negrito** — a recém-concluída; ou, se a fase foi interrompida,
+   bloqueada ou aguarda portão, a própria fase em curso. Cada concluída leva um resumo de até 8
    palavras ao lado; pendente vai sem resumo.
 3. **Arquivos**: sempre **caminho real** e existente, com tamanho ou contagem
    quando ajudar. Caminho prometido, planejado ou inventado é falha do bloco —

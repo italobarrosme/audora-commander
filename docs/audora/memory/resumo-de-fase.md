@@ -75,8 +75,15 @@ Tradução dos blocos para inglês. Alterar o hook SessionStart ou os manifests.
 
 ## delta
 
+- MODIFICADO (2026-08-31): **/2** — de "com a fase recém-concluída em negrito"
+  para "com a fase EM FOCO em negrito (a recém-concluída; ou, quando a fase foi
+  interrompida, bloqueada ou aguarda portão, a própria fase em curso)". Motivo:
+  /7 manda imprimir o bloco em fase interrompida, situação em que NÃO existe fase
+  recém-concluída para destacar. As duas corridas do e2e destacaram a fase em
+  foco, que é a informação útil. /2 e /7 se contradiziam na letra.
+
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-resumo-de-fase.md
 
 ## feedback-reprovacao
