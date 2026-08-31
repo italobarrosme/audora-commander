@@ -77,23 +77,23 @@ Base `7e86d9d` (pré-fatia) vs `ab3b310`. `SKILL.md` 13.331 → 7.979 bytes
 (-40% por carga). Custo por sessão de fase de uma demanda MEDIUM, somando as
 references que cada fase de fato lê:
 
-| sessão | operações usadas | antes | depois |
-|---|---|---|---|
-| S1 commander+scope | carregar-contexto, registrar-no, registrar-aprendizado | 13.331 | 9.308 |
-| S2 plan | carregar-contexto, consultar-codigo | 13.331 | 9.888 |
-| S3 execute | consultar-codigo, registrar-delta, registrar-aprendizado | 13.331 | 9.888 |
-| S4 e2e | carregar-contexto, registrar-aprendizado | 13.331 | 7.979 |
-| S5 validate | compactar, registrar-delta | 13.331 | 9.778 |
-| **total** | | **66.655** | **46.841** |
-
 **Corte 29%** — economia de 19.814 bytes (~4.953 tokens) por demanda MEDIUM.
 A estimativa da fase de escopo era ~6k tokens; o medido é 4,95k. Comando em
 `docs/audora/planos/plano-memory-fatiada.md`, Tarefa 4, passo 2.
+Tabela por sessão em `memory-fatiada-historico.md`.
 
 ## delta
 
+- MODIFICADO (2026-08-31): **/2** — de "lê exatamente um arquivo de
+  reference — o daquela operação — e nenhum outro" para "lê o arquivo de
+  reference daquela operação, e nenhum outro ALÉM dos que o próprio
+  protocolo da operação encadear explicitamente". Motivo: o e2e mostrou
+  `consultar-codigo` lendo também `bootstrap.md` — e está certo, o passo 1
+  do protocolo manda "executar a operação 2 e voltar aqui" quando o bullet
+  `graphify:` não existe. Critério absoluto demais, não implementação errada.
+
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-memory-fatiada.md
 
 ## feedback-reprovacao

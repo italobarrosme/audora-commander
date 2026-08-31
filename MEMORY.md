@@ -36,6 +36,8 @@ time pequeno em projetos web/mobile/api.
   falha). Validação de instalação = `claude plugin uninstall
   audora-commander@audora-commander-dev && ./install.sh` seguido do
   checklist do README.md em sessão interativa.
+- **ferramenta-e2e**: `claude -p` (projeto não-web, sem docker) — sessão
+  real do Claude Code com o plugin instalado do cache.
 - **graphify**: ativo
 
 ## Aprendizados [carga: sempre]
@@ -50,6 +52,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-30 | validate | Arquivar nó que tem `<id>-historico.md`: `git mv` dos DOIS arquivos para `docs/audora/arquivo/` (mesmo prefixo de data) e corrigir o ponteiro relativo no corpo — mover só o nó quebra o link.
 - 2026-08-31 | execute | `bash tests/run.sh 2>&1 | tail -N; echo $?` reporta o exit do **tail**, sempre 0 — falso verde na leitura da evidência. Rodar `run.sh > /dev/null 2>&1; echo $?` (ou `${PIPESTATUS[0]}`) para o código real.
 - 2026-08-31 | validate | `assert_contains`/`grep -qF` é sensível a CAIXA e trata string iniciada por `-` como opção — "Reference ausente" não casa com 'reference ausente', e `grep -lF '--budget'` precisa do separador `--`. Vale para o teste E para o comando de evidência.
+- 2026-08-31 | e2e | `claude -p` passa de 120s e o Bash tool joga para background — comando que restaura arquivo no fim deixa o repo quebrado nesse meio-tempo. Script com `trap restore EXIT INT TERM` ANTES do `mv`.
+- 2026-08-31 | e2e | Capturar `claude -p` com `| tail -N` corta a evidência e leva a veredito parcial — redirecionar para arquivo e ler inteiro.
 
 ## Índice de nós [carga: sempre]
 
