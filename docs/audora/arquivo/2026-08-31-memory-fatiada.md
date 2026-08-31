@@ -1,9 +1,9 @@
 ---
 id: memory-fatiada
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [memory-graphify]
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-memory-fatiada.md, docs/audora/planos/plano-memory-fatiada.md, skills/memory/SKILL.md, skills/memory/references/, tests/test-docs.sh, tests/test-no-grafo.sh, tests/test-skills.sh]
 keywords: [memory, tokens, references, overhead, performance]
 resumo: Skill memory vira roteador fino + references carregáveis por operação — medido: -40% por carga da skill, -29% do custo por demanda MEDIUM.
 atualizado-em: 2026-08-31
@@ -28,8 +28,8 @@ das 7 operações.
   reference
 - **memory-fatiada/2** — QUANDO uma fase invocar a skill memory para uma
   operação movida (bootstrap, registrar-no, compactar, consultar-codigo) O
-  SISTEMA DEVE ler exatamente um arquivo de reference — o daquela operação — e
-  nenhum outro
+  SISTEMA DEVE ler o arquivo de reference daquela operação, e nenhum outro
+  além dos que o próprio protocolo da operação encadear explicitamente
 - **memory-fatiada/3** — QUANDO a skill memory for carregada O SISTEMA DEVE
   apresentar uma tabela que mapeia cada uma das 7 operações ao seu local
   (inline, ou caminho do arquivo de reference)
@@ -69,7 +69,7 @@ inteiro: /9 mede esta skill, não o framework.
 
 ## decisoes
 
-Ver `memory-fatiada-historico.md` (mesma pasta).
+Ver `2026-08-31-memory-fatiada-historico.md` (mesma pasta).
 
 ## medicao (/9)
 
@@ -84,13 +84,8 @@ Tabela por sessão em `memory-fatiada-historico.md`.
 
 ## delta
 
-- MODIFICADO (2026-08-31): **/2** — de "lê exatamente um arquivo de
-  reference — o daquela operação — e nenhum outro" para "lê o arquivo de
-  reference daquela operação, e nenhum outro ALÉM dos que o próprio
-  protocolo da operação encadear explicitamente". Motivo: o e2e mostrou
-  `consultar-codigo` lendo também `bootstrap.md` — e está certo, o passo 1
-  do protocolo manda "executar a operação 2 e voltar aqui" quando o bullet
-  `graphify:` não existe. Critério absoluto demais, não implementação errada.
+<!-- Consolidado no corpo em 2026-08-31 (sync da validate): /2 refinado
+     para permitir o encadeamento que o protocolo da operação declara. -->
 
 ## e2e
 

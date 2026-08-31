@@ -83,6 +83,24 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Skill `memory` fatiada em 2026-08-31 (nó `memory-fatiada`, MEDIUM, versão
+0.6.0): a skill mais chamada do framework (7 das 9 a invocam, 18 pontos de
+chamada) virou **roteador + references**. `SKILL.md` caiu de 226 para 143
+linhas (13.331 → 7.979 bytes, −40% por carga); `bootstrap`, `registrar-no`,
+`compactar` e `consultar-codigo` viraram um arquivo cada em
+`skills/memory/references/`, lidos UMA por operação; `carregar-contexto`,
+`registrar-delta` e `registrar-aprendizado` ficaram inline por serem quentes e
+curtos. Contrato das 7 operações preservado. Reference ausente avisa nomeando o
+arquivo e degrada sem travar a fase. **Medido, não estimado**: 66.655 → 46.841
+bytes de carga da skill por demanda MEDIUM (−29%, ~4.953 tokens) — a medição
+existe porque uma decisão viva de 2026-08-25 mandava medir se a travessia
+voltasse a doer. A suíte deixou de asserir por `cat` único e passou a asserir
+por **localização** (arquivo certo), com assert negativo provando que é
+movimento e não cópia; teto de 250 linhas estendido a `skills/*/references/` na
+Constituição. Suíte 295 → 364 asserts. e2e em sessão real 0.6.0 fechou 8 dos 9
+critérios; o /2 foi refinado por delta ao descobrir que o protocolo de
+`consultar-codigo` encadeia `bootstrap` legitimamente.
+
 Skill `worktree` entregue em 2026-08-27 (nó `skill-worktree`, MEDIUM, versão
 0.5.0): nona skill, isolamento de demanda em git worktree sob pedido
 explícito, fan-out de N agentes com domínios de arquivo não-sobrepostos, e

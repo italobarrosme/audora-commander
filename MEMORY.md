@@ -59,7 +59,7 @@ time pequeno em projetos web/mobile/api.
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
-- memory-fatiada | in-progress | Memory fatiada | Skill memory vira roteador fino + references carregáveis por operação — medido: -40% por carga da skill, -29% do custo por demanda MEDIUM. | memory, tokens, references, overhead, performance | skills/memory/
+- memory-fatiada | delivered | Memory fatiada → docs/audora/arquivo/2026-08-31-memory-fatiada.md
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
