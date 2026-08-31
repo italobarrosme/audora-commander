@@ -97,7 +97,7 @@ existe porque uma decisão viva de 2026-08-25 mandava medir se a travessia
 voltasse a doer. A suíte deixou de asserir por `cat` único e passou a asserir
 por **localização** (arquivo certo), com assert negativo provando que é
 movimento e não cópia; teto de 250 linhas estendido a `skills/*/references/` na
-Constituição. Suíte 295 → 364 asserts. e2e em sessão real 0.6.0 fechou 8 dos 9
+Constituição. Suíte 295 → 334 asserts. e2e em sessão real 0.6.0 fechou 8 dos 9
 critérios; o /2 foi refinado por delta ao descobrir que o protocolo de
 `consultar-codigo` encadeia `bootstrap` legitimamente.
 

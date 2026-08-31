@@ -57,6 +57,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-31 | e2e | `claude -p` passa de 120s e o Bash tool joga para background — comando que restaura arquivo no fim deixa o repo quebrado nesse meio-tempo. Script com `trap restore EXIT INT TERM` ANTES do `mv`.
 - 2026-08-31 | e2e | Capturar `claude -p` com `| tail -N` corta a evidência e leva a veredito parcial — redirecionar para arquivo e ler inteiro.
 - 2026-08-31 | execute | Teste negativo que suja arquivo ainda NÃO commitado: `git checkout <arquivo>` restaura do ÍNDICE e apaga o trabalho em andamento. Commitar o green ANTES de provar que o guarda morde, ou copiar para o scratchpad e restaurar de lá.
+- 2026-08-31 | validate | Total de asserts da suíte precisa ser SOMADO da saída real (`grep PASS= | awk`) — `run.sh` só imprime por arquivo, e citar o total de cabeça inflou o número em 30 no commit e no PRD. Comparar bases com `git archive` também subconta 3: `test-dogfood.sh` depende do repo git.
 
 ## Índice de nós [carga: sempre]
 
