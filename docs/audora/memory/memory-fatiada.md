@@ -5,8 +5,8 @@ origem: humano
 depende-de: [memory-graphify]
 arquivos: []
 keywords: [memory, tokens, references, overhead, performance]
-resumo: Skill memory vira roteador fino + references carregáveis por operação — corta 45% do custo de carga da skill mais chamada do framework.
-atualizado-em: 2026-08-30
+resumo: Skill memory vira roteador fino + references carregáveis por operação — medido: -40% por carga da skill, -29% do custo por demanda MEDIUM.
+atualizado-em: 2026-08-31
 ---
 
 # memory-fatiada
@@ -69,17 +69,26 @@ inteiro: /9 mede esta skill, não o framework.
 
 ## decisoes
 
-- 2026-08-30 (humano): estratégia híbrida — quentes e pequenas inline
-  (carregar-contexto, registrar-delta, registrar-aprendizado), grandes ou
-  frias em reference (bootstrap, registrar-no, compactar, consultar-codigo).
-  Máximo (7 references) foi descartado: toda chamada de fase pagaria um Read.
-- 2026-08-30 (humano): reference ausente avisa e degrada, mesmo padrão do
-  Graphify — índice é atalho, não portão.
-- 2026-08-30 (humano): reference segue o mesmo teto de 250 linhas do SKILL.md,
-  um número só para lembrar.
-- 2026-08-30 (IA): medição antes/depois vira critério (/9) por causa da
-  decisão viva de 2026-08-25 (grafo-v2) que mandou medir se a travessia
-  voltasse a doer. Voltou.
+Ver `memory-fatiada-historico.md` (mesma pasta).
+
+## medicao (/9)
+
+Base `7e86d9d` (pré-fatia) vs `ab3b310`. `SKILL.md` 13.331 → 7.979 bytes
+(-40% por carga). Custo por sessão de fase de uma demanda MEDIUM, somando as
+references que cada fase de fato lê:
+
+| sessão | operações usadas | antes | depois |
+|---|---|---|---|
+| S1 commander+scope | carregar-contexto, registrar-no, registrar-aprendizado | 13.331 | 9.308 |
+| S2 plan | carregar-contexto, consultar-codigo | 13.331 | 9.888 |
+| S3 execute | consultar-codigo, registrar-delta, registrar-aprendizado | 13.331 | 9.888 |
+| S4 e2e | carregar-contexto, registrar-aprendizado | 13.331 | 7.979 |
+| S5 validate | compactar, registrar-delta | 13.331 | 9.778 |
+| **total** | | **66.655** | **46.841** |
+
+**Corte 29%** — economia de 19.814 bytes (~4.953 tokens) por demanda MEDIUM.
+A estimativa da fase de escopo era ~6k tokens; o medido é 4,95k. Comando em
+`docs/audora/planos/plano-memory-fatiada.md`, Tarefa 4, passo 2.
 
 ## delta
 
