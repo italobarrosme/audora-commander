@@ -8,6 +8,9 @@ restos="$(LC_ALL=C.UTF-8 grep -rniE 'grafo' skills hooks templates .claude-plugi
 assert_empty "$restos" "memory-graphify/1 resíduo de GRAFO"
 for r in README.md README.pt-BR.md; do [ "$(grep -ci grafo "$r")" -le 3 ] && ok || ko "memory-graphify/1 $r cita grafo fora da tabela Renamed in 0.4.0"; done
 n="$(grep -c 'GRAFO' skills/memory/SKILL.md 2>/dev/null)"; [ "${n:-99}" -le 1 ] && ok || ko "memory-graphify/1 skill memory cita GRAFO mais de uma vez"
+# memory-fatiada/2 — o aviso do GRAFO fica inline (carregar-contexto); reference nenhuma o repete.
+r="$(LC_ALL=C.UTF-8 grep -rc 'GRAFO' skills/memory/references 2>/dev/null | grep -v ':0$' || true)"
+assert_empty "$r" "memory-graphify/1 reference cita GRAFO"
 assert_file "skills/memory/SKILL.md" "memory-graphify/1 skill memory"
 assert_no_file "skills/graph" "memory-graphify/1 skill graph removida"
 assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "memory-graphify/1 9 skills"
