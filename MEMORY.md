@@ -59,6 +59,7 @@ time pequeno em projetos web/mobile/api.
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
+- resumo-de-fase | in-progress | Resumo de fase | Toda fase fecha imprimindo no terminal um bloco Markdown com o que foi feito, o que falta e as tarefas em checkbox — hoje o humano não enxerga o que está sendo entregue | feedback, visibilidade, resumo, checkbox, terminal, fase | skills/
 - memory-fatiada | delivered | Memory fatiada → docs/audora/arquivo/2026-08-31-memory-fatiada.md
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
