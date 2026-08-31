@@ -208,6 +208,41 @@ assert_empty "$r" "memory-graphify/1 reference cita GRAFO"
 - **done quando**: `bash tests/run.sh` verde (todos os arquivos de teste
   PASS, FAIL=0) e `wc -c skills/memory/SKILL.md` ≤ 7600 bytes.
 
+> **Decisão tomada pela IA (2026-08-31)**: o teto de 7600 bytes foi estourado —
+> roteador ficou em 7979 bytes / 143 linhas. Causa: a tabela de roteamento e a
+> regra de degradação, exigidas por /3 e /4, custam ~700 bytes que a
+> estimativa do plano não previu. Não aparei conteúdo normativo para bater um
+> número auto-imposto; o que vale é o corte medido em /9. Teto real aceito:
+> 8000 bytes.
+
+### Subtarefas (expandidas em 2026-08-31, quando chegou a vez)
+
+Regra que governa as 4 primeiras: **mover, não reescrever**. O corpo de cada
+operação sai verbatim do `SKILL.md` atual; só o cabeçalho da operação e o
+preâmbulo de 3 linhas são novos. Reescrever conteúdo aqui violaria /5
+(contrato inalterado) e viraria uma demanda diferente.
+
+- [ ] **T2.1** — `references/bootstrap.md`: corpo da operação 2 (36 linhas do
+  SKILL.md, itens 1-5 incluindo a Etapa Graphify a-f). Done: as 11 strings do
+  bloco `/2 bootstrap cita` da suíte presentes, cada uma em UMA linha.
+- [ ] **T2.2** — `references/registrar-no.md`: corpo da operação 3 (18 linhas,
+  itens 1-4). Done: `no-template.md`, `hotfix-pending-record` e
+  `planned | in-progress` presentes.
+- [ ] **T2.3** — `references/compactar.md`: corpo da operação 6 (25 linhas,
+  itens 0-5). Done: `docs/audora/arquivo/`, `aprendizados-historico.md` e
+  `git mv` presentes.
+- [ ] **T2.4** — `references/consultar-codigo.md`: corpo da operação 7 (28
+  linhas, itens 1-6). Done: `graphify query`, `graphify path`,
+  `graphify affected`, `--budget` e `src=` presentes.
+- [ ] **T2.5** — `SKILL.md` vira roteador: apagar os 4 corpos movidos,
+  inserir a tabela de 7 linhas (`| <op> | inline |` ou
+  `| <op> | references/<op>.md |`) e a regra de degradação com as duas frases
+  literais que a suíte cobra (`reference ausente`, `sem travar a fase`).
+  Done: `bash tests/run.sh` exit 0.
+
+Nenhuma subtarefa comita sozinha — o green só existe depois da T2.5, então o
+commit é um só, ao fim da T2.
+
 ---
 
 ## Tarefa 3: Constituição, versão e docs

@@ -31,6 +31,29 @@ skill confere o mesmo.
 base desta skill (o Skill tool imprime esse diretório ao carregar). Ex.:
 `bash "<raiz do plugin>/hooks/graphify-status" .`.
 
+## Onde mora cada operação
+
+Esta skill é um roteador. As operações quentes e curtas estão inline, aqui
+embaixo; as grandes ou raras vivem em `references/`, ao lado deste arquivo, e
+só devem ser lidas quando a operação é de fato usada. **Leia uma reference por
+operação — nunca a pasta inteira.**
+
+| operação | onde |
+|---|---|
+| carregar-contexto | inline |
+| bootstrap | references/bootstrap.md |
+| registrar-no | references/registrar-no.md |
+| registrar-delta | inline |
+| registrar-aprendizado | inline |
+| compactar | references/compactar.md |
+| consultar-codigo | references/consultar-codigo.md |
+
+Uma **reference ausente** ou ilegível não interrompe nada: avise em 1 linha
+qual arquivo faltou e siga a operação pelo que este roteador garante — Lei de
+Ferro, schema e regra de leitura seletiva —, **sem travar a fase**. Reference
+é atalho para o corpo da operação, não portão. Instalação sem `references/` é instalação quebrada:
+avise o humano para reinstalar o plugin.
+
 ## Regra de leitura seletiva (vale para TODAS as operações)
 
 Nunca leia a pasta `docs/audora/memory/` inteira, nunca leia corpo de nó não
@@ -50,7 +73,7 @@ Consulta estrutural NUNCA carrega corpos — grep resolve:
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
 Código: nunca "varrer o repo para entender" — operação 7.
 
-## Operações
+## Operações inline
 
 ### 1. carregar-contexto (início de demanda)
 
@@ -61,60 +84,6 @@ Código: nunca "varrer o repo para entender" — operação 7.
    Read SÓ de `docs/audora/memory/<id>.md` desses nós.
 4. Devolver: Constituição (inclui o bullet `graphify`) + Aprendizados + nós
    relevantes para a fase que chamou.
-
-### 2. bootstrap (projeto sem MEMORY)
-
-1. Projeto novo: copiar `MEMORY-template.md` → `MEMORY.md`, preencher
-   Propósito e Constituição perguntando o que faltar (`como-rodar` incluso);
-   Aprendizados vazio; zero nós; criar `docs/audora/memory/` vazia.
-2. Projeto existente: engenharia reversa MÍNIMA — ler README/PRD/estrutura
-   (não a codebase inteira); Propósito, Constituição verificável, e nós das
-   funcionalidades visíveis com `origem: inferido` (linha no índice basta —
-   expansão sob demanda).
-3. Nó `inferido` NÃO vale como verdade: demanda tocando nó inferido →
-   confirmar com o humano antes de usar; confirmado → `origem: humano`.
-4. **Etapa Graphify** (sempre, ao fim do bootstrap):
-   a. Constituição já tem bullet `graphify:` → pular esta etapa, não
-      perguntar de novo — só se o humano pedir.
-   b. Rodar `bash "<raiz do plugin>/hooks/graphify-status" .` → imprime uma
-      de `ausente | sem-indice | sem-codigo | ativo`.
-   c. `ausente` → perguntar "Instalar Graphify (índice local do código, sem
-      API key)?". Aceitou: `uv tool install graphifyy`; falhou ou `uv`
-      ausente: `pipx install graphifyy`; confirmar com `graphify --version`
-      e seguir para (d). Instalação falhou (sem uv/pipx, sem rede, Python
-      < 3.10): mostrar o erro REAL, seguir degradado avisando, NÃO gravar
-      `recusado`, nunca afirmar que instalou. Recusou: Constituição
-      `graphify: recusado` + aviso "plan/debug/execute rodam degradadas
-      (grep/Read)".
-   d. `sem-indice` → `graphify update .` (só código, sem API key), rodar o
-      status de novo.
-   e. `ativo` → `graphify hook install` (post-commit mantém o índice
-      atualizado) e CONFERIR rodando `GIT_DIR=.git bash .git/hooks/post-commit`:
-      "could not locate a Python" = hook instalado mas inerte (caminho do
-      Python com espaço zera o `_PINNED`) → avisar, pinar `_PINNED` no hook
-      e registrar aprendizado; `graphify-out/` no `.gitignore`; Constituição
-      `graphify: ativo`.
-   f. `sem-codigo` → avisar "nenhuma linguagem suportada indexada"; NÃO
-      instalar git hook; Constituição `graphify: sem-codigo`.
-5. MEMORY parcial desde o dia 1 é o esperado.
-
-### 3. registrar-no (criar/atualizar nó)
-
-1. Validar contra `no-template.md` ANTES de escrever: frontmatter completo
-   (id, estado, origem, depende-de, arquivos, keywords, resumo,
-   atualizado-em), estado no enum (`planned | in-progress | blocked |
-   delivered | discarded`, + transitório `hotfix-pending-record`), critérios
-   NUMERADOS (`<id>/<n>`, número nunca reutilizado). Escrita que quebra
-   schema é rejeitada (`memory-validate`). Exceção declarada: nó recém-aberto
-   pela porta de entrada (MEDIUM/HIGH) pode ter `criterios-aceite` vazio ATÉ
-   a fase scope; LIGHT/HOTFIX já entram com ≥1 critério numerado.
-2. Escrever `docs/audora/memory/<id>.md` E a linha rica do índice NA MESMA
-   EDIÇÃO (resumo/keywords espelhados). Índice e pasta divergentes = memória
-   inconsistente → PARAR e corrigir.
-3. Máximo 3 nós `in-progress` (contagem global pelo índice). Quarto chegando →
-   porta de entrada resolve com o humano.
-4. Em branch de demanda: editar SOMENTE os arquivos dos nós daquela demanda
-   (+ suas linhas de índice). Conflito de merge fora deles → humano decide.
 
 ### 4. registrar-delta (mudança no meio da demanda)
 
@@ -144,65 +113,12 @@ Código: nunca "varrer o repo para entender" — operação 7.
    duplicar. Contradiz um antigo → anexar ao antigo
    `[invalidado-em: data] [substituido-por: <linha nova>]`, nunca apagar.
 
-### 6. compactar (manutenção)
-
-0. **Consolidar delta** (sync da validate): aplicar cada ADICIONADO /
-   MODIFICADO / REMOVIDO no corpo (criterios-aceite, decisoes,
-   fora-de-escopo), critério novo recebe o próximo `<id>/<n>`, e esvaziar
-   `## delta`.
-1. Gatilhos: nó virou `delivered` (sync da validate); `MEMORY.md` > ~300
-   linhas (`memory-guard` acusa); arquivo de nó > ~100 linhas; seção
-   Aprendizados > ~40 linhas.
-2. Nó `delivered`: (a) promover as decisões AINDA VÁLIDAS aprovadas no portão
-   para `docs/audora/decisoes-vivas.md` (1 linha: data | nó | decisão);
-   (b) consolidar os aprendizados da demanda na seção Aprendizados (dedupe
-   pelo grep da operação 5); (c) `git mv docs/audora/memory/<id>.md
-   docs/audora/arquivo/AAAA-MM-DD-<id>.md`; (d) linha do índice vira
-   `- <id> | delivered | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
-   Movimento, nunca reescrita.
-3. Requisito/decisão/aprendizado superado: NUNCA apagar — anexar
-   `[invalidado-em: data] [substituido-por: <ref>]`.
-4. Nó ativo > ~100 linhas: mover histórico frio (delta consolidado, decisões
-   antigas) para `docs/audora/memory/<id>-historico.md` + ponteiro de 1
-   linha. Aprendizados > ~40 linhas: mover os mais antigos para
-   `docs/audora/aprendizados-historico.md` + ponteiro de 1 linha.
-5. A promoção do resumo ao PRD.md é responsabilidade da skill validate
-   (direção única MEMORY → PRD; o PRD nunca alimenta o MEMORY).
-
-### 7. consultar-codigo (plan, debug, execute — antes de qualquer Read)
-
-Protocolo único de consulta ao índice de código. Chamado por plan, debug e
-execute ANTES de abrir qualquer arquivo de código. scope, e2e e validate
-NÃO chamam (não exploram código cru).
-
-1. Pré-condição: Constituição com `graphify: ativo`. `graphify: recusado`
-   ou `graphify: sem-codigo` → devolver "sem índice de código: grep/Read" e
-   seguir — sem oferecer instalação/indexação de novo (só se o humano
-   pedir). Bullet ausente → a etapa Graphify do bootstrap nunca rodou:
-   executar a operação 2, passo 4, e voltar aqui.
-2. Sanidade: `bash "<raiz do plugin>/hooks/graphify-status" .` ≠ `ativo`
-   (`graph.json` sumiu ou corrompeu) → passo 6.
-3. Consultar: `graphify query "<símbolo, rota ou domínio da tarefa>"
-   --budget 1500` → linhas `NODE <label> [src=<arquivo> loc=L<n>
-   community=<c>]` e `EDGE`. Caminho entre dois símbolos: `graphify path
-   "A" "B"`. Impacto de mudar X: `graphify affected "X"`.
-4. Ler SÓ os arquivos citados em `src=` das linhas `NODE` (Read com offset
-   em `loc=` quando o arquivo for grande). Read fora do apontado → só com
-   exceção declarada na fase, em 1 linha: "índice não cobre X porque …".
-5. Arquivo existe no repo mas não aparece na consulta → `graphify update .`
-   UMA única vez e repetir o passo 3; persistindo → passo 6.
-6. Degradar: comando falha (exit ≠ 0, `error: graph file not found`,
-   `graph.json` corrompido, `graphify` sumiu do PATH) → avisar em 1 linha
-   e cair para grep/Read na MESMA fase. Nunca travar a demanda, nunca
-   "consertar" o Graphify no meio da fase — registrar aprendizado
-   (operação 5) se a causa for do projeto.
-
 ## Conflito MEMORY vs código
 
 Detecção acontece no escopo da demanda: a skill plan lê os arquivos
-afetados (via operação 7) e algo contradiz um nó → sinaliza. Registre a
-divergência no nó, apresente ao humano, ele decide. Nunca escolha em
-silêncio.
+afetados (via operação 7, `references/consultar-codigo.md`) e algo contradiz
+um nó → sinaliza. Registre a divergência no nó, apresente ao humano, ele
+decide. Nunca escolha em silêncio.
 
 ## Red flags — pare e corrija
 
@@ -210,6 +126,7 @@ silêncio.
 |---|---|
 | "Eu lembro do requisito, registro depois" | Depois = nunca. Sessão morre, memória morre. Registre agora. |
 | "Carrego a pasta memory/ inteira pra garantir" | Contexto é o gargalo. Índice decide; grep consulta; Read só o tocado. |
+| "Leio todas as references de uma vez pra ter contexto" | Contexto é o gargalo — de novo. Uma reference por operação usada. |
 | "Edito o nó agora, índice depois" | Índice desatualizado quebra a carga de todo mundo. Mesma edição. |
 | "Aprendizado eu guardo no sync final" | Sync final é depois do /clear. Aprendizado é NA HORA, 1 linha. |
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |
