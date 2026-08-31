@@ -82,6 +82,16 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 | "O humano tá com pressa, declaro HOTFIX por ele" | HOTFIX é declaração DELE. Pressa sua não é emergência dele. |
 | "Tá no meio, desce de HIGH pra MEDIUM que anda mais" | Catraca desce só com o humano. Suba sozinho, desça nunca. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: a categoria (LIGHT/MEDIUM/HIGH/HOTFIX), as respostas de risco
+  que a justificam em 1 linha, e o nó registrado.
+- **Arquivos**: o arquivo do nó e a linha do índice em `MEMORY.md`.
+- **Próximo**: a primeira fase da tabela de roteamento daquela categoria.
+
 ## PRÓXIMA SKILL
 
 Roteamento da tabela acima: LIGHT/HOTFIX → **execute**; MEDIUM/HIGH →

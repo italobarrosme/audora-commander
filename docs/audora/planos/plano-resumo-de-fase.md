@@ -206,3 +206,21 @@ Passos (2-5 minutos cada; código real, zero placeholder):
   - NÃO tocar: `skills/memory/SKILL.md`, `skills/worktree/SKILL.md`
 - **done quando**: `bash tests/run.sh > /dev/null 2>&1; echo $?` devolve **0**,
   e `wc -l skills/*/SKILL.md` mostra todas ≤ 250.
+
+### Subtarefas (expandidas em 2026-08-31, quando chegou a vez)
+
+Seção idêntica em estrutura nas 7, inserida ANTES de `## PRÓXIMA SKILL`, com só
+a parte específica variando. Aponta o template, nunca copia a spec.
+
+- [ ] **T3.1** `audora-commander` — Produzido: categoria + por quê + nó registrado.
+- [ ] **T3.2** `scope` — Produzido: nº de critérios EARS, fora-de-escopo, decisões.
+- [ ] **T3.3** `plan` — Produzido: nº de tarefas e quais ficaram `expandir: sim`.
+- [ ] **T3.4** `execute` — Produzido: tarefas verdes + a regra de /3 com a
+  string literal `só no fim da fase`.
+- [ ] **T3.5** `e2e` — Produzido: critérios exercitados e veredito de cada um.
+- [ ] **T3.6** `validate` — Produzido + o bloco `**Entrega**` de /4.
+- [ ] **T3.7** `debug` — Produzido: causa raiz demonstrada, ou achados da caçada.
+- [ ] **T3.8** Constituição — bullet `padroes` ganha o 7º item, valendo para
+  skill de FASE (ferramenta não tem, critério /9).
+
+Commit único ao fim: o green só existe com as 8 feitas.

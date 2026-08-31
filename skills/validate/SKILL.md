@@ -87,6 +87,19 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
 | "Reprovou, mas o problema é pequeno, sigo direto" | Reprovação tem fluxo: registrar feedback, voltar à fase certa. |
 | "A migração é pequena, eu mesmo executo" | Irreversível fora do repo = mão do humano. Sem exceção. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: o veredito do portão e o que o sync consolidou.
+- **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado.
+- **Próximo**: nenhum — o fluxo da demanda encerra aqui.
+
+Aprovada, o bloco de fase é seguido do bloco **Entrega**: tabela
+critério → veredito com a evidência em 1 linha, e a lista de arquivos tocados
+tirada de `git diff --name-only` real. Formato no mesmo template.
+
 ## PRÓXIMA SKILL
 
 Nenhuma — o fluxo da demanda encerra aqui. Nova demanda → skill

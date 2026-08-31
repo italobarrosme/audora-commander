@@ -98,6 +98,16 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 | "Deixo o server rodando pra próxima" | Órfão de porta ocupada quebra a próxima sessão. Teardown sempre. |
 | "Pulo o e2e sem avisar, ganho tempo" | Pular é direito do humano, não seu. Ofereça, registre a escolha. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: quais critérios foram exercitados e o veredito de cada um
+  (`passou` / `falhou` / `não-automatizável`).
+- **Arquivos**: `docs/audora/e2e/e2e-<id>.md` e os artefatos versionados.
+- **Próximo**: validate, com o relatório anexado ao roteiro.
+
 ## PRÓXIMA SKILL
 
 Relatório pronto (ou pulo registrado) → **validate**, com o relatório anexado

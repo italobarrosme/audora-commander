@@ -96,6 +96,17 @@ provando O QUE foi checado.
 | "Trato o sintoma, a causa fica pra depois" | Sintoma tratado volta com outra roupa. Causa raiz ou nada. |
 | "Na caçada, reporto tudo que parece estranho" | Achado sem verificação é ruído que queima confiança. Verifique antes. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: modo sintoma → a causa raiz demonstrada e as hipóteses
+  refutadas; modo caçada → classes varridas e achados por veredito.
+- **Arquivos**: o teste de reprodução, ou
+  `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`.
+- **Próximo**: execute (fix via TDD), validate, ou escalada humana.
+
 ## PRÓXIMA SKILL
 
 Causa raiz demonstrada → **execute** (fix via TDD). Achados da caçada

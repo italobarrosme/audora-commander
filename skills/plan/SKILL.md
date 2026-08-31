@@ -91,6 +91,16 @@ próximos passos. A próxima sessão lê isso primeiro.
 | "Grep no repo inteiro é mais seguro que o índice" | Índice aponta, leitura confirma. Ativo → consulte primeiro; degrade só com aviso. |
 | "Tarefa referencia helper que crio depois" | Referência órfã = plano quebrado. Defina na tarefa que produz. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: quantas tarefas, quantos passos, e quais ficaram marcadas
+  `expandir: sim` (não detalhadas ainda, por design).
+- **Arquivos**: `docs/audora/planos/plano-<id>.md`, com tamanho.
+- **Próximo**: execute na primeira tarefa sem `depende-de` pendente.
+
 ## PRÓXIMA SKILL
 
 Plano salvo (e aprovado, se HIGH) → **execute**.

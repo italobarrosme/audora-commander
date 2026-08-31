@@ -31,7 +31,9 @@ time pequeno em projetos web/mobile/api.
   `hooks/` (hooks + `graphify-status`) e `tests/` (suíte bash).
 - **padroes**: toda skill tem frontmatter `name`+`description` ("Use
   quando..."), Lei de Ferro em bloco de código no topo, "Anuncie ao começar",
-  fluxo numerado, tabela de red flags e seção "PRÓXIMA SKILL".
+  fluxo numerado, tabela de red flags e seção "PRÓXIMA SKILL"; skill de FASE
+  tem também `## Bloco de fechamento` apontando
+  `templates/bloco-fechamento-template.md` (skill-ferramenta não tem).
 - **como-rodar**: `bash tests/run.sh` (suíte do plugin; exit 1 se algo
   falha). Validação de instalação = `claude plugin uninstall
   audora-commander@audora-commander-dev && ./install.sh` seguido do
@@ -54,6 +56,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-31 | validate | `assert_contains`/`grep -qF` é sensível a CAIXA e trata string iniciada por `-` como opção — "Reference ausente" não casa com 'reference ausente', e `grep -lF '--budget'` precisa do separador `--`. Vale para o teste E para o comando de evidência.
 - 2026-08-31 | e2e | `claude -p` passa de 120s e o Bash tool joga para background — comando que restaura arquivo no fim deixa o repo quebrado nesse meio-tempo. Script com `trap restore EXIT INT TERM` ANTES do `mv`.
 - 2026-08-31 | e2e | Capturar `claude -p` com `| tail -N` corta a evidência e leva a veredito parcial — redirecionar para arquivo e ler inteiro.
+- 2026-08-31 | execute | Teste negativo que suja arquivo ainda NÃO commitado: `git checkout <arquivo>` restaura do ÍNDICE e apaga o trabalho em andamento. Commitar o green ANTES de provar que o guarda morde, ou copiar para o scratchpad e restaurar de lá.
 
 ## Índice de nós [carga: sempre]
 

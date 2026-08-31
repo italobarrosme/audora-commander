@@ -79,6 +79,16 @@ fora-de-escopo?
 | "Critério em prosa serve, EARS é burocracia" | Prosa aceita ambiguidade; EARS não. Ambiguidade hoje é retrabalho amanhã. |
 | "Apresento o escopo e já começo o plano" | Portão é portão. Apresente e ESPERE o sim. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: quantos critérios EARS, se o fora-de-escopo ficou explícito,
+  e quantas decisões foram registradas.
+- **Arquivos**: o nó (MEDIUM) ou a spec dedicada (HIGH), e a linha do índice.
+- **Próximo**: o portão humano de escopo; aprovado, a fase plan.
+
 ## PRÓXIMA SKILL
 
 Escopo aprovado → **plan**. Reabertura resolvida → devolver à fase chamadora.

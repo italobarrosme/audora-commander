@@ -85,6 +85,17 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 | "A suíte quebrou em outro lugar, arrumo depois" | Verde é a suíte TODA. Arrume agora. |
 | "Só dessa vez" | Não existe só dessa vez. |
 
+## Bloco de fechamento
+
+Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
+de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+
+- **Produzido**: a lista de TAREFAS do plano em checkbox — uma linha por
+  tarefa, com o resultado ao lado (red/green, asserts, exit code). Essa lista
+  sai **só no fim da fase**, nunca a cada tarefa verde.
+- **Arquivos**: os que a execução tocou, do diff real.
+- **Próximo**: validate (que oferece o e2e antes do portão).
+
 ## PRÓXIMA SKILL
 
 Todas as tarefas verdes → **validate** (que oferece o e2e antes do portão).
