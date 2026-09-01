@@ -72,7 +72,7 @@ time pequeno em projetos web/mobile/api.
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - grafo-inicio-fim | planned | GRAFO no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
-- sync-mecanizado | planned | Sync mecanizado | Os 5 passos mecânicos do sync da validate viram hooks/memory-sync; modelo fica só com os 3 de julgamento | validate, sync, hooks, bookkeeping | skills/validate/, hooks/
+- sync-mecanizado | in-progress | Sync mecanizado | Os 5 passos mecânicos do sync da validate viram ferramenta em hooks/; o modelo fica só com os 3 de julgamento | validate, sync, hooks, bookkeeping, memoria | skills/validate/, hooks/, tests/
 - light-enxuto | delivered | LIGHT enxuto → docs/audora/arquivo/2026-09-01-light-enxuto.md
 - decisoes-vivas-poda | delivered | Poda das decisões vivas → docs/audora/arquivo/2026-09-01-decisoes-vivas-poda.md
 - decisoes-vivas-auditoria | planned | Auditoria das decisões vivas | Auditar as 17 entradas sob critério binário — só marca se um teste da suíte reprovaria a violação, provado por mutação | decisoes-vivas, auditoria, marcacao, criterio-binario | docs/audora/decisoes-vivas.md
