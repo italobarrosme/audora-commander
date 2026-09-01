@@ -21,6 +21,7 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
    Aceitou → skill e2e, volte aqui com o relatório. Recusou → registrar no nó
    `e2e: pulado-pelo-humano` e seguir.
+   Categoria LIGHT: a oferta é condicional — ver `## Fechamento LIGHT`.
 2. **Gate de evidência 1:1** — para CADA critério de aceite do nó, citado
    pelo endereço `<id>/<n>`:
    - evidência automatizada: comando executado agora + saída correspondente
@@ -71,10 +72,38 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - Arquivar o plano em `docs/audora/planos/arquivo/`.
    - HOTFIX: regularizar o registro retroativo (nó `hotfix-pending-record`
      → nó completo).
+   - Categoria LIGHT: rode só os passos com conteúdo — ver `## Fechamento LIGHT`.
 7. **Efeito irreversível fora do repo** (migração em ambiente compartilhado,
    deploy, e-mail, cobrança) — em QUALQUER categoria: preparar o comando
    exato + rollback, apresentar, e o HUMANO executa ou autoriza aquele
    comando específico. Você nunca dispara sozinho.
+
+## Fechamento LIGHT
+
+Demanda LIGHT percorre `execute → validate` e não tem plano-arquivo, escopo
+escrito nem, quase sempre, delta ou decisão durável. O fechamento acompanha o
+risco — mas o que ele NUNCA corta é o **portão humano** com aprovação
+explícita e a **evidência 1:1** por critério. Enxugar é tirar material de
+revisão, nunca tirar a revisão.
+
+- **Oferta de e2e** (item 1): só quando a demanda toca
+  **caminho percorrido pelo usuário** — tela, rota, fluxo, saída de CLI.
+  LIGHT interno (refactor,
+  doc, config, teste) não recebe a oferta. Pedido explícito do humano roda
+  sempre, em qualquer caso.
+- **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff, e
+  1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
+  vivas quando não há nenhuma.
+- **Sync** (item 6): rode só os passos com conteúdo real — `arquivos:` do
+  diff, aprendizados, e nó → `delivered` com arquivamento. Consolidar delta e
+  promover decisões vivas rodam SOMENTE se houver delta ou decisão.
+- **Plano**: LIGHT **não tem plano** para arquivar. Pule a etapa sem listá-la
+  como pendência.
+- **PRD**: promova apenas se o ajuste alterar comportamento que o `PRD.md` já
+  descreve. Não alterando, registre no nó e diga em 1 linha que o PRD não
+  mudou e por quê — silêncio sobre o PRD é proibido.
+
+HOTFIX não usa este caminho: tem o dele, com registro retroativo.
 
 ## Red flags — pare e corrija
 
