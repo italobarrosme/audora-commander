@@ -1,9 +1,9 @@
 ---
 id: decisoes-vivas-poda
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [MEMORY.md, PRD.md, docs/audora/decisoes-vivas.md, docs/audora/planos/plano-decisoes-vivas-poda.md, docs/audora/specs/decisoes-vivas-poda-escopo.md, skills/validate/SKILL.md, tests/test-skills.sh]
 keywords: [decisoes-vivas, poda, duplicacao, drift, regra-de-entrada]
 resumo: Regra de entrada nova para decisoes-vivas.md (so entra o que nao da pra impor por teste/hook/config) e poda das entradas ja impostas ou mortas.
 atualizado-em: 2026-09-01
@@ -70,9 +70,9 @@ Escopo em spec dedicada (categoria HIGH): `docs/audora/specs/decisoes-vivas-poda
 
 ## e2e
 
-pendente
+pulado — 2 revisões adversariais em lugar do e2e (HIGH)
 
 ## feedback-reprovacao
 
 Reprovada na revisão adversarial de 2026-09-01. Achados completos em
-`decisoes-vivas-poda-historico.md` (mesma pasta); a ação está no `## delta`.
+`../arquivo/2026-09-01-decisoes-vivas-poda-historico.md` (mesma pasta); a ação está no `## delta`.

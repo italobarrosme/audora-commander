@@ -83,6 +83,28 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Regra de entrada e guardas das decisões vivas entregues em 2026-09-01 (nó
+`decisoes-vivas-poda`, HIGH). A skill `validate` passa a filtrar o que entra em
+`docs/audora/decisoes-vivas.md`: só é candidata a decisão que NÃO esteja já
+declarada normativamente, **para o mesmo escopo de aplicação**, em artefato que
+o framework lê — e regra que vale para skills futuras não é duplicata de um
+SKILL.md que só a aplica a si mesmo. Se a decisão PODERIA virar teste e o teste
+não existe, a skill manda escrever o teste na mesma demanda ou manter a
+entrada; sumir em silêncio virou proibido. Artefato que trata a matéria como
+fora do próprio escopo não serve de ponteiro. A suíte ganhou guardas para os
+marcadores `[invalidado-em:]` / `[substituido-por:]`: reprovam arquivo ausente
+ou vazio, ponteiro vazio, ponteiro apontando diretório ou arquivo inexistente,
+marcador sem par, marcador em linha indentada e marcador com qualquer formato
+de data — cada caso provado por mutação. Suíte 380 → 387 asserts.
+
+**A auditoria das 17 entradas NÃO foi entregue** e virou o nó
+`decisoes-vivas-auditoria` (`planned`). Duas revisões adversariais reprovaram a
+classificação, em conjuntos diferentes de entradas, e o diagnóstico foi que o
+critério "já declarada normativamente" admite julgamento demais. As 8 marcações
+foram revertidas e `decisoes-vivas.md` voltou byte-idêntico ao estado
+pré-demanda. O nó novo troca julgamento por prova: só marca se um teste da
+suíte reprovaria a violação, verificado por mutação entrada por entrada.
+
 Fechamento proporcional do LIGHT entregue em 2026-09-01 (nó `light-enxuto`,
 MEDIUM): a skill `validate` ganhou a seção `## Fechamento LIGHT`. Uma demanda
 LIGHT não tem plano, escopo escrito nem, quase sempre, delta ou decisão
