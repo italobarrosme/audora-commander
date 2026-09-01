@@ -112,4 +112,10 @@ assert_contains "$e" 'só no fim da fase' "/3 execute imprime tarefas so no fim"
 v="$(cat skills/validate/SKILL.md)"
 assert_contains "$v" 'git diff --name-only' "/4 validate tira arquivos do diff real"
 assert_contains "$v" '**Entrega**' "/4 validate imprime o bloco de entrega"
+# scope-batch/7,/8 — perguntas em lote, com teste de dependencia declarado
+sc="$(cat skills/scope/SKILL.md)"
+assert_not_contains "$sc" 'Nunca duas perguntas na mesma mensagem' "/7 scope sem a regra antiga"
+for s in 'Perguntas — em lote' 'independentes' 'no máximo 4' 'teste de dependência' 'em série'; do
+  assert_contains "$sc" "$s" "/8 scope declara '$s'"
+done
 report
