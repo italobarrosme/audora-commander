@@ -37,6 +37,11 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - **Decisões vivas propostas** (sempre): quais decisões do nó seguem
      valendo para demandas futuras (candidatas a `docs/audora/decisoes-vivas.md`)
      — o humano aprova/corta no portão; o sync (item 6) só executa.
+     **Filtro de entrada**: só é candidata a decisão que NÃO dá para
+     impor por teste, hook ou config. Dá para escrever um teste que a
+     imponha? Então o lugar dela é o teste — prosa duplicada deriva do que
+     descreve e passa a mentir. Descartou por esse motivo? Diga em 1 linha
+     qual artefato já impõe a decisão.
    - **Categoria HIGH** (soma ao anterior): sumário de mudanças por arquivo,
      trechos sensíveis destacados (auth, dinheiro, dados, migração) para
      revisão de código — comportamento E código, não ou.
@@ -59,7 +64,8 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - Preencher `arquivos:` do nó via `git diff --name-only` da demanda — do
      diff real, nunca de memória.
    - Promover para `docs/audora/decisoes-vivas.md` as decisões vivas
-     aprovadas no portão (propostas no roteiro, item 3).
+     aprovadas no portão (propostas no roteiro, item 3) — só as que passaram
+     no filtro de entrada; o sync não reabre o que o item 3 descartou.
    - Consolidar os aprendizados da demanda na seção Aprendizados do
      `MEMORY.md` (skill memory, compactar — dedupe por grep; o que já foi
      registrado na hora pelas fases só é conferido).
