@@ -128,18 +128,29 @@ done
 for s in 'não tem plano' 'caminho percorrido pelo usuário' 'PRD'; do
   assert_contains "$lt" "$s" "/7 caminho LIGHT trata '$s'"
 done
-# decisoes-vivas-poda/5,/6,/7 — regra de entrada e consistencia dos marcadores
+# decisoes-vivas-poda/1,/5,/6,/7,/8,/9,/10 — regra de entrada e marcadores
 vd="$(cat skills/validate/SKILL.md)"
 assert_contains "$vd" 'impor por teste, hook ou config' "/5 validate declara a regra de entrada"
+assert_contains "$vd" 'mesmo escopo de aplicação' "/1 validate declara o discriminador de escopo"
+assert_contains "$vd" 'escreva o teste' "/8 validate manda escrever o teste ou manter a entrada"
 dv='docs/audora/decisoes-vivas.md'
-ents="$(grep '^- 20' "$dv" || true)"   # SO linhas de entrada; o rodape cita os marcadores
-bad="$(printf '%s
-' "$ents" | grep 'invalidado-em' | grep -v 'substituido-por' || true)"
-assert_empty "$bad" "/6 invalidado-em sem substituido-por"
-falta=""
-for ref in $(printf '%s
-' "$ents" | grep -o 'substituido-por: [^]]*' | sed 's/substituido-por: //'); do
-  [ -e "$ref" ] || falta="$falta $ref"
-done
-assert_empty "$falta" "/7 substituido-por aponta arquivo inexistente"
+assert_file "$dv" "/9 arquivo de decisoes vivas existe"
+ents="$(grep '^- 20' "$dv" 2>/dev/null || true)"
+[ -n "$ents" ] && ok || ko "/9 decisoes-vivas.md sem nenhuma entrada"
+# marcador REAL tem data (20..); o rodape usa o placeholder AAAA-MM-DD e nao casa
+marc="$(grep '\[invalidado-em: 20' "$dv" 2>/dev/null || true)"
+if [ -n "$marc" ]; then
+  bad="$(printf '%s
+' "$marc" | grep -v '\[substituido-por: [^] ]' || true)"
+  assert_empty "$bad" "/6+/10 invalidado-em sem substituido-por preenchido"
+  printf '%s
+' "$marc" | grep -o '\[substituido-por: [^]]*\]' | sed 's/\[substituido-por: //; s/\]$//' > "$SP/refs.txt"
+  falta=""
+  while IFS= read -r ref; do
+    [ -f "$ref" ] || falta="$falta|$ref"
+  done < "$SP/refs.txt"
+  assert_empty "$falta" "/7+/10 substituido-por deve apontar ARQUIVO existente"
+else
+  ok; ok
+fi
 report
