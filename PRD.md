@@ -83,6 +83,24 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Bloco de fechamento entregue em 2026-08-31 (nó `resumo-de-fase`, MEDIUM,
+versão 0.7.0): toda skill de FASE passa a encerrar imprimindo no terminal um
+bloco Markdown padronizado — título `<id> · <fase> → <próxima>`, checkbox das
+fases com resumo de até 8 palavras, o que a fase produziu, arquivos tocados
+(caminho real e existente) e próximo passo. A execute fecha com a lista de
+TAREFAS em checkbox, só no fim da fase; a validate aprovada soma o bloco
+**Entrega** com tabela critério → veredito e arquivos do `git diff --name-only`
+real. Categoria LIGHT/HOTFIX omite da lista as fases que não percorre, e fase
+interrompida, bloqueada ou reprovada imprime o bloco mesmo assim, desmarcada e
+com o motivo em 1 linha. O formato é schema, então vive só em
+`templates/bloco-fechamento-template.md` (110 linhas) e cada skill de fase
+aponta para ele em ~8 linhas — nunca cópia. `memory` e `worktree` NÃO imprimem:
+são skills-ferramenta e devolvem à fase chamadora. A Constituição ganhou o
+sétimo padrão obrigatório de skill de fase. Suíte 334 → 365 asserts, com teste
+negativo provando os dois guardas. e2e em duas sessões reais 0.7.0 provou /1,
+/5, /6 e /7 — o contraste LIGHT (3 fases listadas) vs HIGH (5) é a prova do /5;
+/2 foi refinado por delta ao descobrir que contradizia /7 em fase interrompida.
+
 Skill `memory` fatiada em 2026-08-31 (nó `memory-fatiada`, MEDIUM, versão
 0.6.0): a skill mais chamada do framework (7 das 9 a invocam, 18 pontos de
 chamada) virou **roteador + references**. `SKILL.md` caiu de 226 para 143

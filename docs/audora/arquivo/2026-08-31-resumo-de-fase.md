@@ -1,9 +1,9 @@
 ---
 id: resumo-de-fase
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, MEMORY.md, PRD.md, docs/audora/e2e/e2e-resumo-de-fase.md, docs/audora/planos/plano-resumo-de-fase.md, skills/audora-commander/SKILL.md, skills/debug/SKILL.md, skills/e2e/SKILL.md, skills/execute/SKILL.md, skills/plan/SKILL.md, skills/scope/SKILL.md, skills/validate/SKILL.md, templates/bloco-fechamento-template.md, tests/test-docs.sh, tests/test-skills.sh, tests/test-templates.sh]
 keywords: [feedback, visibilidade, resumo, checkbox, terminal, fase]
 resumo: Toda fase fecha imprimindo no terminal um bloco Markdown com o que foi feito, o que falta e as tarefas em checkbox — hoje o humano não enxerga o que está sendo entregue.
 atualizado-em: 2026-08-31
@@ -27,8 +27,9 @@ sem abrir nenhum arquivo.
   o que a fase produziu, arquivos tocados e próximo passo
 - **resumo-de-fase/2** — QUANDO o bloco de fechamento listar as fases O
   SISTEMA DEVE marcar `[x]` nas concluídas e `[ ]` nas pendentes, com a fase
-  recém-concluída em negrito e um resumo de até 8 palavras ao lado de cada
-  concluída
+  EM FOCO em negrito — a recém-concluída; ou, quando a fase foi interrompida,
+  bloqueada ou aguarda portão, a própria fase em curso — e um resumo de até 8
+  palavras ao lado de cada concluída
 - **resumo-de-fase/3** — QUANDO a fase execute terminar O SISTEMA DEVE
   imprimir a lista de TAREFAS do plano em checkbox, uma linha por tarefa com o
   resultado ao lado, e NÃO imprimir esse bloco a cada tarefa individual
@@ -75,12 +76,8 @@ Tradução dos blocos para inglês. Alterar o hook SessionStart ou os manifests.
 
 ## delta
 
-- MODIFICADO (2026-08-31): **/2** — de "com a fase recém-concluída em negrito"
-  para "com a fase EM FOCO em negrito (a recém-concluída; ou, quando a fase foi
-  interrompida, bloqueada ou aguarda portão, a própria fase em curso)". Motivo:
-  /7 manda imprimir o bloco em fase interrompida, situação em que NÃO existe fase
-  recém-concluída para destacar. As duas corridas do e2e destacaram a fase em
-  foco, que é a informação útil. /2 e /7 se contradiziam na letra.
+<!-- Consolidado no corpo em 2026-08-31 (sync da validate): /2 refinado
+     para a fase EM FOCO, resolvendo a contradição com /7. -->
 
 ## e2e
 

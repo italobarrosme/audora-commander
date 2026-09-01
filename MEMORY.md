@@ -58,12 +58,13 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-31 | e2e | Capturar `claude -p` com `| tail -N` corta a evidência e leva a veredito parcial — redirecionar para arquivo e ler inteiro.
 - 2026-08-31 | execute | Teste negativo que suja arquivo ainda NÃO commitado: `git checkout <arquivo>` restaura do ÍNDICE e apaga o trabalho em andamento. Commitar o green ANTES de provar que o guarda morde, ou copiar para o scratchpad e restaurar de lá.
 - 2026-08-31 | validate | Total de asserts da suíte precisa ser SOMADO da saída real (`grep PASS= | awk`) — `run.sh` só imprime por arquivo, e citar o total de cabeça inflou o número em 30 no commit e no PRD. Comparar bases com `git archive` também subconta 3: `test-dogfood.sh` depende do repo git.
+- 2026-08-31 | validate | O post-commit do Graphify dispara UMA reconstrução em background por commit; demanda com muitos commits empilha processos Python e a suíte parece TRAVAR (>5 min contra ~30s normais). Antes de debugar teste que "pendurou", rodar os arquivos isolados: se cada um passa, a causa é contenção, não o teste.
 
 ## Índice de nós [carga: sempre]
 
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
-- resumo-de-fase | in-progress | Resumo de fase | Toda fase fecha imprimindo no terminal um bloco Markdown com o que foi feito, o que falta e as tarefas em checkbox — hoje o humano não enxerga o que está sendo entregue | feedback, visibilidade, resumo, checkbox, terminal, fase | skills/
+- resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md
 - memory-fatiada | delivered | Memory fatiada → docs/audora/arquivo/2026-08-31-memory-fatiada.md
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
