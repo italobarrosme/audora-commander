@@ -83,6 +83,23 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Perguntas em lote entregues em 2026-09-01 (nó `scope-batch`, MEDIUM): a fase
+`scope` deixa de mandar "uma por vez / nunca duas perguntas na mesma mensagem"
+e passa a agrupar as INDEPENDENTES, no máximo 4 por lote (limite do
+`AskUserQuestion`, documentado como limite de ferramenta e não preferência).
+O que decide lote vs série é um **teste de dependência** explícito: a resposta
+de uma pergunta muda o enunciado, as opções ou a própria existência da outra?
+Sim, série; não, mesmo lote. Decisão de formato ou layout passa a exigir
+PREVIEW de cada alternativa; mais de 4 lacunas prioriza as que mais mudam
+escopo e AVISA que há lote seguinte, em vez de truncar em silêncio; cada
+escolha vira uma linha em `## decisoes` do nó com a alternativa descartada.
+Red flag nova cobre o excesso oposto (agrupar perguntas dependentes gera
+resposta sobre premissa errada). O gargalo atacado é wall-clock: a fase
+custava `N perguntas × tempo de resposta humana`. Intocados por
+fora-de-escopo: o portão de escopo, o marcador `[PRECISA-CLARIFICAR]` e o
+direito de não responder — mudou a cadência, nunca o direito. Suíte
+365 → 371 asserts, com teste negativo. e2e pulado por decisão humana.
+
 Bloco de fechamento entregue em 2026-08-31 (nó `resumo-de-fase`, MEDIUM,
 versão 0.7.0): toda skill de FASE passa a encerrar imprimindo no terminal um
 bloco Markdown padronizado — título `<id> · <fase> → <próxima>`, checkbox das

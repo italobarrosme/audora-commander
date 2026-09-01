@@ -1,9 +1,9 @@
 ---
 id: scope-batch
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [MEMORY.md, PRD.md, docs/audora/planos/plano-scope-batch.md, skills/scope/SKILL.md, tests/test-skills.sh]
 keywords: [scope, perguntas, wall-clock, latencia, lote]
 resumo: Fase scope agrupa até 4 perguntas independentes numa mensagem em vez de uma-por-vez — o gargalo da fase é latência humana, não trabalho.
 atualizado-em: 2026-08-31
@@ -68,6 +68,6 @@ de código.
 
 ## e2e
 
-pendente
+pulado-pelo-humano (2026-09-01, portão final)
 
 ## feedback-reprovacao
