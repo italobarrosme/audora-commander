@@ -1,9 +1,9 @@
 ---
 id: light-enxuto
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [MEMORY.md, PRD.md, docs/audora/planos/plano-light-enxuto.md, skills/validate/SKILL.md, tests/test-skills.sh]
 keywords: [light, cerimonia, validate, roteamento, fechamento]
 resumo: Demanda LIGHT deixa de pagar o fechamento desenhado para MEDIUM — o sync de 8 operações tem passo vácuo e passos quase sempre vazios.
 atualizado-em: 2026-09-01
@@ -80,6 +80,6 @@ não percorre.
 
 ## e2e
 
-pendente
+pulado-pelo-humano (2026-09-01, portão final)
 
 ## feedback-reprovacao

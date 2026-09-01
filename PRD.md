@@ -83,6 +83,23 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Fechamento proporcional do LIGHT entregue em 2026-09-01 (nó `light-enxuto`,
+MEDIUM): a skill `validate` ganhou a seção `## Fechamento LIGHT`. Uma demanda
+LIGHT não tem plano, escopo escrito nem, quase sempre, delta ou decisão
+durável — mas vinha pagando o sync de 8 operações desenhado para MEDIUM/HIGH,
+com um passo vácuo (arquivar plano inexistente) e outros quase sempre vazios.
+Agora: a oferta de e2e só aparece quando a demanda toca caminho percorrido
+pelo usuário; o roteiro vira versão curta (evidência 1:1 + diff + 1 linha de
+como conferir); o sync roda só os passos com conteúdo real; o plano
+inexistente não vira pendência; e o `PRD.md` só recebe promoção se o ajuste
+alterar comportamento que ele já descreve — com silêncio sobre o PRD
+explicitamente proibido. O que NÃO encolhe está na primeira linha da seção:
+portão humano com aprovação explícita e evidência 1:1 por critério. O critério
+/8 é guarda contra erosão futura: a suíte assere DENTRO da seção (extraída por
+`awk`), porque no arquivo inteiro as duas frases já aparecem no fluxo geral e o
+guarda passaria por acidente. MEDIUM e HIGH intocados. Suíte 371 → 377
+asserts, com teste negativo. e2e pulado por decisão humana.
+
 Perguntas em lote entregues em 2026-09-01 (nó `scope-batch`, MEDIUM): a fase
 `scope` deixa de mandar "uma por vez / nunca duas perguntas na mesma mensagem"
 e passa a agrupar as INDEPENDENTES, no máximo 4 por lote (limite do
