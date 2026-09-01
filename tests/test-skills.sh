@@ -137,8 +137,11 @@ dv='docs/audora/decisoes-vivas.md'
 assert_file "$dv" "/9 arquivo de decisoes vivas existe"
 ents="$(grep '^- 20' "$dv" 2>/dev/null || true)"
 [ -n "$ents" ] && ok || ko "/9 decisoes-vivas.md sem nenhuma entrada"
-# marcador REAL tem data (20..); o rodape usa o placeholder AAAA-MM-DD e nao casa
-marc="$(grep '\[invalidado-em: 20' "$dv" 2>/dev/null || true)"
+# exclui o bloco de comentario HTML (o rodape cita os marcadores no texto das
+# regras); assim o guarda pega marcador com QUALQUER data e em linha indentada
+corpo="$(awk '/<!--/{c=1} !c; /-->/{c=0}' "$dv" 2>/dev/null || true)"
+marc="$(printf '%s
+' "$corpo" | grep '\[invalidado-em:' || true)"
 if [ -n "$marc" ]; then
   bad="$(printf '%s
 ' "$marc" | grep -v '\[substituido-por: [^] ]' || true)"

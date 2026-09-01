@@ -56,6 +56,18 @@ Escopo em spec dedicada (categoria HIGH): `docs/audora/specs/decisoes-vivas-poda
   reprovar `substituido-por` vazio, apontando diretório, ou fora do par de
   colchetes. Motivo: `[substituido-por: ]` escapava dos dois guardas.
 
+- REMOVIDO (2026-09-01): **/2**, **/3** e **/4** saem desta demanda para o nó
+  `decisoes-vivas-auditoria`. Motivo: duas revisões adversariais reprovaram a
+  AUDITORIA por erro de classificação, em conjuntos diferentes de entradas, e o
+  diagnóstico é que o critério "já declarada normativamente" não é operável. A
+  infraestrutura (regra na validate + guardas) fechou e é o que esta demanda
+  entrega. As 8 marcações foram revertidas: `decisoes-vivas.md` voltou
+  byte-idêntico ao estado pré-demanda (17 entradas, 0 marcadas).
+- MODIFICADO (2026-09-01): o guarda de /6 e /10 deixa de ancorar em
+  `[invalidado-em: 20` e passa a excluir o bloco de comentário HTML por `awk`.
+  Motivo: a âncora `20` fechava o D4 mas abria o N1 — marcador com data
+  não-`20xx`, e até a linha do rodapé copiada literal, escapavam do guarda.
+
 ## e2e
 
 pendente
