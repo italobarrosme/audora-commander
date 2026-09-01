@@ -20,9 +20,21 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
 1. **Contexto**: carregar constituição + nós relacionados (skill memory,
    operação carregar-contexto). Nó da demanda já existe (criado pela porta de
    entrada).
-2. **Perguntas — uma por vez.** Só sobre comportamento: o que o usuário vê,
-   o que o sistema faz, o que acontece no erro. Prefira múltipla escolha
-   quando as opções são enumeráveis. Nunca duas perguntas na mesma mensagem.
+2. **Perguntas — em lote.** Só sobre comportamento: o que o usuário vê, o que
+   o sistema faz, o que acontece no erro. Prefira múltipla escolha quando as
+   opções são enumeráveis; decisão de formato ou layout vai com PREVIEW de
+   cada alternativa, nunca descrita em prosa.
+   - Antes de agrupar, aplique o **teste de dependência**, que decide lote vs
+     série: a resposta de uma pergunta muda o enunciado, as opções ou a
+     própria existência da outra?
+     **Sim** → em série, uma de cada vez. **Não** → mesmo lote.
+   - Perguntas independentes vão juntas, **no máximo 4** por lote (limite da
+     ferramenta do harness, não preferência).
+   - Mais de 4 lacunas independentes → priorize as que mais mudam o escopo e
+     diga que há lote seguinte. Truncar em silêncio é pior que perguntar duas
+     vezes.
+   - Respondido o lote, cada escolha vira uma linha em `## decisoes` do nó,
+     com a alternativa descartada e o motivo.
 3. **Lacuna vira marcador, nunca suposição.** Informação que falta e você não
    consegue obter agora → escrever `[PRECISA-CLARIFICAR: <a dúvida exata>]` no
    artefato. É PROIBIDO substituir o marcador por uma suposição plausível — a
@@ -77,6 +89,7 @@ fora-de-escopo?
 | "Detalhe esse depois, na implementação" | Depois o contexto é outro e a suposição vira código. Feche agora ou marque. |
 | "O escopo tá claro na conversa, não preciso escrever" | Conversa morre no /clear. Artefato escrito ou escopo não existe. |
 | "Critério em prosa serve, EARS é burocracia" | Prosa aceita ambiguidade; EARS não. Ambiguidade hoje é retrabalho amanhã. |
+| "Mando as 4 perguntas de uma vez, ganho tempo" | Só se forem independentes. Pergunta que depende de outra, em lote, gera resposta sobre premissa errada. |
 | "Apresento o escopo e já começo o plano" | Portão é portão. Apresente e ESPERE o sim. |
 
 ## Bloco de fechamento
