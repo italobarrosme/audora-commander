@@ -153,4 +153,10 @@ if [ -n "$marc" ]; then
 else
   ok; ok
 fi
+# decisoes-vivas-poda/8 — as 2 decisoes que apontam skills/e2e/SKILL.md ganham
+# guarda de verdade: sem isto o ponteiro e prosa->prosa e pode derivar (achado B3).
+e2s="$(cat skills/e2e/SKILL.md)"
+assert_contains "$e2s" 'docker-compose.e2e.yml' "/8 e2e fixa o nome do compose de e2e"
+assert_contains "$e2s" 'nunca escolher sozinho' "/8 e2e exige perguntar a ferramenta nao-web"
+assert_contains "$e2s" 'Registrar a escolha na' "/8 e2e registra a escolha na Constituicao"
 report
