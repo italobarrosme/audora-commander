@@ -118,4 +118,14 @@ assert_not_contains "$sc" 'Nunca duas perguntas na mesma mensagem' "/7 scope sem
 for s in 'Perguntas — em lote' 'independentes' 'no máximo 4' 'teste de dependência' 'em série'; do
   assert_contains "$sc" "$s" "/8 scope declara '$s'"
 done
+# light-enxuto/7,/8 — caminho de fechamento LIGHT, asserido DENTRO da secao
+vl="$(cat skills/validate/SKILL.md)"
+assert_contains "$vl" '## Fechamento LIGHT' "/7 validate declara o caminho LIGHT"
+lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+for s in 'portão humano' 'evidência 1:1'; do
+  assert_contains "$lt" "$s" "/8 caminho LIGHT preserva '$s'"
+done
+for s in 'não tem plano' 'caminho percorrido pelo usuário' 'PRD'; do
+  assert_contains "$lt" "$s" "/7 caminho LIGHT trata '$s'"
+done
 report
