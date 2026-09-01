@@ -59,6 +59,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-31 | execute | Teste negativo que suja arquivo ainda NÃO commitado: `git checkout <arquivo>` restaura do ÍNDICE e apaga o trabalho em andamento. Commitar o green ANTES de provar que o guarda morde, ou copiar para o scratchpad e restaurar de lá.
 - 2026-08-31 | validate | Total de asserts da suíte precisa ser SOMADO da saída real (`grep PASS= | awk`) — `run.sh` só imprime por arquivo, e citar o total de cabeça inflou o número em 30 no commit e no PRD. Comparar bases com `git archive` também subconta 3: `test-dogfood.sh` depende do repo git.
 - 2026-08-31 | validate | O post-commit do Graphify dispara UMA reconstrução em background por commit; demanda com muitos commits empilha processos Python e a suíte parece TRAVAR (>5 min contra ~30s normais). Antes de debugar teste que "pendurou", rodar os arquivos isolados: se cada um passa, a causa é contenção, não o teste.
+- 2026-09-01 | validate | `grep -c` sai **1** quando o count é 0, então encadear com `&&` quebra o comando exatamente quando a verificação de ausência PASSA — o resto não roda e você lê log velho achando que a suíte reprovou. Em bloco de evidência, separar com `;` ou nova linha, nunca `&&`.
 
 ## Índice de nós [carga: sempre]
 
