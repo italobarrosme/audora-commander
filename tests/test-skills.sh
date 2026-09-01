@@ -128,4 +128,18 @@ done
 for s in 'não tem plano' 'caminho percorrido pelo usuário' 'PRD'; do
   assert_contains "$lt" "$s" "/7 caminho LIGHT trata '$s'"
 done
+# decisoes-vivas-poda/5,/6,/7 — regra de entrada e consistencia dos marcadores
+vd="$(cat skills/validate/SKILL.md)"
+assert_contains "$vd" 'impor por teste, hook ou config' "/5 validate declara a regra de entrada"
+dv='docs/audora/decisoes-vivas.md'
+ents="$(grep '^- 20' "$dv" || true)"   # SO linhas de entrada; o rodape cita os marcadores
+bad="$(printf '%s
+' "$ents" | grep 'invalidado-em' | grep -v 'substituido-por' || true)"
+assert_empty "$bad" "/6 invalidado-em sem substituido-por"
+falta=""
+for ref in $(printf '%s
+' "$ents" | grep -o 'substituido-por: [^]]*' | sed 's/substituido-por: //'); do
+  [ -e "$ref" ] || falta="$falta $ref"
+done
+assert_empty "$falta" "/7 substituido-por aponta arquivo inexistente"
 report
