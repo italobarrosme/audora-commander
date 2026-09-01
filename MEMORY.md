@@ -74,7 +74,7 @@ time pequeno em projetos web/mobile/api.
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | planned | Sync mecanizado | Os 5 passos mecânicos do sync da validate viram hooks/memory-sync; modelo fica só com os 3 de julgamento | validate, sync, hooks, bookkeeping | skills/validate/, hooks/
 - light-enxuto | delivered | LIGHT enxuto → docs/audora/arquivo/2026-09-01-light-enxuto.md
-- decisoes-vivas-poda | planned | Poda das decisões vivas | Regra de entrada nova (só entra decisão que NÃO dá pra impor por teste/hook/config) + poda das ~8 já impostas ou mortas, com invalidado-em apontando para o teste que virou a verdade | decisoes-vivas, poda, duplicacao, drift | docs/audora/decisoes-vivas.md, templates/
+- decisoes-vivas-poda | in-progress | Poda das decisões vivas | Regra de entrada nova (só entra decisão que NÃO dá pra impor por teste/hook/config) e poda das entradas já impostas ou mortas | decisoes-vivas, poda, duplicacao, drift, regra-de-entrada | docs/audora/decisoes-vivas.md, templates/, skills/validate/
 - skill-memory | discarded | Skill MEMORY | Absorvido por memory-graphify em 2026-08-26 (memory = memória do produto + aprendizados) | memoria, aprendizado, skill | —
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
