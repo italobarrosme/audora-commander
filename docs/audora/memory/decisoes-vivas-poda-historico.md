@@ -45,3 +45,31 @@ achados verificados de novo por mim, um a um:
 **Frente A limpa:** `diff` do original contra a versão atual com os sufixos
 removidos deu VAZIO — nenhuma linha apagada, reordenada ou alterada. /2 está
 atendido.
+
+
+## Segunda revisão adversarial (2026-09-01) — reprovada de novo
+
+**Fechados da 1ª rodada, confirmados por mutação:** D1, D2, D3, D4, D5, D6,
+B1, C2, E1, /2. Baseline `PASS=210 FAIL=0`.
+
+**Achados altos novos:**
+- **N1 (regressão minha)**: a âncora `[invalidado-em: 20` que fechou o D4 abriu
+  este — marcador com data não-`20xx` escapa do guarda INTEIRO.
+  `[invalidado-em: hoje]` sem `substituido-por` → `PASS=210 FAIL=0`. A linha do
+  próprio rodapé, copiada literal, também passa.
+- **N2**: as 3 decisões de `skill-worktree` ficaram intocadas, mas têm 6 asserts
+  em `tests/test-worktree.sh` — MAIS cobertura que o par `e2e` que foi marcado.
+  A regra de "mesmo escopo" não discrimina os dois grupos.
+- **N3**: `Placeholders <...> traduzem` está morta e contradita e ficou
+  intocada — `tests/test-docs.sh:23` força os blocos EN/PT byte-idênticos (md5
+  confirmado igual), e o único placeholder aparece não-traduzido nos dois.
+  Traduzir deixaria a suíte vermelha. Mesma classe do C1.
+
+**Médios:** N5 (asserts do e2e cortam antes da parte que sustenta a decisão),
+N6 (ponteiro da `debug` cobre só metade — "dois modos" segue vivo e sem teste),
+N7 (ponteiro do PT→EN não declara nada e o rabo da decisão vale além),
+N4 (troquei o ponteiro dos identificadores EN por um mais fraco).
+
+**Diagnóstico:** o critério "já declarada normativamente" não é operável —
+duas rodadas, dois conjuntos diferentes de erro de classificação. A
+infraestrutura (regra na validate + guardas) fechou; a AUDITORIA não.
