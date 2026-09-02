@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Script auxiliar (chamado pela skill validate via Bash, NÃO é hook do harness).
+# Uso: memory-sync <id-do-no>     — rodar da raiz do projeto-alvo.
+#
+# Descobre e IMPRIME o que o sync mecânico da validate precisa:
+#   1. a linha `arquivos:` do nó, montada do diff real da demanda
+#   2. a linha nova do índice, no formato `delivered`
+#   3. o comando de arquivar o plano (se houver plano)
+#
+# NUNCA escreve. Quem aplica é o modelo: as duas linhas com Edit — é isso que
+# faz `memory-validate` e `memory-guard` dispararem no PostToolUse — e o
+# `git mv` com Bash. Um script escrevendo por fora sairia do alcance dos hooks.
+#
+# Pré-condição: o modelo já virou `estado: delivered` e moveu o nó para
+# docs/audora/arquivo/AAAA-MM-DD-<id>.md.
+#
+# Exit 0 = imprimiu o que fazer, ou não havia nada a fazer.
+# Exit 1 = pré-condição não bateu; nada é impresso além do motivo (stderr).
+set -uo pipefail
+
+die() { echo "memory-sync: $*" >&2; exit 1; }
+
+id="${1:-}"
+[ -n "$id" ] || die "uso: memory-sync <id-do-no>"
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+  || die "não é um repositório git — abortando sem emitir nada"
+[ -f MEMORY.md ] || die "MEMORY.md não encontrado na raiz do projeto"
+
+# --- pré-condição: nó já arquivado, com exatamente 1 match ---------------
+# O glob termina em -<id>.md, então irmãos como -<id>-historico.md e
+# -<id>-escopo.md não casam.
+shopt -s nullglob
+cands=(docs/audora/arquivo/*-"$id".md)
+shopt -u nullglob
+case "${#cands[@]}" in
+  0) die "nó ainda não arquivado: esperava docs/audora/arquivo/AAAA-MM-DD-$id.md — o modelo vira o estado e faz o git mv ANTES de chamar este script" ;;
+  1) no="${cands[0]}" ;;
+  *) die "ambíguo: ${#cands[@]} arquivos casam docs/audora/arquivo/*-$id.md — resolva à mão" ;;
+esac
+
+# --- pré-condição: o id tem linha no índice -----------------------------
+# Comparação literal (index==1), nunca regex: id com ponto (plugin-v0.1.0)
+# casaria vizinhos numa regex ingênua.
+linha="$(awk -v id="$id" 'index($0, "- " id " | ") == 1 { print; exit }' MEMORY.md)"
+[ -n "$linha" ] || die "id '$id' não tem linha no índice de MEMORY.md"
+
+estado_idx="$(printf '%s' "$linha" | awk -F' \\| ' '{print $2}')"
+titulo="$(printf '%s' "$linha" | awk -F' \\| ' '{print $3}')"
+[ -n "$titulo" ] || die "não consegui ler o título na linha do índice de '$id'"
+
+plano="docs/audora/planos/plano-$id.md"
+arq_atual="$(awk '/^arquivos:/ { print; exit }' "$no")"
+
+# --- idempotência: já feito? --------------------------------------------
+if [ "$estado_idx" = "delivered" ] \
+   && [ "$arq_atual" != "arquivos: []" ] \
+   && [ ! -f "$plano" ]; then
+  echo "memory-sync: nada a fazer — índice já em delivered, arquivos: preenchido e plano arquivado."
+  exit 0
+fi
+
+# --- base do diff --------------------------------------------------------
+# O commit que CRIOU o arquivo do nó delimita a demanda. Derivar da mensagem
+# de commit (--grep) casa commits de outras demandas que só CITAM o id.
+cria="$(git log --diff-filter=A --format=%H -- "docs/audora/memory/$id.md" "$no" 2>/dev/null | tail -1)"
+[ -n "$cria" ] || die "não achei o commit que criou o arquivo do nó '$id'"
+
+base="$(git rev-parse "$cria^" 2>/dev/null || true)"
+[ -n "$base" ] || base="$(git hash-object -t tree /dev/null)"   # commit-raiz
+
+lista="$(git diff --name-only "$base..HEAD" 2>/dev/null)" \
+  || die "git diff falhou entre $base e HEAD"
+[ -n "$lista" ] || die "diff vazio entre $base e HEAD — não emito arquivos: vazio"
+
+# o próprio nó, no caminho de antes do arquivamento, não entra na lista
+lista="$(printf '%s\n' "$lista" | grep -vxF "docs/audora/memory/$id.md" || true)"
+[ -n "$lista" ] || die "lista vazia depois de excluir o próprio nó — não emito arquivos: vazio"
+
+arq="$(printf '%s\n' "$lista" | awk '{ printf "%s%s", (NR>1 ? ", " : ""), $0 }')"
+
+# --- saída ---------------------------------------------------------------
+echo "# memory-sync — $id"
+echo "# Aplique as duas linhas com Edit (os hooks disparam no PostToolUse)."
+echo
+echo "## 1. arquivos: em $no"
+echo "arquivos: [$arq]"
+echo "# NOTA: esta lista é do que já está commitado. O próprio commit do sync
+#       ainda vai tocar PRD.md (se houver promoção) e o nó em $no —
+#       acrescente à lista o que se aplicar."
+echo
+echo "## 2. linha do índice em MEMORY.md"
+echo "de:   $linha"
+echo "para: - $id | delivered | $titulo → $no"
+echo
+if [ -f "$plano" ]; then
+  echo "## 3. arquivar o plano"
+  echo "mkdir -p docs/audora/planos/arquivo && git mv $plano docs/audora/planos/arquivo/"
+else
+  echo "## 3. plano: não existe (demanda LIGHT) — nada a arquivar"
+fi
+exit 0

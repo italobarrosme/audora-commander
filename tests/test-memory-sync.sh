@@ -37,7 +37,12 @@ Fixture.
 - no-x-historico | planned | Vizinho | nao pode ser tocado | k | s/
 M
   printf 'a\n' > alfa.txt
-  git add -A >/dev/null 2>&1 && git commit -qm base >/dev/null 2>&1 || return 1
+  # A mensagem cita 'no-x' DE PROPOSITO, num commit ANTERIOR a criacao do no.
+  # E o cenario do achado 1: no repo real, 7aaec1e ('registra 4 nos') cita os
+  # quatro ids. Derivar a base por --grep pegaria ESTE commit e traria
+  # alfa.txt para a lista. Sem isto, o teste nao distingue a derivacao certa
+  # da errada — verificado por mutacao.
+  git add -A >/dev/null 2>&1 && git commit -qm "chore(memory): registra os nos no-x e no-x-historico" >/dev/null 2>&1 || return 1
   # commit que CRIA o arquivo do no — daqui sai a base do diff
   printf -- '---\nid: no-x\nestado: in-progress\norigem: humano\ndepende-de: []\narquivos: []\nkeywords: [k1]\nresumo: r\natualizado-em: 2026-09-02\n---\n\n# no-x\n' > docs/audora/memory/no-x.md
   git add -A >/dev/null 2>&1 && git commit -qm "docs(no-x): abre o no" >/dev/null 2>&1 || return 1
@@ -114,6 +119,19 @@ git add -A >/dev/null 2>&1; git commit -qm irmaos >/dev/null 2>&1
 bash "$SYNC" no-x > "$SP/o8" 2>&1; c8=$?
 assert_eq 0 "$c8" "/2 glob ambiguo nao confunde o script"
 assert_contains "$(cat "$SP/o8")" '→ docs/audora/arquivo/2026-09-02-no-x.md' "/2 aponta o NO, nao o historico nem a spec"
+
+# CASO 9 — o commit do sync toca arquivos que o script NAO pode ver ainda
+# (PRD.md promovido depois, e o proprio no no caminho novo). O script tem que
+# AVISAR com todas as letras, senao a lista sai incompleta em silencio.
+# Descoberto reproduzindo o sync real do light-enxuto num clone: a lista do
+# script perdia PRD.md contra a que eu tinha escrito a mao.
+# ATENCAO: nao assere so 'PRD.md' — ele ja aparece no diff da fixture e o
+# assert passaria por vacuidade, sem provar aviso nenhum.
+fx
+bash "$SYNC" no-x > "$SP/o9" 2>&1
+o9="$(cat "$SP/o9")"
+assert_contains "$o9" 'acrescente à lista' "/1 avisa que a lista nao ve o commit do sync"
+assert_contains "$o9" 'PRD.md (se houver promoção)' "/1 nomeia o PRD como candidato"
 
 cd "$ROOT" || exit 1
 assert_eq "$REAL_HEAD" "$(git rev-parse HEAD 2>/dev/null || echo sem-git)" "/11 repositorio real intocado pelos testes"
