@@ -162,4 +162,10 @@ e2s="$(cat skills/e2e/SKILL.md)"
 assert_contains "$e2s" 'docker-compose.e2e.yml' "/8 e2e fixa o nome do compose de e2e"
 assert_contains "$e2s" 'nunca escolher sozinho' "/8 e2e exige perguntar a ferramenta nao-web"
 assert_contains "$e2s" 'Registrar a escolha na' "/8 e2e registra a escolha na Constituicao"
+# sync-mecanizado/9 — a validate aponta o gerador e mantem os 3 de julgamento
+vs="$(cat skills/validate/SKILL.md)"
+assert_contains "$vs" 'hooks/memory-sync' "/9 validate aponta o script"
+assert_contains "$vs" 'aplique com Edit' "/9 validate diz para aplicar com Edit (hooks disparam)"
+assert_contains "$vs" 'julgamento seguem com você' "/9 validate mantem os 3 passos de julgamento explicitos"
+assert_file hooks/memory-sync "/9 o script existe"
 report

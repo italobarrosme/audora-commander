@@ -67,6 +67,15 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
      novas no plano, demanda continua `in-progress`.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
    direto):
+   Vire `estado: delivered` e faça o `git mv` do nó (e do `-historico.md`, se
+   houver) PRIMEIRO; depois rode `bash "<raiz do plugin>/hooks/memory-sync" <id>`.
+   Ele descobre e imprime `arquivos:` do diff real, a linha nova do índice e o
+   comando de arquivar o plano — e não escreve nada. **Aplique com Edit** as
+   duas linhas: é o `Edit` que faz `memory-validate` e `memory-guard`
+   dispararem no PostToolUse. Ele aborta sem emitir nada se alguma
+   pré-condição não bater; leia o motivo e corrija antes de insistir.
+   Os três passos de julgamento seguem com você: consolidar o `delta` no
+   corpo, escolher as decisões vivas e redigir o resumo do `PRD.md`.
    - Consolidar o bloco `delta` no corpo do nó (skill memory).
    - Preencher `arquivos:` do nó via `git diff --name-only` da demanda — do
      diff real, nunca de memória.
