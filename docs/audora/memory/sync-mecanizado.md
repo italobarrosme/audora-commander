@@ -70,3 +70,6 @@ completos em `sync-mecanizado-historico.md`. Reabertura:
 pendente
 
 ## feedback-reprovacao
+
+Reprovada na 2ª revisão adversarial (do diff, 2026-09-03): 4 altos e 24 de 44
+mutações passando verde. Detalhe em `sync-mecanizado-historico.md`.
