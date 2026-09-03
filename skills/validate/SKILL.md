@@ -66,35 +66,32 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - **Aprovação parcial** → o aceito segue o item 6; o resto vira etapas
      novas no plano, demanda continua `in-progress`.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
-   direto):
-   Vire `estado: delivered` e faça o `git mv` do nó (e do `-historico.md`, se
-   houver) PRIMEIRO; depois rode `bash "<raiz do plugin>/hooks/memory-sync" <id>`.
-   Ele descobre e imprime `arquivos:` do diff real, a linha nova do índice e o
-   comando de arquivar o plano — e não escreve nada. **aplique com Edit** as
-   duas linhas: é o `Edit` que faz `memory-validate` e `memory-guard`
-   dispararem no PostToolUse. Ele aborta sem emitir nada se alguma
-   pré-condição não bater; leia o motivo e corrija antes de insistir.
-   Os três passos de julgamento seguem com você: consolidar o `delta` no
-   corpo, escolher as decisões vivas e redigir o resumo do `PRD.md`.
-   - Consolidar o bloco `delta` no corpo do nó (skill memory).
-   - Preencher `arquivos:` do nó via `git diff --name-only` da demanda — do
-     diff real, nunca de memória.
-   - Promover para `docs/audora/decisoes-vivas.md` as decisões vivas
-     aprovadas no portão (propostas no roteiro, item 3) — só as que passaram
-     no filtro de entrada; o sync não reabre o que o item 3 descartou.
-   - Consolidar os aprendizados da demanda na seção Aprendizados do
-     `MEMORY.md` (skill memory, compactar — dedupe por grep; o que já foi
-     registrado na hora pelas fases só é conferido).
-   - Nó → `delivered`; arquivar por movimento (skill memory, compactar):
-     `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`
-     + linha do índice atualizada.
-   - **Promover ao PRD.md**: resumo do que foi entregue + data de última
-     atualização. Direção única MEMORY → PRD, sempre (vale para toda camada
-     derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
-   - Arquivar o plano em `docs/audora/planos/arquivo/`.
-   - HOTFIX: regularizar o registro retroativo (nó `hotfix-pending-record`
-     → nó completo).
-   - Categoria LIGHT: rode só os passos com conteúdo — ver `## Fechamento LIGHT`.
+   direto). **A ordem importa**: o índice e a pasta têm de ficar coerentes a
+   cada passo, senão `memory-validate` bloqueia a próxima escrita.
+   1. **Julgamento, primeiro** (só você faz): consolidar o bloco `delta` no
+      corpo do nó; promover a `docs/audora/decisoes-vivas.md` as decisões
+      aprovadas no portão, só as que passaram no filtro de entrada; e
+      consolidar os aprendizados na seção Aprendizados do `MEMORY.md`
+      (skill memory, compactar — dedupe por grep).
+   2. **Estado e movimento**: nó → `delivered` e
+      `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
+      Nó com `<id>-historico.md`: mover os DOIS, mesmo prefixo de data, e
+      corrigir o ponteiro relativo no corpo.
+   3. **Mecânico**: rodar `bash "<raiz do plugin>/hooks/memory-sync" <id>`.
+      Ele imprime a linha `arquivos:` do diff, a linha nova do índice e o
+      comando de arquivar o plano — e não escreve nada. **aplique com Edit**
+      as duas linhas (o Edit em `MEMORY.md` faz `memory-validate` e
+      `memory-guard` dispararem no PostToolUse; o nó arquivado fica fora do
+      alcance deles, então confira essa linha você mesmo). Ele aborta sem
+      emitir nada se alguma pré-condição não bater, e AVISA se o intervalo
+      contiver commits de outra demanda — leia os avisos antes de aplicar.
+   4. **Promover ao `PRD.md`**: resumo do que foi entregue + data de última
+      atualização. Direção única MEMORY → PRD, sempre (vale para toda camada
+      derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
+      Tocou o PRD? Acrescente-o à lista `arquivos:` — o script não o vê,
+      porque o commit do sync ainda não aconteceu quando ele roda.
+   5. HOTFIX: regularizar o registro retroativo (nó `hotfix-pending-record`
+      → nó completo).
 7. **Efeito irreversível fora do repo** (migração em ambiente compartilhado,
    deploy, e-mail, cobrança) — em QUALQUER categoria: preparar o comando
    exato + rollback, apresentar, e o HUMANO executa ou autoriza aquele

@@ -46,15 +46,20 @@ linha="$(awk -v id="$id" 'index($0, "- " id " | ") == 1 { print; exit }' MEMORY.
 [ -n "$linha" ] || die "id '$id' não tem linha no índice de MEMORY.md"
 
 estado_idx="$(printf '%s' "$linha" | awk -F' \\| ' '{print $2}')"
-titulo="$(printf '%s' "$linha" | awk -F' \\| ' '{print $3}')"
+# O título é o 3º campo. Numa linha JÁ delivered esse campo carrega
+# " → caminho" grudado; cortar, senão a linha emitida sai com seta dupla.
+titulo="$(printf '%s' "$linha" | awk -F' \\| ' '{ t=$3; sub(/ → .*/, "", t); print t }')"
 [ -n "$titulo" ] || die "não consegui ler o título na linha do índice de '$id'"
 
 plano="docs/audora/planos/plano-$id.md"
-arq_atual="$(awk '/^arquivos:/ { print; exit }' "$no")"
+# Normaliza: tira o prefixo e o espaço à direita. Campo AUSENTE devolve "" —
+# e "" não pode contar como preenchido, senão o script diz "nada a fazer"
+# sobre um nó com a lista vazia.
+arq_atual="$(awk '/^arquivos:/ { sub(/^arquivos:[[:space:]]*/, ""); sub(/[[:space:]]+$/, ""); print; exit }' "$no")"
 
 # --- idempotência: já feito? --------------------------------------------
 if [ "$estado_idx" = "delivered" ] \
-   && [ "$arq_atual" != "arquivos: []" ] \
+   && [ -n "$arq_atual" ] && [ "$arq_atual" != "[]" ] \
    && [ ! -f "$plano" ]; then
   echo "memory-sync: nada a fazer — índice já em delivered, arquivos: preenchido e plano arquivado."
   exit 0
@@ -88,6 +93,16 @@ echo "arquivos: [$arq]"
 echo "# NOTA: esta lista é do que já está commitado. O próprio commit do sync
 #       ainda vai tocar PRD.md (se houver promoção) e o nó em $no —
 #       acrescente à lista o que se aplicar."
+
+# O range vai até HEAD. Se o fluxo não foi estritamente sequencial, ele pega
+# commits de OUTRAS demandas — o script não tem como saber onde a demanda
+# termina, então avisa em vez de decidir por você.
+alheios="$(git log --format=%s "$base..HEAD" | grep -vcF -- "$id" || true)"
+if [ "${alheios:-0}" -gt 0 ]; then
+  echo "# AVISO: ${alheios} commits no intervalo não citam '$id' — o range pode"
+  echo "#        conter outra demanda. Confira antes de aplicar:"
+  git log --format="#          %h %s" "$base..HEAD" | grep -vF -- "$id" || true
+fi
 echo
 echo "## 2. linha do índice em MEMORY.md"
 echo "de:   $linha"

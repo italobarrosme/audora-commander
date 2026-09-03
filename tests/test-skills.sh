@@ -166,6 +166,15 @@ assert_contains "$e2s" 'Registrar a escolha na' "/8 e2e registra a escolha na Co
 vs="$(cat skills/validate/SKILL.md)"
 assert_contains "$vs" 'hooks/memory-sync' "/9 validate aponta o script"
 assert_contains "$vs" 'aplique com Edit' "/9 validate diz para aplicar com Edit (hooks disparam)"
-assert_contains "$vs" 'julgamento seguem com você' "/9 validate mantem os 3 passos de julgamento explicitos"
+assert_contains "$vs" '**Julgamento, primeiro**' "/9 item 6 poe o julgamento primeiro"
+for j in 'delta' 'decisoes-vivas.md' 'Aprendizados'; do
+  assert_contains "$vs" "$j" "/9 os 3 de julgamento nomeados: $j"
+done
 assert_file hooks/memory-sync "/9 o script existe"
+# sync-mecanizado/9 — o item 6 nao pode ter DUAS ordens. A lista antiga mandava
+# preencher arquivos: ANTES do delivered; seguindo ela depois do git mv, o
+# memory-validate BLOQUEIA qualquer Edit no MEMORY.md (indice x pasta).
+v6="$(cat skills/validate/SKILL.md)"
+assert_not_contains "$v6" 'Preencher `arquivos:` do nó via `git diff --name-only` da demanda' "/9 bullet antigo de arquivos: removido do item 6"
+assert_contains "$v6" 'ordem importa' "/9 item 6 declara que a ordem importa"
 report

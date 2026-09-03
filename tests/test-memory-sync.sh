@@ -133,6 +133,79 @@ o9="$(cat "$SP/o9")"
 assert_contains "$o9" 'acrescente à lista' "/1 avisa que a lista nao ve o commit do sync"
 assert_contains "$o9" 'PRD.md (se houver promoção)' "/1 nomeia o PRD como candidato"
 
+# ===== 2a revisao adversarial: casos que fecham as mutacoes verdes =====
+
+# CASO 10 — SETA DUPLA: indice ja delivered mas sync incompleto.
+# titulo e $3 de awk -F' | ', e numa linha delivered $3 ja contem " -> caminho".
+fx
+perl -0pi -e 's#^- no-x \| in-progress \|.*$#- no-x | delivered | Titulo \& Co → docs/audora/arquivo/2026-09-02-no-x.md#m' MEMORY.md
+bash "$SYNC" no-x > "$SP/o10" 2>&1
+o10="$(cat "$SP/o10")"
+assert_not_contains "$o10" 'no-x.md → docs/audora/arquivo/2026-09-02-no-x.md' "/2 nunca emite seta dupla"
+assert_contains "$o10" 'para: - no-x | delivered | Titulo & Co → docs/audora/arquivo/2026-09-02-no-x.md' "/2 titulo cortado no separador"
+
+# CASO 11 — IDEMPOTENCIA MENTE: campo arquivos: AUSENTE
+fx
+perl -0pi -e 's#^arquivos: \[\]
+##m' docs/audora/arquivo/2026-09-02-no-x.md
+perl -0pi -e 's#^- no-x \| in-progress \|.*$#- no-x | delivered | Titulo \& Co → docs/audora/arquivo/2026-09-02-no-x.md#m' MEMORY.md
+git mv docs/audora/planos/plano-no-x.md docs/audora/planos/arquivo/ >/dev/null 2>&1
+bash "$SYNC" no-x > "$SP/o11" 2>&1
+assert_not_contains "$(cat "$SP/o11")" 'nada a fazer' "/6 arquivos: AUSENTE nao e 'feito'"
+
+# CASO 12 — IDEMPOTENCIA: arquivos: [] com espaco a direita
+fx
+perl -0pi -e 's#^arquivos: \[\]$#arquivos: []   #m' docs/audora/arquivo/2026-09-02-no-x.md
+perl -0pi -e 's#^- no-x \| in-progress \|.*$#- no-x | delivered | Titulo \& Co → docs/audora/arquivo/2026-09-02-no-x.md#m' MEMORY.md
+git mv docs/audora/planos/plano-no-x.md docs/audora/planos/arquivo/ >/dev/null 2>&1
+bash "$SYNC" no-x > "$SP/o12" 2>&1
+assert_not_contains "$(cat "$SP/o12")" 'nada a fazer' "/6 arquivos: [] com espaco nao e 'feito'"
+
+# CASO 13 — os 3 ramos da idempotencia, isolados (mutacoes idem-sem-* passavam)
+fx
+perl -0pi -e 's#^arquivos: \[\]$#arquivos: [beta.txt]#m' docs/audora/arquivo/2026-09-02-no-x.md
+git mv docs/audora/planos/plano-no-x.md docs/audora/planos/arquivo/ >/dev/null 2>&1
+bash "$SYNC" no-x > "$SP/o13a" 2>&1   # indice AINDA in-progress
+assert_not_contains "$(cat "$SP/o13a")" 'nada a fazer' "/6 indice in-progress nao e 'feito'"
+perl -0pi -e 's#^- no-x \| in-progress \|.*$#- no-x | delivered | Titulo \& Co → docs/audora/arquivo/2026-09-02-no-x.md#m' MEMORY.md
+git mv docs/audora/planos/arquivo/plano-no-x.md docs/audora/planos/ >/dev/null 2>&1
+bash "$SYNC" no-x > "$SP/o13b" 2>&1   # plano AINDA em planos/
+assert_not_contains "$(cat "$SP/o13b")" 'nada a fazer' "/6 plano nao arquivado nao e 'feito'"
+
+# CASO 14 — a LISTA EXATA (mutacoes da base passavam: so 'alfa.txt' era asserido)
+fx
+bash "$SYNC" no-x > "$SP/o14" 2>&1
+assert_contains "$(cat "$SP/o14")" 'arquivos: [beta.txt, docs/audora/planos/plano-no-x.md]' "/1 lista exata, na ordem do git, com virgula-espaco"
+
+# CASO 15 — glob AMBIGUO de verdade: dois arquivos com data diferente
+fx
+cp docs/audora/arquivo/2026-09-02-no-x.md docs/audora/arquivo/2026-08-01-no-x.md
+bash "$SYNC" no-x > "$SP/o15" 2>&1; c15=$?
+[ "$c15" -ne 0 ] && ok || ko "/5 dois arquivos casando o glob deve abortar"
+assert_contains "$(cat "$SP/o15")" 'ambíguo' "/5 aborto nomeia a ambiguidade"
+
+# CASO 16 — /10 estatico: o script nao pode conter comando de escrita
+src="$(cat "$SYNC")"
+corpo="$(grep -v '^[[:space:]]*#' "$SYNC" | grep -v '^echo ' | grep -v '^  echo ')"
+assert_not_contains "$corpo" 'sed -i' "/10 script nao usa sed -i"
+assert_not_contains "$corpo" 'tee ' "/10 script nao usa tee"
+assert_not_contains "$corpo" ' > ' "/10 script nao redireciona para arquivo"
+assert_not_contains "$corpo" ' >> ' "/10 script nao anexa a arquivo"
+
+# CASO 17 — cada die tem mensagem propria (mutacoes die-* passavam mascaradas)
+fx
+rm -f MEMORY.md
+bash "$SYNC" no-x > "$SP/o17" 2>&1
+assert_contains "$(cat "$SP/o17")" 'MEMORY.md não encontrado' "/5 die de MEMORY.md ausente tem mensagem propria"
+
+# CASO 18 — super-inclusao: commit de OUTRA demanda dentro do range
+fx
+printf 'gama
+' > gama.txt
+git add -A >/dev/null 2>&1; git commit -qm "feat(outro-no/1): demanda diferente" >/dev/null 2>&1
+bash "$SYNC" no-x > "$SP/o18" 2>&1
+assert_contains "$(cat "$SP/o18")" 'commits no intervalo não citam' "/1 avisa que o range tem commit de outra demanda"
+
 cd "$ROOT" || exit 1
 assert_eq "$REAL_HEAD" "$(git rev-parse HEAD 2>/dev/null || echo sem-git)" "/11 repositorio real intocado pelos testes"
 report
