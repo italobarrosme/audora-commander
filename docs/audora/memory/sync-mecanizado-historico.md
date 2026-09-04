@@ -45,3 +45,37 @@ dois hooks IGNORAM. Só o Edit em `MEMORY.md` dispara.
 **Baixo**: CR não tratado (clone fresco vem CRLF; `awk` do Git-for-Windows
 come, o do Linux não); `-historico.md` não é excluído da lista; a seção
 `## Fechamento LIGHT` não cita o gerador; argumento extra ignorado em silêncio.
+
+## 3ª revisão — do diff corrigido (2026-09-04)
+
+Reprovada de novo. **7 das 16 mutações nomeadas fecharam; 9 seguem abertas; 14
+NOVAS apareceram.** Placar de mutação: 24/44 verdes (55%) → 30/66 (45%).
+
+**Altos:**
+
+- **Regressão minha**: o corte do título no ` → `, feito para matar a seta
+  dupla, mutila título legítimo. `Migrar CSV → Parquet` vira `Migrar CSV`.
+  Reproduzido.
+- **O guarda estático de /10 é peneira**: 9 escritas reais passam verdes,
+  inclusive uma que corrompe o `MEMORY.md` e **desarma os dois hooks para
+  sempre** (comentando a linha 1 do schema). Pior, o filtro do próprio caso
+  remove linhas que começam com `echo `, então `echo pwn > /tmp/x` escapa.
+  Lista negra de string não fecha isso.
+- **O aviso de super-inclusão não é testado**: `alheios=1` fixo passa verde, e
+  a contagem invertida (`grep -cF` em vez de `grep -vcF`) também.
+- **A base do diff segue sem prova**: `$base..HEAD` → `HEAD~1..HEAD` passa
+  verde, porque na fixture os dois ranges coincidem.
+
+**Médios:** idempotência ainda mente para `[ ]`, `"[]"`, `null`; a dupla ordem
+MIGROU para `## Fechamento LIGHT`, que mantém a ordem antiga e não cita o
+gerador — e a correção do item 6 apagou o ponteiro que existia para lá; o
+`-historico.md` entra na lista com caminho já morto; 7 dos 11 `die` sem prova,
+mascarados em cadeia.
+
+**Diagnóstico:** o script faz cirurgia de string num formato Markdown desenhado
+para humano e LLM, não para parser. Cada borda (título com seta, `arquivos:`
+com espaço esquisito, id que é substring) vira caso especial novo, e cada
+correção abriu buraco em outro lugar — três rodadas seguidas. O retorno
+marginal está caindo: a própria sugestão do revisor para provar /10 é snapshot
+recursivo de mtime+hash da árvore inteira, incluindo `.git/` e um diretório
+sentinela fora do repo, a cada caso de teste.
