@@ -1,9 +1,9 @@
 ---
 id: gate-mecanico
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [templates/gate-template.md, hooks/gate, tests/test-gate.sh, skills/execute/SKILL.md, skills/validate/SKILL.md, skills/memory/SKILL.md, skills/memory/references/bootstrap.md, MEMORY.md, PRD.md, docs/audora/e2e/e2e-gate-mecanico.md, docs/audora/planos/arquivo/plano-gate-mecanico.md]
 keywords: [gate, loop-engineering, anti-fraude, testes, lint, typecheck, template]
 resumo: Comando único por projeto-alvo que responde passou/não passou (suíte, lint, typecheck, anti-fraude de teste); GREEN do execute vira gate verde.
 atualizado-em: 2026-09-04

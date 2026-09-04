@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-08-31
+> Última atualização: 2026-09-04
 
 ## O que é e para que serve
 
@@ -16,7 +16,7 @@ Code.
 
 - Markdown (skills, templates, docs) + JSON (plugin.json, marketplace.json,
   hooks.json) + bash (hooks: `session-start`, `memory-guard`,
-  `memory-validate`; script auxiliar `graphify-status`; sem jq —
+  `memory-validate`; scripts auxiliares `graphify-status` e `gate`; sem jq —
   awk/sed/grep/perl do Git for Windows).
 - Suíte de regressão do plugin em bash: `tests/run.sh` + `tests/test-*.sh`
   (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`).
@@ -25,7 +25,7 @@ Code.
   sem API key). Oferecido pela skill `memory`; ausência degrada para
   grep/Read com aviso.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.6.0.
+  Versão 0.7.0.
 
 ## Arquitetura
 
@@ -82,6 +82,27 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Gate mecânico entregue em 2026-09-04 (nó `gate-mecanico`, MEDIUM, D1 do
+roadmap de loop engineering em `docs/specs/2026-09-02-loop-engineering-roadmap.md`):
+um comando por projeto que responde passou/não passou — suíte, lint e
+typecheck (etapa sem ferramenta na stack é pulada com aviso, nunca falha) mais
+**anti-fraude de teste** sobre o diff não commitado (`git diff HEAD`): arquivo
+de teste apagado reprova nomeando o arquivo; skip/only adicionado reprova com
+arquivo e linha; queda na contagem de asserts reprova com antes → depois,
+salvo justificativa `gate-asserts: <motivo>` no nó da demanda. O schema vive
+em `templates/gate-template.md` (config `GATE_*` com env sobrepondo defaults —
+é o que permite testar o gate na própria suíte sem recursão); a instância
+dogfood deste repo é `hooks/gate`, registrada na Constituição
+(`gate: bash hooks/gate <id-da-demanda>`). A skill `memory` oferta o gate no
+bootstrap (etapa 5) e no início de demanda em projeto sem `gate:` — uma vez,
+recusa registrada gruda; a `execute` passa a tratar GREEN como gate verde
+quando o bullet existe; a `validate` lista o diff dos arquivos de teste
+separado do resto em toda categoria. Suíte 415 → 467 asserts, com fixture de
+repo git real exercitando as três fraudes red-green; e2e com sessão
+`claude -p` real provou a oferta no carregar-contexto e o controle negativo
+(Graphify recusado não reofertado) — relatório em
+`docs/audora/e2e/e2e-gate-mecanico.md`.
 
 Mecanização do sync da validate: **tentada e abandonada** em 2026-09-04 (nó
 `sync-mecanizado`, HIGH). O que ficou é conhecimento documentado, não código.
