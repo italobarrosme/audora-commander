@@ -164,13 +164,17 @@ assert_contains "$e2s" 'nunca escolher sozinho' "/8 e2e exige perguntar a ferram
 assert_contains "$e2s" 'Registrar a escolha na' "/8 e2e registra a escolha na Constituicao"
 # sync-mecanizado/9 — a validate aponta o gerador e mantem os 3 de julgamento
 vs="$(cat skills/validate/SKILL.md)"
-assert_contains "$vs" 'hooks/memory-sync' "/9 validate aponta o script"
+assert_contains "$vs" 'hooks/memory-arquivos' "/9 validate aponta o script"
 assert_contains "$vs" 'aplique com Edit' "/9 validate diz para aplicar com Edit (hooks disparam)"
 assert_contains "$vs" '**Julgamento, primeiro**' "/9 item 6 poe o julgamento primeiro"
 for j in 'delta' 'decisoes-vivas.md' 'Aprendizados'; do
   assert_contains "$vs" "$j" "/9 os 3 de julgamento nomeados: $j"
 done
-assert_file hooks/memory-sync "/9 o script existe"
+assert_file hooks/memory-arquivos "/9 o script existe"
+# achado 6 da 3a revisao: a dupla ordem migrou para o Fechamento LIGHT, que
+# mantinha a ordem antiga e nem citava o gerador. LIGHT e o caminho comum.
+lt2="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+assert_contains "$lt2" 'memory-arquivos' "/9 Fechamento LIGHT tambem cita o gerador"
 # sync-mecanizado/9 — o item 6 nao pode ter DUAS ordens. A lista antiga mandava
 # preencher arquivos: ANTES do delivered; seguindo ela depois do git mv, o
 # memory-validate BLOQUEIA qualquer Edit no MEMORY.md (indice x pasta).

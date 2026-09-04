@@ -77,14 +77,14 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
       `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
       Nó com `<id>-historico.md`: mover os DOIS, mesmo prefixo de data, e
       corrigir o ponteiro relativo no corpo.
-   3. **Mecânico**: rodar `bash "<raiz do plugin>/hooks/memory-sync" <id>`.
-      Ele imprime a linha `arquivos:` do diff, a linha nova do índice e o
-      comando de arquivar o plano — e não escreve nada. **aplique com Edit**
-      as duas linhas (o Edit em `MEMORY.md` faz `memory-validate` e
-      `memory-guard` dispararem no PostToolUse; o nó arquivado fica fora do
-      alcance deles, então confira essa linha você mesmo). Ele aborta sem
-      emitir nada se alguma pré-condição não bater, e AVISA se o intervalo
-      contiver commits de outra demanda — leia os avisos antes de aplicar.
+   3. **Mecânico**: rode `bash "<raiz do plugin>/hooks/memory-arquivos" <id>`.
+      Ele descobre a base da demanda e imprime a linha `arquivos:` do diff
+      real — só isso, e não escreve nada. Aplique com Edit no nó arquivado.
+      Ele aborta sem emitir se alguma pré-condição não bater, e AVISA se o
+      intervalo contiver commits de outra demanda — leia o aviso antes de
+      aplicar. A linha do índice e o `git mv` do plano você escreve: são
+      triviais, e foi tentando mecanizá-los que três revisões adversariais
+      acharam corrupção de título e de linha vizinha.
    4. **Promover ao `PRD.md`**: resumo do que foi entregue + data de última
       atualização. Direção única MEMORY → PRD, sempre (vale para toda camada
       derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
@@ -113,7 +113,8 @@ revisão, nunca tirar a revisão.
 - **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff, e
   1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
   vivas quando não há nenhuma.
-- **Sync** (item 6): rode só os passos com conteúdo real — `arquivos:` do
+- **Sync** (item 6): rode só os passos com conteúdo real — `arquivos:` (o
+  gerador `hooks/memory-arquivos` monta a linha; aplique com Edit) do
   diff, aprendizados, e nó → `delivered` com arquivamento. Consolidar delta e
   promover decisões vivas rodam SOMENTE se houver delta ou decisão.
 - **Plano**: LIGHT **não tem plano** para arquivar. Pule a etapa sem listá-la

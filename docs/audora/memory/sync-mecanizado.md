@@ -65,6 +65,23 @@ completos em `sync-mecanizado-historico.md`. Reabertura:
   DEVE abortar o arquivo de teste, nunca seguir com o cwd no repositório real
   (achado 7: os casos 4, 5 e 6 commitariam no repo de verdade).
 
+- REMOVIDO (2026-09-04): **/2** (linha do índice), **/3** (arquivar plano) e
+  **/6** (idempotência, que só existia por causa dos dois). Motivo: TRÊS
+  revisões adversariais seguidas, e o placar de mutação foi 24/44 verdes →
+  30/66 — cada correção fechava umas e abria outras, incluindo uma regressão
+  minha (o corte no ` → ` mutilava título legítimo: `Migrar CSV → Parquet`
+  virava `Migrar CSV`). Diagnóstico: toda a cirurgia de string vivia na parte
+  de MENOR valor — a linha do índice é uma linha que o modelo escreve em
+  segundos; o que ele errava à mão era a base do diff.
+- MODIFICADO (2026-09-04): o script passa a se chamar `hooks/memory-arquivos`
+  — o nome diz o que ele faz. Só descobre a base e imprime a lista.
+- MODIFICADO (2026-09-04): **/1b** passa a excluir também o
+  `docs/audora/memory/<id>-historico.md` (achado 10 da 3ª revisão: entrava na
+  lista com caminho já morto, porque o item 6 manda mover os dois).
+- MODIFICADO (2026-09-04): **/10** deixa de ser guarda por lista negra de
+  string (peneira: 9 escritas reais passavam, uma delas desarmando os hooks) e
+  passa a ser snapshot de toda a árvore, `.git/` incluso, antes e depois.
+
 ## e2e
 
 pendente

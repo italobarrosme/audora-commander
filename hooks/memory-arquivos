@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# Script auxiliar (chamado pela skill validate via Bash, NÃO é hook do harness).
+# Uso: memory-arquivos <id-do-no>     — rodar da raiz do projeto-alvo.
+#
+# Descobre a base da demanda e IMPRIME a linha `arquivos:` do diff real.
+# Faz UMA coisa: a que o modelo errava à mão (derivar a base e montar a lista).
+# A linha do índice e o `git mv` do plano ficam com o modelo — são triviais de
+# escrever e era ali que morava toda a cirurgia de string que três revisões
+# adversariais reprovaram.
+#
+# NUNCA escreve: só roda `git rev-parse`, `git log`, `git diff` e imprime.
+#
+# Pré-condição: o modelo já virou `estado: delivered` e moveu o nó para
+# docs/audora/arquivo/AAAA-MM-DD-<id>.md.
+#
+# Exit 0 = imprimiu a linha. Exit 1 = pré-condição não bateu; nada é impresso
+# além do motivo (stderr).
+set -uo pipefail
+
+die() { echo "memory-arquivos: $*" >&2; exit 1; }
+
+id="${1:-}"
+[ -n "$id" ] || die "uso: memory-arquivos <id-do-no>"
+[ $# -eq 1 ] || die "argumento extra: use exatamente um id"
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+  || die "não é um repositório git — abortando sem emitir nada"
+[ -f MEMORY.md ] || die "MEMORY.md não encontrado na raiz do projeto"
+
+# --- pré-condição: nó já arquivado, exatamente 1 match -------------------
+# O glob termina em -<id>.md, então -<id>-historico.md e -<id>-escopo.md não
+# casam.
+shopt -s nullglob
+cands=(docs/audora/arquivo/*-"$id".md)
+shopt -u nullglob
+case "${#cands[@]}" in
+  0) die "nó ainda não arquivado: esperava docs/audora/arquivo/AAAA-MM-DD-$id.md — o modelo vira o estado e faz o git mv ANTES de chamar este script" ;;
+  1) no="${cands[0]}" ;;
+  *) die "ambíguo: ${#cands[@]} arquivos casam docs/audora/arquivo/*-$id.md — resolva à mão" ;;
+esac
+
+# --- base do diff --------------------------------------------------------
+# O commit que CRIOU o arquivo do nó delimita a demanda. Derivar da mensagem
+# (--grep) casa commits de outras demandas que só CITAM o id.
+cria="$(git log --diff-filter=A --format=%H -- "docs/audora/memory/$id.md" "$no" 2>/dev/null | tail -1)"
+[ -n "$cria" ] || die "não achei o commit que criou o arquivo do nó '$id'"
+
+base="$(git rev-parse "$cria^" 2>/dev/null || true)"
+[ -n "$base" ] || base="$(git hash-object -t tree /dev/null)"   # commit-raiz
+
+lista="$(git diff --name-only "$base..HEAD" 2>/dev/null)" \
+  || die "git diff falhou entre $base e HEAD"
+[ -n "$lista" ] || die "diff vazio entre $base e HEAD — não emito lista vazia"
+
+# O próprio nó e o histórico dele, nos caminhos de ANTES do arquivamento, não
+# entram: eles já foram movidos quando este script roda.
+lista="$(printf '%s\n' "$lista" \
+  | grep -vxF "docs/audora/memory/$id.md" \
+  | grep -vxF "docs/audora/memory/$id-historico.md" || true)"
+[ -n "$lista" ] || die "lista vazia depois de excluir o próprio nó — não emito lista vazia"
+
+arq="$(printf '%s\n' "$lista" | awk '{ printf "%s%s", (NR>1 ? ", " : ""), $0 }')"
+
+# --- saída ---------------------------------------------------------------
+echo "arquivos: [$arq]"
+echo "# ^ aplique com Edit em $no"
+echo "# Esta lista é do que já está COMMITADO. O commit do sync ainda vai tocar"
+echo "#   PRD.md (se houver promoção) e $no — acrescente à lista o que se aplicar."
+
+# O range vai até HEAD. Se o fluxo não foi estritamente sequencial, ele pega
+# commits de OUTRAS demandas. O script não sabe onde a demanda termina: avisa.
+# `--grep` casaria id que é substring de outro, então a contagem é por commit
+# cujo assunto não cita o id de forma alguma.
+alheios="$(git log --format=%s "$base..HEAD" | grep -vcF -- "$id")"
+if [ "${alheios:-0}" -gt 0 ]; then
+  echo "# AVISO: $alheios commits no intervalo não citam '$id' — o range pode"
+  echo "#        conter outra demanda. Confira antes de aplicar:"
+  git log --format="#          %h %s" "$base..HEAD" | grep -vF -- "$id" || true
+fi
+exit 0
