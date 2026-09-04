@@ -69,6 +69,7 @@ time pequeno em projetos web/mobile/api.
 
 - docs-permissoes | delivered | Docs de permissões → docs/audora/arquivo/2026-09-04-docs-permissoes.md
 - gate-mecanico | delivered | Gate mecânico → docs/audora/arquivo/2026-09-04-gate-mecanico.md
+- autopilot | in-progress | Autopilot | Humano declara autopilot na entrada e o framework antecipa os portões do meio (mantendo o final); só critérios 100% automatizáveis; HIGH recusa | autopilot, loop-engineering, portao-antecipado, elegibilidade, paradas-humanas | skills/, templates/no-template.md, docs/fundamentos.md
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md
