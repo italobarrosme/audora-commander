@@ -1,11 +1,11 @@
 ---
 id: sync-mecanizado
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [light-enxuto]
-arquivos: []
+arquivos: [MEMORY.md, PRD.md, docs/audora/planos/plano-sync-mecanizado.md, docs/audora/specs/sync-mecanizado-escopo.md, skills/validate/SKILL.md, tests/test-skills.sh]
 keywords: [validate, sync, hooks, bookkeeping, memoria]
-resumo: Os passos mecanicos do sync da validate saem da mao do modelo e viram ferramenta em hooks/, deixando ao modelo so os de julgamento.
+resumo: Tentativa de mecanizar o sync da validate. Script revertido apos 4 revisões adversariais; o conhecimento virou comando documentado no item 6.3.
 atualizado-em: 2026-09-01
 ---
 
@@ -36,7 +36,7 @@ Escopo em spec dedicada (HIGH): `docs/audora/specs/sync-mecanizado-escopo.md`.
 ## delta
 
 Revisão adversarial do PLANO (2026-09-02) derrubou 11 pontos altos. Achados
-completos em `sync-mecanizado-historico.md`. Reabertura:
+completos em `2026-09-04-sync-mecanizado-historico.md`. Reabertura:
 
 - MODIFICADO: **desenho** — de "escreve direto" para "**emite os comandos**;
   o modelo aplica via Edit/Write". Motivo mecânico, não cautela: aplicando por
@@ -84,9 +84,9 @@ completos em `sync-mecanizado-historico.md`. Reabertura:
 
 ## e2e
 
-pendente
+pulado — 4 revisões adversariais em lugar do e2e (HIGH)
 
 ## feedback-reprovacao
 
 Reprovada na 2ª revisão adversarial (do diff, 2026-09-03): 4 altos e 24 de 44
-mutações passando verde. Detalhe em `sync-mecanizado-historico.md`.
+mutações passando verde. Detalhe em `2026-09-04-sync-mecanizado-historico.md`.

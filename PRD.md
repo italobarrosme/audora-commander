@@ -83,6 +83,29 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Mecanização do sync da validate: **tentada e abandonada** em 2026-09-04 (nó
+`sync-mecanizado`, HIGH). O que ficou é conhecimento documentado, não código.
+
+A ideia era tirar da mão do modelo os passos mecânicos do sync. Quatro
+revisões adversariais reprovaram — uma no plano, antes de virar código, e três
+no diff. A taxa de mutação não se moveu: 55% → 45% → 44% das mutações
+passando verdes, e cada correção abria buraco novo, inclusive uma regressão
+(o corte de título que matava a seta dupla mutilava título legítimo). Os últimos
+bugs vivos foram colisão de sufixo no glob — o id `batch` casava o nó de
+`scope-batch` e o script apontava a demanda errada — e nó renomeado perdendo
+trabalho em silêncio. Diagnóstico: o script fazia cirurgia de string num
+formato Markdown desenhado para humano e LLM, e toda a cirurgia vivia na parte
+de menor valor.
+
+O que sobrou, no item 6.3 da skill `validate`, são os dois comandos e as três
+armadilhas que as revisões acharam: a base da demanda é o **pai do commit que
+criou o arquivo do nó** (nunca `--grep` na mensagem, que casa commit de outra
+demanda que só cita o id); o range vai até HEAD e pode conter outra demanda; o
+`PRD.md` ainda não foi tocado quando o comando roda; e o nó e o `-historico.md`
+aparecem no caminho de antes do `git mv`. O item 6 também foi reescrito numa
+ordem só — antes tinha duas, e seguir a antiga fazia `memory-validate` bloquear
+a escrita seguinte. Suíte 395 asserts.
+
 Regra de entrada e guardas das decisões vivas entregues em 2026-09-01 (nó
 `decisoes-vivas-poda`, HIGH). A skill `validate` passa a filtrar o que entra em
 `docs/audora/decisoes-vivas.md`: só é candidata a decisão que NÃO esteja já
