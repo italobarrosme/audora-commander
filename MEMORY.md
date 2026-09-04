@@ -65,6 +65,7 @@ time pequeno em projetos web/mobile/api.
 ## Índice de nós [carga: sempre]
 
 - docs-permissoes | delivered | Docs de permissões → docs/audora/arquivo/2026-09-04-docs-permissoes.md
+- gate-mecanico | in-progress | Gate mecânico | Comando único por projeto-alvo que responde passou/não passou (suíte, lint, typecheck, anti-fraude de teste); GREEN do execute vira gate verde | gate, loop-engineering, anti-fraude, testes, lint, typecheck, template | templates/, skills/execute/, skills/validate/, skills/memory/references/bootstrap.md, tests/
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md
