@@ -55,6 +55,12 @@ redefine GREEN; validate separa o diff de teste no roteiro.
   da demanda (`docs/audora/memory/<id>.md`); id chega como `$1` do gate.
 - Sem `.cmd` novo: `run-hook.cmd gate` já despacha; skills citam
   `bash hooks/gate` (padrão graphify-status).
+- `GATE_ROOT` entra na família de env (descoberto na expansão da T2): sem
+  ele, o `cd "$(dirname $0)/.."` do gate ignora a fixture e examina o repo do
+  plugin. Template atualizado junto (mesmo commit da T2a).
+- Expansão T2: T2a esqueleto+exit+pulos (/3,/4); T2b arquivo apagado (/5);
+  T2c skip/only (/6); T2d asserts+válvula (/7,/8). Ciclos red-green: A =
+  T2a; B = T2b+T2c+T2d (fixture única, cenários independentes).
 
 ---
 
