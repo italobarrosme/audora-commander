@@ -25,7 +25,8 @@ com aviso — nunca falha por ausência.
 # Config: defaults abaixo saem da Constituição do MEMORY (como-rodar/stack);
 # env GATE_* sobrepõe qualquer default (é assim que a suíte testa o gate).
 set -uo pipefail
-cd "$(dirname "$0")/.." || exit 1   # raiz do projeto (gate em subpasta)
+# GATE_ROOT sobrepõe a raiz (é como a suíte aponta o gate para uma fixture)
+cd "${GATE_ROOT:-$(dirname "$0")/..}" || exit 1
 
 SUITE_CMD="${GATE_SUITE_CMD:-npm test}"   # como-rodar da Constituição
 LINT_CMD="${GATE_LINT_CMD:-}"             # vazio = pulado com aviso

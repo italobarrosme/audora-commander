@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Gate mecânico deste repo — instância de templates/gate-template.md.
+# Script auxiliar (chamado via Bash pelas skills, não é hook do Claude).
+# Uso: gate [<id-da-demanda>]   (id habilita a válvula gate-asserts: do nó)
+# Exit 0 = GATE: passou | exit 1 = GATE: reprovado (todos os motivos).
+# Config: env GATE_* sobrepõe defaults (é assim que a suíte testa sem recursão).
+set -uo pipefail
+cd "${GATE_ROOT:-$(dirname "$0")/..}" || exit 1
+
+SUITE_CMD="${GATE_SUITE_CMD:-bash tests/run.sh}"
+LINT_CMD="${GATE_LINT_CMD:-}"             # stack sem lint → pulado com aviso
+TYPECHECK_CMD="${GATE_TYPECHECK_CMD:-}"   # stack sem typecheck → idem
+TEST_ERE="${GATE_TEST_ERE:-^tests/test-.*\.sh$}"
+SKIP_ERE="${GATE_SKIP_ERE:-\.only\(|\.skip\(|xit\(|xdescribe\(|fit\(|fdescribe\(|@skip}"
+ASSERT_ERE="${GATE_ASSERT_ERE:-^[[:space:]]*(assert_[a-z_]+|ok|ko)\b}"
+NODE_DIR="${GATE_NODE_DIR:-docs/audora/memory}"
+
+id="${1:-}"; falhas=()
+
+# --- etapas de ferramenta: lint → typecheck → suíte ---
+etapa() {
+  local nome="$1" cmd="$2"
+  if [ -z "$cmd" ]; then echo "GATE: $nome pulado (sem ferramenta na stack)"; return; fi
+  echo "GATE: rodando $nome ($cmd)"
+  bash -c "$cmd" || falhas+=("$nome falhou: $cmd")
+}
+etapa lint "$LINT_CMD"
+etapa typecheck "$TYPECHECK_CMD"
+etapa suite "$SUITE_CMD"
+
+if [ "${#falhas[@]}" -eq 0 ]; then echo "GATE: passou"; exit 0; fi
+echo "GATE: reprovado — ${#falhas[@]} motivo(s):"
+printf '  - %s\n' "${falhas[@]}"
+exit 1
