@@ -26,6 +26,7 @@ mkfix() {
   rm -rf "$proj"; mkdir -p "$proj/tests" "$proj/docs/audora/memory"
   git -C "$proj" init -q
   git -C "$proj" config user.email gate@test; git -C "$proj" config user.name gate
+  git -C "$proj" config core.autocrlf false
   printf '%s\n' 'assert_eq 1 1' 'assert_eq 2 2' 'ok fim' > "$proj/tests/test-a.sh"
   git -C "$proj" add -A; git -C "$proj" commit -qm base
 }
@@ -44,4 +45,26 @@ rungate false
 assert_eq 1 "$code" "/3 suíte vermelha → exit 1"
 assert_contains "$out" 'GATE: reprovado' "/3 imprime GATE: reprovado"
 assert_contains "$out" 'suite falhou' "/3 nomeia a suíte como motivo"
+
+# gate-mecanico/5 — arquivo de teste apagado → reprova nomeando o arquivo
+mkfix; rm "$proj/tests/test-a.sh"; rungate true
+assert_eq 1 "$code" "/5 teste apagado → exit 1"
+assert_contains "$out" 'arquivo de teste apagado: tests/test-a.sh' "/5 nomeia o arquivo apagado"
+
+# gate-mecanico/6 — skip/only adicionado → reprova nomeando arquivo e linha
+mkfix; printf 'xit("burla")\n' >> "$proj/tests/test-a.sh"; rungate true
+assert_eq 1 "$code" "/6 skip adicionado → exit 1"
+assert_contains "$out" 'skip/only adicionado: tests/test-a.sh:4' "/6 nomeia arquivo e linha"
+
+# gate-mecanico/7 — contagem de asserts caiu sem justificativa → reprova antes → depois
+mkfix; printf '%s\n' 'assert_eq 1 1' 'ok fim' > "$proj/tests/test-a.sh"; rungate true
+assert_eq 1 "$code" "/7 queda de asserts → exit 1"
+assert_contains "$out" 'contagem de asserts caiu: 3 → 2' "/7 imprime antes → depois"
+
+# gate-mecanico/8 — queda com justificativa gate-asserts: no nó → passa imprimindo
+printf 'gate-asserts: refactor legitimo\n' > "$proj/docs/audora/memory/x1.md"
+rungate true x1
+assert_eq 0 "$code" "/8 queda justificada → exit 0"
+assert_contains "$out" 'refactor legitimo' "/8 imprime a justificativa"
+assert_contains "$out" 'GATE: passou' "/8 termina em GATE: passou"
 report

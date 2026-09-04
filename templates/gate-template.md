@@ -48,7 +48,8 @@ while IFS= read -r f; do
   [ -f "$f" ] || continue
   while IFS= read -r hit; do
     [ -n "$hit" ] && falhas+=("skip/only adicionado: $f:$hit")
-  done < <(git diff HEAD -U0 -- "$f" | awk -v ere="$SKIP_ERE" '
+  done < <(git diff HEAD -U0 -- "$f" | SKIP_ERE="$SKIP_ERE" awk '
+    BEGIN { ere = ENVIRON["SKIP_ERE"] }
     /^@@/ { split($3, a, ","); ln = substr(a[1], 2) + 0; next }
     /^\+\+\+/ { next }
     /^\+/ { if (substr($0, 2) ~ ere) print ln ": " substr($0, 2); ln++ }')
