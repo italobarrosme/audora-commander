@@ -77,4 +77,16 @@ assert_contains "$b" 'gate: recusado' "/1 bootstrap registra a recusa"
 ms="$(cat skills/memory/SKILL.md 2>/dev/null)"
 assert_contains "$ms" 'bullet `gate:`' "/2 carregar-contexto checa o bullet gate:"
 assert_contains "$ms" 'não reofertar' "/2 recusa não gera reoferta"
+
+# gate-mecanico/9 — execute: GREEN = gate verde quando a Constituição tem gate:
+e="$(cat skills/execute/SKILL.md 2>/dev/null)"
+assert_contains "$e" 'Constituição com `gate:`' "/9 execute condiciona ao bullet gate:"
+assert_contains "$e" 'verde é o GATE saindo 0' "/9 execute redefine o verde"
+
+# gate-mecanico/10 — validate: diff dos arquivos de teste separado, toda categoria
+v="$(cat skills/validate/SKILL.md 2>/dev/null)"
+assert_contains "$v" '**Diff de teste**' "/10 validate tem a seção de diff de teste"
+assert_contains "$v" 'arquivos de teste separado do resto' "/10 validate separa teste do resto"
+lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+assert_contains "$lt" 'arquivos de teste separados' "/10 Fechamento LIGHT também separa"
 report

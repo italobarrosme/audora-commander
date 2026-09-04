@@ -34,6 +34,9 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - **Comportamento** (sempre): comandos para rodar, telas/rotas para abrir,
      casos de erro para provocar — mapeados critério a critério, com a
      evidência já coletada ao lado.
+   - **Diff de teste** (sempre, toda categoria): listar o diff dos
+     arquivos de teste separado do resto — teste apagado ou skip/only é a
+     fraude que o gate reprova; o roteiro a expõe ao humano.
    - **Decisões vivas propostas** (sempre): quais decisões do nó seguem
      valendo para demandas futuras (candidatas a `docs/audora/decisoes-vivas.md`)
      — o humano aprova/corta no portão; o sync (item 6) só executa.
@@ -121,8 +124,8 @@ revisão, nunca tirar a revisão.
   LIGHT interno (refactor,
   doc, config, teste) não recebe a oferta. Pedido explícito do humano roda
   sempre, em qualquer caso.
-- **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff, e
-  1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
+- **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff
+  (arquivos de teste separados), e 1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
   vivas quando não há nenhuma.
 - **Sync** (item 6): rode só os passos com conteúdo real, e NA ORDEM do item 6
   — julgamento, depois `delivered` + `git mv`, e só então `arquivos:` (a lista

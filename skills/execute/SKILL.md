@@ -38,6 +38,8 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
    - **GREEN**: mínimo para passar. Sem feature extra, sem "melhorar" além do
      teste (YAGNI). Rodar; confirmar na saída real: teste passa E suíte toda
      verde E saída limpa (sem warning novo).
+     Constituição com `gate:` → verde é o GATE saindo 0 (rodar o comando
+     do bullet e ler a saída), não só a suíte; sem `gate:`, suíte toda.
    - **REFACTOR**: só depois do green — duplicação, nomes, extração. Testes
      continuam verdes. Sem comportamento novo.
    - **COMMIT**: etapa verde → `git add <arquivos> && git commit`; a mensagem
