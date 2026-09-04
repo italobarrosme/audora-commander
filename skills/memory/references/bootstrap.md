@@ -36,4 +36,16 @@
       `graphify: ativo`.
    f. `sem-codigo` → avisar "nenhuma linguagem suportada indexada"; NÃO
       instalar git hook; Constituição `graphify: sem-codigo`.
-5. MEMORY parcial desde o dia 1 é o esperado.
+5. **Etapa gate** (sempre, após a Graphify):
+   a. Constituição já tem bullet `gate:` → pular, não perguntar de novo —
+      recusado fica recusado; só reofertar se o humano pedir.
+   b. Ausente → perguntar "Gerar o gate mecânico (comando único passou/não
+      passou: suíte, lint, typecheck, anti-fraude de teste)?".
+   c. Aceitou → instanciar o script de `templates/gate-template.md` (raiz do
+      plugin) preenchendo a config pela Constituição (`como-rodar` →
+      `GATE_SUITE_CMD`; stack → lint/typecheck/EREs; ferramenta ausente →
+      vazio, o gate pula avisando), salvar no projeto-alvo (padrão: `gate` na
+      raiz; repo com pasta de scripts, usar a dele) e registrar
+      `gate: <comando>` na Constituição.
+   d. Recusou → registrar `gate: recusado`.
+6. MEMORY parcial desde o dia 1 é o esperado.

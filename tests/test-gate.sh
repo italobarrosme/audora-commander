@@ -67,4 +67,14 @@ rungate true x1
 assert_eq 0 "$code" "/8 queda justificada → exit 0"
 assert_contains "$out" 'refactor legitimo' "/8 imprime a justificativa"
 assert_contains "$out" 'GATE: passou' "/8 termina em GATE: passou"
+
+# gate-mecanico/1,/2 — oferta no bootstrap e no início de demanda; recusa gruda
+b="$(cat skills/memory/references/bootstrap.md 2>/dev/null)"
+assert_contains "$b" 'Etapa gate' "/1 bootstrap tem a etapa gate"
+assert_contains "$b" 'templates/gate-template.md' "/1 bootstrap instancia do template"
+assert_contains "$b" 'gate: <comando>' "/1 bootstrap registra a aceitação"
+assert_contains "$b" 'gate: recusado' "/1 bootstrap registra a recusa"
+ms="$(cat skills/memory/SKILL.md 2>/dev/null)"
+assert_contains "$ms" 'bullet `gate:`' "/2 carregar-contexto checa o bullet gate:"
+assert_contains "$ms" 'não reofertar' "/2 recusa não gera reoferta"
 report

@@ -84,6 +84,9 @@ Código: nunca "varrer o repo para entender" — operação 7.
    Read SÓ de `docs/audora/memory/<id>.md` desses nós.
 4. Devolver: Constituição (inclui o bullet `graphify`) + Aprendizados + nós
    relevantes para a fase que chamou.
+5. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
+   gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
+   só se o humano pedir.
 
 ### 4. registrar-delta (mudança no meio da demanda)
 
