@@ -120,6 +120,21 @@ da instalação" mais abaixo neste README.
    o MEMORY sincroniza (decisões, aprendizados, arquivo) e PRD.md recebe o
    resumo.
 
+## Reduzindo prompts de permissão
+
+Os prompts de permissão (Bash, Edit, Write) vêm do harness do Claude Code, não
+deste framework — reduzi-los não remove nenhum portão humano. Três opções, da
+mais segura à mais arriscada:
+
+| Opção | O que faz | Risco |
+|---|---|---|
+| `permissions.allow` em `.claude/settings.json` | Allowlist de ferramentas e comandos específicos; o resto continua perguntando | **Baixo** — restrito ao que você listar |
+| `claude --permission-mode acceptEdits` | Edições de arquivo param de perguntar; Bash ainda pergunta | **Médio** — o agente pode reescrever qualquer arquivo do projeto |
+| `claude --permission-mode bypassPermissions` | Nada pergunta | **Alto** — só em sandbox ou worktree descartável, nunca com credencial de produção no ambiente |
+
+Aviso do loop engineering: regra no prompt é pedido; bloqueio real é permissão
+mais sandbox. Configure o harness — não conte com prosa para segurar o agente.
+
 ## Artefatos nos projetos que usam o framework
 
 - `MEMORY.md` — raiz do projeto: índice mestre da memória viva (propósito,

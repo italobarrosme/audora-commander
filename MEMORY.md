@@ -64,6 +64,7 @@ time pequeno em projetos web/mobile/api.
 
 ## Índice de nós [carga: sempre]
 
+- docs-permissoes | in-progress | Docs de permissões | READMEs (EN+PT) ganham seção sobre reduzir prompts de permissão do harness com as três opções e o risco de cada uma | docs, readme, permissoes, permission-prompts, loop-engineering | README.md, README.pt-BR.md
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md

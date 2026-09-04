@@ -23,6 +23,23 @@ blocos() { awk '/^```/{f=!f; next} f' "$1"; }
 assert_eq "$(blocos README.md | md5sum)" "$(blocos README.pt-BR.md | md5sum)" "/19 blocos de código idênticos EN/PT"
 p="$(cat PRD.md)"
 for s in 'MEMORY.md' 'memory-guard' 'memory-validate' 'graphify-status' 'Graphify' 'tests/' '0.4.0'; do assert_contains "$p" "$s" "/19 PRD cita $s"; done
+# docs-permissoes/1,/2,/3 — READMEs ensinam a reduzir prompts de permissão do harness.
+assert_contains "$en" '## Reducing permission prompts' "docs-permissoes/1 README EN tem a seção"
+assert_contains "$pt" '## Reduzindo prompts de permissão' "docs-permissoes/2 README PT tem a seção"
+for s in 'permissions.allow' '--permission-mode' 'acceptEdits' 'bypassPermissions'; do
+  assert_contains "$en" "$s" "docs-permissoes/1 README EN cita $s"
+  assert_contains "$pt" "$s" "docs-permissoes/2 README PT cita $s"
+done
+for s in '**Low**' '**Medium**' '**High**'; do
+  assert_contains "$en" "$s" "docs-permissoes/1 README EN gradua risco $s"
+done
+for s in '**Baixo**' '**Médio**' '**Alto**'; do
+  assert_contains "$pt" "$s" "docs-permissoes/2 README PT gradua risco $s"
+done
+assert_contains "$en" 'sandbox or a disposable worktree' "docs-permissoes/3 README EN restringe bypass a sandbox/worktree"
+assert_contains "$pt" 'sandbox ou worktree descartável' "docs-permissoes/3 README PT restringe bypass a sandbox/worktree"
+assert_contains "$en" 'the real block is permission' "docs-permissoes/3 README EN avisa que bloqueio real é permissão"
+assert_contains "$pt" 'bloqueio real é permissão' "docs-permissoes/3 README PT avisa que bloqueio real é permissão"
 # memory-fatiada/6,/8 — Constituição cobre references; READMEs mostram o layout novo.
 assert_contains "$(cat MEMORY.md)" 'skills/*/references/' "/6 Constituição cobre references"
 for r in README.md README.pt-BR.md; do

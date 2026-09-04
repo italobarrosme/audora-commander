@@ -119,6 +119,22 @@ checklist" further down in this README.
    the MEMORY syncs (decisions, learnings, archive) and PRD.md receives the
    summary.
 
+## Reducing permission prompts
+
+Permission prompts (Bash, Edit, Write) come from the Claude Code harness, not
+from this framework — reducing them does not remove any human gate. Three
+options, from safest to riskiest:
+
+| Option | What it does | Risk |
+|---|---|---|
+| `permissions.allow` in `.claude/settings.json` | Allowlists specific tools and commands; everything else still prompts | **Low** — scoped to what you list |
+| `claude --permission-mode acceptEdits` | File edits stop prompting; Bash still asks | **Medium** — the agent can rewrite any file in the project |
+| `claude --permission-mode bypassPermissions` | Nothing prompts | **High** — only in a sandbox or a disposable worktree, never with production credentials in the environment |
+
+Loop-engineering warning: a rule written in the prompt is a request;
+the real block is permission plus sandbox. Configure the harness — don't
+rely on prose to stop the agent.
+
 ## Artifacts in projects using the framework
 
 - `MEMORY.md` — project root: master index of the living memory (purpose,
