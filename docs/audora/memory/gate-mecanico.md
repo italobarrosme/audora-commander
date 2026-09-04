@@ -90,6 +90,6 @@ dispara é a execute ou o humano — motor é D3).
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-gate-mecanico.md
 
 ## feedback-reprovacao
