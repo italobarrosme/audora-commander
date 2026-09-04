@@ -1,9 +1,9 @@
 ---
 id: docs-permissoes
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [README.md, README.pt-BR.md, tests/test-docs.sh, MEMORY.md]
 keywords: [docs, readme, permissoes, permission-prompts, loop-engineering]
 resumo: READMEs (EN+PT) ganham seção sobre reduzir prompts de permissão do harness com as três opções e o risco de cada uma.
 atualizado-em: 2026-09-04
@@ -49,11 +49,14 @@ harness por conta própria; as demais demandas do roadmap (D1..D4).
   teste `/19` exige blocos EN/PT byte-idênticos e tabela não paga esse custo.
 - 2026-09-04 (IA): asserts de conteúdo adicionados a `tests/test-docs.sh`
   (arquivo existente de docs), não em arquivo de teste novo.
+- 2026-09-04 (validate): PRD não muda — seção nova de README não é
+  comportamento que o PRD descreve.
 
 ## delta
 
 ## e2e
 
-pendente
+não ofertado — LIGHT interno (doc pura, sem caminho de usuário); regra do
+Fechamento LIGHT da validate. Aprovado no portão em 2026-09-04.
 
 ## feedback-reprovacao
