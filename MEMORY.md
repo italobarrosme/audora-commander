@@ -40,6 +40,8 @@ time pequeno em projetos web/mobile/api.
   checklist do README.md em sessão interativa.
 - **ferramenta-e2e**: `claude -p` (projeto não-web, sem docker) — sessão
   real do Claude Code com o plugin instalado do cache.
+- **gate**: `bash hooks/gate <id-da-demanda>` — suíte + anti-fraude de teste;
+  lint/typecheck ausentes na stack, pulados com aviso.
 - **graphify**: ativo
 
 ## Aprendizados [carga: sempre]

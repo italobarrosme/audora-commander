@@ -89,4 +89,14 @@ assert_contains "$v" '**Diff de teste**' "/10 validate tem a seção de diff de 
 assert_contains "$v" 'arquivos de teste separado do resto' "/10 validate separa teste do resto"
 lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
 assert_contains "$lt" 'arquivos de teste separados' "/10 Fechamento LIGHT também separa"
+
+# gate-mecanico/11 — este repo dogfooda: gate: na Constituição, instância do template
+mm="$(cat MEMORY.md 2>/dev/null)"
+assert_contains "$mm" '**gate**:' "/11 Constituição registra o bullet gate"
+assert_contains "$mm" 'hooks/gate' "/11 bullet aponta hooks/gate"
+gg="$(cat hooks/gate 2>/dev/null)"
+for s in GATE_SUITE_CMD GATE_LINT_CMD GATE_TYPECHECK_CMD GATE_TEST_ERE \
+         GATE_SKIP_ERE GATE_ASSERT_ERE GATE_ROOT; do
+  assert_contains "$gg" "$s" "/11 hooks/gate instancia $s do template"
+done
 report
