@@ -77,14 +77,25 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
       `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
       Nó com `<id>-historico.md`: mover os DOIS, mesmo prefixo de data, e
       corrigir o ponteiro relativo no corpo.
-   3. **Mecânico**: rode `bash "<raiz do plugin>/hooks/memory-arquivos" <id>`.
-      Ele descobre a base da demanda e imprime a linha `arquivos:` do diff
-      real — só isso, e não escreve nada. Aplique com Edit no nó arquivado.
-      Ele aborta sem emitir se alguma pré-condição não bater, e AVISA se o
-      intervalo contiver commits de outra demanda — leia o aviso antes de
-      aplicar. A linha do índice e o `git mv` do plano você escreve: são
-      triviais, e foi tentando mecanizá-los que três revisões adversariais
-      acharam corrupção de título e de linha vizinha.
+   3. **`arquivos:` do diff real.** A base da demanda é o **pai do commit que
+      CRIOU o arquivo do nó** — nunca por `--grep` na mensagem, que casa
+      commit de outra demanda que só CITA o id:
+      ```bash
+      cria=$(git log --diff-filter=A --format=%H -- "docs/audora/memory/<id>.md" "docs/audora/arquivo/"*"-<id>.md" | tail -1)
+      git diff --name-only "$cria^..HEAD"
+      ```
+      Leia a saída e monte a linha. Três armadilhas, todas encontradas em
+      revisão adversarial:
+      - o range vai até HEAD e **pode conter commits de outra demanda** se o
+        fluxo não foi sequencial — confira `git log --oneline "$cria^..HEAD"`;
+      - o `PRD.md` ainda não foi tocado quando você roda isso (o passo 4 é que
+        o toca) — acrescente à lista se for promover;
+      - o próprio nó e o `-historico.md` aparecem no caminho ANTIGO, de antes
+        do `git mv` — tire os dois da lista.
+      Mecanizar isso foi tentado e abandonado: quatro revisões adversariais,
+      ~45% das mutações passando verdes, e bugs vivos (colisão de sufixo no
+      glob apontando o nó de outra demanda; nó renomeado perdendo trabalho em
+      silêncio). O relatório está em `docs/audora/arquivo/`.
    4. **Promover ao `PRD.md`**: resumo do que foi entregue + data de última
       atualização. Direção única MEMORY → PRD, sempre (vale para toda camada
       derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
@@ -113,9 +124,9 @@ revisão, nunca tirar a revisão.
 - **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff, e
   1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
   vivas quando não há nenhuma.
-- **Sync** (item 6): rode só os passos com conteúdo real — `arquivos:` (o
-  gerador `hooks/memory-arquivos` monta a linha; aplique com Edit) do
-  diff, aprendizados, e nó → `delivered` com arquivamento. Consolidar delta e
+- **Sync** (item 6): rode só os passos com conteúdo real, e NA ORDEM do item 6
+  — julgamento, depois `delivered` + `git mv`, e só então `arquivos:` (a lista
+  cita o caminho NOVO do nó, então o mv vem antes). Consolidar delta e
   promover decisões vivas rodam SOMENTE se houver delta ou decisão.
 - **Plano**: LIGHT **não tem plano** para arquivar. Pule a etapa sem listá-la
   como pendência.

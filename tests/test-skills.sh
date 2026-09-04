@@ -162,19 +162,17 @@ e2s="$(cat skills/e2e/SKILL.md)"
 assert_contains "$e2s" 'docker-compose.e2e.yml' "/8 e2e fixa o nome do compose de e2e"
 assert_contains "$e2s" 'nunca escolher sozinho' "/8 e2e exige perguntar a ferramenta nao-web"
 assert_contains "$e2s" 'Registrar a escolha na' "/8 e2e registra a escolha na Constituicao"
-# sync-mecanizado/9 — a validate aponta o gerador e mantem os 3 de julgamento
+# sync-mecanizado/9 — o conhecimento das 4 revisoes adversariais vira COMANDO
+# documentado na validate, nao script. Quatro rodadas nao converjiram: taxa de
+# mutacao ficou em ~45% verde e cada correcao abria buraco novo.
 vs="$(cat skills/validate/SKILL.md)"
-assert_contains "$vs" 'hooks/memory-arquivos' "/9 validate aponta o script"
-assert_contains "$vs" 'aplique com Edit' "/9 validate diz para aplicar com Edit (hooks disparam)"
-assert_contains "$vs" '**Julgamento, primeiro**' "/9 item 6 poe o julgamento primeiro"
-for j in 'delta' 'decisoes-vivas.md' 'Aprendizados'; do
-  assert_contains "$vs" "$j" "/9 os 3 de julgamento nomeados: $j"
-done
-assert_file hooks/memory-arquivos "/9 o script existe"
-# achado 6 da 3a revisao: a dupla ordem migrou para o Fechamento LIGHT, que
-# mantinha a ordem antiga e nem citava o gerador. LIGHT e o caminho comum.
-lt2="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
-assert_contains "$lt2" 'memory-arquivos' "/9 Fechamento LIGHT tambem cita o gerador"
+assert_contains "$vs" '--diff-filter=A' "/9 validate documenta a derivacao da base"
+assert_contains "$vs" 'nunca por `--grep`' "/9 validate avisa contra derivar por --grep"
+assert_contains "$vs" 'pode conter commits de outra demanda' "/9 validate avisa da super-inclusao"
+assert_contains "$vs" 'o `PRD.md` ainda não foi tocado' "/9 validate avisa que o PRD nao aparece"
+assert_no_file hooks/memory-arquivos "/9 script revertido"
+assert_no_file hooks/memory-sync "/9 script antigo tambem fora"
+
 # sync-mecanizado/9 — o item 6 nao pode ter DUAS ordens. A lista antiga mandava
 # preencher arquivos: ANTES do delivered; seguindo ela depois do git mv, o
 # memory-validate BLOQUEIA qualquer Edit no MEMORY.md (indice x pasta).
