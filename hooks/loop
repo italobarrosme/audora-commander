@@ -40,9 +40,9 @@ esac
 
 const_bullet() { grep -m1 "^- \*\*$1\*\*:" MEMORY.md 2>/dev/null | sed "s/^- \*\*$1\*\*: *//"; }
 gate_raw="$(const_bullet gate)"
-if [ -z "$gate_raw" ] || [ "$gate_raw" = recusado ]; then
-  faltas+=("bullet 'gate:' na Constituição — sem gate, veredito é do agente")
-fi
+case "$gate_raw" in
+  ''|recusado*) faltas+=("bullet 'gate:' na Constituição — sem gate, veredito é do agente") ;;
+esac
 sandbox="$(const_bullet sandbox)"
 [ -n "$sandbox" ] || faltas+=("bullet 'sandbox:' na Constituição (docker | vm | nenhum)")
 
@@ -53,6 +53,17 @@ get_teto() { printf '%s' "$lp_bullet" | grep -o "$1=[0-9.]*" | cut -d= -f2; }
 [ -n "$cu" ] || cu="$(get_teto custo-usd)"
 { [ -n "$vt" ] && [ -n "$vr" ] && [ -n "$cu" ]; } || \
   faltas+=("tetos — parâmetros (--voltas-tarefa/--voltas-rodada/--custo-usd) ou bullet 'loop:' na Constituição")
+for t in "$vt" "$vr" "$cu"; do
+  [ -z "$t" ] && continue
+  printf '%s' "$t" | grep -qE '^[0-9]+(\.[0-9]+)?$' || \
+    faltas+=("teto inválido: '$t' — número com ponto decimal, nunca vírgula")
+done
+tpl="$(cd "$(dirname "$0")/../templates" 2>/dev/null && pwd)/loop-prompt-template.md"
+[ -f "$tpl" ] || faltas+=("template do prompt ($tpl)")
+if [ -f "$plano" ]; then
+  mal="$(grep '^## Tarefa' "$plano" | grep -vE '^## Tarefa [0-9]+:' || true)"
+  [ -n "$mal" ] && faltas+=("plano fora do formato — heading de tarefa é '## Tarefa <n>:' e veio: $mal")
+fi
 
 if [ "${sandbox:-}" = nenhum ] && [ "$semsandbox_ok" -ne 1 ]; then
   faltas+=("confirmação explícita para sandbox 'nenhum' (--confirmo-sem-sandbox)")
@@ -75,29 +86,26 @@ gate_cmd="${gate_cmd//<id-da-demanda>/$id}"
 CLAUDE="${LOOP_CLAUDE_CMD:-claude}"
 loopdir="docs/audora/planos/loop/$id"
 mkdir -p "$loopdir"
-tpl="$(cd "$(dirname "$0")/../templates" 2>/dev/null && pwd)/loop-prompt-template.md"
 
 rodada=1
 while ls "$loopdir"/rodada$rodada-* >/dev/null 2>&1; do rodada=$((rodada+1)); done
+: > "$loopdir/rodada$rodada-inicio"
 
 tarefa_secao() { awk -v n="$1" '$0 ~ ("^## Tarefa " n ":") {f=1; print; next} /^## /{f=0} f' "$plano"; }
 tarefas_todas() { grep -o '^## Tarefa [0-9]*' "$plano" | grep -o '[0-9]*'; }
+feita() { tarefa_secao "$1" | grep -q '^- \[x\] concluida-pelo-motor'; }
 abertas() {
   local n c=0
-  for n in $(tarefas_todas); do
-    tarefa_secao "$n" | grep -q 'concluida-pelo-motor' || c=$((c+1))
-  done
+  for n in $(tarefas_todas); do feita "$n" || c=$((c+1)); done
   echo "$c"
 }
 proxima_tarefa() {
   local n d ok deps
   for n in $(tarefas_todas); do
-    tarefa_secao "$n" | grep -q 'concluida-pelo-motor' && continue
+    feita "$n" && continue
     deps="$(tarefa_secao "$n" | grep -m1 'depende-de' | grep -o 'Tarefa [0-9]*' | grep -o '[0-9]*' || true)"
     ok=1
-    for d in $deps; do
-      tarefa_secao "$d" | grep -q 'concluida-pelo-motor' || ok=0
-    done
+    for d in $deps; do feita "$d" || ok=0; done
     [ "$ok" = 1 ] && { echo "$n"; return 0; }
   done
   return 0
@@ -107,8 +115,18 @@ volta=0; verdes=0; vermelhos=0; custo_acum=0; consec=0; ult=""
 parada=""; virou_blocked=0
 notas="$loopdir/rodada$rodada-notas.md"
 
+vermelho_volta() { # $1 = rótulo da nota
+  vermelhos=$((vermelhos+1)); consec=$((consec+1))
+  git add -A -- . ":(exclude)$loopdir" >/dev/null 2>&1
+  git diff --cached "$head_antes" > "$loopdir/rodada$rodada-volta$volta.patch" 2>/dev/null
+  git reset -q --hard "$head_antes" >/dev/null 2>&1
+  git clean -qfd -e docs/audora/planos/loop >/dev/null 2>&1
+  { printf -- '- rodada %s volta %s (tarefa %s) %s:\n' "$rodada" "$volta" "$n" "$1"
+    sed 's/^/  /' "$glog" 2>/dev/null || true; } >> "$notas"
+}
+
 while :; do
-  if grep -q 'PRECISA-CLARIFICAR' "$no" "$plano" 2>/dev/null; then
+  if grep -q '\[PRECISA-CLARIFICAR' "$no" "$plano" 2>/dev/null; then
     parada="marcador [PRECISA-CLARIFICAR] aberto — aguardando humano"; break
   fi
   [ "$volta" -ge "$vr" ] && { parada="teto de voltas da rodada ($vr)"; break; }
@@ -131,11 +149,26 @@ while :; do
   rm -f "$loopdir/.tarefa"
   restante="$(awk "BEGIN{print $cu - $custo_acum}")"
   echo "LOOP: rodada $rodada volta $volta — tarefa $n (orçamento restante US\$ $restante)"
-  saida="$("$CLAUDE" -p "$(cat "$pfile")" --output-format json --max-budget-usd "$restante" ${model:+--model "$model"} 2>&1)" || true
+  head_antes="$(git rev-parse HEAD)"
+  saida="$("$CLAUDE" -p "$(cat "$pfile")" --output-format json --max-budget-usd "$restante" ${model:+--model "$model"} 2>&1)"
+  claude_exit=$?
+  printf '%s\n' "$saida" > "$loopdir/rodada$rodada-volta$volta-saida.json"
   custo_volta="$(printf '%s' "$saida" | grep -o '"total_cost_usd":[0-9.]*' | head -1 | cut -d: -f2)"
   custo_acum="$(awk "BEGIN{print $custo_acum + ${custo_volta:-0}}")"
   glog="$loopdir/rodada$rodada-volta$volta-gate.log"
-  if bash -c "$gate_cmd" > "$glog" 2>&1; then
+  violacao=""
+  [ "$claude_exit" -ne 0 ] && violacao="claude saiu com exit $claude_exit"
+  [ -z "$violacao" ] && [ "$(git rev-parse HEAD)" != "$head_antes" ] && \
+    violacao="volta commitou por conta própria (HEAD mudou)"
+  [ -z "$violacao" ] && [ -n "$(git status --porcelain -- "$plano" "$no" 2>/dev/null)" ] && \
+    violacao="volta tocou artefato do motor ($plano ou $no)"
+  [ -z "$violacao" ] && [ -z "$(git status --porcelain -- . ":(exclude)$loopdir" 2>/dev/null)" ] && \
+    violacao="volta não produziu mudança na árvore"
+  if [ -n "$violacao" ]; then
+    printf 'VIOLAÇÃO: %s\n' "$violacao" > "$glog"
+    vermelho_volta "VERMELHA — VIOLAÇÃO"
+    echo "LOOP: volta $volta VERMELHA — VIOLAÇÃO: $violacao"
+  elif bash -c "$gate_cmd" > "$glog" 2>&1; then
     verdes=$((verdes+1)); consec=0
     sed -i "s/^## Tarefa $n:.*/&\n\n- [x] concluida-pelo-motor (rodada $rodada, volta $volta)/" "$plano"
     ends="$(tarefa_secao "$n" | grep -o "$id\/[0-9]*" | sort -u | tr '\n' ' ' | sed 's/ $//')"
@@ -143,12 +176,7 @@ while :; do
     git commit -qm "loop($id): volta $volta verde — tarefa $n [$ends]"
     echo "LOOP: volta $volta VERDE — tarefa $n commitada e marcada"
   else
-    vermelhos=$((vermelhos+1)); consec=$((consec+1))
-    git diff HEAD > "$loopdir/rodada$rodada-volta$volta.patch" 2>/dev/null
-    git checkout -q -- . 2>/dev/null
-    git clean -qfd -e docs/audora/planos/loop >/dev/null 2>&1
-    { printf -- '- rodada %s volta %s (tarefa %s) VERMELHA — gate:\n' "$rodada" "$volta" "$n"
-      sed 's/^/  /' "$glog"; } >> "$notas"
+    vermelho_volta "VERMELHA — gate"
     echo "LOOP: volta $volta VERMELHA — tarefa $n (patch guardado, árvore descartada)"
   fi
 done
@@ -157,13 +185,22 @@ tempo="$SECONDS"
 { grep -q '^## Métricas de rodada (loop)' "$plano" || printf '\n## Métricas de rodada (loop)\n'
   printf -- '\n- rodada %s: voltas=%s verdes=%s vermelhos=%s custo-usd=%s tempo=%ss parada=%s\n' \
     "$rodada" "$volta" "$verdes" "$vermelhos" "$custo_acum" "$tempo" "$parada"
-  if [ -s "$notas" ]; then printf '\n### Notas de sessão da rodada %s\n\n' "$rodada"; cat "$notas"; fi
 } >> "$plano"
+if [ -s "$notas" ]; then
+  if grep -q '^## Notas de sessão' "$plano"; then
+    sed -i "/^## Notas de sessão/r $notas" "$plano"
+  else
+    { printf '\n## Notas de sessão\n\n'; cat "$notas"; } >> "$plano"
+  fi
+fi
 
+git add -- "$plano" >/dev/null 2>&1
 if [ "$virou_blocked" -eq 1 ]; then
   sed -i 's/^estado: in-progress/estado: blocked/' "$no"
   sed -i "s/^- $id | in-progress |/- $id | blocked |/" MEMORY.md
+  git add -- "$no" MEMORY.md >/dev/null 2>&1
 fi
+git commit -qm "loop($id): métricas da rodada $rodada — $parada" >/dev/null 2>&1 || true
 
 echo "LOOP: rodada $rodada encerrada — $parada (voltas=$volta verdes=$verdes vermelhos=$vermelhos custo-usd=$custo_acum tempo=${tempo}s)"
 if [ "$parada" = DONE ]; then

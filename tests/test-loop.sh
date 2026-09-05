@@ -26,7 +26,7 @@ mkloop() {
   git -C "$lproj" config core.autocrlf false
   # fakes vivem FORA da árvore do repo (o descarte do vermelho roda git clean)
   printf '%s\n' '#!/usr/bin/env bash' 'f="$(dirname "$0")/gate-verdicts.txt"' 'v="$(head -1 "$f" 2>/dev/null)"; tail -n +2 "$f" > "$f.t" 2>/dev/null; mv "$f.t" "$f" 2>/dev/null' '[ "$v" = verde ] && { echo "GATE: passou"; exit 0; }' 'echo "GATE: reprovado — suite falhou"; exit 1' > "$SP/lbin/fake-gate"
-  printf '%s\n' '#!/usr/bin/env bash' 'echo "$@" >> "$(dirname "$0")/claude-calls.log"' 'echo "obra da volta" >> ./alvo.txt' 'printf "{\"result\":\"ok\",\"total_cost_usd\":%s}\n" "${FAKE_COST:-0.05}"' > "$SP/lbin/claude"
+  printf '%s\n' '#!/usr/bin/env bash' 'echo "$@" >> "$(dirname "$0")/claude-calls.log"' 'case "${FAKE_MODE:-work}" in' '  work) echo "obra da volta" >> ./alvo.txt ;;' '  newfile) echo novo > ./novo-arquivo.txt ;;' '  rogue) echo "obra da volta" >> ./alvo.txt; git add -A >/dev/null 2>&1; git commit -qm rogue-do-agente >/dev/null 2>&1 ;;' '  tamper) sed -i "s/^## Tarefa 2:.*/&\n- [x] concluida-pelo-motor (fraude)/" ./docs/audora/planos/plano-d1.md; echo obra >> ./alvo.txt ;;' '  noop-fail) exit 1 ;;' 'esac' 'printf "{\"result\":\"ok\",\"total_cost_usd\":%s}\n" "${FAKE_COST:-0.05}"' > "$SP/lbin/claude"
   chmod +x "$SP/lbin/fake-gate" "$SP/lbin/claude"
   printf 'verde\nverde\nverde\n' > "$SP/lbin/gate-verdicts.txt"
   printf 'linha base\n' > "$lproj/alvo.txt"
@@ -43,7 +43,7 @@ assert_file "$LM" "/1 hooks/loop existe"
 mkloop; runloop d1
 assert_eq 0 "$code" "/1 fixture completa → pré-condições OK"
 assert_contains "$out" 'pré-condições OK' "/1 mensagem de OK"
-mkloop; git -C "$lproj" checkout -q -
+mkloop; git -C "$lproj" checkout -q -; git -C "$lproj" branch -m main 2>/dev/null || true
 sed -i 's/^autopilot: elegivel/autopilot: declarado/' "$lproj/docs/audora/memory/d1.md"
 sed -i '/^- \*\*gate\*\*/d' "$lproj/MEMORY.md"
 runloop d1
@@ -75,7 +75,7 @@ runloop d1
 assert_eq 0 "$code" "/9 rodada feliz → exit 0"
 assert_contains "$out" 'DONE' "/9 imprime DONE"
 assert_contains "$out" 'validate' "/9 aponta a preparação de evidência da validate"
-assert_eq 2 "$(git -C "$lproj" log --oneline | grep -c 'loop(d1)')" "/7 dois commits verdes do motor"
+assert_eq 2 "$(git -C "$lproj" log --oneline | grep -c 'verde — tarefa')" "/7 dois commits verdes do motor"
 assert_contains "$(git -C "$lproj" log --format=%s -2)" 'd1/1' "/7 commit cita o endereço do critério"
 assert_eq 2 "$(grep -c 'concluida-pelo-motor' "$lproj/docs/audora/planos/plano-d1.md")" "/7 duas tarefas marcadas pelo motor"
 p1="$lproj/docs/audora/planos/loop/d1/rodada1-volta1-prompt.txt"
@@ -94,8 +94,9 @@ runloop d1
 assert_eq 0 "$code" "/8 vermelha + verdes seguintes → DONE"
 assert_file "$lproj/docs/audora/planos/loop/d1/rodada1-volta1.patch" "/8 patch da volta vermelha salvo"
 assert_eq 2 "$(grep -c 'obra da volta' "$lproj/alvo.txt")" "/8 obra da vermelha descartada da árvore"
-assert_eq 2 "$(git -C "$lproj" log --oneline | grep -c 'loop(d1)')" "/8 vermelha não commita"
-assert_contains "$(cat "$lproj/docs/audora/planos/plano-d1.md")" 'GATE: reprovado' "/8 saída do gate nas Notas de sessão"
+assert_eq 2 "$(git -C "$lproj" log --oneline | grep -c 'verde — tarefa')" "/8 vermelha não commita"
+notasec="$(awk '/^## Notas de sessão/{f=1;next} /^## /{f=0} f' "$lproj/docs/audora/planos/plano-d1.md")"
+assert_contains "$notasec" 'GATE: reprovado' "/8 saída do gate DENTRO da seção Notas de sessão"
 
 # --- loop-motor/10 — nunca-verde → blocked no arquivo e no índice ---
 mkloop; printf 'vermelho\nvermelho\nvermelho\n' > "$SP/lbin/gate-verdicts.txt"
@@ -141,6 +142,54 @@ assert_contains "$out" 'rodada 2' "/15 numera a rodada nova"
 p2="$lproj/docs/audora/planos/loop/d1/rodada2-volta1-prompt.txt"
 t2sec="$(awk '/=== SUA TAREFA/{f=1;next} /=== REGRAS/{f=0} f' "$p2" 2>/dev/null)"
 assert_contains "$t2sec" '## Tarefa 2: segunda' "/15 retoma na tarefa 2, sem refazer a 1"
+
+# --- achados da revisão adversarial (ALTOs 1-4, MÉDIOs 5-9, BAIXOs 11-12) ---
+# A1: claude falha/não trabalha → violação, nunca DONE
+mkloop; FAKE_MODE=noop-fail runloop d1 --voltas-tarefa 2 --voltas-rodada 9 --custo-usd 9
+assert_eq 1 "$code" "A1 claude falhando → exit 1"
+assert_contains "$out" 'VIOLAÇÃO' "A1 violação anunciada"
+assert_eq 0 "$(grep -c 'concluida-pelo-motor' "$lproj/docs/audora/planos/plano-d1.md")" "A1 nenhuma tarefa marcada"
+assert_eq 0 "$(git -C "$lproj" log --oneline | grep -c 'verde — tarefa')" "A1 nenhum commit verde"
+# A2: vermelho com arquivo NOVO → patch não-vazio e árvore limpa
+mkloop; printf 'vermelho\nvermelho\nvermelho\n' > "$SP/lbin/gate-verdicts.txt"
+FAKE_MODE=newfile runloop d1
+assert_contains "$(cat "$lproj/docs/audora/planos/loop/d1/rodada1-volta1.patch" 2>/dev/null)" 'novo-arquivo' "A2 patch captura o arquivo novo"
+assert_no_file "$lproj/novo-arquivo.txt" "A2 arquivo novo descartado da árvore"
+# A3: commit rogue do agente → desfeito, violação
+mkloop; FAKE_MODE=rogue runloop d1 --voltas-tarefa 1 --voltas-rodada 9 --custo-usd 9
+assert_eq 1 "$code" "A3 rogue → exit 1"
+assert_contains "$out" 'commitou por conta própria' "A3 nomeia a violação"
+assert_eq 0 "$(git -C "$lproj" log --oneline | grep -c 'rogue-do-agente')" "A3 commit rogue desfeito da história"
+# A4: agente frauda o plano → violação, plano restaurado
+mkloop; FAKE_MODE=tamper runloop d1 --voltas-tarefa 1 --voltas-rodada 9 --custo-usd 9
+assert_eq 1 "$code" "A4 fraude no plano → exit 1"
+assert_contains "$out" 'artefato do motor' "A4 nomeia a violação"
+assert_eq 0 "$(grep -c 'fraude' "$lproj/docs/audora/planos/plano-d1.md")" "A4 plano restaurado"
+# M5: métricas da rodada 1 sobrevivem ao vermelho da rodada 2
+mkloop; runloop d1 --voltas-tarefa 2 --voltas-rodada 1 --custo-usd 9
+printf 'vermelho\nvermelho\nvermelho\n' > "$SP/lbin/gate-verdicts.txt"
+runloop d1 --voltas-tarefa 2 --voltas-rodada 9 --custo-usd 9
+assert_contains "$(cat "$lproj/docs/audora/planos/plano-d1.md")" '- rodada 1: voltas=' "M5 métricas da rodada 1 duráveis"
+# M6: prosa citando o marcador NÃO conta como concluída
+mkloop; sed -i 's/^- \*\*requisito\*\*: d1\/1$/- **requisito**: d1\/1 (sem tocar em concluida-pelo-motor)/' "$lproj/docs/audora/planos/plano-d1.md"
+runloop d1
+assert_eq 0 "$code" "M6 prosa com o termo → rodada normal"
+assert_eq 2 "$(git -C "$lproj" log --oneline | grep -c 'verde — tarefa')" "M6 as duas tarefas rodaram"
+# M7: teto não-numérico → recusa
+mkloop; runloop d1 --custo-usd 0,5
+assert_eq 1 "$code" "M7 teto com vírgula → recusa"
+assert_contains "$out" 'teto inválido' "M7 nomeia o teto inválido"
+# M9: heading de tarefa fora do formato → recusa antes de gastar
+mkloop; sed -i 's/^## Tarefa 1: primeira/## Tarefa 1 — primeira/' "$lproj/docs/audora/planos/plano-d1.md"
+runloop d1
+assert_eq 1 "$code" "M9 plano fora do formato → recusa"
+assert_contains "$out" 'formato' "M9 nomeia o formato"
+assert_no_file "$SP/lbin/claude-calls.log" "M9 zero volta gasta"
+# B12: gate recusado com sufixo → recusa igual
+mkloop; sed -i 's/^- \*\*gate\*\*:.*/- **gate**: recusado — decidir depois/' "$lproj/MEMORY.md"
+runloop d1
+assert_eq 1 "$code" "B12 recusado com sufixo → recusa"
+assert_contains "$out" "bullet 'gate:'" "B12 nomeia o gate"
 
 # --- cobertura documental: execute, validate e Constituição ---
 ex="$(cat skills/execute/SKILL.md 2>/dev/null)"
