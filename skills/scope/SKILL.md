@@ -55,9 +55,18 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
    - Todo critério em EARS e testável?
    - Fora-de-escopo explícito (não vazio)?
    - Sem contradição com a constituição ou com nós vizinhos (`depende-de`)?
+   - Nó com `autopilot: declarado` → todo critério tem verificação
+     automatizável (teste, e2e, comando)? Sim → gravar `autopilot: elegivel`
+     no nó; não → `autopilot: inelegivel (<id>/<n>)` citando o primeiro
+     critério culpado, avisar e seguir o fluxo normal.
 7. **Portão humano de escopo**: apresentar objetivo + critérios +
    fora-de-escopo e ESPERAR aprovação explícita. Apresentar e já começar o
    plano na mesma resposta é pular o portão. Reprovou → ajustar e reapresentar.
+   Exceção — **portão antecipado** (autopilot): nó `autopilot: elegivel` e
+   zero marcador aberto → o humano já aprovou na entrada; registrar a
+   antecipação em `## decisoes` do nó e seguir para plan — a validate ratifica
+   o escopo no portão final. Marcador aberto → parar e imprimir o bloco de
+   fechamento com a fase desmarcada e o marcador (parada, nunca suposição).
 8. **Fechar a fase** (após aprovação):
    > Fase de escopo fechada. Artefatos salvos: [nó/spec]. Seguro dar /clear
    > agora — nada importante vive só na conversa.

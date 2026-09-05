@@ -31,4 +31,12 @@ assert_contains "$ac" 'autopilot: declarado' "/1 registra o campo no nó"
 assert_contains "$ac" '**HIGH** → recusar' "/2 HIGH recusa"
 assert_contains "$ac" 'NUNCA ofertar' "/2 ativação só espontânea"
 assert_contains "$ac" 'ainda não cruzados' "/3 tardia antecipa só o restante"
+
+# --- autopilot/5,/6,/7 — scope: elegibilidade, portão antecipado, marcador ---
+sc="$(cat skills/scope/SKILL.md 2>/dev/null)"
+assert_contains "$sc" 'autopilot: elegivel' "/5 auto-revisão grava elegível"
+assert_contains "$sc" 'autopilot: inelegivel (<id>/<n>)' "/5 inelegível cita o culpado"
+assert_contains "$sc" 'portão antecipado' "/6 portão antecipado no scope"
+assert_contains "$sc" 'a validate ratifica' "/6 ratificação no portão final"
+assert_contains "$sc" 'a fase desmarcada e o marcador' "/7 marcador aberto para com bloco"
 report
