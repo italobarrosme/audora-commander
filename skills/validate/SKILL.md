@@ -46,6 +46,9 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - **Premissas e decisões tomadas sem portão** (só em autopilot): o escopo
      fechado no portão antecipado e cada decisão tomada sem espera — o humano
      ratifica tudo AQUI.
+   - **Relatório de rodada** (demanda executada pelo motor de loop): a seção
+     `## Métricas de rodada (loop)` do plano (voltas, custo, causa da parada,
+     notas) entra no roteiro, com os patches de voltas vermelhas apontados.
    - **Decisões vivas propostas** (sempre): quais decisões do nó seguem
      valendo para demandas futuras (candidatas a `docs/audora/decisoes-vivas.md`)
      — o humano aprova/corta no portão; o sync (item 6) só executa.

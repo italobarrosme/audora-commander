@@ -63,6 +63,14 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 6. **HOTFIX**: escrever ANTES o teste que reproduz o defeito (red), depois o
    fix (green). Sem teste de reprodução não há hotfix — há chute.
 
+## Volta de loop (motor `hooks/loop`)
+
+Sessão iniciada pelo motor executa UMA tarefa do plano e NADA mais. A volta
+NÃO commita, NÃO marca checkbox, NÃO toca outra tarefa e NÃO roda o gate —
+o motor roda o gate ao fim da volta, commita no verde e marca a tarefa; no
+vermelho o diff vira patch em `docs/audora/planos/loop/<id>/` e o
+diagnóstico vai para as Notas de sessão do plano.
+
 ## Quando algo dá errado
 
 - **Teste falha por motivo desconhecido** → skill **debug** (modo sintoma):

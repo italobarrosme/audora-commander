@@ -42,6 +42,8 @@ time pequeno em projetos web/mobile/api.
   real do Claude Code com o plugin instalado do cache.
 - **gate**: `bash hooks/gate <id-da-demanda>` — suíte + anti-fraude de teste;
   lint/typecheck ausentes na stack, pulados com aviso.
+- **loop**: voltas-tarefa=3 voltas-rodada=12 custo-usd=10 (tetos default do
+  motor `hooks/loop`; parâmetros da invocação sobrepõem).
 - **graphify**: ativo
 
 ## Aprendizados [carga: sempre]

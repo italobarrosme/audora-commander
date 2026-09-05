@@ -141,4 +141,16 @@ assert_contains "$out" 'rodada 2' "/15 numera a rodada nova"
 p2="$lproj/docs/audora/planos/loop/d1/rodada2-volta1-prompt.txt"
 t2sec="$(awk '/=== SUA TAREFA/{f=1;next} /=== REGRAS/{f=0} f' "$p2" 2>/dev/null)"
 assert_contains "$t2sec" '## Tarefa 2: segunda' "/15 retoma na tarefa 2, sem refazer a 1"
+
+# --- cobertura documental: execute, validate e Constituição ---
+ex="$(cat skills/execute/SKILL.md 2>/dev/null)"
+assert_contains "$ex" '## Volta de loop' "execute declara a seção da volta"
+assert_contains "$ex" 'NÃO roda o gate' "execute: volta não roda o gate"
+assert_contains "$ex" 'o motor roda o gate' "execute: quem roda é o motor"
+vv="$(cat skills/validate/SKILL.md 2>/dev/null)"
+assert_contains "$vv" 'Relatório de rodada' "validate recebe o relatório do motor"
+assert_contains "$vv" 'Métricas de rodada (loop)' "validate aponta a seção do plano"
+mm2="$(cat MEMORY.md 2>/dev/null)"
+assert_contains "$mm2" '**loop**:' "Constituição registra os tetos default"
+assert_contains "$mm2" 'voltas-tarefa=3 voltas-rodada=12 custo-usd=10' "tetos propostos e ratificáveis"
 report
