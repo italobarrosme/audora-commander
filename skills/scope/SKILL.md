@@ -99,7 +99,7 @@ fora-de-escopo?
 | "O escopo tá claro na conversa, não preciso escrever" | Conversa morre no /clear. Artefato escrito ou escopo não existe. |
 | "Critério em prosa serve, EARS é burocracia" | Prosa aceita ambiguidade; EARS não. Ambiguidade hoje é retrabalho amanhã. |
 | "Mando as 4 perguntas de uma vez, ganho tempo" | Só se forem independentes. Pergunta que depende de outra, em lote, gera resposta sobre premissa errada. |
-| "Apresento o escopo e já começo o plano" | Portão é portão. Apresente e ESPERE o sim. |
+| "Apresento o escopo e já começo o plano" | Portão é portão. Apresente e ESPERE o sim. Exceção única: portão antecipado por autopilot elegível (item 7). |
 
 ## Bloco de fechamento
 

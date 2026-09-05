@@ -44,6 +44,17 @@ portão final da validate.
 
 ## delta
 
+- MODIFICADO (2026-09-05): autopilot/8 — "Constituição com `ferramenta-e2e`"
+  → "`ferramenta-e2e` OU projeto web (Playwright default da skill e2e)".
+  Motivo: revisão adversarial (achado 10) — autopilot entregaria MENOS e2e
+  que o fluxo manual em projeto web sem bullet.
+- ADICIONADO (2026-09-05): dono da gravação de elegibilidade fora do scope —
+  LIGHT e declaração tardia: porta de entrada checa e grava na hora
+  (achados 5 e 6 da revisão adversarial).
+- ADICIONADO (2026-09-05): coleta do contador — toda fase que esperar input
+  fora dos artefatos já registrados grava 1 linha em `## decisoes` na hora;
+  N reconstituível pós-/clear (achado 2).
+
 ## e2e
 
 pendente

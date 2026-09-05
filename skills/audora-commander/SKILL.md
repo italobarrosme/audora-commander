@@ -56,7 +56,8 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 | HIGH | scope → plan → execute → [e2e] → validate | escopo, plano, resultado |
 | HOTFIX | execute → validate (registro retroativo) | diff + evidência (único) |
 
-`[e2e]` = opcional, oferecido SEMPRE pela validate com recomendação forte.
+`[e2e]` = opcional, oferecido SEMPRE pela validate com recomendação forte
+(salvo autopilot — a validate decide sem perguntar; seção Autopilot).
 
 ## Regras de categoria
 
@@ -78,12 +79,15 @@ NUNCA ofertar por iniciativa própria. Ao reconhecer a declaração:
 
 - **LIGHT/MEDIUM** → registrar `autopilot: declarado` no nó (campo do
   frontmatter, enum no `templates/no-template.md`) e avisar: portões do meio
-  antecipados; o portão final da validate fica SEMPRE.
+  antecipados; o portão final da validate fica SEMPRE. Em LIGHT (que não
+  percorre o scope), a própria porta de entrada checa a elegibilidade ao
+  registrar os critérios e grava `elegivel | inelegivel (<id>/<n>)`.
 - **HIGH** → recusar nomeando o motivo (P4: portão nunca escala para baixo)
   e seguir o fluxo HIGH normal.
-- **Declaração tardia** (no meio da demanda) → aceitar: elegibilidade checada
-  na hora (critérios já existem), antecipando só os portões ainda não cruzados;
-  a declaração vira linha em `## decisoes` do nó.
+- **Declaração tardia** (no meio da demanda) → aceitar: elegibilidade
+  checada e gravada na hora (`autopilot: elegivel | inelegivel (<id>/<n>)`,
+  mesmo critério da auto-revisão do scope), antecipando só os portões
+  ainda não cruzados; a declaração vira linha em `## decisoes` do nó.
 
 ## Red flags — pare e reclassifique
 

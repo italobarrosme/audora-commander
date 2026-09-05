@@ -19,7 +19,8 @@ atualizado-em: 2026-08-24
      depende-de: lista de ids; sintaxe `chave:id` reservada (federação futura)
      autopilot: (opcional) declarado | elegivel | inelegivel (<id>/<n>) —
        declarado pela porta de entrada; elegibilidade gravada pela
-       auto-revisão do scope
+       auto-revisão do scope (LIGHT e declaração tardia: pela porta de
+       entrada, na hora)
      arquivos: paths/globs tocados pela demanda — preenchido no sync da validate
        via `git diff --name-only`, nunca de memória
      keywords + resumo: espelham a linha do índice mestre (mesma edição) -->
@@ -62,7 +63,8 @@ login social; recuperação de senha (nó próprio).
 ## e2e
 
 pendente
-<!-- pendente | relatorio: ../e2e/e2e-<id>.md | pulado-pelo-humano -->
+<!-- pendente | relatorio: ../e2e/e2e-<id>.md | pulado-pelo-humano
+     | pulado-por-autopilot-sem-ferramenta -->
 
 ## feedback-reprovacao
 

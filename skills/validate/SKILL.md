@@ -21,9 +21,12 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
    Aceitou → skill e2e, volte aqui com o relatório. Recusou → registrar no nó
    `e2e: pulado-pelo-humano` e seguir.
-   Nó em autopilot → SEM pergunta: Constituição com `ferramenta-e2e` → rodar
-   o e2e direto; sem ela → registrar
-   `e2e: pulado-por-autopilot-sem-ferramenta` no nó, visível no portão.
+   Nó em autopilot (LIGHT: `autopilot: declarado`+`elegivel` da entrada;
+   MEDIUM: `autopilot: elegivel` — `inelegivel` segue o fluxo normal) →
+   SEM pergunta: Constituição com `ferramenta-e2e` OU projeto web
+   (Playwright é o default da skill e2e) → rodar o e2e direto; sem nenhum
+   dos dois → registrar `e2e: pulado-por-autopilot-sem-ferramenta` no nó,
+   visível no portão.
    Categoria LIGHT: a oferta é condicional — ver `## Fechamento LIGHT`.
 2. **Gate de evidência 1:1** — para CADA critério de aceite do nó, citado
    pelo endereço `<id>/<n>`:
@@ -129,9 +132,10 @@ revisão, nunca tirar a revisão.
   **caminho percorrido pelo usuário** — tela, rota, fluxo, saída de CLI.
   LIGHT interno (refactor,
   doc, config, teste) não recebe a oferta. Pedido explícito do humano roda
-  sempre, em qualquer caso. Em autopilot, único portão do meio de LIGHT:
-  mesma regra do item 1, sem pergunta — com ferramenta roda; sem, registra o
-  pulo no nó.
+  sempre, em qualquer caso. Em autopilot, mesma condicional: LIGHT interno
+  segue SEM e2e (nada muda); LIGHT que toca caminho do usuário aplica a
+  regra do item 1 sem pergunta — com ferramenta (ou web) roda; sem, registra
+  o pulo no nó.
 - **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff
   (arquivos de teste separados), e 1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
   vivas quando não há nenhuma.
@@ -173,7 +177,10 @@ de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
 
 - **Produzido**: o veredito do portão e o que o sync consolidou; em TODA
   demanda, incluir o contador
-  `paradas humanas: N (X lotes de scope, Y ofertas, Z portões)`.
+  `paradas humanas: N (lotes de perguntas, ofertas, portões, outras esperas)`.
+  N sai de artefatos duráveis, nunca da memória da conversa: linhas de lote
+  em `## decisoes` do nó, campo `e2e`, portões da categoria — e TODA fase
+  que esperar input fora desses registra 1 linha em `## decisoes` na hora.
 - **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado.
 - **Próximo**: nenhum — o fluxo da demanda encerra aqui.
 
