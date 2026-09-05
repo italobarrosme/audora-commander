@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Motor de loop (audora-commander) — roda o plano de uma demanda elegível
+# volta a volta: claude -p novo por volta, gate fora do agente, commit no
+# verde. Script auxiliar (chamado via Bash), não é hook do Claude.
+# Uso: loop <id> [--voltas-tarefa N] [--voltas-rodada N] [--custo-usd X]
+#              [--model M] [--confirmo-sem-sandbox]
+# Env: LOOP_ROOT (raiz do projeto-alvo), LOOP_CLAUDE_CMD (default: claude).
+set -uo pipefail
+cd "${LOOP_ROOT:-$(dirname "$0")/..}" || exit 1
+
+id="${1:-}"
+[ -n "$id" ] || { echo "LOOP: uso: loop <id> [opções]"; exit 1; }
+shift
+vt=""; vr=""; cu=""; model=""; semsandbox_ok=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --voltas-tarefa) vt="$2"; shift 2 ;;
+    --voltas-rodada) vr="$2"; shift 2 ;;
+    --custo-usd) cu="$2"; shift 2 ;;
+    --model) model="$2"; shift 2 ;;
+    --confirmo-sem-sandbox) semsandbox_ok=1; shift ;;
+    *) echo "LOOP: argumento desconhecido: $1"; exit 1 ;;
+  esac
+done
+
+no="docs/audora/memory/$id.md"
+plano="docs/audora/planos/plano-$id.md"
+faltas=()
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || faltas+=("repo git (o motor só roda dentro de git)")
+[ -f "$no" ] || faltas+=("nó $no")
+[ -f "$plano" ] || faltas+=("plano $plano")
+grep -q '^autopilot: elegivel' "$no" 2>/dev/null || \
+  faltas+=("nó com 'autopilot: elegivel' — elegibilidade é pré-condição")
+
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?')"
+case "$branch" in
+  main|master) faltas+=("branch própria da demanda (está em '$branch')") ;;
+esac
+
+const_bullet() { grep -m1 "^- \*\*$1\*\*:" MEMORY.md 2>/dev/null | sed "s/^- \*\*$1\*\*: *//"; }
+gate_raw="$(const_bullet gate)"
+if [ -z "$gate_raw" ] || [ "$gate_raw" = recusado ]; then
+  faltas+=("bullet 'gate:' na Constituição — sem gate, veredito é do agente")
+fi
+sandbox="$(const_bullet sandbox)"
+[ -n "$sandbox" ] || faltas+=("bullet 'sandbox:' na Constituição (docker | vm | nenhum)")
+
+lp_bullet="$(const_bullet loop)"
+get_teto() { printf '%s' "$lp_bullet" | grep -o "$1=[0-9.]*" | cut -d= -f2; }
+[ -n "$vt" ] || vt="$(get_teto voltas-tarefa)"
+[ -n "$vr" ] || vr="$(get_teto voltas-rodada)"
+[ -n "$cu" ] || cu="$(get_teto custo-usd)"
+{ [ -n "$vt" ] && [ -n "$vr" ] && [ -n "$cu" ]; } || \
+  faltas+=("tetos — parâmetros (--voltas-tarefa/--voltas-rodada/--custo-usd) ou bullet 'loop:' na Constituição")
+
+if [ "${sandbox:-}" = nenhum ] && [ "$semsandbox_ok" -ne 1 ]; then
+  faltas+=("confirmação explícita para sandbox 'nenhum' (--confirmo-sem-sandbox)")
+fi
+
+if [ "${#faltas[@]}" -gt 0 ]; then
+  echo "LOOP: rodada recusada — falta:"
+  printf '  - %s\n' "${faltas[@]}"
+  exit 1
+fi
+
+if [ "$sandbox" = nenhum ]; then
+  echo "LOOP: AVISO — rodando SEM sandbox, confirmado pelo humano nesta rodada"
+fi
+echo "LOOP: pré-condições OK (gate: $gate_raw | sandbox: $sandbox | tetos: tarefa=$vt rodada=$vr custo-usd=$cu)"
+exit 0
