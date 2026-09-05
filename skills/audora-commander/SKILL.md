@@ -71,6 +71,20 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
   classifique como uma coisa só; proponha decompor em demandas menores e
   classifique cada uma.
 
+## Autopilot (declaração do humano)
+
+Ativação SÓ por declaração espontânea — "autopilot" / "roda até o validate";
+NUNCA ofertar por iniciativa própria. Ao reconhecer a declaração:
+
+- **LIGHT/MEDIUM** → registrar `autopilot: declarado` no nó (campo do
+  frontmatter, enum no `templates/no-template.md`) e avisar: portões do meio
+  antecipados; o portão final da validate fica SEMPRE.
+- **HIGH** → recusar nomeando o motivo (P4: portão nunca escala para baixo)
+  e seguir o fluxo HIGH normal.
+- **Declaração tardia** (no meio da demanda) → aceitar: elegibilidade checada
+  na hora (critérios já existem), antecipando só os portões ainda não cruzados;
+  a declaração vira linha em `## decisoes` do nó.
+
 ## Red flags — pare e reclassifique
 
 | Racionalização | Realidade |

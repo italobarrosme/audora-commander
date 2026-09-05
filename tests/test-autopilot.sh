@@ -22,4 +22,13 @@ assert_eq 0 "$code" "/12 via arquivo do nó → exit 0"
 nt="$(cat templates/no-template.md 2>/dev/null)"
 assert_contains "$nt" 'autopilot:' "/12 no-template documenta o campo"
 assert_contains "$nt" 'inelegivel (<id>/<n>)' "/12 no-template documenta o enum completo"
+
+# --- autopilot/1,/2,/3 — porta de entrada: declaração, catraca HIGH, tardia ---
+ac="$(cat skills/audora-commander/SKILL.md 2>/dev/null)"
+assert_contains "$ac" '## Autopilot' "/1 porta de entrada tem a seção"
+assert_contains "$ac" 'roda até o validate' "/1 reconhece a frase de declaração"
+assert_contains "$ac" 'autopilot: declarado' "/1 registra o campo no nó"
+assert_contains "$ac" '**HIGH** → recusar' "/2 HIGH recusa"
+assert_contains "$ac" 'NUNCA ofertar' "/2 ativação só espontânea"
+assert_contains "$ac" 'ainda não cruzados' "/3 tardia antecipa só o restante"
 report
