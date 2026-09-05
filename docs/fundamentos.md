@@ -143,12 +143,12 @@ gênero é ignorar isto — quem calibra, ganha.
 Regras:
 1. **Quatro categorias com roteamento explícito**:
 
-   | Categoria | Fases | Portões humanos |
-   |---|---|---|
-   | LEVE | executar → validar | resultado |
-   | MÉDIA | escopo → plano → executar → [e2e] → validar | escopo, resultado |
-   | ALTA | escopo → plano → executar → [e2e] → validar | escopo, plano, resultado |
-   | HOTFIX | executar → validar (registro retroativo) | diff + evidência (único) |
+   | Categoria | Fases | Portões humanos | Autopilot |
+   |---|---|---|---|
+   | LEVE | executar → validar | resultado | resultado (e2e sem oferta) |
+   | MÉDIA | escopo → plano → executar → [e2e] → validar | escopo, resultado | resultado (+ lotes do escopo) |
+   | ALTA | escopo → plano → executar → [e2e] → validar | escopo, plano, resultado | recusado |
+   | HOTFIX | executar → validar (registro retroativo) | diff + evidência (único) | — |
 
    `[e2e]` = opcional, fortemente recomendado (ver P5.x).
 
@@ -202,6 +202,12 @@ Regras:
    categoria. IA prepara comando + rollback; humano executa ou autoriza aquele
    comando específico.
 7. **Decisões do humano registradas no GRAFO** — decisão vira memória durável.
+8. **Portão antecipado por declaração** (autopilot): o humano pode declarar
+   ("autopilot" / "roda até o validate") em demanda LEVE/MÉDIA — os portões
+   do meio ficam aprovados na entrada e as decisões tomadas sem portão são
+   ratificadas no final; o portão final NUNCA é antecipado; ALTA recusa
+   (catraca do P4). Elegibilidade: todo critério com verificação
+   automatizável, senão o fluxo normal segue com o critério culpado nomeado.
 
 ---
 

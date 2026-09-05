@@ -56,4 +56,9 @@ assert_contains "$v" 'lotes de scope' "/11 contador discriminado"
 ap="$(awk '/^## Autopilot no portão/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
 assert_contains "$ap" 'portão final' "/13 seção de autopilot fala do portão final"
 assert_contains "$ap" 'NUNCA' "/13 portão final NUNCA antecipado, dentro da seção"
+
+# --- autopilot/14 — fundamentos: coluna no P4, regra no P5 ---
+fu="$(cat docs/fundamentos.md 2>/dev/null)"
+assert_contains "$fu" '| Autopilot |' "/14 tabela do P4 ganha a coluna"
+assert_contains "$fu" 'Portão antecipado por declaração' "/14 P5 ganha a regra"
 report
