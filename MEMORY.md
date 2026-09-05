@@ -64,6 +64,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-31 | validate | Total de asserts da suíte precisa ser SOMADO da saída real (`grep PASS= | awk`) — `run.sh` só imprime por arquivo, e citar o total de cabeça inflou o número em 30 no commit e no PRD. Comparar bases com `git archive` também subconta 3: `test-dogfood.sh` depende do repo git.
 - 2026-08-31 | validate | O post-commit do Graphify dispara UMA reconstrução em background por commit; demanda com muitos commits empilha processos Python e a suíte parece TRAVAR (>5 min contra ~30s normais). Antes de debugar teste que "pendurou", rodar os arquivos isolados: se cada um passa, a causa é contenção, não o teste.
 - 2026-09-01 | validate | `grep -c` sai **1** quando o count é 0, então encadear com `&&` quebra o comando exatamente quando a verificação de ausência PASSA — o resto não roda e você lê log velho achando que a suíte reprovou. Em bloco de evidência, separar com `;` ou nova linha, nunca `&&`.
+- 2026-09-05 | execute | O guarda anti-GRAFO pega SUBSTRING case-insensitive: "parágrafo" reprova a suíte. Prosa nova em superfície do plugin evita a sequência g-r-a-f-o (usar "resumo", "diagnóstico curto").
+- 2026-09-05 | execute | Arquivo de teste com muitos spawns de processo (fixtures git + scripts) passa de 120s no Windows e o Bash tool joga para background — rodar via run_in_background e ler o output-file, nunca encadear duas execuções no mesmo comando.
 - 2026-09-05 | validate | Guarda de invariante com grep de palavras SEPARADAS é enganável — revisão adversarial provou por mutação (texto invertido passava). Asserir a FRASE inteira, dentro da seção extraída por awk.
 - 2026-09-04 | execute | `awk -v var="$ERE"` mastiga backslash (gawk trata `\.` como `.` e avisa no stderr) — regex dinâmica entra via `VAR="$ERE" awk 'BEGIN{ere=ENVIRON["VAR"]}'`, nunca por `-v`.
 - 2026-09-02 | execute | `git add -A` varre arquivo untracked de OUTRA sessão para dentro do commit (aconteceu com `docs/specs/2026-09-02-loop-engineering-roadmap.md`). Em repo compartilhado entre sessões, listar os caminhos no `git add` ou conferir `git status --short` antes — e encadear `git commit` depois de `tests/run.sh` sem ler o exit fez o commit sair VERMELHO.
@@ -73,7 +75,7 @@ time pequeno em projetos web/mobile/api.
 - docs-permissoes | delivered | Docs de permissões → docs/audora/arquivo/2026-09-04-docs-permissoes.md
 - gate-mecanico | delivered | Gate mecânico → docs/audora/arquivo/2026-09-04-gate-mecanico.md
 - autopilot | delivered | Autopilot → docs/audora/arquivo/2026-09-05-autopilot.md
-- loop-motor | in-progress | Motor de loop | Motor headless que roda o plano de uma demanda em autopilot volta a volta — claude -p novo por volta, gate fora do agente, commit no verde, tetos e condições de parada | loop, motor, headless, claude-p, contexto-zerado, teto, blocked, ralph | hooks/, templates/, skills/execute/, skills/validate/, tests/
+- loop-motor | delivered | Motor de loop → docs/audora/arquivo/2026-09-05-loop-motor.md
 - plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
 - memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md

@@ -83,6 +83,29 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Motor de loop entregue em 2026-09-05 (nó `loop-motor`, HIGH, D3 do roadmap de
+loop engineering — fecha a tese "spec = direção, teste = aprovação, loop =
+execução, humano decide nas bordas"): `hooks/loop` roda o plano-arquivo de
+uma demanda `autopilot: elegivel` volta a volta — cada volta é um `claude -p`
+NOVO (contexto zerado) com prompt gerado de
+`templates/loop-prompt-template.md` (nó + plano + UMA tarefa + regras), e
+quem julga é o MOTOR: gate da Constituição fora do processo do agente, commit
+citando `<id>/<n>` e checkbox no verde, patch + nota nas Notas de sessão no
+vermelho. Pré-condições recusam a rodada listando TUDO que falta (elegível,
+`gate:`, `sandbox:` — `nenhum` só com `--confirmo-sem-sandbox` —, branch
+própria, tetos numéricos por parâmetro ou bullet
+`loop: voltas-tarefa=3 voltas-rodada=12 custo-usd=10`). Paradas: `DONE`,
+N vermelhos seguidos → nó `blocked`, teto de voltas/custo
+(`--max-budget-usd`, soma via awk do JSON), `[PRECISA-CLARIFICAR`, com
+métricas por rodada COMMITADAS no plano e retomada sem refazer tarefa
+marcada. A revisão adversarial (15 achados, 4 ALTO) endureceu a volta com
+detecção de VIOLAÇÃO antes do gate: claude falho, commit rogue (desfeito),
+fraude no plano (restaurada), volta vazia — nada disso vira verde. Suíte
+503 → 600 asserts com `claude` FALSO no PATH (o modelo real nunca roda na
+suíte); demo real de rodada com vermelho no meio termina `DONE` com 2 commits
+e métricas. D4 (paralelo) segue `planned` no roadmap — só depois de rodadas
+reais de D3.
+
 Autopilot entregue em 2026-09-05 (nó `autopilot`, HIGH, D2 do roadmap de loop
 engineering): o humano declara na entrada — "autopilot" / "roda até o
 validate" — e o framework antecipa os portões do MEIO, mantendo SEMPRE o

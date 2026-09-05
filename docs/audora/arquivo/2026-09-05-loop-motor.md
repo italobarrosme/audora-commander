@@ -1,9 +1,9 @@
 ---
 id: loop-motor
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [gate-mecanico, autopilot]
-arquivos: []
+arquivos: [hooks/loop, templates/loop-prompt-template.md, tests/test-loop.sh, skills/execute/SKILL.md, skills/validate/SKILL.md, MEMORY.md, PRD.md, docs/audora/specs/loop-motor-escopo.md, docs/audora/e2e/e2e-loop-motor.md, docs/audora/planos/arquivo/plano-loop-motor.md]
 keywords: [loop, motor, headless, claude-p, contexto-zerado, teto, blocked, ralph]
 resumo: Motor headless que roda o plano de uma demanda em autopilot volta a volta — claude -p novo por volta, gate fora do agente, commit no verde, tetos e condições de parada.
 atualizado-em: 2026-09-05
@@ -53,20 +53,21 @@ substituir a suíte do projeto-alvo.
   da rodada. Descartado: descartar sem guardar.
 - 2026-09-05 (roadmap, dec. 6): `sandbox: nenhum` roda SÓ com confirmação
   explícita por rodada, aviso impresso no bloco. Descartado: recusar sempre.
+- 2026-09-05 (portão final, ratificado): violações da volta detectadas ANTES
+  do gate (claude exit != 0, commit rogue desfeito por reset, plano/nó
+  tocados restaurados, volta sem mudança) — tudo vermelho com patch e nota;
+  métricas e blocked commitados pelo motor (durabilidade).
+- 2026-09-05 (portão final, ratificado): tetos default na Constituição
+  (`loop: voltas-tarefa=3 voltas-rodada=12 custo-usd=10`).
+- 2026-09-05 (limitação conhecida, achado 10 do revisor): prompt como um
+  argv (limite ~32K no Windows) e parse do custo byte-exato
+  (`"total_cost_usd":N`) — primeira rodada real observa; mitigação futura:
+  prompt via arquivo + parse tolerante.
 
 ## delta
 
-- ADICIONADO (2026-09-05, revisão adversarial): a volta ganhou detecção de
-  VIOLAÇÃO antes do gate — claude com exit != 0, commit rogue (HEAD mudou),
-  volta que tocou plano/nó, volta sem mudança na árvore; tudo vira vermelho
-  com patch e nota, e commit rogue é desfeito (reset ao HEAD anterior).
-- ADICIONADO (2026-09-05): métricas e blocked commitados pelo motor ao fim da
-  rodada (durabilidade contra o descarte do próximo vermelho).
-- REGISTRADO SEM CORREÇÃO (2026-09-05, achado 10 do revisor): prompt inteiro
-  vai como um argv (limite ~32K do CreateProcess no Windows — plano grande
-  falha o spawn e cai na violação de exit) e o parse do custo exige o byte
-  exato `"total_cost_usd":N`. Limitações conhecidas para a primeira rodada
-  real; mitigação futura: prompt via arquivo + parse tolerante.
+<!-- consolidado em ## decisoes no sync de 2026-09-05 (ratificado no portão
+     final). -->
 
 ## e2e
 
