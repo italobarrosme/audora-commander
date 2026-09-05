@@ -31,8 +31,8 @@ arquivos do repositório.
 5. NÃO commitar. NÃO marcar checkbox do plano (o marcador
    `concluida-pelo-motor` é do motor). NÃO rodar o gate — o motor roda
    depois de você terminar e decide verde/vermelho.
-6. Terminou (ou travou): escreva 1 parágrafo de diagnóstico em stdout e
-   PARE. Não inicie outra tarefa.
+6. Terminou (ou travou): escreva um diagnóstico curto (3-5 frases) em
+   stdout e PARE. Não inicie outra tarefa.
 ```
 
 <!-- Regras de preenchimento (hooks/loop):

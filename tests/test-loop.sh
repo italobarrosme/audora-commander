@@ -9,7 +9,7 @@ lp="$(cat templates/loop-prompt-template.md 2>/dev/null)"
 for s in '{{NO}}' '{{PLANO}}' '{{TAREFA}}' '{{ID}}'; do
   assert_contains "$lp" "$s" "/5 placeholder $s"
 done
-for s in 'UMA tarefa' 'procurar antes de criar' 'placeholder' 'NÃO commitar' \
+for s in 'UMA tarefa' 'Procurar antes de criar' 'placeholder' 'NÃO commitar' \
          'NÃO marcar checkbox' 'NÃO tocar outra tarefa' 'NÃO rodar o gate'; do
   assert_contains "$lp" "$s" "/5 regra: $s"
 done
