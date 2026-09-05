@@ -40,6 +40,9 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    - **Diff de teste** (sempre, toda categoria): listar o diff dos
      arquivos de teste separado do resto — teste apagado ou skip/only é a
      fraude que o gate reprova; o roteiro a expõe ao humano.
+   - **Premissas e decisões tomadas sem portão** (só em autopilot): o escopo
+     fechado no portão antecipado e cada decisão tomada sem espera — o humano
+     ratifica tudo AQUI.
    - **Decisões vivas propostas** (sempre): quais decisões do nó seguem
      valendo para demandas futuras (candidatas a `docs/audora/decisoes-vivas.md`)
      — o humano aprova/corta no portão; o sync (item 6) só executa.
@@ -144,6 +147,14 @@ revisão, nunca tirar a revisão.
 
 HOTFIX não usa este caminho: tem o dele, com registro retroativo.
 
+## Autopilot no portão
+
+O portão final NUNCA é antecipado — autopilot antecipa só os portões do
+meio; a aprovação explícita do humano acontece AQUI, em toda categoria. O
+roteiro soma a seção "Premissas e decisões tomadas sem portão" (item 3) e o
+veredito do humano cobre também essas premissas — reprovar uma premissa
+segue o fluxo de reprovação normal (item 5).
+
 ## Red flags — pare e corrija
 
 | Racionalização | Realidade |
@@ -160,7 +171,9 @@ HOTFIX não usa este caminho: tem o dele, com registro retroativo.
 Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
 de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
 
-- **Produzido**: o veredito do portão e o que o sync consolidou.
+- **Produzido**: o veredito do portão e o que o sync consolidou; em TODA
+  demanda, incluir o contador
+  `paradas humanas: N (X lotes de scope, Y ofertas, Z portões)`.
 - **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado.
 - **Próximo**: nenhum — o fluxo da demanda encerra aqui.
 

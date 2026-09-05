@@ -46,4 +46,14 @@ assert_contains "$v" 'SEM pergunta' "/8 autopilot roda e2e sem perguntar"
 assert_contains "$v" 'e2e: pulado-por-autopilot-sem-ferramenta' "/9 pulo registrado no nó"
 lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
 assert_contains "$lt" 'Em autopilot' "/4 Fechamento LIGHT aplica a regra"
+
+# --- autopilot/10,/11,/13 — roteiro, contador e portão final inegociável ---
+assert_contains "$v" 'Premissas e decisões tomadas sem portão' "/10 roteiro ganha a seção de premissas"
+assert_contains "$v" 'paradas humanas: N' "/11 bloco de fechamento conta paradas"
+assert_contains "$v" 'lotes de scope' "/11 contador discriminado"
+# /13 — teste negativo: a declaração vive DENTRO da seção de autopilot da
+# validate (awk na seção; fora dela não conta — padrão do guarda LIGHT).
+ap="$(awk '/^## Autopilot no portão/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+assert_contains "$ap" 'portão final' "/13 seção de autopilot fala do portão final"
+assert_contains "$ap" 'NUNCA' "/13 portão final NUNCA antecipado, dentro da seção"
 report
