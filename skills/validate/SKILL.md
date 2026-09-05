@@ -21,6 +21,9 @@ executado NESTA sessão com saída lida. Confiança não é evidência.
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
    Aceitou → skill e2e, volte aqui com o relatório. Recusou → registrar no nó
    `e2e: pulado-pelo-humano` e seguir.
+   Nó em autopilot → SEM pergunta: Constituição com `ferramenta-e2e` → rodar
+   o e2e direto; sem ela → registrar
+   `e2e: pulado-por-autopilot-sem-ferramenta` no nó, visível no portão.
    Categoria LIGHT: a oferta é condicional — ver `## Fechamento LIGHT`.
 2. **Gate de evidência 1:1** — para CADA critério de aceite do nó, citado
    pelo endereço `<id>/<n>`:
@@ -123,7 +126,9 @@ revisão, nunca tirar a revisão.
   **caminho percorrido pelo usuário** — tela, rota, fluxo, saída de CLI.
   LIGHT interno (refactor,
   doc, config, teste) não recebe a oferta. Pedido explícito do humano roda
-  sempre, em qualquer caso.
+  sempre, em qualquer caso. Em autopilot, único portão do meio de LIGHT:
+  mesma regra do item 1, sem pergunta — com ferramenta roda; sem, registra o
+  pulo no nó.
 - **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff
   (arquivos de teste separados), e 1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
   vivas quando não há nenhuma.

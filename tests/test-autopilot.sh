@@ -39,4 +39,11 @@ assert_contains "$sc" 'autopilot: inelegivel (<id>/<n>)' "/5 inelegível cita o 
 assert_contains "$sc" 'portão antecipado' "/6 portão antecipado no scope"
 assert_contains "$sc" 'a validate ratifica' "/6 ratificação no portão final"
 assert_contains "$sc" 'a fase desmarcada e o marcador' "/7 marcador aberto para com bloco"
+
+# --- autopilot/4,/8,/9 — validate: e2e sem oferta; pulo registrado; LIGHT junto ---
+v="$(cat skills/validate/SKILL.md 2>/dev/null)"
+assert_contains "$v" 'SEM pergunta' "/8 autopilot roda e2e sem perguntar"
+assert_contains "$v" 'e2e: pulado-por-autopilot-sem-ferramenta' "/9 pulo registrado no nó"
+lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+assert_contains "$lt" 'Em autopilot' "/4 Fechamento LIGHT aplica a regra"
 report
