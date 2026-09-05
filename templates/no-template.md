@@ -17,6 +17,9 @@ atualizado-em: 2026-08-24
      origem: humano | inferido (inferido NÃO vale como verdade até o humano
        confirmar)
      depende-de: lista de ids; sintaxe `chave:id` reservada (federação futura)
+     autopilot: (opcional) declarado | elegivel | inelegivel (<id>/<n>) —
+       declarado pela porta de entrada; elegibilidade gravada pela
+       auto-revisão do scope
      arquivos: paths/globs tocados pela demanda — preenchido no sync da validate
        via `git diff --name-only`, nunca de memória
      keywords + resumo: espelham a linha do índice mestre (mesma edição) -->
