@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-09-04
+> Última atualização: 2026-09-05
 
 ## O que é e para que serve
 
@@ -82,6 +82,27 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Autopilot entregue em 2026-09-05 (nó `autopilot`, HIGH, D2 do roadmap de loop
+engineering): o humano declara na entrada — "autopilot" / "roda até o
+validate" — e o framework antecipa os portões do MEIO, mantendo SEMPRE o
+portão final da validate (invariante guardado por teste de frase inteira
+dentro da seção, endurecido depois que a revisão adversarial provou por
+mutação que asserts de palavras separadas eram enganáveis). Vale para LIGHT e
+MEDIUM; HIGH recusa nomeando o P4 (provado em sessão `claude -p` real, junto
+com o registro de `autopilot: declarado` por outra sessão real). Elegibilidade
+pela pergunta que decide (todos os critérios automatizáveis?): auto-revisão do
+scope grava `autopilot: elegivel | inelegivel (<id>/<n>)`; LIGHT e declaração
+tardia são gravadas pela porta de entrada na hora. Em autopilot a validate
+decide o e2e sem perguntar (roda com `ferramenta-e2e` OU projeto web;
+sem nada, registra `e2e: pulado-por-autopilot-sem-ferramenta`), o roteiro
+ganha "Premissas e decisões tomadas sem portão" e o bloco de fechamento de
+TODA demanda passa a imprimir `paradas humanas: N` discriminado,
+reconstituível de artefatos duráveis. Campo `autopilot:` documentado no
+`no-template.md`; `memory-validate` intocado (caracterização provou que campo
+desconhecido já passa). Revisão adversarial: 15 achados (4 ALTO), 14
+corrigidos no mesmo ciclo. Suíte 467 → 503 asserts; GREEN da demanda foi
+fechado pelo próprio gate de D1 (`GATE: passou`).
 
 Gate mecânico entregue em 2026-09-04 (nó `gate-mecanico`, MEDIUM, D1 do
 roadmap de loop engineering em `docs/specs/2026-09-02-loop-engineering-roadmap.md`):
