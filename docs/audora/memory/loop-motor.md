@@ -56,8 +56,20 @@ substituir a suíte do projeto-alvo.
 
 ## delta
 
+- ADICIONADO (2026-09-05, revisão adversarial): a volta ganhou detecção de
+  VIOLAÇÃO antes do gate — claude com exit != 0, commit rogue (HEAD mudou),
+  volta que tocou plano/nó, volta sem mudança na árvore; tudo vira vermelho
+  com patch e nota, e commit rogue é desfeito (reset ao HEAD anterior).
+- ADICIONADO (2026-09-05): métricas e blocked commitados pelo motor ao fim da
+  rodada (durabilidade contra o descarte do próximo vermelho).
+- REGISTRADO SEM CORREÇÃO (2026-09-05, achado 10 do revisor): prompt inteiro
+  vai como um argv (limite ~32K do CreateProcess no Windows — plano grande
+  falha o spawn e cai na violação de exit) e o parse do custo exige o byte
+  exato `"total_cost_usd":N`. Limitações conhecidas para a primeira rodada
+  real; mitigação futura: prompt via arquivo + parse tolerante.
+
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-loop-motor.md
 
 ## feedback-reprovacao
