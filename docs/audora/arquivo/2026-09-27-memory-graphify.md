@@ -24,8 +24,12 @@ aceito.
 Spec dedicada (HIGH, histórica): `../specs/memory-graphify-escopo.md` — 19
 critérios `memory-graphify/1..19`, com o delta consolidado abaixo:
 
-- /1 vale sem exceções: zero menção ao nome antigo na superfície do plugin
-  (as exceções do aviso e da tabela de renomeação saíram com /3 e /19).
+- /1 MODIFICADO: 8 → 9 skills (skill-worktree); vale sem exceções — zero
+  menção ao nome antigo na superfície do plugin (as exceções do aviso e da
+  tabela de renomeação saíram com /3 e /19).
+- /9 MODIFICADO (2026-09-27, `limpeza-codigo-morto`): o estado migrado
+  segue verdadeiro (conferido à mão), mas deixou de ser asserido pela suíte —
+  os asserts de migração saíram com o guarda.
 - /3 REMOVIDO (2026-09-27, `limpeza-codigo-morto`): aviso sobre o arquivo de
   memória antigo aposentado — breaking não é mais comunicado.
 - /19 MODIFICADO (2026-09-27, `limpeza-codigo-morto`): READMEs e PRD
@@ -59,7 +63,7 @@ versionar `graphify-out/`.
 relatorio: ../e2e/e2e-memory-graphify.md (2026-08-26; 7 corridas `claude -p`,
 11 critérios exercitados, 0 falhou). Evidência de fechamento (2026-09-27):
 /2, /4, /6, /10, /12, /13, /14 no relatório; /5, /7, /8, /9, /11, /15, /16,
-/18, /19 na suíte (`bash tests/run.sh`, 548 asserts, 0 falhas); /17 regra
+/18, /19 na suíte (/9: conferência manual) (`bash tests/run.sh`, 548 asserts, 0 falhas); /17 regra
 escrita (roteiro humano); /1 grep vazio no roteiro de `limpeza-codigo-morto`.
 
 ## feedback-reprovacao

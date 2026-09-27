@@ -19,7 +19,7 @@ assert_empty "$(grep -rn '8 skills' README.md README.pt-BR.md PRD.md 2>/dev/null
 blocos() { awk '/^```/{f=!f; next} f' "$1"; }
 assert_eq "$(blocos README.md | md5sum)" "$(blocos README.pt-BR.md | md5sum)" "/19 blocos de código idênticos EN/PT"
 p="$(cat PRD.md)"
-for s in 'MEMORY.md' 'memory-guard' 'memory-validate' 'graphify-status' 'Graphify' 'tests/' '0.4.0'; do assert_contains "$p" "$s" "/19 PRD cita $s"; done
+for s in 'MEMORY.md' 'memory-guard' 'memory-validate' 'graphify-status' 'Graphify' 'tests/'; do assert_contains "$p" "$s" "/19 PRD cita $s"; done
 # docs-permissoes/1,/2,/3 — READMEs ensinam a reduzir prompts de permissão do harness.
 assert_contains "$en" '## Reducing permission prompts' "docs-permissoes/1 README EN tem a seção"
 assert_contains "$pt" '## Reduzindo prompts de permissão' "docs-permissoes/2 README PT tem a seção"

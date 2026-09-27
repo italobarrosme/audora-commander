@@ -69,6 +69,6 @@ Uma linha rica por nó — decide relevância SEM abrir o corpo; o corpo vive em
    linhas → mover os antigos para docs/audora/aprendizados-historico.md;
    por nó ver no-template.
 5. Máximo 3 nós in-progress, contados globalmente por este índice.
-   Caminhos sempre relativos ao arquivo que os contém.
-6. O corpo do nó é resolvido pelo id (id = nome do arquivo em
+6. Caminhos sempre relativos ao arquivo que os contém.
+7. O corpo do nó é resolvido pelo id (id = nome do arquivo em
    docs/audora/memory/) — link implícito por construção. -->

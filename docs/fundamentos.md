@@ -35,10 +35,11 @@ Regras:
    `depende-de`, `arquivos`, `keywords`, `resumo`, `atualizado-em`). A skill
    memory valida o schema antes de escrever; os hooks `memory-guard` e
    `memory-validate` rejeitam escrita que o quebra.
-2. **Seções com modo de carga** (inspirado em Kiro steering): `sempre`
-   (Propósito, Constituição, Aprendizados, índice — enxuto, cabe em qualquer
-   contexto), `auto` (corpo do nó, carregado quando a demanda o toca, escolhido
-   pela linha do índice), `manual` (nós `delivered` em `docs/audora/arquivo/`).
+2. **Carga seletiva** (inspirado em Kiro steering): o `MEMORY.md` inteiro
+   (`[carga: sempre]` — enxuto, cabe em qualquer contexto) entra em toda
+   demanda; corpo de nó e decisões vivas (`[carga: auto]`) entram só quando a
+   demanda toca a área, escolhidos pela linha do índice ou por grep; nós em
+   `docs/audora/arquivo/` só se o humano pedir histórico.
    Nunca carregar a pasta de nós inteira; consulta estrutural é grep.
 3. **Constituição** (inspirado em Spec Kit): seção curta e estável no topo do
    `MEMORY.md` com princípios inegociáveis do projeto (stack, restrições,
@@ -99,7 +100,7 @@ Regras:
    tarefas declaram `depende-de`; "qual a próxima?" é resposta mecânica, nunca
    tarefa bloqueada. Tarefa complexa (`expandir: sim`) é quebrada em
    subtarefas só quando chega a vez dela.
-5. **Etapa calibrada**: no máximo ~3 arquivos, 1 teste-alvo, critério de done.
+5. **Etapa calibrada**: passos de 2-5 minutos, 1 teste mínimo, critério de done.
    Após qualquer compactação de contexto: reler plano + nó do MEMORY antes de
    continuar (reancoragem obrigatória).
 6. **Gatilhos de replanejamento enumerados**: (a) símbolo/arquivo referenciado
@@ -292,7 +293,7 @@ Regras:
 | Processo proporcional (BMAD; crítica ao gênero) | audora-commander |
 | Classificação binária + tabela de roteamento (crítica adversarial) | audora-commander |
 | Delta + sync pós-merge (OpenSpec) | memory + validate |
-| Modos de carga sempre/auto/manual (Kiro steering) | memory |
+| Carga seletiva sempre/auto (Kiro steering) | memory |
 | Constituição enxuta (Spec Kit) | memory |
 | Bootstrap brownfield com nós `inferido` (crítica adversarial) | memory |
 | Índice de código consultado antes de ler arquivo (Graphify) | memory → plan, execute, debug |

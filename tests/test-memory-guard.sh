@@ -12,4 +12,6 @@ yes 'x' | head -120 > "$d/docs/audora/memory/n.md"
 run_hook memory-guard "$d/docs/audora/memory/n.md";         assert_eq 2 "$code" "/8 nó 120 linhas → 2"; assert_contains "$out" "n-historico.md" "/8 msg nó"
 yes 'x' | head -120 > "$d/docs/audora/memory/n-historico.md"
 run_hook memory-guard "$d/docs/audora/memory/n-historico.md"; assert_eq 0 "$code" "/8 -historico → 0"
+mkdir -p "$d/docs/outros"; yes 'x' | head -120 > "$d/docs/outros/n.md"
+run_hook memory-guard "$d/docs/outros/n.md";                 assert_eq 0 "$code" "/8 arquivo fora de docs/audora/memory → 0"
 report
