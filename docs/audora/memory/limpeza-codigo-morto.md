@@ -43,6 +43,7 @@ Graphify, comunicar breaking, versionar roadmap.
 - 2026-09-27 (humano): portão de escopo aprovado ("continue"), incluindo as
   2 decisões da IA (bump 0.8.0 só aqui; contagem de skills migra para
   `test-skills.sh`).
+- 2026-09-27 (humano): portão de plano aprovado ("pode seguir").
 
 ## delta
 

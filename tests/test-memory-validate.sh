@@ -26,6 +26,9 @@ run_hook memory-validate "$SP/sempipe/MEMORY.md";       assert_eq 2 "$code" "/8 
 mk dep 'memory-schema: 1' '- x | planned | X | r | k | —'; no dep x planned 'nao-existe'
 run_hook memory-validate "$SP/dep/MEMORY.md";           assert_eq 2 "$code" "/8 dep inexistente → 2"; assert_contains "$out" "depende de 'nao-existe'" "/8 msg dep"
 
+mk fed 'memory-schema: 1' '- x | planned | X | r | k | —'; no fed x planned 'ext:x'
+run_hook memory-validate "$SP/fed/MEMORY.md";           assert_eq 2 "$code" "limpeza-codigo-morto/4 dep com ':' é id comum → 2"; assert_contains "$out" "depende de 'ext:x'" "limpeza-codigo-morto/4 msg"
+
 mk ciclo 'memory-schema: 1' $'- a | planned | A | r | k | —\n- b | planned | B | r | k | —'; no ciclo a planned 'b'; no ciclo b planned 'a'
 run_hook memory-validate "$SP/ciclo/MEMORY.md";         assert_eq 2 "$code" "/8 ciclo → 2"; assert_contains "$out" "ciclo em depende-de" "/8 msg ciclo"
 

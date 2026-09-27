@@ -16,7 +16,7 @@ atualizado-em: 2026-08-24
        (+ hotfix-pending-record, transitório)
      origem: humano | inferido (inferido NÃO vale como verdade até o humano
        confirmar)
-     depende-de: lista de ids; sintaxe `chave:id` reservada (federação futura)
+     depende-de: lista de ids de nós do índice
      autopilot: (opcional) declarado | elegivel | inelegivel (<id>/<n>) —
        declarado pela porta de entrada; elegibilidade gravada pela
        auto-revisão do scope (LIGHT e declaração tardia: pela porta de
