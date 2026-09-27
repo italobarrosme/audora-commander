@@ -81,6 +81,15 @@ real (custo de API).
 - 2026-09-27 (humano): portão de escopo aprovado ("continue"), incluindo bump
   0.9.0.
 
+## medicao
+
+Bytes (`tests/test-carga.sh`; tokens ~ bytes/3,3). Carga estática MEDIUM:
+BASE 56237 → 53609 (−4,7%); FULL 58036 → 58818 (+1,3% — regras novas e
+cabeçalhos das references); `validate` base 11603 → 7596 (−35%; LIGHT deixa
+de carregar sync e filtro). Loop (/6), plano real `plano-limpeza-codigo-morto`:
+recorte do plano no prompt 13695 → 6632 por volta (−52%). Estimado: /1 evita reler memory (8,3KB)
+e bloco (4,1KB) por fase, ~35KB (~10k tok) por MEDIUM; /5 paga a saída 1x.
+
 ## delta
 
 ## e2e

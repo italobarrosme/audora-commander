@@ -37,6 +37,7 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 
 ## Notas de sessão
 
+- 2026-09-27 (execute): T5+T6 fechadas com UM gate (mesmo esquema da T1+T2). Medição honesta: carga estática FULL subiu 1,3% (regras novas + cabeçalhos de references); ganho real é comportamental e no loop (−52% por volta, plano real). Ver `## medicao` do nó.
 - 2026-09-27 (execute): T1+T2 fechadas com UM gate sobre as duas (arquivos independentes) e 2 commits separados. T3: done "< 6500 bytes" era estimativa sem medição — o roteador ganhou tabela + regra de reference ausente e o corte real ficou em 7596 (−35%); done replanejado para < 7700 (decisão IA, gatilho (b): alvo impossível como especificado sem mover texto normativo).
 
 ---
@@ -49,7 +50,7 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 - **arquivos**: Modificar `hooks/loop`, `templates/loop-prompt-template.md`; Teste `tests/test-loop.sh`.
 - **done quando**: prompt da volta 1 sem `## Tarefa 2`, com `# Plano — d1` e `## Notas de sessão`; fixture sem notas → rodada DONE.
 
-- [ ] **1. Red** — em `test-loop.sh`, após o assert `/5 tarefa 2 fora da seção da volta 1`:
+- [x] **1. Red** — em `test-loop.sh`, após o assert `/5 tarefa 2 fora da seção da volta 1`:
   ```bash
   assert_not_contains "$(cat "$p1")" '## Tarefa 2' "otimizacao-tokens/6 prompt inteiro sem a tarefa 2"
   assert_contains "$(cat "$p1")" '# Plano — d1' "otimizacao-tokens/6 prompt leva o cabeçalho"
@@ -63,8 +64,8 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
   assert_not_contains "$(cat "$lproj/docs/audora/planos/loop/d1/rodada1-volta1-prompt.txt")" '## Tarefa 2' "otimizacao-tokens/6 sem notas, sem tarefa 2"
   ```
   E placeholder: trocar o loop da linha 9 para também exigir a frase `outras tarefas omitidas`.
-- [ ] **2. Rodar** `bash tests/test-loop.sh` (background) → FAIL no `prompt inteiro sem a tarefa 2`.
-- [ ] **3. Implementar** — não-óbvio, vai o código:
+- [x] **2. Rodar** `bash tests/test-loop.sh` (background) → FAIL no `prompt inteiro sem a tarefa 2`.
+- [x] **3. Implementar** — não-óbvio, vai o código:
   ```bash
   plano_base() {
     awk '/^## Tarefa [0-9]+:/{exit} {print}' "$plano"
@@ -72,8 +73,8 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
   }
   ```
   (a 2ª awk só imprime notas que estejam DEPOIS da 1ª tarefa — as de antes já saíram no cabeçalho). Gravar em `$loopdir/.plano` e ler no lugar de `$plano` no `awk -v pl=`. Template: `=== PLANO (cabeçalho + notas de sessão; outras tarefas omitidas) ===` e regra 1 do rodapé.
-- [ ] **4. Rodar** test-loop → verde; gate.
-- [ ] **5. Commit** `feat(otimizacao-tokens/6): volta do loop recebe cabeçalho + tarefa + notas`.
+- [x] **4. Rodar** test-loop → verde; gate.
+- [x] **5. Commit** `feat(otimizacao-tokens/6): volta do loop recebe cabeçalho + tarefa + notas`.
 
 ## Tarefa 2: plano sem código de implementação duplicado
 
@@ -82,7 +83,7 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 - **arquivos**: Modificar `skills/plan/SKILL.md`, `templates/plano-template.md`; Teste `tests/test-skills.sh`.
 - **done quando**: asserts abaixo verdes.
 
-- [ ] **1. Red** — `test-skills.sh`, fim do arquivo antes de `report`:
+- [x] **1. Red** — `test-skills.sh`, fim do arquivo antes de `report`:
   ```bash
   pl="$(cat skills/plan/SKILL.md)"; pt="$(cat templates/plano-template.md)"
   assert_contains "$pl" 'implementação só quando não-óbvio' "otimizacao-tokens/5 plan: implementação só se não-óbvia"
@@ -91,10 +92,10 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
   assert_contains "$pt" 'implementação só quando não-óbvio' "otimizacao-tokens/5 template: idem"
   assert_contains "$pt" 'TBD' "otimizacao-tokens/5 template mantém a proibição de placeholder"
   ```
-- [ ] **2. Rodar** → FAIL.
-- [ ] **3. Implementar** — plan item 5: passos com "código completo do TESTE, assinaturas exatas e comandos com saída esperada; implementação só quando não-óbvio (algoritmo, regex, SQL, formato exato) — a execute escreve o resto UMA vez"; item 6: "passo sem arquivo, assinatura ou comando exatos" no lugar de "passo que descreve sem mostrar como". Template: cabeçalho dos passos e passo 3 no mesmo espírito.
-- [ ] **4. Rodar** → verde; gate.
-- [ ] **5. Commit** `feat(otimizacao-tokens/5): plano carrega teste e assinaturas, não implementação óbvia`.
+- [x] **2. Rodar** → FAIL.
+- [x] **3. Implementar** — plan item 5: passos com "código completo do TESTE, assinaturas exatas e comandos com saída esperada; implementação só quando não-óbvio (algoritmo, regex, SQL, formato exato) — a execute escreve o resto UMA vez"; item 6: "passo sem arquivo, assinatura ou comando exatos" no lugar de "passo que descreve sem mostrar como". Template: cabeçalho dos passos e passo 3 no mesmo espírito.
+- [x] **4. Rodar** → verde; gate.
+- [x] **5. Commit** `feat(otimizacao-tokens/5): plano carrega teste e assinaturas, não implementação óbvia`.
 
 ## Tarefa 3: validate vira roteador + references
 
@@ -104,7 +105,7 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 - **arquivos**: Modificar `skills/validate/SKILL.md`; Criar `skills/validate/references/{sync,decisoes-vivas,fechamento-light}.md`; Teste `tests/test-skills.sh`, `tests/test-autopilot.sh`, `tests/test-gate.sh`.
 - **done quando**: suíte verde, contagem de asserts não cai, `validate/SKILL.md` < 7700 bytes (replanejado, ver notas).
 
-- [ ] **1. Red** — relocar os asserts (texto idêntico, arquivo novo) e somar os de estrutura:
+- [x] **1. Red** — relocar os asserts (texto idêntico, arquivo novo) e somar os de estrutura:
   ```bash
   VR=skills/validate/references; vv="$(cat skills/validate/SKILL.md)"
   for r in sync decisoes-vivas fechamento-light; do
@@ -118,10 +119,10 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
   [ "$(wc -c < skills/validate/SKILL.md)" -lt 6500 ] && ok || ko "otimizacao-tokens/2 validate < 6500 bytes"
   ```
   Relocação: test-skills 87-89 e 160-173 leem `$VR/sync.md`; 114-121 (`lt`) lê `$VR/fechamento-light.md` inteiro e `'## Fechamento LIGHT'` vira o título `# validate — Fechamento LIGHT`; 124-127 leem `$VR/decisoes-vivas.md`; test-autopilot 60-61 e test-gate 90-91 leem `fechamento-light.md`.
-- [ ] **2. Rodar** test-skills/test-autopilot/test-gate → FAIL (references ausentes).
-- [ ] **3. Implementar** — `git mv` não se aplica (é corte de seção): mover os blocos por recorte, sem reescrever o texto normativo; roteador ganha a tabela `| uso | onde |` e a regra de reference ausente numa linha só.
-- [ ] **4. Rodar** suíte → verde; comparar total de asserts (≥ antes).
-- [ ] **5. Commit** `refactor(otimizacao-tokens/2,3,8): validate vira roteador + references`.
+- [x] **2. Rodar** test-skills/test-autopilot/test-gate → FAIL (references ausentes).
+- [x] **3. Implementar** — `git mv` não se aplica (é corte de seção): mover os blocos por recorte, sem reescrever o texto normativo; roteador ganha a tabela `| uso | onde |` e a regra de reference ausente numa linha só.
+- [x] **4. Rodar** suíte → verde; comparar total de asserts (≥ antes).
+- [x] **5. Commit** `refactor(otimizacao-tokens/2,3,8): validate vira roteador + references`.
 
 ## Tarefa 4: não reler na sessão + /clear recomendado
 
@@ -129,7 +130,7 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 - **requisito**: **otimizacao-tokens/1** — QUANDO uma fase precisar da skill memory, do `MEMORY.md` ou do template do bloco de fechamento e eles já tiverem sido carregados nesta sessão (sem `/clear` nem compactação depois) O SISTEMA DEVE reusar o que está no contexto, sem reinvocar a skill nem reler o arquivo; após `/clear` ou compactação, recarrega normalmente. **otimizacao-tokens/4** — QUANDO uma fase fechar e a próxima se reancorar só pelos artefatos O SISTEMA DEVE recomendar `/clear` no bloco de fechamento, deixando a decisão com o humano (em autopilot, sem pausa, a recomendação não aparece).
 - **arquivos**: Modificar `skills/memory/SKILL.md`, as 7 skills de fase (seção `## Bloco de fechamento`), `skills/scope/SKILL.md` e `skills/plan/SKILL.md` ("Fechar a fase"), `templates/bloco-fechamento-template.md`; Teste `tests/test-skills.sh`, `tests/test-templates.sh`.
 
-- [ ] **1. Red**:
+- [x] **1. Red**:
   ```bash
   assert_contains "$(cat skills/memory/SKILL.md)" 'Já carregado nesta sessão' "otimizacao-tokens/1 memory: não reinvocar/reler"
   for s in audora-commander scope plan execute e2e validate debug; do
@@ -141,10 +142,10 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
   assert_contains "$b" 'autopilot' "otimizacao-tokens/4 template omite em autopilot"
   for s in scope plan; do assert_contains "$(cat skills/$s/SKILL.md)" 'Recomendo /clear' "otimizacao-tokens/4 $s recomenda /clear"; done
   ```
-- [ ] **2. Rodar** → FAIL.
-- [ ] **3. Implementar** — memory, regra de leitura seletiva, item novo: "**Já carregado nesta sessão** (skill memory invocada, `MEMORY.md` lido, sem `/clear` nem compactação depois) → reusar do contexto; não reinvocar a skill nem reler o arquivo. Depois de `/clear` ou compactação, recarregar." Bloco das 7 fases: "(template já lido nesta sessão → não reler)". Template, regra 4 do Próximo: "próxima fase se reancora pelos artefatos → `— /clear recomendado`; o humano decide; na sessão nova basta `<fase> de <id>`. Autopilot: omitir (não há pausa)." scope/plan "Fechar a fase": "Seguro dar /clear" → "Recomendo /clear agora".
-- [ ] **4. Rodar** → verde; gate.
-- [ ] **5. Commit** `feat(otimizacao-tokens/1,4): não reler na sessão; /clear recomendado entre fases`.
+- [x] **2. Rodar** → FAIL.
+- [x] **3. Implementar** — memory, regra de leitura seletiva, item novo: "**Já carregado nesta sessão** (skill memory invocada, `MEMORY.md` lido, sem `/clear` nem compactação depois) → reusar do contexto; não reinvocar a skill nem reler o arquivo. Depois de `/clear` ou compactação, recarregar." Bloco das 7 fases: "(template já lido nesta sessão → não reler)". Template, regra 4 do Próximo: "próxima fase se reancora pelos artefatos → `— /clear recomendado`; o humano decide; na sessão nova basta `<fase> de <id>`. Autopilot: omitir (não há pausa)." scope/plan "Fechar a fase": "Seguro dar /clear" → "Recomendo /clear agora".
+- [x] **4. Rodar** → verde; gate.
+- [x] **5. Commit** `feat(otimizacao-tokens/1,4): não reler na sessão; /clear recomendado entre fases`.
 
 ## Tarefa 5: teto de carga na suíte + medição
 
@@ -154,14 +155,14 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 - **arquivos**: Criar `tests/test-carga.sh`; Modificar o nó (medição).
 - **done quando**: teste verde com teto = depois medido + 3% (arredondado para cima em centenas); teste negativo: teto 1 byte abaixo do medido reprova.
 
-- [ ] **1. Red** — criar `test-carga.sh` com teto provisório `TETO_BASE=1` → FAIL (prova que morde).
-- [ ] **2. Medir** BASE/FULL depois; fixar `TETO_BASE`/`TETO_FULL`; registrar antes → depois no nó.
-- [ ] **3. Rodar** → verde; gate.
-- [ ] **4. Commit** `test(otimizacao-tokens/7): teto de carga do caminho MEDIUM`.
+- [x] **1. Red** — criar `test-carga.sh` com teto provisório `TETO_BASE=1` → FAIL (prova que morde).
+- [x] **2. Medir** BASE/FULL depois; fixar `TETO_BASE`/`TETO_FULL`; registrar antes → depois no nó.
+- [x] **3. Rodar** → verde; gate.
+- [x] **4. Commit** `test(otimizacao-tokens/7): teto de carga do caminho MEDIUM`.
 
 ## Tarefa 6: versão 0.9.0 + gate final
 
 - **depende-de**: [Tarefa 1, Tarefa 5]
 - **requisito**: versão (decisão aprovada no escopo) e **otimizacao-tokens/8** (suíte inteira verde, invariantes presentes).
 - **arquivos**: `.claude-plugin/*.json`, `tests/test-docs.sh`.
-- [ ] **1. Red** test-docs `'"version": "0.9.0"'` → FAIL. **2.** bump. **3.** gate final → `GATE: passou`. **4. Commit** `chore(otimizacao-tokens): versão 0.9.0`.
+- [x] **1. Red** test-docs `'"version": "0.9.0"'` → FAIL. **2.** bump. **3.** gate final → `GATE: passou`. **4. Commit** `chore(otimizacao-tokens): versão 0.9.0`.
