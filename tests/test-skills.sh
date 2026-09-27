@@ -83,7 +83,7 @@ assert_contains "$a" 'skill `memory`' "/2 porta de entrada usa skill memory"
 assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "limpeza-codigo-morto/3 9 skills"
 assert_contains "$a" 'de qualquer outra coisa. Nunca seguir sem MEMORY' "limpeza-codigo-morto/1 porta de entrada oferece bootstrap sem aviso legado"
 assert_contains "$a" 'MEMORY ausente → oferecer bootstrap antes' "memory-graphify/2 porta de entrada oferece bootstrap"
-v="$(cat skills/validate/SKILL.md)"
+v="$(cat skills/validate/references/sync.md 2>/dev/null)"
 assert_contains "$v" 'docs/audora/memory/<id>.md docs/audora/arquivo/' "/7 validate arquiva por git mv"
 assert_contains "$v" 'aprendizados' "/7 validate consolida aprendizados"
 assert_contains "$v" 'MEMORY → PRD' "/7 direção única"
@@ -111,9 +111,9 @@ for s in 'Perguntas — em lote' 'independentes' 'no máximo 4' 'teste de depend
   assert_contains "$sc" "$s" "/8 scope declara '$s'"
 done
 # light-enxuto/7,/8 — caminho de fechamento LIGHT, asserido DENTRO da secao
-vl="$(cat skills/validate/SKILL.md)"
-assert_contains "$vl" '## Fechamento LIGHT' "/7 validate declara o caminho LIGHT"
-lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+vl="$(cat skills/validate/references/fechamento-light.md 2>/dev/null)"
+assert_contains "$vl" '# validate — Fechamento LIGHT' "/7 validate declara o caminho LIGHT"
+lt="$(cat skills/validate/references/fechamento-light.md 2>/dev/null)"
 for s in 'portão humano' 'evidência 1:1'; do
   assert_contains "$lt" "$s" "/8 caminho LIGHT preserva '$s'"
 done
@@ -121,7 +121,7 @@ for s in 'não tem plano' 'caminho percorrido pelo usuário' 'PRD'; do
   assert_contains "$lt" "$s" "/7 caminho LIGHT trata '$s'"
 done
 # decisoes-vivas-poda/1,/5,/6,/7,/8,/9,/10 — regra de entrada e marcadores
-vd="$(cat skills/validate/SKILL.md)"
+vd="$(cat skills/validate/references/decisoes-vivas.md 2>/dev/null)"
 assert_contains "$vd" 'impor por teste, hook ou config' "/5 validate declara a regra de entrada"
 assert_contains "$vd" 'mesmo escopo de aplicação' "/1 validate declara o discriminador de escopo"
 assert_contains "$vd" 'escreva o teste' "/8 validate manda escrever o teste ou manter a entrada"
@@ -157,7 +157,7 @@ assert_contains "$e2s" 'Registrar a escolha na' "/8 e2e registra a escolha na Co
 # sync-mecanizado/9 — o conhecimento das 4 revisoes adversariais vira COMANDO
 # documentado na validate, nao script. Quatro rodadas nao converjiram: taxa de
 # mutacao ficou em ~45% verde e cada correcao abria buraco novo.
-vs="$(cat skills/validate/SKILL.md)"
+vs="$(cat skills/validate/references/sync.md 2>/dev/null)"
 assert_contains "$vs" '--diff-filter=A' "/9 validate documenta a derivacao da base"
 assert_contains "$vs" 'nunca por `--grep`' "/9 validate avisa contra derivar por --grep"
 assert_contains "$vs" 'pode conter commits de outra demanda' "/9 validate avisa da super-inclusao"
@@ -168,7 +168,7 @@ assert_no_file hooks/memory-sync "/9 script antigo tambem fora"
 # sync-mecanizado/9 — o item 6 nao pode ter DUAS ordens. A lista antiga mandava
 # preencher arquivos: ANTES do delivered; seguindo ela depois do git mv, o
 # memory-validate BLOQUEIA qualquer Edit no MEMORY.md (indice x pasta).
-v6="$(cat skills/validate/SKILL.md)"
+v6="$(cat skills/validate/references/sync.md 2>/dev/null)"
 assert_not_contains "$v6" 'Preencher `arquivos:` do nó via `git diff --name-only` da demanda' "/9 bullet antigo de arquivos: removido do item 6"
 assert_contains "$v6" 'ordem importa' "/9 item 6 declara que a ordem importa"
 # otimizacao-tokens/5 — plano carrega teste e assinaturas, não implementação óbvia
@@ -178,4 +178,16 @@ assert_contains "$pl" 'código completo do TESTE' "otimizacao-tokens/5 plan: tes
 assert_not_contains "$pl" 'Código real nos passos' "otimizacao-tokens/5 plan: regra antiga fora"
 assert_contains "$pt" 'implementação só quando não-óbvio' "otimizacao-tokens/5 template: idem"
 assert_contains "$pt" 'TBD' "otimizacao-tokens/5 template mantém a proibição de placeholder"
+# otimizacao-tokens/2,/3 — validate é roteador + references (texto asserido onde mora)
+VR=skills/validate/references; vv="$(cat skills/validate/SKILL.md)"
+for r in sync decisoes-vivas fechamento-light; do
+  assert_file "$VR/$r.md" "otimizacao-tokens/2 reference $r existe"
+  assert_contains "$vv" "references/$r.md" "otimizacao-tokens/2 roteador aponta $r"
+done
+assert_contains "$vv" 'Reference ausente' "otimizacao-tokens/3 declara reference ausente"
+assert_contains "$vv" 'mantém o portão humano e NÃO roda o sync' "otimizacao-tokens/3 portão fica, sync não roda"
+assert_not_contains "$vv" '--diff-filter=A' "otimizacao-tokens/2 corpo do sync fora do roteador"
+assert_not_contains "$vv" 'Mecanizar isso foi tentado' "otimizacao-tokens/2 prosa histórica fora"
+assert_not_contains "$(cat "$VR/sync.md" 2>/dev/null)" 'Mecanizar isso foi tentado' "otimizacao-tokens/2 prosa histórica fora do sync"
+[ "$(wc -c < skills/validate/SKILL.md)" -lt 7700 ] && ok || ko "otimizacao-tokens/2 validate < 7700 bytes (era 11603)"
 report

@@ -57,7 +57,7 @@ assert_contains "$fl" 'SEM pergunta' "/8 autopilot roda e2e sem perguntar (dentr
 assert_contains "$fl" 'projeto web' "/8 web com Playwright default conta como ferramenta"
 assert_contains "$fl" 'e2e: pulado-por-autopilot-sem-ferramenta' "/9 pulo registrado no nó"
 assert_contains "$fl" '`inelegivel` segue o fluxo normal' "/5 inelegível fora do autopilot na validate"
-lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+lt="$(cat skills/validate/references/fechamento-light.md 2>/dev/null)"
 assert_contains "$lt" 'Em autopilot, mesma condicional' "/4 Fechamento LIGHT preserva o carve-out interno"
 
 # --- autopilot/10,/11,/13 — roteiro, contador e portão final inegociável ---

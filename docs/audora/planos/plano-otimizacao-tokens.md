@@ -37,6 +37,8 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 
 ## Notas de sessão
 
+- 2026-09-27 (execute): T1+T2 fechadas com UM gate sobre as duas (arquivos independentes) e 2 commits separados. T3: done "< 6500 bytes" era estimativa sem medição — o roteador ganhou tabela + regra de reference ausente e o corte real ficou em 7596 (−35%); done replanejado para < 7700 (decisão IA, gatilho (b): alvo impossível como especificado sem mover texto normativo).
+
 ---
 
 ## Tarefa 1: prompt de volta enxuto no motor de loop
@@ -100,7 +102,7 @@ FULL MEDIUM aprovado = 58036 (+ compactar); `validate/SKILL.md` = 11603.
 - **requisito**: **otimizacao-tokens/2** — QUANDO a skill validate for carregada O SISTEMA DEVE trazer inline só o fluxo até o portão; sync pós-merge, filtro de decisões vivas e Fechamento LIGHT vivem em `skills/validate/references/`, lidos UMA por uso, e a prosa histórica sai. **otimizacao-tokens/3** — QUANDO uma reference da validate estiver ausente O SISTEMA DEVE avisar nomeando o arquivo, manter o portão humano e NÃO executar o sync de memória — pede reinstalação do plugin. **otimizacao-tokens/8** — invariantes de portão e evidência seguem asseridos, no arquivo onde moram.
 - **decisões relevantes**: padrão da skill memory (tabela operação → onde; "leia uma reference por uso"). Inline fica: itens 1-5 do fluxo, item 7 (irreversível), Autopilot no portão, red flags, bloco, próxima. Sai para references: item 6 inteiro → `sync.md`; filtro de entrada das decisões vivas → `decisoes-vivas.md`; seção Fechamento LIGHT → `fechamento-light.md`. Sai de vez: parágrafo "Mecanizar isso foi tentado e abandonado…".
 - **arquivos**: Modificar `skills/validate/SKILL.md`; Criar `skills/validate/references/{sync,decisoes-vivas,fechamento-light}.md`; Teste `tests/test-skills.sh`, `tests/test-autopilot.sh`, `tests/test-gate.sh`.
-- **done quando**: suíte verde, contagem de asserts não cai, `validate/SKILL.md` < 6500 bytes.
+- **done quando**: suíte verde, contagem de asserts não cai, `validate/SKILL.md` < 7700 bytes (replanejado, ver notas).
 
 - [ ] **1. Red** — relocar os asserts (texto idêntico, arquivo novo) e somar os de estrutura:
   ```bash

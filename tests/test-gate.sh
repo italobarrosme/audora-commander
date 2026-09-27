@@ -87,7 +87,7 @@ assert_contains "$e" 'verde é o GATE saindo 0' "/9 execute redefine o verde"
 v="$(cat skills/validate/SKILL.md 2>/dev/null)"
 assert_contains "$v" '**Diff de teste**' "/10 validate tem a seção de diff de teste"
 assert_contains "$v" 'arquivos de teste separado do resto' "/10 validate separa teste do resto"
-lt="$(awk '/^## Fechamento LIGHT/{f=1;next} /^## /{f=0} f' skills/validate/SKILL.md)"
+lt="$(cat skills/validate/references/fechamento-light.md 2>/dev/null)"
 assert_contains "$lt" 'arquivos de teste separados' "/10 Fechamento LIGHT também separa"
 
 # gate-mecanico/11 — este repo dogfooda: gate: na Constituição, instância do template
