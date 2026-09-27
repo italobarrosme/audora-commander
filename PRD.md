@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-09-05
+> Última atualização: 2026-09-27
 
 ## O que é e para que serve
 
@@ -25,7 +25,7 @@ Code.
   sem API key). Oferecido pela skill `memory`; ausência degrada para
   grep/Read com aviso.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.7.0.
+  Versão 0.8.0.
 
 ## Arquitetura
 
@@ -33,8 +33,7 @@ Code.
 
 - `audora-commander` — porta de entrada: classifica demanda (LIGHT / MEDIUM /
   HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
-  Projeto sem `MEMORY.md` → oferece bootstrap (arquivo de memória de versão
-  anterior recebe aviso de que não é mais lido).
+  Projeto sem `MEMORY.md` → oferece bootstrap.
 - `memory` — dona do MEMORY (memória externa do produto, `memory-schema: 1`):
   `MEMORY.md` é índice mestre (Propósito, Constituição — inclui o bullet
   `graphify: ativo | recusado | sem-codigo` —, Aprendizados, linha rica por
@@ -83,6 +82,25 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+Limpeza de código morto entregue em 2026-09-27 (nó `limpeza-codigo-morto`,
+HIGH, versão 0.8.0, breaking sem comunicação por decisão do humano — adesão
+pequena, ninguém impactado). Saiu da superfície do plugin todo resto de
+compatibilidade: o aviso sobre o arquivo de memória antigo (skill `memory` e
+porta de entrada), a seção de renomeação dos dois READMEs e o guarda
+anti-legado da suíte (`tests/test-no-grafo.sh` e asserts de migração, que
+reprovavam até "parágrafo"). Saiu também a sintaxe reservada `chave:id` de
+`depende-de` (federação que nunca veio): `memory-validate` trata `:` como id
+comum. Os nós `memory-graphify` e `plugin-v0.1.0`, `in-progress` desde
+agosto, foram fechados como `delivered` com evidência por critério.
+`docs/fundamentos.md` foi reescrito com a nomenclatura e a mecânica atuais
+(MEMORY, skills em inglês, LIGHT/MEDIUM/HIGH, gate, motor de loop). A
+revisão adversarial (0 ALTO, 2 MÉDIO, 6 BAIXO) pegou cobertura viva que a
+remoção tinha levado junto — devolvida e provada por mutação. e2e com
+`claude -p` real (0.8.0): projeto sem memória recebe oferta de bootstrap
+sem menção a legado; com arquivo antigo no repo, o framework não orienta
+mais e o modelo pergunta (custo aceito, registrado em decisões vivas). Suíte
+593 → 550 asserts (queda justificada: guardas removidos).
+
 Motor de loop entregue em 2026-09-05 (nó `loop-motor`, HIGH, D3 do roadmap de
 loop engineering — fecha a tese "spec = direção, teste = aprovação, loop =
 execução, humano decide nas bordas"): `hooks/loop` roda o plano-arquivo de
@@ -128,7 +146,7 @@ corrigidos no mesmo ciclo. Suíte 467 → 503 asserts; GREEN da demanda foi
 fechado pelo próprio gate de D1 (`GATE: passou`).
 
 Gate mecânico entregue em 2026-09-04 (nó `gate-mecanico`, MEDIUM, D1 do
-roadmap de loop engineering em `docs/specs/2026-09-02-loop-engineering-roadmap.md`):
+roadmap de loop engineering):
 um comando por projeto que responde passou/não passou — suíte, lint e
 typecheck (etapa sem ferramenta na stack é pulada com aviso, nunca falha) mais
 **anti-fraude de teste** sobre o diff não commitado (`git diff HEAD`): arquivo
@@ -298,8 +316,7 @@ estados de um projeto na primeira escrita pela skill `graph` (tabela PT→EN em
 da memória passou a acusar estado fora do enum na coluna do índice, linha sem
 coluna de estado, e a citar o caminho absoluto de `templates/` do plugin;
 READMEs com seção "Renamed in 0.3.0" (comandos, categorias, estados); prosa do
-framework segue em português (`docs/fundamentos.md` mantém os nomes antigos,
-com aviso). Corrigido de quebra um bug pré-existente: `description` do
+framework segue em português (`docs/fundamentos.md` só foi alinhado aos nomes atuais na 0.8.0). Corrigido de quebra um bug pré-existente: `description` do
 frontmatter sem aspas quebrava `claude plugin validate` (skill carregava com
 metadata vazia). Duas rodadas adversariais (plano e diff, 57 agentes, 43
 achados confirmados e integrados); e2e real com sessão `claude -p` listando
@@ -345,10 +362,10 @@ automática (recomendada) vs. manual.
 
 ## Metas futuras de implementação
 
-1. v0.1.0: oito skills + hook + templates + marketplace local + README com
-   checklist de validação (spec §6 + adendo).
-2. Dry-run completo de uma demanda LIGHT e uma MEDIUM em projeto de exemplo.
+1. Otimização de tokens (nó `otimizacao-tokens`, planned): plano sem código
+   duplicado, prompt de volta enxuto no motor de loop, limpeza de contexto.
+2. README com seção detalhada por skill (nó `readme-skills`, planned).
 3. Estender `memory-validate` para validar `estado:` também nos arquivos de
    `docs/audora/memory/` (hoje só a coluna do índice) — nó futuro.
-4. Futuro (fora do v0.1.0): porte para outros harnesses, marketplace público,
+4. Futuro: porte para outros harnesses, marketplace público,
    agentes dedicados.

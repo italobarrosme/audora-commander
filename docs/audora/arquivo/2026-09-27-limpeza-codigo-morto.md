@@ -1,12 +1,12 @@
 ---
 id: limpeza-codigo-morto
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/fundamentos.md, docs/audora/decisoes-vivas.md, docs/audora/arquivo/, docs/audora/planos/arquivo/, docs/audora/e2e/e2e-limpeza-codigo-morto.md, docs/audora/specs/limpeza-codigo-morto-escopo.md, hooks/memory-validate, skills/audora-commander/SKILL.md, skills/memory/SKILL.md, templates/MEMORY-template.md, templates/no-template.md, tests/]
 keywords: [limpeza, codigo-morto, legado, grafo, federacao, fundamentos, breaking]
 resumo: Remove legado GRAFO, federação reservada e nós travados; alinha fundamentos à nomenclatura atual.
-atualizado-em: 2026-09-26
+atualizado-em: 2026-09-27
 ---
 
 # limpeza-codigo-morto
@@ -52,6 +52,7 @@ Graphify, comunicar breaking, versionar roadmap.
 - 2026-09-27 (IA): exceção declarada ao grep do done da T2 — `grafo-v2` em
   `tests/test-dogfood.sh` é id de nó arquivado (história imutável), não
   guarda.
+- 2026-09-27 (humano): portão final aprovado ("continue") — inclui a ressalva do e2e (fixB), a decisão viva proposta e o merge local na main.
 
 gate-asserts: queda aprovada no escopo (/3) — guarda anti-GRAFO (test-no-grafo.sh) e asserts de migração removidos; comportamento vivo reescrito sem nome legado.
 

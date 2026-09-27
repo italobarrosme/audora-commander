@@ -24,6 +24,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-27 | skill-worktree | Commit nao integrado se detecta com `rev-list --count HEAD --not --remotes`; `@{u}..HEAD` sai 128 em branch sem upstream.
 - 2026-08-31 | memory-fatiada | Skill grande vira roteador + `references/`: operações quentes e curtas inline, grandes ou raras em arquivo próprio, lidas UMA por operação; reference ausente avisa e degrada.
 - 2026-09-01 | decisoes-vivas-poda | Decisão que dá para impor por teste, hook ou config não entra em decisoes-vivas.md — o lugar dela é o teste; prosa duplicada deriva do que descreve.
+- 2026-09-27 | limpeza-codigo-morto | Mudança incompatível não ganha seção de renomeação nem aviso de versão anterior enquanto a adesão for pequena — o custo aceito é projeto com arquivo antigo ficar sem orientação do framework.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro

@@ -70,6 +70,9 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-05 | validate | Guarda de invariante com grep de palavras SEPARADAS é enganável — revisão adversarial provou por mutação (texto invertido passava). Asserir a FRASE inteira, dentro da seção extraída por awk.
 - 2026-09-04 | execute | `awk -v var="$ERE"` mastiga backslash (gawk trata `\.` como `.` e avisa no stderr) — regex dinâmica entra via `VAR="$ERE" awk 'BEGIN{ere=ENVIRON["VAR"]}'`, nunca por `-v`.
 - 2026-09-02 | execute | `git add -A` varre arquivo untracked de OUTRA sessão para dentro do commit (aconteceu com `docs/specs/2026-09-02-loop-engineering-roadmap.md`). Em repo compartilhado entre sessões, listar os caminhos no `git add` ou conferir `git status --short` antes — e encadear `git commit` depois de `tests/run.sh` sem ler o exit fez o commit sair VERMELHO.
+- 2026-09-27 | execute | O anti-fraude do gate reprova arquivo de teste apagado SEM válvula (`gate-asserts:` cobre só queda de asserts) — remoção de teste aprovada no escopo ainda exige autorização explícita do humano no commit.
+- 2026-09-27 | execute | Nesta máquina `claude` e `graphify` não estão no PATH do Bash tool — usar `~/.local/bin/claude.exe` (ou `PATH="$HOME/.local/bin:$PATH"` antes do `./install.sh`); consultar-codigo degrada para grep.
+- 2026-09-27 | validate | Remover seção inteira de doc pode levar junto a ÚNICA menção a comportamento vivo (os hooks só eram citados na tabela Renamed) — antes de apagar seção, `grep` os termos que os testes de doc exigem.
 
 ## Índice de nós [carga: sempre]
 
@@ -77,7 +80,7 @@ time pequeno em projetos web/mobile/api.
 - gate-mecanico | delivered | Gate mecânico → docs/audora/arquivo/2026-09-04-gate-mecanico.md
 - autopilot | delivered | Autopilot → docs/audora/arquivo/2026-09-05-autopilot.md
 - loop-motor | delivered | Motor de loop → docs/audora/arquivo/2026-09-05-loop-motor.md
-- limpeza-codigo-morto | in-progress | Limpeza de código morto | Remove legado GRAFO, federação reservada e nós travados; alinha fundamentos à nomenclatura atual | limpeza, codigo-morto, legado, grafo, federacao, fundamentos, breaking | skills/, hooks/, templates/, tests/, docs/, README.md
+- limpeza-codigo-morto | delivered | Limpeza de código morto → docs/audora/arquivo/2026-09-27-limpeza-codigo-morto.md
 - otimizacao-tokens | planned | Otimização de tokens | Corta custo de token do framework: plano sem código duplicado, prompt de volta enxuto no loop, limpeza de contexto | tokens, custo, contexto, plano, loop | skills/, templates/, hooks/loop
 - readme-skills | planned | README por skill | READMEs EN e PT ganham seção detalhada por skill: gatilho, passos, artefatos, portões, próxima | readme, docs, skills | README.md, README.pt-BR.md
 - plugin-v0.1.0 | delivered | Plugin v0.1.0 → docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md
