@@ -93,6 +93,10 @@ while ls "$loopdir"/rodada$rodada-* >/dev/null 2>&1; do rodada=$((rodada+1)); do
 
 tarefa_secao() { awk -v n="$1" '$0 ~ ("^## Tarefa " n ":") {f=1; print; next} /^## /{f=0} f' "$plano"; }
 tarefas_todas() { grep -o '^## Tarefa [0-9]*' "$plano" | grep -o '[0-9]*'; }
+plano_base() { # cabeçalho (até a 1ª tarefa) + notas de sessão que estejam depois dela
+  awk '/^## Tarefa [0-9]+:/{exit} {print}' "$plano"
+  awk '/^## Tarefa [0-9]+:/{t=1} t && /^## Notas de sessão/{f=1; print; next} /^## /{f=0} f' "$plano"
+}
 feita() { tarefa_secao "$1" | grep -q '^- \[x\] concluida-pelo-motor'; }
 abertas() {
   local n c=0
@@ -140,13 +144,14 @@ while :; do
   volta=$((volta+1)); ult="$n"
   pfile="$loopdir/rodada$rodada-volta$volta-prompt.txt"
   tarefa_secao "$n" > "$loopdir/.tarefa"
+  plano_base > "$loopdir/.plano"
   awk '/^```text$/{f=1;next} /^```$/{f=0} f' "$tpl" | sed "s/{{ID}}/$id/g" | \
-    awk -v no="$no" -v pl="$plano" -v ta="$loopdir/.tarefa" '
+    awk -v no="$no" -v pl="$loopdir/.plano" -v ta="$loopdir/.tarefa" '
       /^\{\{NO\}\}$/     { while ((getline l < no) > 0) print l; close(no); next }
       /^\{\{PLANO\}\}$/  { while ((getline l < pl) > 0) print l; close(pl); next }
       /^\{\{TAREFA\}\}$/ { while ((getline l < ta) > 0) print l; close(ta); next }
       { print }' > "$pfile"
-  rm -f "$loopdir/.tarefa"
+  rm -f "$loopdir/.tarefa" "$loopdir/.plano"
   restante="$(awk "BEGIN{print $cu - $custo_acum}")"
   echo "LOOP: rodada $rodada volta $volta — tarefa $n (orçamento restante US\$ $restante)"
   head_antes="$(git rev-parse HEAD)"

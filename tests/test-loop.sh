@@ -14,6 +14,7 @@ for s in 'UMA tarefa' 'Procurar antes de criar' 'placeholder' 'NÃO commitar' \
   assert_contains "$lp" "$s" "/5 regra: $s"
 done
 assert_contains "$lp" 'concluida-pelo-motor' "/5 contrato do marcador citado"
+assert_contains "$lp" 'outras tarefas omitidas' "otimizacao-tokens/6 template declara o recorte do plano"
 
 # --- fixture do motor: projeto git, MEMORY, plano, fake claude e fake gate ---
 LM="$ROOT/hooks/loop"
@@ -83,10 +84,18 @@ assert_file "$p1" "/5 prompt da volta 1 salvo"
 t1sec="$(awk '/=== SUA TAREFA/{f=1;next} /=== REGRAS/{f=0} f' "$p1")"
 assert_contains "$t1sec" '## Tarefa 1: primeira' "/5 volta 1 recebe a tarefa 1"
 assert_not_contains "$t1sec" '## Tarefa 2' "/5 tarefa 2 fora da seção da volta 1"
+assert_not_contains "$(cat "$p1")" '## Tarefa 2' "otimizacao-tokens/6 prompt inteiro sem a tarefa 2"
+assert_contains "$(cat "$p1")" '# Plano — d1' "otimizacao-tokens/6 prompt leva o cabeçalho"
+assert_contains "$(cat "$p1")" '## Notas de sessão' "otimizacao-tokens/6 prompt leva as notas (no fim do plano)"
 assert_contains "$(cat "$SP/lbin/claude-calls.log")" '--max-budget-usd' "/5 claude chamado com teto de custo"
 assert_contains "$(cat "$SP/lbin/claude-calls.log")" '--output-format json' "/5 claude chamado com saída json"
 assert_contains "$(cat "$lproj/docs/audora/planos/plano-d1.md")" 'Métricas de rodada' "/13 métricas gravadas no plano"
 assert_contains "$out" 'custo' "/13 custo no fechamento"
+
+mkloop; sed -i '/^## Notas de sessão/d' "$lproj/docs/audora/planos/plano-d1.md"; git -C "$lproj" commit -qam sem-notas
+runloop d1
+assert_eq 0 "$code" "otimizacao-tokens/6 plano sem notas → DONE"
+assert_not_contains "$(cat "$lproj/docs/audora/planos/loop/d1/rodada1-volta1-prompt.txt")" '## Tarefa 2' "otimizacao-tokens/6 sem notas, sem tarefa 2"
 
 # --- loop-motor/8 — vermelho: patch salvo, árvore limpa, sem commit, nota ---
 mkloop; printf 'vermelho\nverde\nverde\n' > "$SP/lbin/gate-verdicts.txt"

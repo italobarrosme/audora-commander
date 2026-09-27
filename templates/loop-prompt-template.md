@@ -15,7 +15,7 @@ arquivos do repositório.
 === NÓ DA DEMANDA ===
 {{NO}}
 
-=== PLANO ===
+=== PLANO (cabeçalho + notas de sessão; outras tarefas omitidas) ===
 {{PLANO}}
 
 === SUA TAREFA (somente esta) ===
@@ -36,8 +36,9 @@ arquivos do repositório.
 ```
 
 <!-- Regras de preenchimento (hooks/loop):
-1. {{NO}} = corpo de docs/audora/memory/<id>.md; {{PLANO}} = corpo do
-   plano-<id>.md; {{TAREFA}} = a seção `## Tarefa <n>` escolhida (primeira
+1. {{NO}} = corpo de docs/audora/memory/<id>.md; {{PLANO}} = cabeçalho do
+   plano-<id>.md (até a 1ª `## Tarefa`) + `## Notas de sessão` — as outras
+   tarefas ficam fora (custo de token por volta); {{TAREFA}} = a seção `## Tarefa <n>` escolhida (primeira
    aberta com depende-de satisfeitas).
 2. O prompt é gerado por volta — nunca reaproveitar sessão nem histórico.
 3. O motor roda `claude -p` com --output-format json e --max-budget-usd
