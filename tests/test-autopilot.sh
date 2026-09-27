@@ -74,7 +74,7 @@ assert_contains "$ap" 'portão final NUNCA é antecipado' "/13 invariante em fra
 # --- autopilot/14 — fundamentos: coluna no P4, regra no P5 ---
 fu="$(cat docs/fundamentos.md 2>/dev/null)"
 assert_contains "$fu" '| Autopilot |' "/14 tabela do P4 ganha a coluna"
-assert_contains "$fu" '| LEVE | executar → validar | resultado | resultado (e2e sem oferta) |' "/14 linha LEVE completa na tabela"
+assert_contains "$fu" '| LIGHT | execute → validate | resultado | resultado (e2e sem oferta) |' "limpeza-codigo-morto/6 linha LIGHT completa na tabela do P4"
 assert_contains "$fu" '**Portão antecipado por declaração**' "/14 P5 ganha a regra nomeada"
 
 # --- achado 8 da revisão — e2e reconhece a declaração como decisão do humano ---
