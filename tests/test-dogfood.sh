@@ -11,7 +11,7 @@ for id in plugin-v0.1.0 memory-graphify skill-memory comandos-ingles grafo-v2 do
   grep -q "^- $id |" MEMORY.md && ok || ko "/9 índice perdeu $id"
 done
 grep -q '^- skill-memory | discarded |' MEMORY.md && ok || ko "/9 skill-memory discarded"
-assert_file docs/audora/memory/memory-graphify.md "/9 nó em memory/"
+assert_file docs/audora/arquivo/2026-09-27-memory-graphify.md "limpeza-codigo-morto/5 memory-graphify arquivado"; assert_file docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md "limpeza-codigo-morto/5 plugin-v0.1.0 arquivado"
 run_hook memory-validate "$ROOT/MEMORY.md"; assert_eq 0 "$code" "/9 memory-validate verde"; assert_empty "$out" "/9 stderr vazio"
 run_hook memory-guard "$ROOT/MEMORY.md";    assert_eq 0 "$code" "/9 memory-guard verde"
 grep -q '^graphify-out/$' .gitignore && ok || ko "/12 gitignore"

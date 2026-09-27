@@ -80,8 +80,8 @@ time pequeno em projetos web/mobile/api.
 - limpeza-codigo-morto | in-progress | Limpeza de código morto | Remove legado GRAFO, federação reservada e nós travados; alinha fundamentos à nomenclatura atual | limpeza, codigo-morto, legado, grafo, federacao, fundamentos, breaking | skills/, hooks/, templates/, tests/, docs/, README.md
 - otimizacao-tokens | planned | Otimização de tokens | Corta custo de token do framework: plano sem código duplicado, prompt de volta enxuto no loop, limpeza de contexto | tokens, custo, contexto, plano, loop | skills/, templates/, hooks/loop
 - readme-skills | planned | README por skill | READMEs EN e PT ganham seção detalhada por skill: gatilho, passos, artefatos, portões, próxima | readme, docs, skills | README.md, README.pt-BR.md
-- plugin-v0.1.0 | in-progress | Plugin v0.1.0 | Plugin instalável com 8 skills, hook SessionStart, templates e marketplace local | plugin, skills, marketplace, hook, instalacao | skills/, hooks/, templates/
-- memory-graphify | in-progress | Memory + Graphify | GRAFO vira MEMORY (memorys.md) e Graphify indexa o código por baixo dos panos para consulta barata nas fases | memory, graphify, grafo, consulta, tokens, breaking | skills/, hooks/, templates/
+- plugin-v0.1.0 | delivered | Plugin v0.1.0 → docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md
+- memory-graphify | delivered | Memory + Graphify → docs/audora/arquivo/2026-09-27-memory-graphify.md
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md
 - memory-fatiada | delivered | Memory fatiada → docs/audora/arquivo/2026-08-31-memory-fatiada.md
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
