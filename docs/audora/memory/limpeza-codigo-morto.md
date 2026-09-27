@@ -44,6 +44,16 @@ Graphify, comunicar breaking, versionar roadmap.
   2 decisões da IA (bump 0.8.0 só aqui; contagem de skills migra para
   `test-skills.sh`).
 - 2026-09-27 (humano): portão de plano aprovado ("pode seguir").
+- 2026-09-27 (humano, parada fora de portão): T2 commitada com o gate
+  reprovando por UM motivo — `arquivo de teste apagado:
+  tests/test-no-grafo.sh` (remoção aprovada no escopo; o gate não tem válvula
+  para arquivo apagado). Descartados: criar válvula `gate-apagados:`; manter
+  o arquivo morto. Suíte verde (548 asserts).
+- 2026-09-27 (IA): exceção declarada ao grep do done da T2 — `grafo-v2` em
+  `tests/test-dogfood.sh` é id de nó arquivado (história imutável), não
+  guarda.
+
+gate-asserts: queda aprovada no escopo (/3) — guarda anti-GRAFO (test-no-grafo.sh) e asserts de migração removidos; comportamento vivo reescrito sem nome legado.
 
 ## delta
 

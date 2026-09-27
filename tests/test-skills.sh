@@ -17,12 +17,6 @@ for s in audora-commander memory scope plan execute e2e validate debug worktree;
   grep -q 'LEI DE FERRO' "$f" && ok || ko "$s Lei de Ferro"
   grep -q 'Anuncie ao começar' "$f" && ok || ko "$s Anuncie"
   grep -q '^## PRÓXIMA SKILL' "$f" && ok || ko "$s PRÓXIMA SKILL"
-  if [ "$s" = memory ]; then
-    [ "$(grep -ci 'grafo' "$f")" -le 1 ] && ok || ko "memory cita grafo além do aviso /3"
-  else
-    grep -qi 'grafo' "$f" && ko "$s cita grafo" || ok
-  fi
-  grep -qE 'skill graph|`graph`|graph, scope|skill `graph`' "$f" && ko "$s cita skill graph" || ok
 done
 MS="skills/memory/SKILL.md"; MR="skills/memory/references"
 m="$(cat "$MS" 2>/dev/null)"
@@ -70,13 +64,9 @@ done
 for s in 'memory-schema: 1' 'docs/audora/memory/' 'memory-validate' 'memory-guard' 'Aprendizados' '| <fase> |'; do
   assert_contains "$m" "$s" "/1 roteador cita '$s'"
 done
-assert_contains "$m" 'GRAFO.md' "/3 memory avisa sobre GRAFO.md antigo"
-assert_eq "1" "$(grep -c 'GRAFO.md' "$MS" 2>/dev/null)" "/3 GRAFO.md só no aviso"
 # /4 — degradação declarada no roteador
 assert_contains "$m" 'reference ausente' "/4 roteador declara reference ausente"
 assert_contains "$m" 'sem travar a fase' "/4 roteador degrada sem travar"
-assert_not_contains "$m" 'PT→EN' "memory sem migração PT→EN"
-assert_not_contains "$m" 'versao-schema' "memory sem schema v1/v2"
 for s in plan execute debug; do
   f="$(cat skills/$s/SKILL.md)"
   assert_contains "$f" 'consultar-codigo' "/14 $s consulta o índice de código"
@@ -90,7 +80,8 @@ for s in scope execute debug e2e; do
 done
 a="$(cat skills/audora-commander/SKILL.md)"
 assert_contains "$a" 'skill `memory`' "/2 porta de entrada usa skill memory"
-assert_contains "$a" 'MEMORY ausente' "/2 porta de entrada oferece bootstrap"
+assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "limpeza-codigo-morto/3 9 skills"
+assert_contains "$a" 'de qualquer outra coisa. Nunca seguir sem MEMORY' "limpeza-codigo-morto/1 porta de entrada oferece bootstrap sem aviso legado"
 v="$(cat skills/validate/SKILL.md)"
 assert_contains "$v" 'docs/audora/memory/<id>.md docs/audora/arquivo/' "/7 validate arquiva por git mv"
 assert_contains "$v" 'aprendizados' "/7 validate consolida aprendizados"

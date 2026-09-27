@@ -12,7 +12,6 @@ grep -q "^description: 'Use quando" "$f" && ok || ko "worktree description entre
 assert_contains "$w" 'LEI DE FERRO' "worktree Lei de Ferro"
 assert_contains "$w" 'Anuncie ao começar' "worktree Anuncie"
 assert_contains "$w" '## PRÓXIMA SKILL' "worktree PRÓXIMA SKILL"
-assert_not_contains "$w" 'grafo' "worktree sem grafo"
 # /1 gatilho é pedido explícito — nunca iniciativa própria
 assert_contains "$w" 'pedido explícito' "/1 worktree exige pedido explícito"
 # /2 nomeação pelo id do nó

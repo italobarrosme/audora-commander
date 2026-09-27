@@ -35,10 +35,8 @@ run_hook memory-validate "$SP/ciclo/MEMORY.md";         assert_eq 2 "$code" "/8 
 d="$SP/secao"; mkdir -p "$d/docs/audora/memory"; printf 'memory-schema: 1\n\n## Índice de nós [carga: sempre]\n\n' > "$d/MEMORY.md"
 run_hook memory-validate "$d/MEMORY.md";                assert_eq 2 "$code" "/4 seção ausente → 2"; assert_contains "$out" "'## Aprendizados'" "/4 msg cita Aprendizados"
 
-mk semschema 'versao-schema: 2' '- x | em-curso | X | r | k | —'
+mk semschema '# MEMORY de outra ferramenta' '- x | em-curso | X | r | k | —'
 run_hook memory-validate "$SP/semschema/MEMORY.md";     assert_eq 0 "$code" "/8 sem memory-schema → 0 (não é nosso)"
-mkdir -p "$SP/g/docs/audora/nos"; printf 'versao-schema: 2\n\n## Índice de nós [carga: sempre]\n\n- x | em-curso | X\n' > "$SP/g/GRAFO.md"
-run_hook memory-validate "$SP/g/GRAFO.md";              assert_eq 0 "$code" "/8 GRAFO.md ignorado → 0"
 run_hook memory-validate "$SP/ok/qualquer.txt";         assert_eq 0 "$code" "/8 fora do MEMORY → 0"
 out="$(echo 'nao-json' | bash "$ROOT/hooks/memory-validate" 2>&1)"; assert_eq 0 "$?" "/8 JSON inválido → 0"
 report

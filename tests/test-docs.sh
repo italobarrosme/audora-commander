@@ -8,12 +8,9 @@ for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
 done
 assert_contains "$(cat .claude-plugin/plugin.json)" '"graphify"' "/19 keyword graphify"
 en="$(cat README.md)"; pt="$(cat README.pt-BR.md)"
-assert_contains "$en" '## Renamed in 0.4.0' "/19 seção 0.4.0 EN"
-assert_contains "$pt" '## Renomeado em 0.4.0' "/19 seção 0.4.0 PT"
 for s in 'MEMORY.md' '`memory`' 'docs/audora/memory/' 'graphify-out/' 'uv tool install graphifyy' 'memory-validate'; do
   assert_contains "$en" "$s" "/19 README EN cita $s"; assert_contains "$pt" "$s" "/19 README PT cita $s"
 done
-assert_not_contains "$en" 'Renamed in 0.3.0' "/1 seção 0.3.0 removida (tabela grafo)"
 assert_contains "$en" '| `worktree` |' "skill-worktree/1 README EN lista worktree"
 assert_contains "$pt" '| `worktree` |' "skill-worktree/1 README PT lista worktree"
 assert_contains "$en" 'The 9 skills' "skill-worktree/1 README EN diz 9 skills"

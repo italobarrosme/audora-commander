@@ -96,7 +96,7 @@ checklist" further down in this README.
 | Skill | Role |
 |---|---|
 | `audora-commander` | Entry point: classifies the demand by risk (LIGHT/MEDIUM/HIGH/HOTFIX) and routes it |
-| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and drives Graphify: install offer, code graph, `consultar-codigo` for plan/debug/execute. Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation |
+| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and drives Graphify: install offer, code graph, `consultar-codigo` for plan/debug/execute. Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation. Hooks `memory-guard` and `memory-validate` check every write to the MEMORY |
 | `scope` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
 | `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
 | `execute` | Red-green TDD with real evidence; commit per green step |
@@ -169,27 +169,6 @@ Run in the interactive session after installing:
 - [ ] 5. WHEN a LIGHT and a MEDIUM demand are simulated in a sample project,
   the flow MUST produce the expected artifacts (node in the MEMORY; plan file
   for the MEDIUM; validation script).
-
-## Renamed in 0.4.0 (breaking)
-
-The product memory is now called MEMORY, and Graphify indexes the code
-underneath it. No migration: a project that still has the old memory file
-gets a warning from the entry point and a fresh bootstrap — what to do with
-the old file is up to you.
-
-| Before | After |
-|---|---|
-| `graph` skill | `memory` skill |
-| `GRAFO.md` | `MEMORY.md` (line 1: `memory-schema: 1`; new `## Aprendizados` section) |
-| `docs/audora/nos/` | `docs/audora/memory/` |
-| `GRAFO-ARQUIVO.md` | dropped — history lives in `docs/audora/arquivo/` |
-| hooks `grafo-guard`, `grafo-validate` | `memory-guard`, `memory-validate` |
-| schema v1 / v2, PT→EN state migration | gone — single schema, EN states only |
-
-0.3.0 already moved commands, risk categories and node states to English
-(`scope`, `plan`, `execute`, `validate`, `debug`; LIGHT/MEDIUM/HIGH/HOTFIX;
-`planned | in-progress | blocked | delivered | discarded`) — see the git
-history for the old names. `docs/fundamentos.md` still uses pre-0.3.0 names.
 
 ## Development
 

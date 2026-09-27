@@ -79,12 +79,11 @@ Código: nunca "varrer o repo para entender" — operação 7.
 
 1. Ler `MEMORY.md`. Ausente → oferecer **bootstrap** (operação 2). Não
    travar, não seguir sem MEMORY, não inventar um.
-2. `GRAFO.md` presente e `MEMORY.md` ausente → avisar "GRAFO não é mais lido pelo framework (0.4.0)" e oferecer bootstrap; o destino do arquivo antigo é decisão do humano — nunca converter nem apagar por conta própria.
-3. Identificar no índice os nós relacionados (linha rica + depende-de);
+2. Identificar no índice os nós relacionados (linha rica + depende-de);
    Read SÓ de `docs/audora/memory/<id>.md` desses nós.
-4. Devolver: Constituição (inclui o bullet `graphify`) + Aprendizados + nós
+3. Devolver: Constituição (inclui o bullet `graphify`) + Aprendizados + nós
    relevantes para a fase que chamou.
-5. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
+4. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
    gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
    só se o humano pedir.
 

@@ -97,7 +97,7 @@ da instalação" mais abaixo neste README.
 | Skill | Papel |
 |---|---|
 | `audora-commander` | Porta de entrada: classifica a demanda por risco (LIGHT/MEDIUM/HIGH/HOTFIX) e roteia |
-| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e comanda o Graphify: oferta de instalação, índice do código, `consultar-codigo` para plan/debug/execute. Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação |
+| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e comanda o Graphify: oferta de instalação, índice do código, `consultar-codigo` para plan/debug/execute. Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação. Os hooks `memory-guard` e `memory-validate` conferem toda escrita no MEMORY |
 | `scope` | Fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR], portão de escopo |
 | `plan` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
 | `execute` | TDD red-green com evidência real; commit por etapa verde |
@@ -168,28 +168,6 @@ Rode na sessão interativa após instalar:
 - [ ] 5. QUANDO uma demanda LIGHT e uma MEDIUM forem simuladas num projeto de
   exemplo, o fluxo DEVE produzir os artefatos esperados (nó no MEMORY;
   plano-arquivo na MEDIUM; roteiro de validação).
-
-## Renomeado em 0.4.0 (breaking)
-
-A memória do produto agora se chama MEMORY, e o Graphify indexa o código por
-baixo dela. Sem migração: projeto que ainda tem o arquivo de memória antigo
-recebe um aviso da porta de entrada e um bootstrap novo — o que fazer com o
-arquivo antigo é decisão sua.
-
-| Antes | Depois |
-|---|---|
-| skill `graph` | skill `memory` |
-| `GRAFO.md` | `MEMORY.md` (linha 1: `memory-schema: 1`; seção nova `## Aprendizados`) |
-| `docs/audora/nos/` | `docs/audora/memory/` |
-| `GRAFO-ARQUIVO.md` | removido — histórico vive em `docs/audora/arquivo/` |
-| hooks `grafo-guard`, `grafo-validate` | `memory-guard`, `memory-validate` |
-| schema v1 / v2, migração de estado PT→EN | somem — schema único, estados só em inglês |
-
-A 0.3.0 já tinha levado comandos, categorias de risco e estados de nó para o
-inglês (`scope`, `plan`, `execute`, `validate`, `debug`;
-LIGHT/MEDIUM/HIGH/HOTFIX; `planned | in-progress | blocked | delivered |
-discarded`) — os nomes antigos estão no histórico do git.
-`docs/fundamentos.md` ainda usa os nomes anteriores à 0.3.0.
 
 ## Desenvolvimento
 

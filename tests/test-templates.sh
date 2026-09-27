@@ -15,10 +15,6 @@ for campo in '^id:' '^estado:' '^origem:' '^depende-de:' '^arquivos:' '^keywords
   printf '%s\n' "$n" | grep -qE "$campo" && ok || ko "/5 frontmatter $campo"
 done
 assert_contains "$n" 'exemplo-login/1' "/5 critério numerado"
-assert_not_contains "$n" 'PT→EN' "/5 sem migração PT→EN"
-assert_no_file templates/GRAFO-template.md "/1 GRAFO-template removido"
-assert_no_file templates/GRAFO-template-v1.md "/1 GRAFO-template-v1 removido"
-assert_empty "$(grep -rli grafo templates || true)" "/1 zero grafo em templates"
 # resumo-de-fase/1,/2,/5,/6,/7 — formato canonico do bloco de fechamento
 assert_file templates/bloco-fechamento-template.md "/1 template do bloco existe"
 b="$(cat templates/bloco-fechamento-template.md 2>/dev/null)"
