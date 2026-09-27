@@ -40,11 +40,12 @@ e por quê, estado parcial, próximos passos. Próxima sessão lê isto primeiro
   - Teste: `caminho/exato/novo.test.ts`
 - **done quando**: <condição objetiva verificável>
 
-Passos (2-5 minutos cada; código real, zero placeholder):
+Passos (2-5 minutos cada; teste completo, zero placeholder — implementação só quando não-óbvio):
 
 - [ ] **1. Escrever teste que falha** — código do teste no plano, completo.
 - [ ] **2. Rodar e ver falhar pelo motivo certo** — comando exato + saída esperada.
-- [ ] **3. Implementar o mínimo para passar** — código no plano.
+- [ ] **3. Implementar o mínimo para passar** — arquivos + assinaturas exatas;
+  código só se não-óbvio (algoritmo, regex, SQL, formato exato).
 - [ ] **4. Rodar e ver passar (suíte toda verde)** — comando exato + saída esperada.
 - [ ] **5. Commit** — `git add <arquivos> && git commit -m "<tipo>: <mensagem>"`.
 
@@ -52,5 +53,6 @@ Passos (2-5 minutos cada; código real, zero placeholder):
 quebrar em subtarefas somente quando chegar a vez dela (just-in-time). -->
 
 <!-- Proibições (falhas de plano): TBD; TODO; "tratar erros adequadamente";
-"similar à tarefa N" (repita o código); passo que descreve sem mostrar como;
+"similar à tarefa N" (repita o código); passo sem arquivo, assinatura ou
+comando exatos;
 referência a função/tipo não definido em nenhuma tarefa. -->

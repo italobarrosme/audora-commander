@@ -44,12 +44,14 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
    - `depende-de` explícito entre tarefas: "qual a próxima?" é resposta
      mecânica — nunca uma tarefa bloqueada.
    - Passos de 2-5 minutos com checkbox: teste red → verificar red →
-     implementar → verificar green → commit. Código real nos passos.
+     implementar → verificar green → commit. Nos passos: código completo do TESTE,
+     assinaturas exatas e comandos com saída esperada; implementação só quando não-óbvio
+     (algoritmo, regex, SQL, formato exato) — a execute escreve o resto UMA vez.
    - Tarefa complexa: marcar `expandir: sim` e quebrar em subtarefas SÓ
      quando chegar a vez dela (just-in-time — não detalhe tudo no dia 1).
 6. **Proibição de placeholders** — falhas de plano, nunca escreva: "TBD",
    "tratar erros adequadamente", "adicionar validação", "similar à tarefa N"
-   (repita o código), passo que descreve sem mostrar como, referência a
+   (repita o código), passo sem arquivo, assinatura ou comando exatos, referência a
    função/tipo não definido em nenhuma tarefa.
 7. **Self-review** (rodar você mesmo, corrigir inline):
    - Cobertura: cada critério de aceite do nó tem tarefa que o implementa?
