@@ -81,7 +81,7 @@ time pequeno em projetos web/mobile/api.
 - autopilot | delivered | Autopilot → docs/audora/arquivo/2026-09-05-autopilot.md
 - loop-motor | delivered | Motor de loop → docs/audora/arquivo/2026-09-05-loop-motor.md
 - limpeza-codigo-morto | delivered | Limpeza de código morto → docs/audora/arquivo/2026-09-27-limpeza-codigo-morto.md
-- otimizacao-tokens | planned | Otimização de tokens | Corta custo de token do framework: plano sem código duplicado, prompt de volta enxuto no loop, limpeza de contexto | tokens, custo, contexto, plano, loop | skills/, templates/, hooks/loop
+- otimizacao-tokens | in-progress | Otimização de tokens | Corta custo de token do framework: plano sem código duplicado, prompt de volta enxuto no loop, limpeza de contexto | tokens, custo, contexto, plano, loop | skills/, templates/, hooks/loop
 - readme-skills | planned | README por skill | READMEs EN e PT ganham seção detalhada por skill: gatilho, passos, artefatos, portões, próxima | readme, docs, skills | README.md, README.pt-BR.md
 - plugin-v0.1.0 | delivered | Plugin v0.1.0 → docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md
 - memory-graphify | delivered | Memory + Graphify → docs/audora/arquivo/2026-09-27-memory-graphify.md
