@@ -59,6 +59,6 @@ gate-asserts: queda aprovada no escopo (/3) — guarda anti-GRAFO (test-no-grafo
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-limpeza-codigo-morto.md (2026-09-27; 2 corridas `claude -p` com 0.8.0 do cache; /1 passou, borda com arquivo antigo passou com ressalva)
 
 ## feedback-reprovacao
