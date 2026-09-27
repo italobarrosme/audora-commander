@@ -39,6 +39,9 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
 
 ## Notas de sessão
 
+- 2026-09-27 (execute): T2 — remover a seção Renamed levou junto a única menção aos hooks `memory-guard`/`memory-validate` nos READMEs (test-docs /19 pegou); recolocada na linha da skill `memory` da tabela. Gate da T2 reprovou só por `arquivo de teste apagado: tests/test-no-grafo.sh` — commit autorizado pelo humano (decisão no nó). Grep do done da T2 acha `grafo-v2` (id arquivado) — exceção declarada.
+- 2026-09-27 (execute): graphify e claude fora do PATH do bash nesta máquina — localização por grep (consultar-codigo degradado); `claude plugin validate` via `~/.local/bin/claude.exe`.
+
 ---
 
 ## Tarefa 1: federação `chave:id` sai do schema
@@ -57,17 +60,17 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
   `tests/test-memory-validate.sh`.
 - **done quando**: caso `ext:x` sai 2 com "depende de 'ext:x'"; suíte verde.
 
-- [ ] **1. Teste red** — em `test-memory-validate.sh`, antes do bloco `ciclo`:
+- [x] **1. Teste red** — em `test-memory-validate.sh`, antes do bloco `ciclo`:
   ```bash
   mk fed 'memory-schema: 1' '- x | planned | X | r | k | —'; no fed x planned 'ext:x'
   run_hook memory-validate "$SP/fed/MEMORY.md";           assert_eq 2 "$code" "limpeza-codigo-morto/4 dep com ':' é id comum → 2"; assert_contains "$out" "depende de 'ext:x'" "limpeza-codigo-morto/4 msg"
   ```
-- [ ] **2. Rodar** `bash tests/test-memory-validate.sh` → FAIL (hoje sai 0: `continue`).
-- [ ] **3. Implementar** — apagar a linha `case "$d" in *:*) continue ;; esac`
+- [x] **2. Rodar** `bash tests/test-memory-validate.sh` → FAIL (hoje sai 0: `continue`).
+- [x] **3. Implementar** — apagar a linha `case "$d" in *:*) continue ;; esac`
   do hook; apagar a regra 6 do MEMORY-template (renumerar 7→6); no
   no-template, `depende-de: lista de ids de nós do índice`.
-- [ ] **4. Rodar** o arquivo e depois `bash tests/run.sh > log; echo $?` → 0.
-- [ ] **5. Commit** `feat(limpeza-codigo-morto/4): depende-de sem sintaxe reservada chave:id`.
+- [x] **4. Rodar** o arquivo e depois `bash tests/run.sh > log; echo $?` → 0.
+- [x] **5. Commit** `feat(limpeza-codigo-morto/4): depende-de sem sintaxe reservada chave:id`.
 
 ## Tarefa 2: legado GRAFO e guardas de migração saem
 
@@ -93,19 +96,19 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
   `test-memory-validate.sh`.
 - **done quando**: `grep -rniE 'grafo|versão anterior|renamed in|renomeado em' skills hooks templates tests .claude-plugin README.md README.pt-BR.md` vazio; suíte verde.
 
-- [ ] **1. Red** — `test-skills.sh`: acrescentar
+- [x] **1. Red** — `test-skills.sh`: acrescentar
   `assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "limpeza-codigo-morto/3 9 skills"`
   e trocar o assert `'MEMORY ausente'` da porta de entrada por
   `assert_contains "$a" 'MEMORY ausente → oferecer bootstrap antes' "/1 porta de entrada oferece bootstrap"`
   (frase nova, sem o parêntese legado). Rodar → FAIL no assert novo da porta.
-- [ ] **2. Implementar /1** — memory: apagar o passo 2 do carregar-contexto e
+- [x] **2. Implementar /1** — memory: apagar o passo 2 do carregar-contexto e
   renumerar 3→2, 4→3, 5→4. Porta de entrada, passo 1: `MEMORY ausente →
   oferecer bootstrap antes de qualquer outra coisa. Nunca seguir sem MEMORY,
   nunca inventar um.`
-- [ ] **3. Implementar /2** — apagar dos dois READMEs a seção
+- [x] **3. Implementar /2** — apagar dos dois READMEs a seção
   `## Renamed in 0.4.0 (breaking)` / `## Renomeado em 0.4.0 (breaking)` até
   antes de `## Development` / `## Desenvolvimento`.
-- [ ] **4. Implementar /3** — apagar `tests/test-no-grafo.sh`; remover:
+- [x] **4. Implementar /3** — apagar `tests/test-no-grafo.sh`; remover:
   test-skills (bloco `if memory ... grafo` + linha `skill graph`, asserts
   `GRAFO.md`, `PT→EN`, `versao-schema`); test-templates (`PT→EN`,
   `GRAFO-template*`, `zero grafo`); test-session-start (`graph,`, `GRAFO`,
@@ -116,12 +119,12 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
   `semschema` com linha 1 `# MEMORY de outra ferramenta` (sem caso GRAFO.md —
   `qualquer.txt` já cobre "fora do MEMORY"); memory-guard idem e sem o caso
   `nos/`.
-- [ ] **5. MEMORY.md** — linha `grafo-inicio-fim` → `memory-inicio-fim |
+- [x] **5. MEMORY.md** — linha `grafo-inicio-fim` → `memory-inicio-fim |
   planned | Memória no início e fim | …`; aprendizado 2026-09-05 do guarda e o
   de 2026-08-27 (8 pontos) recebem `[invalidado-em: 2026-09-27]
   [substituido-por: …]` + linha nova do de 8 pontos sem `test-no-grafo.sh`.
-- [ ] **6. Rodar** suíte → 0; rodar o grep do done → vazio.
-- [ ] **7. Commit** `refactor(limpeza-codigo-morto/1,2,3): legado GRAFO e guardas de migração removidos`.
+- [x] **6. Rodar** suíte → 0; rodar o grep do done → vazio.
+- [x] **7. Commit** `refactor(limpeza-codigo-morto/1,2,3): legado GRAFO e guardas de migração removidos`.
 
 ## Tarefa 3: fundamentos com nomes e mecânica atuais
 
@@ -141,12 +144,12 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
 - **arquivos**: Modificar `docs/fundamentos.md`, `tests/test-autopilot.sh`.
 - **done quando**: `grep -nE 'GRAFO|grafo|LEVE|MÉDIA|ALTA|validado|em-curso|entregue|executar|validar|depurar' docs/fundamentos.md` vazio; suíte verde.
 
-- [ ] **1. Red** — test-autopilot: trocar a linha asserida por
+- [x] **1. Red** — test-autopilot: trocar a linha asserida por
   `'| LIGHT | execute → validate | resultado | resultado (e2e sem oferta) |'`
   (label `/14 linha LIGHT completa na tabela`). Rodar → FAIL.
-- [ ] **2. Implementar** — reescrever fundamentos pelo mapeamento acima.
-- [ ] **3. Rodar** suíte → 0 e o grep do done → vazio.
-- [ ] **4. Commit** `docs(limpeza-codigo-morto/6): fundamentos com nomenclatura e mecânica atuais`.
+- [x] **2. Implementar** — reescrever fundamentos pelo mapeamento acima.
+- [x] **3. Rodar** suíte → 0 e o grep do done → vazio.
+- [x] **4. Commit** `docs(limpeza-codigo-morto/6): fundamentos com nomenclatura e mecânica atuais`.
 
 ## Tarefa 4: versão 0.8.0
 
@@ -157,10 +160,10 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
 - **arquivos**: Modificar os 2 manifests; Teste `tests/test-docs.sh`.
 - **done quando**: test-docs verde com 0.8.0.
 
-- [ ] **1. Red** — test-docs: `'"version": "0.8.0"'` (label `limpeza-codigo-morto/8`). Rodar → FAIL.
-- [ ] **2. Implementar** — `"version": "0.8.0"` nos dois JSON.
-- [ ] **3. Rodar** suíte → 0.
-- [ ] **4. Commit** `chore(limpeza-codigo-morto/8): versão 0.8.0`.
+- [x] **1. Red** — test-docs: `'"version": "0.8.0"'` (label `limpeza-codigo-morto/8`). Rodar → FAIL.
+- [x] **2. Implementar** — `"version": "0.8.0"` nos dois JSON.
+- [x] **3. Rodar** suíte → 0.
+- [x] **4. Commit** `chore(limpeza-codigo-morto/8): versão 0.8.0`.
 
 ## Tarefa 5: fechar nós travados
 
@@ -187,13 +190,13 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
 - **done quando**: `memory-validate`/`memory-guard` exit 0 no MEMORY.md;
   `grep -c '| in-progress |' MEMORY.md` = 1 (só esta demanda); suíte verde.
 
-- [ ] **1. Red** — test-dogfood: `assert_file docs/audora/arquivo/2026-09-27-memory-graphify.md "limpeza-codigo-morto/5 memory-graphify arquivado"` e idem `plugin-v0.1.0`. Rodar → FAIL.
-- [ ] **2. Coletar evidência** — `claude plugin validate .` (saída lida).
-- [ ] **3. Implementar** — delta + evidência + `estado: delivered` em cada
+- [x] **1. Red** — test-dogfood: `assert_file docs/audora/arquivo/2026-09-27-memory-graphify.md "limpeza-codigo-morto/5 memory-graphify arquivado"` e idem `plugin-v0.1.0`. Rodar → FAIL.
+- [x] **2. Coletar evidência** — `claude plugin validate .` (saída lida).
+- [x] **3. Implementar** — delta + evidência + `estado: delivered` em cada
   nó; consolidar delta no corpo (compactar item 0); `git mv` dos nós e
   planos; linhas do índice no formato arquivado.
-- [ ] **4. Rodar** hooks no MEMORY.md → 0; suíte → 0.
-- [ ] **5. Commit** `chore(limpeza-codigo-morto/5): memory-graphify e plugin-v0.1.0 entregues e arquivados`.
+- [x] **4. Rodar** hooks no MEMORY.md → 0; suíte → 0.
+- [x] **5. Commit** `chore(limpeza-codigo-morto/5): memory-graphify e plugin-v0.1.0 entregues e arquivados`.
 
 ## Tarefa 6: gate da demanda
 
@@ -209,8 +212,8 @@ roda) — fora de escopo por decisão do escopo; nenhum outro.
   `gate-asserts:` na Tarefa 2).
 - **done quando**: `bash hooks/gate limpeza-codigo-morto` → `GATE: passou`, exit 0.
 
-- [ ] **1.** Tarefa 2 passo 6: gate com `gate-asserts:` → saída lida.
-- [ ] **2.** Gate final → exit 0.
+- [x] **1.** Tarefa 2 passo 6: gate com `gate-asserts:` → saída lida.
+- [x] **2.** Gate final → exit 0.
 
 /7 (PRD sem o roadmap) é executado no sync da validate, após o merge na
 `main` (regra global: PRD só muda com a `main`).
