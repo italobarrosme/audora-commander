@@ -70,6 +70,10 @@ Consulta estrutural NUNCA carrega corpos — grep resolve:
 - aprendizado por termo: `grep -i '<termo>' MEMORY.md`
 - decisão durável de área: `grep -i '<termo>' docs/audora/decisoes-vivas.md`
 
+**Já carregado nesta sessão** (skill memory invocada, `MEMORY.md` lido, sem
+`/clear` nem compactação depois) → reusar do contexto: não reinvocar a skill
+nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
+
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
 Código: nunca "varrer o repo para entender" — operação 7.
 

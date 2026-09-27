@@ -62,7 +62,7 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
    aprovação. MEDIUM: plano salvo, seguir direto.
 9. **Fechar a fase**:
    > Fase de plano fechada. Artefato salvo: docs/audora/planos/plano-<id>.md.
-   > Seguro dar /clear agora — a execução começa relendo o plano.
+   > Recomendo /clear agora — a execução começa relendo o plano (`execute de <id>`).
 
 ## Replanejamento (durante a execução)
 
@@ -96,7 +96,8 @@ próximos passos. A próxima sessão lê isso primeiro.
 ## Bloco de fechamento
 
 Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
-de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sessão
+→ não reler). Nesta fase:
 
 - **Produzido**: quantas tarefas, quantos passos, e quais ficaram marcadas
   `expandir: sim` (não detalhadas ainda, por design).

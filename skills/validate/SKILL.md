@@ -116,7 +116,8 @@ segue o fluxo de reprovação normal (item 5).
 ## Bloco de fechamento
 
 Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
-de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sessão
+→ não reler). Nesta fase:
 
 - **Produzido**: o veredito do portão e o que o sync consolidou; em TODA
   demanda, incluir o contador

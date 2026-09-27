@@ -26,4 +26,8 @@ assert_contains "$b" '| critério | veredito | evidência |' "/4 tabela criterio
 assert_contains "$b" 'LIGHT' "/5 template trata LIGHT/HOTFIX"
 assert_contains "$b" 'caminho real' "/6 template proibe caminho inventado"
 assert_contains "$b" 'reprovada' "/7 template trata fase interrompida ou reprovada"
+# otimizacao-tokens/4 — bloco recomenda /clear; autopilot omite
+b2="$(cat templates/bloco-fechamento-template.md)"
+assert_contains "$b2" '/clear recomendado' "otimizacao-tokens/4 template recomenda /clear"
+assert_contains "$b2" 'Em autopilot, omitir' "otimizacao-tokens/4 template omite em autopilot"
 report

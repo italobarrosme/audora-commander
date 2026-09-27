@@ -68,8 +68,8 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
    o escopo no portão final. Marcador aberto → parar e imprimir o bloco de
    fechamento com a fase desmarcada e o marcador (parada, nunca suposição).
 8. **Fechar a fase** (após aprovação):
-   > Fase de escopo fechada. Artefatos salvos: [nó/spec]. Seguro dar /clear
-   > agora — nada importante vive só na conversa.
+   > Fase de escopo fechada. Artefatos salvos: [nó/spec]. Recomendo /clear
+   > agora — nada importante vive só na conversa; na sessão nova: `plan de <id>`.
 
 ## Requisito de produto vs decisão de implementação
 
@@ -104,7 +104,8 @@ fora-de-escopo?
 ## Bloco de fechamento
 
 Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
-de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sessão
+→ não reler). Nesta fase:
 
 - **Produzido**: quantos critérios EARS, se o fora-de-escopo ficou explícito,
   e quantas decisões foram registradas.

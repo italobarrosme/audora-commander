@@ -103,7 +103,8 @@ pergunta (roda, ou registra `e2e: pulado-por-autopilot-sem-ferramenta`).
 ## Bloco de fechamento
 
 Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
-de `templates/bloco-fechamento-template.md` (raiz do plugin). Nesta fase:
+de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sessão
+→ não reler). Nesta fase:
 
 - **Produzido**: quais critérios foram exercitados e o veredito de cada um
   (`passou` / `falhou` / `não-automatizável`).

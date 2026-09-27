@@ -39,7 +39,9 @@ Regras:
    quando ajudar. Caminho prometido, planejado ou inventado é falha do bloco —
    se o arquivo ainda não existe, ele não entra.
 4. **Próximo**: uma ação concreta, não "continuar". Se a próxima ação é um
-   portão humano, diga isso.
+   portão humano, diga isso. Próxima fase se reancora só pelos artefatos (nó,
+   plano, relatório) → somar `— /clear recomendado (na sessão nova: "<fase> de <id>")`;
+   a decisão é do humano. Em autopilot, omitir: não há pausa entre fases.
 
 ## Categoria LIGHT e HOTFIX
 

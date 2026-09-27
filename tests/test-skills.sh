@@ -190,4 +190,11 @@ assert_not_contains "$vv" '--diff-filter=A' "otimizacao-tokens/2 corpo do sync f
 assert_not_contains "$vv" 'Mecanizar isso foi tentado' "otimizacao-tokens/2 prosa histórica fora"
 assert_not_contains "$(cat "$VR/sync.md" 2>/dev/null)" 'Mecanizar isso foi tentado' "otimizacao-tokens/2 prosa histórica fora do sync"
 [ "$(wc -c < skills/validate/SKILL.md)" -lt 7700 ] && ok || ko "otimizacao-tokens/2 validate < 7700 bytes (era 11603)"
+# otimizacao-tokens/1,/4 — não reler na sessão; /clear recomendado entre fases
+assert_contains "$(cat skills/memory/SKILL.md)" 'Já carregado nesta sessão' "otimizacao-tokens/1 memory: não reinvocar/reler"
+for s in audora-commander scope plan execute e2e validate debug; do
+  bf="$(awk '/^## Bloco de fechamento/{f=1;next} /^## /{f=0} f' "skills/$s/SKILL.md")"
+  assert_contains "$bf" 'já lido nesta sessão' "otimizacao-tokens/1 $s não relê o template"
+done
+for s in scope plan; do assert_contains "$(cat skills/$s/SKILL.md)" 'Recomendo /clear' "otimizacao-tokens/4 $s recomenda /clear"; done
 report
