@@ -78,6 +78,8 @@ real (custo de API).
   cache do plugin só refaz com bump) — a confirmar no portão de escopo.
 - 2026-09-27 (IA): economia do /1 é comportamental (o modelo deixa de
   reler) — medida por bytes só como estimativa; o /7 mede a carga estática.
+- 2026-09-27 (humano): portão de escopo aprovado ("continue"), incluindo bump
+  0.9.0.
 
 ## delta
 
