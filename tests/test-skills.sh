@@ -189,7 +189,7 @@ assert_contains "$vv" 'mantém o portão humano e NÃO roda o sync' "otimizacao-
 assert_not_contains "$vv" '--diff-filter=A' "otimizacao-tokens/2 corpo do sync fora do roteador"
 assert_not_contains "$vv" 'Mecanizar isso foi tentado' "otimizacao-tokens/2 prosa histórica fora"
 assert_not_contains "$(cat "$VR/sync.md" 2>/dev/null)" 'Mecanizar isso foi tentado' "otimizacao-tokens/2 prosa histórica fora do sync"
-[ "$(wc -c < skills/validate/SKILL.md)" -lt 7700 ] && ok || ko "otimizacao-tokens/2 validate < 7700 bytes (era 11603)"
+[ "$(tr -d '\r' < skills/validate/SKILL.md | wc -c)" -lt 7700 ] && ok || ko "otimizacao-tokens/2 validate < 7700 bytes (era 11603)"
 # otimizacao-tokens/1,/4 — não reler na sessão; /clear recomendado entre fases
 assert_contains "$(cat skills/memory/SKILL.md)" 'Já carregado nesta sessão' "otimizacao-tokens/1 memory: não reinvocar/reler"
 for s in audora-commander scope plan execute e2e validate debug; do
