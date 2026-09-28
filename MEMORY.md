@@ -97,7 +97,7 @@ time pequeno em projetos web/mobile/api.
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
 - light-enxuto | delivered | LIGHT enxuto → docs/audora/arquivo/2026-09-01-light-enxuto.md
 - decisoes-vivas-poda | delivered | Poda das decisões vivas → docs/audora/arquivo/2026-09-01-decisoes-vivas-poda.md
-- decisoes-vivas-auditoria | planned | Auditoria das decisões vivas | Auditar as 17 entradas sob critério binário — só marca se um teste da suíte reprovaria a violação, provado por mutação | decisoes-vivas, auditoria, marcacao, criterio-binario | docs/audora/decisoes-vivas.md
+- decisoes-vivas-auditoria | discarded | Auditoria das decisões vivas → docs/audora/arquivo/2026-09-28-decisoes-vivas-auditoria.md (descartado pelo humano em 2026-09-28, antes do scope)
 - skill-memory | discarded | Skill MEMORY | Absorvido por memory-graphify em 2026-08-26 (memory = memória do produto + aprendizados) | memoria, aprendizado, skill | —
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —

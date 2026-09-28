@@ -237,8 +237,11 @@ de data — cada caso provado por mutação. Suíte 380 → 387 asserts.
 classificação, em conjuntos diferentes de entradas, e o diagnóstico foi que o
 critério "já declarada normativamente" admite julgamento demais. As 8 marcações
 foram revertidas e `decisoes-vivas.md` voltou byte-idêntico ao estado
-pré-demanda. O nó novo troca julgamento por prova: só marca se um teste da
-suíte reprovaria a violação, verificado por mutação entrada por entrada.
+pré-demanda. O nó novo trocava julgamento por prova: só marcaria se um teste
+da suíte reprovasse a violação, verificado por mutação entrada por entrada.
+Em 2026-09-28 o humano **descartou** o nó antes do scope (arquivado em
+`docs/audora/arquivo/2026-09-28-decisoes-vivas-auditoria.md`): as 17 decisões
+vivas ficam como estão.
 
 Fechamento proporcional do LIGHT entregue em 2026-09-01 (nó `light-enxuto`,
 MEDIUM): a skill `validate` ganhou a seção `## Fechamento LIGHT`. Uma demanda

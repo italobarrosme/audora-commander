@@ -1,12 +1,12 @@
 ---
 id: decisoes-vivas-auditoria
-estado: planned
+estado: discarded
 origem: humano
 depende-de: [decisoes-vivas-poda]
 arquivos: []
 keywords: [decisoes-vivas, auditoria, marcacao, criterio-binario]
 resumo: Auditar as 17 decisões vivas sob critério binário — só marca se um teste da suíte reprovaria a violação, provado por mutação.
-atualizado-em: 2026-09-01
+atualizado-em: 2026-09-28
 ---
 
 # decisoes-vivas-auditoria
@@ -40,6 +40,8 @@ teste nenhum). Relatórios completos em
 <!-- Definido na fase scope. -->
 
 ## decisoes
+
+- 2026-09-28 (humano): nó descartado antes do scope — auditoria das 17 entradas não será feita; decisões vivas ficam como estão.
 
 ## delta
 
