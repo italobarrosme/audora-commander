@@ -106,6 +106,198 @@ da instalação" mais abaixo neste README.
 | `debug` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
 | `worktree` | Isolamento sob demanda em git worktree: ciclo de vida de uma demanda, fan-out de N agentes, integração em série, portão humano na remoção |
 
+Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
+
+## As skills em detalhe
+
+### `audora-commander`
+
+- **Quando dispara**: no início de qualquer demanda de software (criar,
+  alterar, corrigir, refatorar) — o hook de SessionStart aponta para cá.
+- **O que faz**: carrega o contexto (skill `memory`: Constituição,
+  Aprendizados e índice de nós; sem `MEMORY.md` → oferece bootstrap antes de
+  tudo); com 3 ou mais nós `in-progress`, pergunta o que pausar antes de
+  aceitar outro; classifica a demanda por quatro perguntas binárias de risco
+  — dado persistido ou migração? API pública/contrato? auth, segurança ou
+  pagamento? efeito irreversível fora do repo? Qualquer sim → HIGH; vários
+  arquivos ou lógica nova → MEDIUM; o resto → LIGHT. HOTFIX só quando você
+  declara. Anuncia a categoria (você pode corrigir), registra o nó e roteia.
+  Aceita "autopilot" / "roda até o validate" em LIGHT e MEDIUM (HIGH recusa).
+  Catraca de mão única: sobe a categoria sozinha no meio do caminho, desce só
+  com a sua aprovação. Demanda gigante é quebrada em menores.
+- **O que deixa no disco**: o nó `docs/audora/memory/<id>.md`
+  (`in-progress`) e a linha dele no `MEMORY.md`; nó LIGHT/HOTFIX já nasce
+  com critérios EARS numerados.
+- **Portões humanos**: nenhum próprio — você pode corrigir a classificação.
+- **Próxima**: LIGHT/HOTFIX → `execute`; MEDIUM/HIGH → `scope`; sem MEMORY →
+  `memory` (bootstrap).
+
+### `memory`
+
+- **Quando dispara**: chamada pelas outras skills (carregar contexto,
+  registrar nó, delta ou aprendizado, consultar código) ou direto por você.
+- **O que faz**: é dona do MEMORY — o índice mestre `MEMORY.md` (Propósito,
+  Constituição, Aprendizados, uma linha rica por nó) mais um arquivo por nó.
+  Sete operações: `carregar-contexto`, `bootstrap`, `registrar-no`,
+  `registrar-delta`, `registrar-aprendizado`, `compactar`,
+  `consultar-codigo`. Roteador: operações quentes inline, o resto em
+  `skills/memory/references/`, lidas uma por operação. Leitura seletiva
+  (índice + só os nós que a demanda toca; grep para consulta estrutural); o
+  que já foi carregado na sessão não é relido. O bootstrap oferece instalar
+  o Graphify (`uv tool install graphifyy`) e gerar o gate mecânico — uma vez
+  cada; recusa fica registrada. `consultar-codigo` roda `graphify query` /
+  `path` / `affected` e lê só os arquivos `src=`; qualquer falha degrada para
+  grep com aviso. Os hooks `memory-guard` (tetos de linhas) e
+  `memory-validate` (schema, índice ↔ pasta, enum, ciclos) bloqueiam escrita
+  quebrada.
+- **O que deixa no disco**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
+  `docs/audora/decisoes-vivas.md`, nós arquivados em `docs/audora/arquivo/`,
+  `graphify-out/` (no gitignore) e, se aceito, o script `gate` do projeto.
+- **Portões humanos**: instalar o Graphify e gerar o gate são decisão sua;
+  conflito de merge no MEMORY fora dos nós da demanda é seu.
+- **Próxima**: devolve à fase que chamou; invocada direto → oferece
+  classificar uma demanda.
+
+### `scope`
+
+- **Quando dispara**: demanda MEDIUM/HIGH logo após a classificação, ou
+  quando uma fase posterior reabre o escopo.
+- **O que faz**: fala só de comportamento observável (nada de arquivo ou
+  biblioteca). Pergunta em lotes de até 4 perguntas independentes — as
+  dependentes vão em série, escolha de layout vai com preview. Lacuna vira
+  `[PRECISA-CLARIFICAR: …]`, nunca suposição. Escreve o objetivo, critérios
+  EARS numerados (`<id>/<n>`, "QUANDO … O SISTEMA DEVE …", com erro e borda)
+  e o fora-de-escopo explícito, e faz auto-revisão (sem marcador aberto, tudo
+  testável, sem conflito com a Constituição). Em autopilot, registra se todo
+  critério é automatizável.
+- **O que deixa no disco**: MEDIUM → os três campos no nó; HIGH → spec
+  dedicada `docs/audora/specs/<id>-escopo.md`; uma linha por decisão
+  respondida no nó.
+- **Portões humanos**: o portão de escopo — espera sua aprovação explícita
+  (antecipado só em autopilot elegível, ratificado no portão final).
+- **Próxima**: `plan`, com `/clear` recomendado — o plano se reancora nos
+  artefatos escritos.
+
+### `plan`
+
+- **Quando dispara**: depois do escopo aprovado (MEDIUM/HIGH).
+- **O que faz**: duas passadas — localizar (consulta ao Graphify quando
+  ativo, senão grep) e depois ler os arquivos que o plano vai tocar,
+  listados no cabeçalho. Conflito MEMORY vs código para e vai para você.
+  Escreve tarefas autossuficientes: critérios EARS copiados verbatim,
+  decisões relevantes, interfaces com assinatura exata, caminhos exatos,
+  `depende-de` e passos de 2–5 minutos (red → verificar → implementar →
+  green → commit). Os passos levam o código completo do TESTE, assinaturas e
+  comandos exatos; código de implementação só quando não é óbvio (algoritmo,
+  regex, SQL, formato exato). Zero placeholder. Tarefa complexa marcada
+  `expandir: sim` só é detalhada quando chega a vez dela.
+- **O que deixa no disco**: `docs/audora/planos/plano-<id>.md`.
+- **Portões humanos**: HIGH → portão de plano; MEDIUM segue direto.
+- **Próxima**: `execute`.
+
+### `execute`
+
+- **Quando dispara**: plano aprovado (MEDIUM/HIGH) ou demanda LIGHT/HOTFIX
+  pronta para código.
+- **O que faz**: relê o plano e o nó no início de toda sessão; a próxima
+  tarefa é a primeira com as dependências concluídas. Por tarefa: localiza
+  vizinhos pelo índice de código; RED — um teste mínimo citando `<id>/<n>`,
+  visto falhando pelo motivo certo; GREEN — o mínimo, com a suíte toda verde
+  (ou o `gate:` da Constituição saindo 0); REFACTOR; COMMIT citando o
+  critério. Os testes cobrem integração real e caminhos de erro e borda.
+  Micro-decisões vão para o plano, aprendizados para o MEMORY na hora.
+  HOTFIX: teste de reprodução antes do fix. Falha desconhecida → `debug`;
+  beco sem saída → nó `blocked` e você decide. Como volta do motor de loop
+  (`hooks/loop`), faz UMA tarefa e nunca commita — o motor roda o gate,
+  commita a volta verde e guarda a vermelha como patch.
+- **O que deixa no disco**: código e testes, um commit por etapa verde, a
+  lista "Decisões tomadas pela IA" no plano.
+- **Portões humanos**: nenhum no meio; você decide sobre nó `blocked`.
+- **Próxima**: `validate`, que oferece o e2e.
+
+### `e2e`
+
+- **Quando dispara**: oferecida pela `validate` quando a execução está
+  verde — opcional, fortemente recomendada.
+- **O que faz**: sobe o produto de verdade. docker compose é o default: usa
+  o compose do projeto ou gera `docker-compose.e2e.yml` a partir da stack;
+  sem Docker, cai para o `como-rodar` da Constituição. Espera ficar saudável
+  e nunca testa com infra parcial. Web → specs Playwright em `e2e/`; não-web
+  → pergunta qual ferramenta usar e registra na Constituição. Todo critério
+  EARS, inclusive os de erro, vira passo executado com evidência real.
+  Teardown sempre.
+- **O que deixa no disco**: `docs/audora/e2e/e2e-<id>.md` (critério →
+  passo → evidência → veredito); o compose e as specs, versionados como
+  regressão acumulada.
+- **Portões humanos**: rodar é decisão sua (pulo fica registrado como
+  `e2e: pulado-pelo-humano`); a ferramenta não-web é escolha sua.
+- **Próxima**: `validate` com o relatório; critério reprovado → `debug`.
+
+### `validate`
+
+- **Quando dispara**: execução (e e2e, se rodado) terminada.
+- **O que faz**: oferece o e2e; exige evidência 1:1 por critério — comando
+  rodado agora com a saída, ou item explícito para conferência humana; monta
+  o roteiro de validação: comportamento, diff de teste separado, premissas do
+  autopilot, relatório da rodada do loop, decisões vivas propostas (filtro de
+  entrada em `references/decisoes-vivas.md`) e, em HIGH, sumário por arquivo
+  mais revisão adversarial por subagente de contexto limpo. Efeito
+  irreversível fora do repo nunca é disparado pela IA. Depois da aprovação,
+  quando o trabalho entra na main, roda o sync de `references/sync.md`:
+  consolida o delta, promove decisões vivas e aprendizados, nó →
+  `delivered`, `git mv` para o arquivo, `arquivos:` do diff real, resumo
+  promovido ao `PRD.md`. LIGHT fecha pelo caminho curto de
+  `references/fechamento-light.md`. Reference ausente mantém o portão e não
+  roda o sync.
+- **O que deixa no disco**: nó arquivado
+  `docs/audora/arquivo/AAAA-MM-DD-<id>.md`, plano arquivado,
+  `docs/audora/decisoes-vivas.md`, `PRD.md` atualizado.
+- **Portões humanos**: o portão final — nunca antecipado, em toda categoria
+  (aprovar, reprovar ou aprovar em parte).
+- **Próxima**: nenhuma — a demanda termina; a próxima começa em
+  `audora-commander`.
+
+### `debug`
+
+- **Quando dispara**: bug, teste falhando por motivo desconhecido,
+  comportamento inesperado ou critério de e2e reprovado; sem sintoma
+  nenhum, como caçada de defeitos.
+- **O que faz**: modo sintoma — reprodução determinística (de preferência
+  um teste que falha), evidência completa (erro inteiro, caminho que falha
+  pelo índice de código, diff recente), uma hipótese por vez testada pelo
+  experimento mais barato que a distingue, causa raiz que explica todos os
+  sintomas, fix via TDD. Três hipóteses refutadas → para e escala para você.
+  Modo caçada — varre classes de defeito (referências cruzadas, contratos e
+  schemas, documentação viva e contagens, bordas de erro, configuração e
+  execução) e verifica cada achado antes de reportar.
+- **O que deixa no disco**: teste de reprodução permanente; relatório de
+  caçada em `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas e
+  aprendizados no MEMORY.
+- **Portões humanos**: escalada após 3 hipóteses refutadas; na caçada, quais
+  melhorias viram nó é decisão sua.
+- **Próxima**: `execute` (fix via TDD), `validate` ou decisão sua.
+
+### `worktree`
+
+- **Quando dispara**: só quando você pede explicitamente para isolar uma
+  demanda, listar worktrees, despachar agentes em paralelo, integrar ou
+  limpar — nunca por iniciativa própria.
+- **O que faz**: isola a demanda com o worktree nativo do harness
+  (`EnterWorktree` / `ExitWorktree`), com o nome do id do nó; prepara o
+  ambiente (arquivos ignorados via `.worktreeinclude`, dependências, aviso de
+  que os hooks do git são compartilhados — nunca copia segredo em
+  silêncio); lista cada worktree com caminho, branch, nó, limpo? e commits
+  não integrados; despacha N agentes em domínios de arquivo não-sobrepostos,
+  criados e integrados um de cada vez; antes de remover, confere sujo, não
+  integrado, arquivo ignorado e junction apontando para fora.
+- **O que deixa no disco**: `.claude/worktrees/<id>/` e uma branch por
+  demanda; caminho e branch registrados no nó.
+- **Portões humanos**: descartar worktree que ainda tem trabalho
+  (`discard_changes`) é sempre seu; limpeza de órfãos é oferecida, nunca
+  executada.
+- **Próxima**: a fase que a demanda pedia (`execute`, ou `scope`/`plan`);
+  trabalho integrado → `validate`.
+
 ## Fluxo de uso (exemplo: demanda MEDIUM)
 
 1. Você pede: "adiciona filtro por data na listagem de pedidos".

@@ -42,4 +42,23 @@ assert_contains "$(cat MEMORY.md)" 'skills/*/references/' "/6 Constituição cob
 for r in README.md README.pt-BR.md; do
   assert_contains "$(cat "$r")" 'skills/memory/references/' "/8 $r cita references/"
 done
+# readme-skills/1,/2,/3 — toda skill de skills/ tem subseção com os 5 rótulos nos 2 READMEs
+sec() { awk -v h="### \`$2\`" '$0==h{f=1;next} /^##/{f=0} f' "$1"; }
+for d in skills/*/; do
+  s="$(basename "$d")"
+  sen="$(sec README.md "$s")"; spt="$(sec README.pt-BR.md "$s")"
+  [ -n "$sen" ] && ok || ko "readme-skills/3 README.md sem subseção da skill $s"
+  [ -n "$spt" ] && ok || ko "readme-skills/3 README.pt-BR.md sem subseção da skill $s"
+  for l in '**When it fires**' '**What it does**' '**What it leaves on disk**' '**Human gates**' '**Next**'; do
+    assert_contains "$sen" "$l" "readme-skills/1 $s EN tem $l"
+  done
+  for l in '**Quando dispara**' '**O que faz**' '**O que deixa no disco**' '**Portões humanos**' '**Próxima**'; do
+    assert_contains "$spt" "$l" "readme-skills/2 $s PT tem $l"
+  done
+done
+# readme-skills/5 — a tabela-resumo continua e linka o detalhe
+assert_contains "$(cat README.md)" '## Skills in detail' "readme-skills/5 EN tem a seção"
+assert_contains "$(cat README.pt-BR.md)" '## As skills em detalhe' "readme-skills/5 PT tem a seção"
+assert_contains "$(cat README.md)" '(#skills-in-detail)' "readme-skills/5 tabela EN linka o detalhe"
+assert_contains "$(cat README.pt-BR.md)" '(#as-skills-em-detalhe)' "readme-skills/5 tabela PT linka o detalhe"
 report

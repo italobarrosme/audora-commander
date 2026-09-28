@@ -30,7 +30,7 @@ memory e validate (fonte do conteúdo, 0.9.0).
 - **requisito**: **readme-skills/1**, **readme-skills/2**, **readme-skills/3** (ver nó); **readme-skills/5** (tabela e link).
 - **arquivos**: Teste `tests/test-docs.sh`.
 
-- [ ] **1. Red** — antes do `report` de `test-docs.sh`:
+- [x] **1. Red** — antes do `report` de `test-docs.sh`:
   ```bash
   # readme-skills/1,/2,/3 — toda skill tem subseção com os 5 rótulos nos 2 READMEs
   sec() { awk -v h="### \`$2\`" '$0==h{f=1;next} /^##/{f=0} f' "$1"; }
@@ -51,7 +51,7 @@ memory e validate (fonte do conteúdo, 0.9.0).
   assert_contains "$(cat README.pt-BR.md)" '(#as-skills-em-detalhe)' "readme-skills/5 tabela PT linka o detalhe"
   ```
   (corrigir: o assert da seção lê `$(cat README.md)`, não `$en`.)
-- [ ] **2. Rodar** `bash tests/test-docs.sh` → FAIL por skill ausente.
+- [x] **2. Rodar** `bash tests/test-docs.sh` → FAIL por skill ausente.
 
 ## Tarefa 2: conteúdo EN + PT
 
@@ -61,6 +61,6 @@ memory e validate (fonte do conteúdo, 0.9.0).
 - **arquivos**: Modificar `README.md`, `README.pt-BR.md`.
 - **done quando**: test-docs verde; leitura cruzada /4 no roteiro; gate.
 
-- [ ] **3. Implementar** — seção EN e PT; linha abaixo da tabela: "Details per skill: [Skills in detail](#skills-in-detail)" / "Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe)".
-- [ ] **4. Rodar** test-docs → verde; gate.
-- [ ] **5. Commit** `docs(readme-skills/1,2,3,5): seção detalhada por skill nos 2 READMEs + guarda`.
+- [x] **3. Implementar** — seção EN e PT; linha abaixo da tabela: "Details per skill: [Skills in detail](#skills-in-detail)" / "Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe)".
+- [x] **4. Rodar** test-docs → verde; gate.
+- [x] **5. Commit** `docs(readme-skills/1,2,3,5): seção detalhada por skill nos 2 READMEs + guarda`.

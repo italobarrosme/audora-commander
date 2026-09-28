@@ -105,6 +105,195 @@ checklist" further down in this README.
 | `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
 | `worktree` | On-demand isolation in a git worktree: lifecycle of one demand, fan-out of N agents, serial integration, human gate on removal |
 
+Details per skill: [Skills in detail](#skills-in-detail).
+
+## Skills in detail
+
+### `audora-commander`
+
+- **When it fires**: at the start of any software demand (create, change,
+  fix, refactor) — the SessionStart hook points here.
+- **What it does**: loads the context (skill `memory`: Constitution,
+  Learnings and node index; no `MEMORY.md` → offers a bootstrap first);
+  with 3 or more nodes `in-progress`, asks what to pause before taking a new
+  one; classifies the demand with four binary risk questions — persisted
+  data or migration? public API/contract? auth, security or payment?
+  irreversible effect outside the repo? Any yes → HIGH; several files or new
+  logic → MEDIUM; otherwise LIGHT. HOTFIX only when you declare it. Announces
+  the category (you can correct it), registers the node and routes. Accepts
+  "autopilot" / "roda até o validate" for LIGHT and MEDIUM (HIGH refuses).
+  One-way ratchet: raises the category on its own mid-way, lowers it only
+  with your approval. Oversized demands are split into smaller ones.
+- **What it leaves on disk**: the node `docs/audora/memory/<id>.md`
+  (`in-progress`) and its line in `MEMORY.md`; LIGHT/HOTFIX nodes already get
+  numbered EARS criteria.
+- **Human gates**: none of its own — you can correct the classification.
+- **Next**: LIGHT/HOTFIX → `execute`; MEDIUM/HIGH → `scope`; no MEMORY →
+  `memory` (bootstrap).
+
+### `memory`
+
+- **When it fires**: called by the other skills (load context, register a
+  node, delta or learning, look up code), or directly by you.
+- **What it does**: owns the MEMORY — the master index `MEMORY.md` (Purpose,
+  Constitution, Learnings, one rich line per node) plus one file per node.
+  Seven operations: `carregar-contexto`, `bootstrap`, `registrar-no`,
+  `registrar-delta`, `registrar-aprendizado`, `compactar`,
+  `consultar-codigo`. Router: hot operations inline, the rest in
+  `skills/memory/references/`, read one per operation. Selective reading
+  (index + only the nodes the demand touches; grep for structural queries);
+  whatever is already loaded in the session is not read again. The bootstrap
+  offers to install Graphify (`uv tool install graphifyy`) and to generate
+  the mechanical gate — once each; a refusal sticks. `consultar-codigo` runs
+  `graphify query` / `path` / `affected` and reads only the `src=` files;
+  any failure degrades to grep with a warning. Hooks `memory-guard` (line
+  ceilings) and `memory-validate` (schema, index ↔ folder, enum, cycles)
+  block broken writes.
+- **What it leaves on disk**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
+  `docs/audora/decisoes-vivas.md`, archived nodes in `docs/audora/arquivo/`,
+  `graphify-out/` (gitignored) and, if accepted, the project's `gate` script.
+- **Human gates**: installing Graphify and generating the gate are your
+  call; MEMORY merge conflicts outside the demand's own nodes are yours.
+- **Next**: back to the phase that called it; invoked directly → offers to
+  classify a demand.
+
+### `scope`
+
+- **When it fires**: MEDIUM/HIGH demand right after classification, or when
+  a later phase reopens the scope.
+- **What it does**: talks only about observable behavior (no files, no
+  libraries). Asks in batches of up to 4 independent questions — dependent
+  ones go in series, layout choices come with previews. A gap becomes
+  `[PRECISA-CLARIFICAR: …]`, never a guess. Writes the objective, numbered
+  EARS criteria (`<id>/<n>`, "WHEN … THE SYSTEM SHALL …", error and edge
+  cases included) and an explicit out-of-scope, then self-reviews (no open
+  marker, everything testable, no clash with the Constitution). Under
+  autopilot it records whether every criterion is automatable.
+- **What it leaves on disk**: MEDIUM → the three fields in the node; HIGH →
+  a dedicated spec `docs/audora/specs/<id>-escopo.md`; one line per answered
+  decision in the node.
+- **Human gates**: the scope gate — waits for your explicit approval
+  (skipped only under eligible autopilot, ratified at the final gate).
+- **Next**: `plan`, with `/clear` recommended — the plan re-anchors on the
+  written artifacts.
+
+### `plan`
+
+- **When it fires**: after the scope is approved (MEDIUM/HIGH).
+- **What it does**: two passes — locate (Graphify query when active,
+  otherwise grep) and then read the files the plan will touch, listed in the
+  header. A MEMORY vs code conflict stops and goes to you. Writes
+  self-sufficient tasks: EARS criteria copied verbatim, relevant decisions,
+  interfaces with exact signatures, exact paths, `depende-de`, and 2–5
+  minute steps (red → verify → implement → green → commit). Steps carry the
+  full TEST code, exact signatures and commands; implementation code only
+  when it is not obvious (algorithm, regex, SQL, exact format). No
+  placeholders. Complex tasks marked `expandir: sim` are detailed only when
+  their turn comes.
+- **What it leaves on disk**: `docs/audora/planos/plano-<id>.md`.
+- **Human gates**: HIGH → plan gate; MEDIUM goes straight on.
+- **Next**: `execute`.
+
+### `execute`
+
+- **When it fires**: approved plan (MEDIUM/HIGH) or a LIGHT/HOTFIX demand
+  ready for code.
+- **What it does**: re-reads the plan and the node at the start of every
+  session; the next task is the first one whose dependencies are done. Per
+  task: locate neighbors through the code index; RED — one minimal test
+  citing `<id>/<n>`, seen failing for the right reason; GREEN — the minimum,
+  with the whole suite green (or the Constitution's `gate:` exiting 0);
+  REFACTOR; COMMIT citing the criterion. Tests must cover real integrations
+  and error/edge paths. Micro-decisions go to the plan, learnings to the
+  MEMORY on the spot. HOTFIX: reproduction test before the fix. Unknown
+  failure → `debug`; dead end → node `blocked` and you decide. As a lap of
+  the loop engine (`hooks/loop`) it does ONE task and never commits — the
+  engine runs the gate, commits green laps and keeps red ones as patches.
+- **What it leaves on disk**: code and tests, one commit per green step,
+  the "Decisões tomadas pela IA" list in the plan.
+- **Human gates**: none mid-way; you decide on a `blocked` node.
+- **Next**: `validate`, which offers the e2e.
+
+### `e2e`
+
+- **When it fires**: offered by `validate` once execution is green —
+  optional, strongly recommended.
+- **What it does**: boots the real product. docker compose is the default:
+  it uses the project's compose or generates `docker-compose.e2e.yml` from
+  the stack; without Docker it falls back to the Constitution's
+  `como-rodar`. Waits for healthy and never tests on partial infra. Web →
+  Playwright specs in `e2e/`; non-web → asks you which tool and records it
+  in the Constitution. Every EARS criterion, error ones included, becomes an
+  executed step with real evidence. Teardown always.
+- **What it leaves on disk**: `docs/audora/e2e/e2e-<id>.md` (criterion →
+  step → evidence → verdict); the compose and specs, versioned as
+  accumulated regression.
+- **Human gates**: running it is your call (a skip is recorded as
+  `e2e: pulado-pelo-humano`); the non-web tool is your choice.
+- **Next**: `validate` with the report; a failed criterion → `debug`.
+
+### `validate`
+
+- **When it fires**: execution (and e2e, if run) is finished.
+- **What it does**: offers the e2e; demands 1:1 evidence per criterion — a
+  command run now with its output, or an explicit item for human check;
+  builds the validation script: behavior, test diff shown separately,
+  autopilot premises, loop round report, proposed durable decisions (entry
+  filter in `references/decisoes-vivas.md`), and for HIGH a per-file summary
+  plus an adversarial review by a clean-context subagent. Irreversible
+  effects outside the repo are never fired by the AI. After approval, when
+  the work lands on main, runs the sync in `references/sync.md`: consolidate
+  the delta, promote durable decisions and learnings, node → `delivered`,
+  `git mv` to the archive, `arquivos:` from the real diff, summary promoted
+  to `PRD.md`. LIGHT closes through the short path in
+  `references/fechamento-light.md`. A missing reference keeps the gate and
+  skips the sync.
+- **What it leaves on disk**: archived node
+  `docs/audora/arquivo/AAAA-MM-DD-<id>.md`, archived plan,
+  `docs/audora/decisoes-vivas.md`, updated `PRD.md`.
+- **Human gates**: the final gate — never anticipated, in every category
+  (approve, reject or approve in part).
+- **Next**: none — the demand ends; a new one starts at `audora-commander`.
+
+### `debug`
+
+- **When it fires**: a bug, a test failing for an unknown reason,
+  unexpected behavior or a failed e2e criterion; with no symptom at all, as
+  a defect hunt.
+- **What it does**: symptom mode — deterministic reproduction (ideally a
+  failing test), full evidence (whole error, failing path through the code
+  index, recent diff), one hypothesis at a time tested by the cheapest
+  distinguishing experiment, a root cause that explains every symptom, fix
+  via TDD. Three refuted hypotheses → stops and escalates to you. Hunt mode
+  — sweeps defect classes (cross references, contracts and schemas, living
+  docs and counts, error edges, configuration and execution) and verifies
+  every finding before reporting it.
+- **What it leaves on disk**: a permanent reproduction test; hunt reports in
+  `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas and learnings in the
+  MEMORY.
+- **Human gates**: escalation after 3 refuted hypotheses; in hunt mode,
+  which improvements become nodes is up to you.
+- **Next**: `execute` (fix via TDD), `validate`, or your decision.
+
+### `worktree`
+
+- **When it fires**: only when you explicitly ask to isolate a demand, list
+  worktrees, fan out agents, integrate or clean up — never on its own.
+- **What it does**: isolates a demand with the harness's native worktree
+  (`EnterWorktree` / `ExitWorktree`), named after the node id; prepares the
+  environment (ignored files via `.worktreeinclude`, dependencies, a warning
+  that git hooks are shared — never copies secrets silently); lists every
+  worktree with path, branch, node, clean? and unintegrated commits; fans out
+  N agents over non-overlapping file domains, created and integrated one at
+  a time; before removal checks dirty, unintegrated and ignored files and
+  junctions pointing outside.
+- **What it leaves on disk**: `.claude/worktrees/<id>/` and a branch per
+  demand; path and branch recorded in the node.
+- **Human gates**: discarding a worktree that still has work
+  (`discard_changes`) is always yours; orphan cleanup is offered, never run.
+- **Next**: the phase the demand needed (`execute`, or `scope`/`plan`);
+  integrated work → `validate`.
+
 ## Usage flow (example: a MEDIUM demand)
 
 1. You ask: "add a date filter to the orders list".
