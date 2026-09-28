@@ -85,6 +85,15 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
 
+README por skill entregue em 2026-09-28 (nó `readme-skills`, MEDIUM): os dois
+READMEs ganharam a seção "Skills in detail" / "As skills em detalhe", com uma
+subseção por skill e cinco rótulos fixos — quando dispara, o que faz, o que
+deixa no disco, portões humanos e próxima skill —, escrita a partir dos
+SKILL.md da 0.9.0 e conferida por leitura cruzada. A tabela-resumo continua,
+com link para o detalhe. `tests/test-docs.sh` ganhou a guarda que itera
+`skills/*/`: skill nova sem subseção nos dois READMEs reprova a suíte
+nomeando a skill e o README. Suíte 604 → 716 asserts. e2e pulado (doc pura).
+
 Otimização de tokens entregue em 2026-09-28 (nó `otimizacao-tokens`, MEDIUM,
 versão 0.9.0). Três frentes. **Contexto**: skill memory, `MEMORY.md` e
 template do bloco já carregados na sessão não são reinvocados nem relidos
@@ -382,8 +391,7 @@ automática (recomendada) vs. manual.
 
 ## Metas futuras de implementação
 
-1. README com seção detalhada por skill (nó `readme-skills`, planned).
-2. Estender `memory-validate` para validar `estado:` também nos arquivos de
+1. Estender `memory-validate` para validar `estado:` também nos arquivos de
    `docs/audora/memory/` (hoje só a coluna do índice) — nó futuro.
-3. Futuro: porte para outros harnesses, marketplace público,
+2. Futuro: porte para outros harnesses, marketplace público,
    agentes dedicados.

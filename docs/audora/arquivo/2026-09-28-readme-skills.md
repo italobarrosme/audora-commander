@@ -1,9 +1,9 @@
 ---
 id: readme-skills
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [otimizacao-tokens]
-arquivos: []
+arquivos: [README.md, README.pt-BR.md, tests/test-docs.sh, MEMORY.md, PRD.md, docs/audora/planos/arquivo/plano-readme-skills.md]
 keywords: [readme, docs, skills]
 resumo: READMEs EN e PT ganham seção detalhada por skill: gatilho, passos, artefatos, portões, próxima.
 atualizado-em: 2026-09-28
@@ -51,11 +51,12 @@ as demais seções do README.
 - 2026-09-28 (IA): /4 verificado por leitura cruzada com os SKILL.md no
   roteiro (não há teste mecânico honesto para "descreve só o que existe").
 - 2026-09-28 (humano): escopo aprovado ("continue").
+- 2026-09-28 (humano): portão final aprovado ("confirmado"); e2e pulado (doc pura).
 
 ## delta
 
 ## e2e
 
-pendente
+pulado-pelo-humano (2026-09-28 — demanda só de documentação)
 
 ## feedback-reprovacao

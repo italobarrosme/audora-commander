@@ -84,7 +84,7 @@ time pequeno em projetos web/mobile/api.
 - loop-motor | delivered | Motor de loop → docs/audora/arquivo/2026-09-05-loop-motor.md
 - limpeza-codigo-morto | delivered | Limpeza de código morto → docs/audora/arquivo/2026-09-27-limpeza-codigo-morto.md
 - otimizacao-tokens | delivered | Otimização de tokens → docs/audora/arquivo/2026-09-28-otimizacao-tokens.md
-- readme-skills | in-progress | README por skill | READMEs EN e PT ganham seção detalhada por skill: gatilho, passos, artefatos, portões, próxima | readme, docs, skills | README.md, README.pt-BR.md
+- readme-skills | delivered | README por skill → docs/audora/arquivo/2026-09-28-readme-skills.md
 - plugin-v0.1.0 | delivered | Plugin v0.1.0 → docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md
 - memory-graphify | delivered | Memory + Graphify → docs/audora/arquivo/2026-09-27-memory-graphify.md
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md
