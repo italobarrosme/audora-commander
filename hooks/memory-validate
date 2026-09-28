@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Hook PostToolUse (Edit|Write): integridade do MEMORY (memory-schema: 1).
 # Acusa: seção obrigatória ausente no MEMORY.md; linha do índice sem coluna
-# de estado; estado fora do enum; nó in-progress/blocked sem arquivo; arquivo
-# de nó sem linha no índice; depende-de inexistente; ciclo.
+# de estado; estado fora do enum (no índice e no frontmatter de cada nó); nó
+# sem campo estado:; nó in-progress/blocked sem arquivo; arquivo de nó sem
+# linha no índice; depende-de inexistente; ciclo.
 # Erro → exit 2 + stderr. Fora do MEMORY, ou MEMORY.md sem "memory-schema: 1"
 # na linha 1 → exit 0.
 # Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
@@ -67,7 +68,14 @@ done <<EOF_IDX
 $idx
 EOF_IDX
 
-# 2. arquivo sem linha no índice + 3. deps inexistentes (coleta arestas)
+# estado: do FRONTMATTER (linha 1 '---' até o próximo '---'); "=<valor>" ou nada
+fm_estado() {
+  tr -d '\r' < "$1" | awk 'NR==1 { if ($0 != "---") exit; next }
+    /^---$/ { exit }
+    /^estado:/ { sub(/^estado:[ \t]*/, ""); sub(/[ \t]*$/, ""); print "=" $0; exit }'
+}
+
+# 2. arquivo sem linha no índice + estado do nó + 3. deps inexistentes (coleta arestas)
 edges=""
 if [ -d "$dir" ]; then
   for f in "$dir"/*.md; do
@@ -76,6 +84,18 @@ if [ -d "$dir" ]; then
     case "$b" in *-historico) continue ;; esac
     printf '%s\n' "$idx_ids" | grep -qx "$b" || erros="$erros
 - arquivo docs/audora/memory/$b.md sem linha no índice mestre"
+    fe="$(fm_estado "$f")"
+    if [ -z "$fe" ]; then
+      erros="$erros
+- arquivo docs/audora/memory/$b.md sem campo 'estado:' no frontmatter ($tpl/no-template.md)"
+    else
+      ve="${fe#=}"
+      case "$ve" in
+        planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ;;
+        *) erros="$erros
+- arquivo docs/audora/memory/$b.md com estado '$ve' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ($tpl/no-template.md)" ;;
+      esac
+    fi
     for d in $(grep -m1 '^depende-de:' "$f" | tr -d '\r' | sed 's/^depende-de: *\[\(.*\)\].*/\1/' | tr ',' ' '); do
       [ -n "$d" ] || continue
       printf '%s\n' "$idx_ids" | grep -qx "$d" || erros="$erros

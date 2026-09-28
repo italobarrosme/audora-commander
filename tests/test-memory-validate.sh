@@ -39,4 +39,40 @@ mk semschema '# MEMORY de outra ferramenta' '- x | em-curso | X | r | k | —'
 run_hook memory-validate "$SP/semschema/MEMORY.md";     assert_eq 0 "$code" "/8 sem memory-schema → 0 (não é nosso)"
 run_hook memory-validate "$SP/ok/qualquer.txt";         assert_eq 0 "$code" "/8 fora do MEMORY → 0"
 out="$(echo 'nao-json' | bash "$ROOT/hooks/memory-validate" 2>&1)"; assert_eq 0 "$?" "/8 JSON inválido → 0"
+
+# validate-estado-no/1 — estado do NÓ fora do enum (índice válido) → 2
+mk nenum 'memory-schema: 1' '- x | planned | X | r | k | —'; no nenum x planejado ''
+run_hook memory-validate "$SP/nenum/docs/audora/memory/x.md"
+assert_eq 2 "$code" "validate-estado-no/1 estado do nó fora do enum → 2"
+assert_contains "$out" "docs/audora/memory/x.md" "validate-estado-no/1 msg nomeia o arquivo"
+assert_contains "$out" "'planejado'" "validate-estado-no/1 msg nomeia o valor"
+assert_contains "$out" "planned|in-progress|blocked|delivered|discarded|hotfix-pending-record" "validate-estado-no/1 msg cita o enum"
+run_hook memory-validate "$SP/nenum/MEMORY.md"
+assert_eq 2 "$code" "validate-estado-no/1 idem via MEMORY.md → 2"
+
+# validate-estado-no/2 — nó sem estado: no frontmatter → 2 (estado: no CORPO não conta)
+sem_estado() { printf -- '---\nid: %s\norigem: humano\ndepende-de: []\narquivos: []\nkeywords: []\nresumo: r\natualizado-em: 2026-09-28\n---\n# %s\n\nestado: planned\n' "$2" "$2" > "$SP/$1/docs/audora/memory/$2.md"; }
+mk nsem 'memory-schema: 1' '- x | planned | X | r | k | —'; sem_estado nsem x
+run_hook memory-validate "$SP/nsem/docs/audora/memory/x.md"
+assert_eq 2 "$code" "validate-estado-no/2 nó sem estado: → 2"
+assert_contains "$out" "docs/audora/memory/x.md sem campo 'estado:'" "validate-estado-no/2 msg nomeia o arquivo"
+
+# validate-estado-no/4 — escrita num nó BOM acusa OUTRO nó ruim
+mk todos 'memory-schema: 1' $'- x | planned | X | r | k | —\n- y | planned | Y | r | k | —'; no todos x planned ''; no todos y planejado ''
+run_hook memory-validate "$SP/todos/docs/audora/memory/x.md"
+assert_eq 2 "$code" "validate-estado-no/4 escrita em x acusa y → 2"
+assert_contains "$out" "docs/audora/memory/y.md" "validate-estado-no/4 msg nomeia o outro nó"
+
+# validate-estado-no/5 — CRLF + espaços ao redor do valor → 0, sem falso positivo
+mk crlf 'memory-schema: 1' '- x | in-progress | X | r | k | —'
+printf -- '---\r\nid: x\r\nestado:   in-progress  \r\norigem: humano\r\ndepende-de: []\r\narquivos: []\r\nkeywords: []\r\nresumo: r\r\natualizado-em: 2026-09-28\r\n---\r\n# x\r\n' > "$SP/crlf/docs/audora/memory/x.md"
+run_hook memory-validate "$SP/crlf/MEMORY.md"
+assert_eq 0 "$code" "validate-estado-no/5 CRLF e espaços via MEMORY.md → 0"; assert_empty "$out" "validate-estado-no/5 stderr vazio"
+run_hook memory-validate "$SP/crlf/docs/audora/memory/x.md"
+assert_eq 0 "$code" "validate-estado-no/5 CRLF e espaços via nó → 0"
+
+# validate-estado-no/6 — <id>-historico.md sem frontmatter é ignorado
+printf '# x — histórico\n\nsem frontmatter\n' > "$SP/ok/docs/audora/memory/x-historico.md"
+run_hook memory-validate "$SP/ok/MEMORY.md"
+assert_eq 0 "$code" "validate-estado-no/6 histórico ignorado → 0"; assert_empty "$out" "validate-estado-no/6 stderr vazio"
 report
