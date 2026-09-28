@@ -1,9 +1,9 @@
 ---
 id: validate-estado-no
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [hooks/memory-validate, tests/test-memory-validate.sh, tests/test-docs.sh, tests/test-skills.sh, skills/memory/SKILL.md, skills/memory/references/registrar-no.md, skills/validate/references/sync.md, README.md, README.pt-BR.md, MEMORY.md, PRD.md, docs/audora/e2e/e2e-validate-estado-no.md, docs/audora/planos/plano-validate-estado-no.md]
 keywords: [memory-validate, hook, estado, enum, frontmatter]
 resumo: memory-validate passa a validar o campo estado do frontmatter dos arquivos de nó, não só a coluna do índice.
 atualizado-em: 2026-09-28

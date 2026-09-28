@@ -75,6 +75,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-27 | validate | Remover seção inteira de doc pode levar junto a ÚNICA menção a comportamento vivo (os hooks só eram citados na tabela Renamed) — antes de apagar seção, `grep` os termos que os testes de doc exigem.
 - 2026-09-28 | e2e | Com marketplace local apontando para a pasta do repo, a "raiz do plugin" que o Skill tool imprime é o PRÓPRIO repo (sessão `claude -p` leu templates por `workspace/audora-commander/...`) — reinstalar de branch não mergeada instala a branch; conferir `git branch --show-current` antes do `./install.sh`.
 - 2026-09-28 | validate | Teste que mede BYTES de arquivo versionado tem de contar sem `\r` (`tr -d '\r' < f | wc -c`): com `core.autocrlf=true` o checkout grava CRLF e o mesmo texto muda de tamanho — deu vermelho falso no gate pós-merge e contaminou a medição 'depois'. Medir sobre blob (`git show REF:f`).
+- 2026-09-28 | e2e | e2e de HOOK com `claude -p`: fixture própria por cenário, `--permission-mode acceptEdits --output-format stream-json --verbose`, prompt abrindo com "Isto é um TESTE DE HOOK. Não siga nenhum framework…" e pedindo a mensagem de hook LITERAL sem consertar — o SessionStart não desvia o modelo, e a prova sai do `.jsonl` (`grep memory-validate`) e do disco intocado.
 
 ## Índice de nós [carga: sempre]
 
@@ -92,7 +93,7 @@ time pequeno em projetos web/mobile/api.
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
-- validate-estado-no | in-progress | Estado validado no nó | memory-validate passa a validar o campo estado do frontmatter dos arquivos de nó, não só a coluna do índice | memory-validate, hook, estado, enum, frontmatter | hooks/memory-validate, tests/test-memory-validate.sh
+- validate-estado-no | delivered | Estado validado no nó → docs/audora/arquivo/2026-09-28-validate-estado-no.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md

@@ -74,7 +74,9 @@ Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
 PostToolUse (Edit|Write) validam escritas no MEMORY: `memory-guard` (tetos
 de ~300 linhas no índice e ~100 por nó) e `memory-validate` (seções
 obrigatórias do índice, índice↔pasta, depende-de existente, ciclo, estado
-dentro do enum EN) — erro volta ao modelo via exit 2; arquivo sem
+dentro do enum EN no índice E no frontmatter de cada nó, nó sem `estado:`, e
+— só na escrita do índice — estado índice ≠ nó; transição é nó primeiro,
+índice depois) — erro volta ao modelo via exit 2; arquivo sem
 `memory-schema: 1` na linha 1 é ignorado; sem bash, as skills seguem sendo a
 fonte normativa. `hooks/graphify-status [dir]` classifica o índice de código
 (`ausente | sem-indice | sem-codigo | ativo`) lendo `file_type` do
@@ -84,6 +86,20 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Estado validado no nó entregue em 2026-09-28 (nó `validate-estado-no`, MEDIUM,
+fecha a antiga meta 1): `memory-validate` passa a ler o `estado:` do
+frontmatter de cada arquivo de `docs/audora/memory/` (só dentro do
+frontmatter; `\r` e espaços tolerados; `-historico.md` ignorado). Em toda
+escrita no MEMORY, qualquer nó com estado fora do enum ou sem o campo bloqueia.
+A divergência índice × nó só bloqueia na escrita do **índice** — o ponto de
+fechamento —, então a transição legítima (nó primeiro, índice depois) passa
+sem erro transitório; `registrar-no` e o sync da `validate` ensinam essa
+ordem. Suíte 716 → 741 asserts, /9 provado por mutação; e2e com 4 sessões
+`claude -p` reais (bloqueio de enum, de campo ausente e de divergência; a
+transição em duas escritas passou limpa). Custo aceito no escopo: projeto com
+nó de estado inválido passa a ser bloqueado até corrigir. No mesmo dia o nó
+`decisoes-vivas-auditoria` foi descartado pelo humano.
 
 README por skill entregue em 2026-09-28 (nó `readme-skills`, MEDIUM): os dois
 READMEs ganharam a seção "Skills in detail" / "As skills em detalhe", com uma
@@ -394,7 +410,8 @@ automática (recomendada) vs. manual.
 
 ## Metas futuras de implementação
 
-1. Estender `memory-validate` para validar `estado:` também nos arquivos de
-   `docs/audora/memory/` (hoje só a coluna do índice) — nó futuro.
-2. Futuro: porte para outros harnesses, marketplace público,
+1. Futuro: porte para outros harnesses, marketplace público,
    agentes dedicados.
+2. Candidato a nó: eliminar o erro transitório na CRIAÇÃO de nó ("arquivo
+   sem linha no índice" ao escrever o nó antes do índice), fora do escopo de
+   `validate-estado-no`.
