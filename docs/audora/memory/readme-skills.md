@@ -50,6 +50,7 @@ as demais seções do README.
 - 2026-09-28 (IA): sem bump de versão — README não entra no runtime do plugin.
 - 2026-09-28 (IA): /4 verificado por leitura cruzada com os SKILL.md no
   roteiro (não há teste mecânico honesto para "descreve só o que existe").
+- 2026-09-28 (humano): escopo aprovado ("continue").
 
 ## delta
 
