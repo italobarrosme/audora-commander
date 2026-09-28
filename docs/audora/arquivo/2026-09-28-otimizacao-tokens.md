@@ -1,12 +1,12 @@
 ---
 id: otimizacao-tokens
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [limpeza-codigo-morto]
-arquivos: []
+arquivos: [.claude-plugin/, MEMORY.md, PRD.md, hooks/loop, skills/, templates/bloco-fechamento-template.md, templates/loop-prompt-template.md, templates/plano-template.md, tests/, docs/audora/e2e/e2e-otimizacao-tokens.md, docs/audora/planos/arquivo/plano-otimizacao-tokens.md]
 keywords: [tokens, custo, contexto, plano, loop]
 resumo: Corta custo de token do framework: plano sem código duplicado, prompt de volta enxuto no loop, limpeza de contexto.
-atualizado-em: 2026-09-27
+atualizado-em: 2026-09-28
 ---
 
 # otimizacao-tokens
@@ -78,14 +78,16 @@ real (custo de API).
   cache do plugin só refaz com bump) — a confirmar no portão de escopo.
 - 2026-09-27 (IA): economia do /1 é comportamental (o modelo deixa de
   reler) — medida por bytes só como estimativa; o /7 mede a carga estática.
-- 2026-09-27 (humano): portão de escopo aprovado ("continue"), incluindo bump
-  0.9.0.
+- 2026-09-27 (humano): escopo aprovado ("continue"), com bump 0.9.0.
+- 2026-09-28 (humano): portão final aprovado; /4 parcial aceito.
+- 2026-09-28 (IA, sync): testes de bytes contavam `\r` (autocrlf) — corrigido;
+  medição refeita sobre blobs LF (números acima).
 
 ## medicao
 
 Bytes (`tests/test-carga.sh`; tokens ~ bytes/3,3). Carga estática MEDIUM:
-BASE 56237 → 53609 (−4,7%); FULL 58036 → 58818 (+1,3% — regras novas e
-cabeçalhos das references); `validate` base 11603 → 7596 (−35%; LIGHT deixa
+BASE 56237 → 53274 (−5,3%); FULL 58036 → 58483 (+0,8% — regras novas e
+cabeçalhos das references); `validate` base 11603 → 7635 (−34%; LIGHT deixa
 de carregar sync e filtro). Loop (/6), plano real `plano-limpeza-codigo-morto`:
 recorte do plano no prompt 13695 → 6632 por volta (−52%). Estimado: /1 evita reler memory (8,3KB)
 e bloco (4,1KB) por fase, ~35KB (~10k tok) por MEDIUM; /5 paga a saída 1x.

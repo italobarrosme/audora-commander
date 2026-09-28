@@ -73,6 +73,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-27 | execute | O anti-fraude do gate reprova arquivo de teste apagado SEM válvula (`gate-asserts:` cobre só queda de asserts) — remoção de teste aprovada no escopo ainda exige autorização explícita do humano no commit.
 - 2026-09-27 | execute | Nesta máquina `claude` e `graphify` não estão no PATH do Bash tool — usar `~/.local/bin/claude.exe` (ou `PATH="$HOME/.local/bin:$PATH"` antes do `./install.sh`); consultar-codigo degrada para grep.
 - 2026-09-27 | validate | Remover seção inteira de doc pode levar junto a ÚNICA menção a comportamento vivo (os hooks só eram citados na tabela Renamed) — antes de apagar seção, `grep` os termos que os testes de doc exigem.
+- 2026-09-28 | e2e | Com marketplace local apontando para a pasta do repo, a "raiz do plugin" que o Skill tool imprime é o PRÓPRIO repo (sessão `claude -p` leu templates por `workspace/audora-commander/...`) — reinstalar de branch não mergeada instala a branch; conferir `git branch --show-current` antes do `./install.sh`.
+- 2026-09-28 | validate | Teste que mede BYTES de arquivo versionado tem de contar sem `\r` (`tr -d '\r' < f | wc -c`): com `core.autocrlf=true` o checkout grava CRLF e o mesmo texto muda de tamanho — deu vermelho falso no gate pós-merge e contaminou a medição 'depois'. Medir sobre blob (`git show REF:f`).
 
 ## Índice de nós [carga: sempre]
 
@@ -81,7 +83,7 @@ time pequeno em projetos web/mobile/api.
 - autopilot | delivered | Autopilot → docs/audora/arquivo/2026-09-05-autopilot.md
 - loop-motor | delivered | Motor de loop → docs/audora/arquivo/2026-09-05-loop-motor.md
 - limpeza-codigo-morto | delivered | Limpeza de código morto → docs/audora/arquivo/2026-09-27-limpeza-codigo-morto.md
-- otimizacao-tokens | in-progress | Otimização de tokens | Corta custo de token do framework: plano sem código duplicado, prompt de volta enxuto no loop, limpeza de contexto | tokens, custo, contexto, plano, loop | skills/, templates/, hooks/loop
+- otimizacao-tokens | delivered | Otimização de tokens → docs/audora/arquivo/2026-09-28-otimizacao-tokens.md
 - readme-skills | planned | README por skill | READMEs EN e PT ganham seção detalhada por skill: gatilho, passos, artefatos, portões, próxima | readme, docs, skills | README.md, README.pt-BR.md
 - plugin-v0.1.0 | delivered | Plugin v0.1.0 → docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md
 - memory-graphify | delivered | Memory + Graphify → docs/audora/arquivo/2026-09-27-memory-graphify.md

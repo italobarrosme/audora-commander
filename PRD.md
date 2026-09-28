@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-09-27
+> Última atualização: 2026-09-28
 
 ## O que é e para que serve
 
@@ -25,7 +25,7 @@ Code.
   sem API key). Oferecido pela skill `memory`; ausência degrada para
   grep/Read com aviso.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.8.0.
+  Versão 0.9.0.
 
 ## Arquitetura
 
@@ -52,7 +52,8 @@ Code.
   `consultar-codigo` vivem em `skills/memory/references/`, lidas UMA por
   operação — reference ausente avisa e degrada, sem travar a fase.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
-- `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes;
+- `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes
+  (código completo do teste + assinaturas; implementação só quando não-óbvia);
   localiza código via consultar-codigo quando `graphify: ativo`.
 - `execute` — TDD red-green com evidência real; commit por etapa verde;
   consultar-codigo antes de tocar código vizinho da tarefa.
@@ -60,7 +61,9 @@ Code.
   fortemente recomendada).
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
   MEMORY → PRD no merge (consolida delta, decisões vivas e aprendizados,
-  arquiva o nó por movimento).
+  arquiva o nó por movimento). Roteador: fluxo até o portão inline; sync,
+  filtro de decisões vivas e Fechamento LIGHT em `skills/validate/references/`;
+  reference ausente mantém o portão e não roda o sync.
 - `debug` — debug com causa raiz demonstrada (modo sintoma; caminho que falha
   via consultar-codigo quando ativo) ou caçada de defeitos por classes com
   verificação de cada achado (modo caçada).
@@ -81,6 +84,23 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Otimização de tokens entregue em 2026-09-28 (nó `otimizacao-tokens`, MEDIUM,
+versão 0.9.0). Três frentes. **Contexto**: skill memory, `MEMORY.md` e
+template do bloco já carregados na sessão não são reinvocados nem relidos
+(e2e real: 1 leitura de cada numa demanda LIGHT atravessando 4 fases); o bloco
+de fechamento recomenda `/clear` quando a próxima fase se reancora pelos
+artefatos (omitido em autopilot); a `validate` virou roteador + 3 references
+(11603 → 7635 bytes na carga base, LIGHT deixa de carregar sync e filtro).
+**Plano**: carrega o código completo do teste, assinaturas e comandos —
+implementação só quando não-óbvia, então a saída deixa de ser paga duas vezes.
+**Loop**: a volta recebe cabeçalho + tarefa + notas de sessão, nunca as outras
+tarefas (−52% do plano por volta, medido num plano real). Medição honesta: a
+carga estática MEDIUM caiu pouco (BASE 56237 → 53274 bytes, −5,3%; FULL
+58036 → 58483, +0,8% por regras e cabeçalhos novos) — o ganho é comportamental e no
+loop. `tests/test-carga.sh` põe teto em bytes para não voltar a inchar.
+Suíte 550 → 604 asserts, nenhum removido (os da validate mudaram de arquivo).
+e2e: /1 provado ao vivo; /4 só no ramo autopilot, aceito parcial no portão.
 
 Limpeza de código morto entregue em 2026-09-27 (nó `limpeza-codigo-morto`,
 HIGH, versão 0.8.0, breaking sem comunicação por decisão do humano — adesão
@@ -362,10 +382,8 @@ automática (recomendada) vs. manual.
 
 ## Metas futuras de implementação
 
-1. Otimização de tokens (nó `otimizacao-tokens`, planned): plano sem código
-   duplicado, prompt de volta enxuto no motor de loop, limpeza de contexto.
-2. README com seção detalhada por skill (nó `readme-skills`, planned).
-3. Estender `memory-validate` para validar `estado:` também nos arquivos de
+1. README com seção detalhada por skill (nó `readme-skills`, planned).
+2. Estender `memory-validate` para validar `estado:` também nos arquivos de
    `docs/audora/memory/` (hoje só a coluna do índice) — nó futuro.
-4. Futuro: porte para outros harnesses, marketplace público,
+3. Futuro: porte para outros harnesses, marketplace público,
    agentes dedicados.
