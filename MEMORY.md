@@ -92,6 +92,7 @@ time pequeno em projetos web/mobile/api.
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
+- validate-estado-no | in-progress | Estado validado no nó | memory-validate passa a validar o campo estado do frontmatter dos arquivos de nó, não só a coluna do índice | memory-validate, hook, estado, enum, frontmatter | hooks/memory-validate, tests/test-memory-validate.sh
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
