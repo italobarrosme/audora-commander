@@ -77,6 +77,6 @@ próprio.
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-validate-estado-no.md
 
 ## feedback-reprovacao
