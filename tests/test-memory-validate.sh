@@ -75,4 +75,17 @@ assert_eq 0 "$code" "validate-estado-no/5 CRLF e espaços via nó → 0"
 printf '# x — histórico\n\nsem frontmatter\n' > "$SP/ok/docs/audora/memory/x-historico.md"
 run_hook memory-validate "$SP/ok/MEMORY.md"
 assert_eq 0 "$code" "validate-estado-no/6 histórico ignorado → 0"; assert_empty "$out" "validate-estado-no/6 stderr vazio"
+
+# validate-estado-no/3 — índice in-progress, nó delivered, escrita no ÍNDICE → 2
+mk div 'memory-schema: 1' '- x | in-progress | X | r | k | —'; no div x delivered ''
+run_hook memory-validate "$SP/div/MEMORY.md"
+assert_eq 2 "$code" "validate-estado-no/3 divergência na escrita do índice → 2"
+assert_contains "$out" "nó 'x' com estado divergente: índice 'in-progress', arquivo 'delivered'" "validate-estado-no/3 msg nomeia nó e os dois valores"
+# validate-estado-no/9 — mesma divergência, escrita no NÓ (1ª metade da transição) → 0
+run_hook memory-validate "$SP/div/docs/audora/memory/x.md"
+assert_eq 0 "$code" "validate-estado-no/9 divergência na escrita do nó → 0"; assert_empty "$out" "validate-estado-no/9 stderr vazio"
+# validate-estado-no/7 — nó sem linha no índice: só o erro de órfão, sem divergência
+run_hook memory-validate "$SP/orfao/MEMORY.md"
+assert_contains "$out" "sem linha no índice" "validate-estado-no/7 órfão continua acusado"
+assert_not_contains "$out" "divergente" "validate-estado-no/7 sem divergência duplicada"
 report

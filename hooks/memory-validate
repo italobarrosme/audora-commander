@@ -22,8 +22,11 @@ file_path="$(printf '%s' "$input" | perl -MJSON::PP -0777 -ne '
 [ -n "$file_path" ] || exit 0
 file_path="${file_path//\\//}"
 
+# Divergência índice × nó só é cobrada na escrita do ÍNDICE (ponto de
+# fechamento): transição é nó primeiro, índice depois.
+escreveu_indice=0
 case "$file_path" in
-  *MEMORY.md) root="$(dirname "$file_path")" ;;
+  *MEMORY.md) root="$(dirname "$file_path")"; escreveu_indice=1 ;;
   *docs/audora/memory/*.md)
     root="${file_path%docs/audora/memory/*}"; root="${root%/}"
     [ -n "$root" ] || root="." ;;
@@ -45,6 +48,7 @@ idx="$(printf '%s\n' "$corpo" | sed -n '/^## Índice de nós/,/^## [^Í]/p' | gr
 idx_ids="$(printf '%s\n' "$idx" | sed 's/^- *\([^ |]*\).*/\1/')"
 
 # 1. estado fora do enum, linha sem estado, nó ativo sem arquivo
+idx_estados=""
 while IFS= read -r linha; do
   [ -n "$linha" ] || continue
   id="$(printf '%s' "$linha" | sed 's/^- *\([^ |]*\).*/\1/')"
@@ -54,6 +58,8 @@ while IFS= read -r linha; do
 - linha do índice sem coluna de estado: '$linha' — formato é \`- <id> | <estado> | <título> | <resumo> | <keywords> | <arquivos>\` ($tpl/MEMORY-template.md)"
     continue
   fi
+  idx_estados="$idx_estados$id $estado
+"
   case "$estado" in
     planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ;;
     *) erros="$erros
@@ -91,7 +97,12 @@ if [ -d "$dir" ]; then
     else
       ve="${fe#=}"
       case "$ve" in
-        planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ;;
+        planned|in-progress|blocked|delivered|discarded|hotfix-pending-record)
+          if [ "$escreveu_indice" -eq 1 ]; then
+            vi="$(printf '%s' "$idx_estados" | awk -v i="$b" '$1==i {print $2; exit}')"
+            [ -n "$vi" ] && [ "$vi" != "$ve" ] && erros="$erros
+- nó '$b' com estado divergente: índice '$vi', arquivo '$ve' — transição é nó primeiro, índice depois; alinhe os dois"
+          fi ;;
         *) erros="$erros
 - arquivo docs/audora/memory/$b.md com estado '$ve' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ($tpl/no-template.md)" ;;
       esac
