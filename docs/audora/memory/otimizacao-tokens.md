@@ -94,6 +94,6 @@ e bloco (4,1KB) por fase, ~35KB (~10k tok) por MEDIUM; /5 paga a saída 1x.
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-otimizacao-tokens.md (2026-09-28; 1 corrida `claude -p` 0.9.0, LIGHT ponta a ponta; /1 passou; /4 parcial — só ramo autopilot ao vivo)
 
 ## feedback-reprovacao
