@@ -23,8 +23,8 @@ corpo de cada nó vive em `docs/audora/memory/<id>.md`. Schemas canônicos em
 `templates/` na raiz do plugin: `MEMORY-template.md` (índice),
 `no-template.md` (arquivo de nó), `decisoes-vivas-template.md`. Nunca
 invente campos. Os hooks `memory-guard` (tetos de linhas) e
-`memory-validate` (índice↔pasta, enum de estado, depende-de, ciclo, seções
-obrigatórias) devolvem exit 2 em escrita que quebra o schema — sem hook, a
+`memory-validate` (índice↔pasta, enum de estado, estado índice↔nó,
+depende-de, ciclo, seções obrigatórias) devolvem exit 2 em escrita que quebra o schema — sem hook, a
 skill confere o mesmo.
 
 **Raiz do plugin**: scripts auxiliares ficam dois níveis acima do diretório

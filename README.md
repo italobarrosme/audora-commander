@@ -147,8 +147,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   the mechanical gate — once each; a refusal sticks. `consultar-codigo` runs
   `graphify query` / `path` / `affected` and reads only the `src=` files;
   any failure degrades to grep with a warning. Hooks `memory-guard` (line
-  ceilings) and `memory-validate` (schema, index ↔ folder, enum, cycles)
-  block broken writes.
+  ceilings) and `memory-validate` (schema, index ↔ folder, enum, cycles,
+  state in each node file) block broken writes.
 - **What it leaves on disk**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
   `docs/audora/decisoes-vivas.md`, archived nodes in `docs/audora/arquivo/`,
   `graphify-out/` (gitignored) and, if accepted, the project's `gate` script.

@@ -148,8 +148,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   cada; recusa fica registrada. `consultar-codigo` roda `graphify query` /
   `path` / `affected` e lê só os arquivos `src=`; qualquer falha degrada para
   grep com aviso. Os hooks `memory-guard` (tetos de linhas) e
-  `memory-validate` (schema, índice ↔ pasta, enum, ciclos) bloqueiam escrita
-  quebrada.
+  `memory-validate` (schema, índice ↔ pasta, enum, ciclos,
+  estado em cada arquivo de nó) bloqueiam escrita quebrada.
 - **O que deixa no disco**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
   `docs/audora/decisoes-vivas.md`, nós arquivados em `docs/audora/arquivo/`,
   `graphify-out/` (no gitignore) e, se aceito, o script `gate` do projeto.

@@ -61,4 +61,7 @@ assert_contains "$(cat README.md)" '## Skills in detail' "readme-skills/5 EN tem
 assert_contains "$(cat README.pt-BR.md)" '## As skills em detalhe' "readme-skills/5 PT tem a seção"
 assert_contains "$(cat README.md)" '(#skills-in-detail)' "readme-skills/5 tabela EN linka o detalhe"
 assert_contains "$(cat README.pt-BR.md)" '(#as-skills-em-detalhe)' "readme-skills/5 tabela PT linka o detalhe"
+# validate-estado-no/8 — READMEs listam a checagem de estado nos arquivos de nó
+assert_contains "$(cat README.md)" 'state in each node file' "validate-estado-no/8 README EN cita estado no nó"
+assert_contains "$(cat README.pt-BR.md)" 'estado em cada arquivo de nó' "validate-estado-no/8 README PT cita estado no nó"
 report

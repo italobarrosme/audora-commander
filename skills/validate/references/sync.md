@@ -11,7 +11,7 @@ senão `memory-validate` bloqueia a próxima escrita.
    aprovadas no portão, só as que passaram no filtro de entrada
    (`decisoes-vivas.md` desta pasta); e consolidar os aprendizados na seção
    Aprendizados do `MEMORY.md` (skill memory, compactar — dedupe por grep).
-2. **Estado e movimento**: nó → `delivered` e
+2. **Estado e movimento**: nó → `delivered` (nó primeiro, índice depois) e
    `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
    Nó com `<id>-historico.md`: mover os DOIS, mesmo prefixo de data, e
    corrigir o ponteiro relativo no corpo. Plano →
