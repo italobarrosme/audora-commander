@@ -79,7 +79,7 @@ com aviso)
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — inserir antes do `report` final de
+- [x] **1. Escrever teste que falha** — inserir antes do `report` final de
   `tests/test-memory-validate.sh`:
 
 ```bash
@@ -120,11 +120,11 @@ run_hook memory-validate "$SP/ok/MEMORY.md"
 assert_eq 0 "$code" "validate-estado-no/6 histórico ignorado → 0"; assert_empty "$out" "validate-estado-no/6 stderr vazio"
 ```
 
-- [ ] **2. Rodar e ver falhar pelo motivo certo** —
+- [x] **2. Rodar e ver falhar pelo motivo certo** —
   `bash tests/test-memory-validate.sh; echo "exit=$?"` → FAIL em /1 (esperado
   2, obtido 0 — hoje o hook não lê o estado do nó), /2 e /4 idem; /5 e /6
   passam já (caracterização: não podem quebrar depois). `exit=1`.
-- [ ] **3. Implementar** em `hooks/memory-validate`:
+- [x] **3. Implementar** em `hooks/memory-validate`:
   - Função (antes do laço da pasta) — formato exato, não-óbvio:
 
 ```bash
@@ -141,9 +141,9 @@ fm_estado() {
     senão `ve="${fe#=}"` e, fora do enum, erro
     `- arquivo docs/audora/memory/$b.md com estado '$ve' fora do enum (planned|in-progress|blocked|delivered|discarded|hotfix-pending-record) ($tpl/no-template.md)`.
   - Atualizar o comentário de cabeçalho do hook (lista do que acusa).
-- [ ] **4. Rodar e ver passar** — `bash tests/run.sh > "$TMPDIR/r.log" 2>&1; echo "exit=$?"`
+- [x] **4. Rodar e ver passar** — `bash tests/run.sh > "$TMPDIR/r.log" 2>&1; echo "exit=$?"`
   → `exit=0`; `grep FAIL=[1-9] "$TMPDIR/r.log"` vazio.
-- [ ] **5. Commit** — `git add hooks/memory-validate tests/test-memory-validate.sh && git commit -m "feat(validate-estado-no/1,2,4,5,6): memory-validate confere enum e presença do estado em todo arquivo de nó"`.
+- [x] **5. Commit** — `git add hooks/memory-validate tests/test-memory-validate.sh && git commit -m "feat(validate-estado-no/1,2,4,5,6): memory-validate confere enum e presença do estado em todo arquivo de nó"`.
 
 ## Tarefa 2: divergência índice × nó só na escrita do índice
 
@@ -173,7 +173,7 @@ fm_estado() {
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — inserir antes do `report` final:
+- [x] **1. Escrever teste que falha** — inserir antes do `report` final:
 
 ```bash
 # validate-estado-no/3 — índice in-progress, nó delivered, escrita no ÍNDICE → 2
@@ -190,10 +190,10 @@ assert_contains "$out" "sem linha no índice" "validate-estado-no/7 órfão cont
 assert_not_contains "$out" "divergente" "validate-estado-no/7 sem divergência duplicada"
 ```
 
-- [ ] **2. Rodar e ver falhar pelo motivo certo** —
+- [x] **2. Rodar e ver falhar pelo motivo certo** —
   `bash tests/test-memory-validate.sh; echo "exit=$?"` → FAIL em /3 (esperado
   2, obtido 0); /9 e /7 passam já (caracterização). `exit=1`.
-- [ ] **3. Implementar** em `hooks/memory-validate`:
+- [x] **3. Implementar** em `hooks/memory-validate`:
   - `escreveu_indice=0` no `case "$file_path"` ramo `*MEMORY.md)` → `=1`.
   - No laço do índice, após extrair `id` e `estado` não vazio:
     `idx_estados="$idx_estados$id $estado
@@ -203,8 +203,8 @@ assert_not_contains "$out" "divergente" "validate-estado-no/7 sem divergência d
     `[ -n "$vi" ] && [ "$vi" != "$ve" ]` → erro
     `- nó '$b' com estado divergente: índice '$vi', arquivo '$ve' — transição é nó primeiro, índice depois; alinhe os dois`.
     `vi` vazio (órfão) → nada (/7).
-- [ ] **4. Rodar e ver passar** — `bash tests/run.sh > "$TMPDIR/r.log" 2>&1; echo "exit=$?"` → `exit=0`.
-- [ ] **5. Commit** — `git add hooks/memory-validate tests/test-memory-validate.sh && git commit -m "feat(validate-estado-no/3,7,9): divergência índice × nó cobrada só na escrita do índice"`.
+- [x] **4. Rodar e ver passar** — `bash tests/run.sh > "$TMPDIR/r.log" 2>&1; echo "exit=$?"` → `exit=0`.
+- [x] **5. Commit** — `git add hooks/memory-validate tests/test-memory-validate.sh && git commit -m "feat(validate-estado-no/3,7,9): divergência índice × nó cobrada só na escrita do índice"`.
 
 ## Tarefa 3: documentação da checagem e da ordem nó → índice
 
@@ -229,7 +229,7 @@ assert_not_contains "$out" "divergente" "validate-estado-no/7 sem divergência d
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — antes do `report` de `tests/test-docs.sh`:
+- [x] **1. Escrever teste que falha** — antes do `report` de `tests/test-docs.sh`:
 
 ```bash
 # validate-estado-no/8 — READMEs listam a checagem de estado nos arquivos de nó
@@ -245,9 +245,9 @@ assert_contains "$(cat skills/validate/references/sync.md)" 'nó primeiro, índi
 assert_contains "$(cat skills/memory/SKILL.md)" 'estado índice↔nó' "validate-estado-no/10 memory lista a checagem nova"
 ```
 
-- [ ] **2. Rodar e ver falhar** — `bash tests/test-docs.sh; bash tests/test-skills.sh`
+- [x] **2. Rodar e ver falhar** — `bash tests/test-docs.sh; bash tests/test-skills.sh`
   → 5 FAIL `não contém ...`.
-- [ ] **3. Implementar** (cada frase asserida inteira numa linha):
+- [x] **3. Implementar** (cada frase asserida inteira numa linha):
   - `README.md`: `memory-validate` (schema, index ↔ folder, enum, cycles) →
     `(schema, index ↔ folder, enum, state in each node file, cycles)`.
   - `README.pt-BR.md`: idem com `(schema, índice ↔ pasta, enum, estado em cada arquivo de nó, ciclos)`.
@@ -255,5 +255,13 @@ assert_contains "$(cat skills/memory/SKILL.md)" 'estado índice↔nó' "validate
     entre parênteses.
   - `registrar-no.md` passo 2: nova frase `Transição de estado: nó primeiro, índice depois — o \`memory-validate\` só cobra a igualdade na escrita do índice.`
   - `sync.md` passo 2: `nó → \`delivered\`` ganha `(nó primeiro, índice depois)`.
-- [ ] **4. Rodar e ver passar** — `bash tests/run.sh > "$TMPDIR/r.log" 2>&1; echo "exit=$?"` → `exit=0`; conferir linha `carga MEDIUM` abaixo dos tetos.
-- [ ] **5. Commit** — `git add README.md README.pt-BR.md skills/memory/SKILL.md skills/memory/references/registrar-no.md skills/validate/references/sync.md tests/test-docs.sh tests/test-skills.sh && git commit -m "docs(validate-estado-no/8,10): READMEs citam estado no nó; ordem nó → índice em registrar-no e sync"`.
+- [x] **4. Rodar e ver passar** — `bash tests/run.sh > "$TMPDIR/r.log" 2>&1; echo "exit=$?"` → `exit=0`; conferir linha `carga MEDIUM` abaixo dos tetos.
+- [x] **5. Commit** — `git add README.md README.pt-BR.md skills/memory/SKILL.md skills/memory/references/registrar-no.md skills/validate/references/sync.md tests/test-docs.sh tests/test-skills.sh && git commit -m "docs(validate-estado-no/8,10): READMEs citam estado no nó; ordem nó → índice em registrar-no e sync"`.
+
+## Decisões tomadas pela IA
+
+- Divergência índice × nó só é cobrada quando o estado do nó é VÁLIDO — enum
+  inválido ou ausente já tem erro próprio; evita dois erros para o mesmo nó.
+- Nó sem frontmatter (linha 1 ≠ `---`) conta como "sem campo estado:".
+- Prova por mutação do /9: trocar a flag `escreveu_indice` por `true` reprova
+  2 asserts de `validate-estado-no/9` (hook restaurado em seguida).
