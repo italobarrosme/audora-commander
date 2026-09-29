@@ -196,4 +196,30 @@ assert_contains "$out" 'diretório inexistente' "graphify-limpeza dir inexistent
 lim --remover "$SP/nao-existe"
 assert_eq 2 "$code" "graphify-limpeza --remover dir inexistente sai 2"
 assert_contains "$(sed -n '1,25p' "$L")" 'dir inexistente' "graphify-limpeza cabeçalho documenta dir inexistente"
+# B1 (/2,/5) — hook do Graphify = binário graphify no 1º token (formato REAL: caminho
+# absoluto entre aspas, .EXE), com ou sem caminho/aspas/.exe, ou via uvx; nome parecido não é
+hk1() { printf '{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"%s"}]}]}}\n' "$1"; }
+REAL='\"C:\\Users\\Italo Barros\\.local\\bin\\graphify.EXE\" hook-guard search'
+for c in "$REAL" '/usr/local/bin/graphify hook-guard read' 'uvx graphify hook-guard glob' 'graphify.exe hook-guard grep'; do
+  mkvazio; mkdir -p "$P/.claude"; hk1 "$c" > "$P/.claude/settings.local.json"; fake '' ''; lim .
+  assert_eq 'settings .claude/settings.local.json' "$out" "remover-graphify/2 B1 hook do Graphify detectado: $c"
+done
+for c in 'rm -rf old-graphify-backup' 'graphify-backup.sh' './scripts/graphify-backup.sh' 'uvx graphify-backup run'; do
+  mkvazio; mkdir -p "$P/.claude"; hk1 "$c" > "$P/.claude/settings.local.json"; fake '' ''; lim .
+  assert_empty "$out" "remover-graphify/2 B1 comando alheio não é resto: $c"
+done
+mkvazio; mkdir -p "$P/.claude"
+printf '%s\n' '{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"'"$REAL"'"},{"type":"command","command":"meu-guard"}]},{"matcher":"Read","hooks":[{"type":"command","command":"/usr/local/bin/graphify hook-guard read"}]},{"matcher":"Glob","hooks":[{"type":"command","command":"uvx graphify hook-guard glob"}]},{"matcher":"Grep","hooks":[{"type":"command","command":"graphify.exe hook-guard grep"}]}],"Stop":[{"hooks":[{"type":"command","command":"rm -rf old-graphify-backup"},{"type":"command","command":"graphify-backup.sh"},{"type":"command","command":"./scripts/graphify-backup.sh"}]}]}}' > "$P/.claude/settings.json"
+fake '' ''; lim --remover .
+assert_eq 0 "$code" "remover-graphify/5 B1 remoção sai 0"
+assert_eq 'removido settings .claude/settings.json' "$out" "remover-graphify/4 B1 relata o settings"
+perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)' < "$P/.claude/settings.json" 2>/dev/null && ok || ko "remover-graphify/5 B1 settings JSON inválido"
+sj="$(cat "$P/.claude/settings.json")"
+assert_not_contains "$sj" 'hook-guard' "remover-graphify/5 B1 as 4 variantes do Graphify saíram"
+for s in '"meu-guard"' '"matcher": "Bash"' 'rm -rf old-graphify-backup' '"graphify-backup.sh"' './scripts/graphify-backup.sh'; do
+  assert_contains "$sj" "$s" "remover-graphify/5 B1 preserva $s"
+done
+for s in '"Read"' '"Glob"' '"Grep"'; do
+  assert_not_contains "$sj" "$s" "remover-graphify/5 B1 grupo $s que ficou vazio sai"
+done
 report

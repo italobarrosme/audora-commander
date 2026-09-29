@@ -135,6 +135,8 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `1.50`→`1.5` e transforma inteiro grande em string).
 - 2026-09-29 (execute, menores): dir inexistente → mensagem no stderr e
   exit 2 (distinto de 1 = falha parcial), documentado no cabeçalho.
+- 2026-09-29 (execute, B1): lançador aceito antes do binário é só `uvx` (o do
+  feedback); `pipx run`, `uv run` e afins não entram — sem caso real visto.
 
 ---
 
@@ -849,7 +851,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   (aspas duplas/simples ou sem aspas); hook do Graphify = basename do 1º token
   casa `^graphify(\.exe)?$` (qualquer caixa), ou 1º token é `uvx` e o 2º casa
   o mesmo.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/2,5): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/2,5): ...`
 
 ## Tarefa 17: M1 — comentário do Graphify acima de `graphify-out/` sai junto
 
