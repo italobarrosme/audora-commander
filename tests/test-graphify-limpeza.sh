@@ -154,4 +154,15 @@ antes_h="$(md5sum < "$P/.git/hooks/post-commit")"; fake '' ''; lim --remover .
 assert_eq 1 "$code" "remover-graphify/6 A3 hook sem marcador end sai 1"
 assert_contains "$out" 'falhou git-hook .git/hooks/post-commit — à mão:' "remover-graphify/6 A3 hook sem end vira comando à mão"
 assert_eq "$antes_h" "$(md5sum 2>/dev/null < "$P/.git/hooks/post-commit")" "remover-graphify/5 A3 hook sem end fica intocado"
+# A4 (/4) — arquivo versionado REMOVIDO também sai como versionado (pasta rastreada; hook em core.hooksPath versionado)
+mkproj; mkdir -p "$P/.githooks"
+printf '%s\n' '#!/bin/sh' '# graphify-checkout-hook-start' 'x' '# graphify-checkout-hook-end' > "$P/.githooks/post-checkout"
+printf '%s\n' '#!/bin/sh' 'echo meu' '# graphify-hook-start' 'x' '# graphify-hook-end' > "$P/.githooks/post-commit"
+git -C "$P" add -A; git -C "$P" add -f graphify-out/graph.json   # pasta versionada antes do .gitignore
+git -C "$P" -c core.hooksPath="$SP/sem-hooks" commit -qm hooks-versionados; git -C "$P" config core.hooksPath .githooks
+fake '' ''; lim --remover .
+assert_eq 0 "$code" "remover-graphify/4 A4 remoção com hooks versionados sai 0"
+for v in graphify-out/graph.json .githooks/post-checkout .githooks/post-commit; do
+  assert_contains "$out" "versionado $v" "remover-graphify/4 A4 relata versionado $v"
+done
 report

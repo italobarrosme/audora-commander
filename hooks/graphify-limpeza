@@ -15,7 +15,7 @@
 # Saída vazia = limpo. Exit 0 sempre. Não escreve nada.
 # --remover: por item, na ordem acima, "removido <tipo> <alvo>" ou
 #   "falhou <tipo> <alvo> — à mão: <comando>"; depois "versionado <arquivo>"
-#   para cada arquivo rastreado que o script alterou. Nunca commita.
+#   para cada arquivo rastreado que o script alterou ou apagou. Nunca commita.
 #   Só a parte do Graphify sai; hook que só tinha o Graphify sai inteiro.
 #   Exit 0 = tudo removido | 1 = algum falhou (os demais seguem). Sem resto → silêncio, 0.
 set -uo pipefail
@@ -105,11 +105,12 @@ for item in "${restos[@]}"; do
       awk '/^- \*\*graphify\*\*:/{s=1;next} s&&/^[[:space:]]+[^[:space:]]/{next} {s=0;print}' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     git-hook)
       if awk '/^# graphify-(checkout-)?hook-start/{s=1;next} s&&/^# graphify-(checkout-)?hook-end/{s=0;next} !s; END{exit s}' "$alvo" > "$tmp"; then   # start sem end → falha, intocado
-        if ! grep -qvE '^(#!.*)?[[:space:]]*$' "$tmp"; then rm -f "$alvo" 2>/dev/null; [ -e "$alvo" ] && ok=0
+        if ! grep -qvE '^(#!.*)?[[:space:]]*$' "$tmp"; then
+          rm -f "$alvo" 2>/dev/null; if [ -e "$alvo" ]; then ok=0; else mudou+=("$alvo"); fi
         else grava "$alvo" || ok=0; fi
       else ok=0; fi ;;
     pasta)
-      rm -rf graphify-out 2>/dev/null; [ -e graphify-out ] && ok=0 ;;
+      rm -rf graphify-out 2>/dev/null; mudou+=(graphify-out); [ -e graphify-out ] && ok=0 ;;
     gitignore)
       { grep -vE '^/?graphify-out/?[[:space:]]*$' "$alvo" > "$tmp" || true; } && grava "$alvo" || ok=0 ;;
     settings)
@@ -125,7 +126,8 @@ for item in "${restos[@]}"; do
   if [ "$ok" -eq 1 ]; then echo "removido $item"
   else echo "falhou $item — à mão: $(amao "$tipo" "$alvo" "$inst")"; falhas=$((falhas+1)); fi
 done
-for f in ${mudou[@]+"${mudou[@]}"}; do
-  git ls-files --error-unmatch -- "$f" >/dev/null 2>&1 && echo "versionado $f"
-done
+# versionado = arquivo rastreado que o script alterou OU apagou (inclui o que havia dentro da pasta)
+if [ "${#mudou[@]}" -gt 0 ]; then
+  git --no-pager diff --name-only --relative -- "${mudou[@]}" 2>/dev/null | sed 's/^/versionado /'
+fi
 [ "$falhas" -eq 0 ]
