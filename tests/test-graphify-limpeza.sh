@@ -129,4 +129,5 @@ assert_eq 0 "$code" "remover-graphify/8 --remover em projeto limpo sai 0"
 assert_empty "$out" "remover-graphify/8 --remover em projeto limpo é silencioso"
 rm -rf "$P"; mkdir -p "$P/graphify-out"; fake '' ''; lim --remover .
 assert_eq 'removido pasta graphify-out/' "$out" "remover-graphify/4 fora de repo git remove sem versionado"
+assert_no_file "$ROOT/hooks/graphify-status" "remover-graphify/10 classificador do índice removido"
 report
