@@ -20,9 +20,9 @@ for s in audora-commander memory scope plan execute e2e validate debug worktree;
 done
 MS="skills/memory/SKILL.md"; MR="skills/memory/references"
 m="$(cat "$MS" 2>/dev/null)"
-# /3 — a tabela do roteador nomeia as 7 operações
+# /3 — a tabela do roteador nomeia as 6 operações
 for op in carregar-contexto bootstrap registrar-no registrar-delta \
-          registrar-aprendizado compactar consultar-codigo; do
+          registrar-aprendizado compactar; do
   assert_contains "$m" "$op" "/3 tabela do roteador cita $op"
 done
 # /1 — as 3 quentes ficam com o CORPO no roteador
@@ -33,8 +33,8 @@ assert_contains "$m" '### 5. registrar-aprendizado' "/1 registrar-aprendizado in
 for op in carregar-contexto registrar-delta registrar-aprendizado; do
   assert_contains "$m" "| $op | inline |" "/3 linha de tabela: $op inline"
 done
-# /7 — as 4 movidas existem e estão na tabela, com a linha completa
-for b in bootstrap registrar-no compactar consultar-codigo; do
+# /7 — as 3 movidas existem e estão na tabela, com a linha completa
+for b in bootstrap registrar-no compactar; do
   assert_file "$MR/$b.md" "/7 reference $b existe"
   assert_contains "$m" "| $b | references/$b.md |" "/7 linha de tabela: $b"
 done
@@ -46,9 +46,6 @@ done
 # /2 — conteúdo de cada operação movida está na SUA reference
 for s in 'hooks/graphify-status' 'uv tool install graphifyy' 'pipx install graphifyy' 'graphify --version' 'graphify update .' 'graphify hook install' 'graphify-out/' '.gitignore' 'graphify: ativo' 'graphify: recusado' 'graphify: sem-codigo'; do
   assert_contains "$(cat "$MR/bootstrap.md" 2>/dev/null)" "$s" "/2 bootstrap cita '$s'"
-done
-for s in 'graphify query' 'graphify path' 'graphify affected' '--budget' 'src='; do
-  assert_contains "$(cat "$MR/consultar-codigo.md" 2>/dev/null)" "$s" "/2 consultar-codigo cita '$s'"
 done
 for s in 'docs/audora/arquivo/' 'aprendizados-historico.md' 'git mv'; do
   assert_contains "$(cat "$MR/compactar.md" 2>/dev/null)" "$s" "/2 compactar cita '$s'"
@@ -67,13 +64,13 @@ done
 # /4 — degradação declarada no roteador
 assert_contains "$m" 'reference ausente' "/4 roteador declara reference ausente"
 assert_contains "$m" 'sem travar a fase' "/4 roteador degrada sem travar"
-for s in plan execute debug; do
-  f="$(cat skills/$s/SKILL.md)"
-  assert_contains "$f" 'consultar-codigo' "/14 $s consulta o índice de código"
-  assert_contains "$f" 'graphify: ativo' "/14 $s condiciona ao estado ativo"
+# remover-graphify/9,/10 — fases e worktree sem Graphify e sem consulta ao índice de código
+for s in audora-commander scope plan execute e2e validate debug worktree; do
+  grep -qiE 'graphify|consultar-codigo' "skills/$s/SKILL.md" && ko "remover-graphify/9 $s cita graphify/consultar-codigo" || ok
 done
-for s in scope e2e validate audora-commander; do
-  grep -qi 'graphify' "skills/$s/SKILL.md" && ko "/18 $s não deve citar graphify" || ok
+assert_no_file "$MR/consultar-codigo.md" "remover-graphify/9 reference consultar-codigo removida"
+for s in 'consultar-codigo' 'operação 7' 'graphify query' 'graphify update'; do
+  assert_not_contains "$m" "$s" "remover-graphify/9 memory sem '$s'"
 done
 for s in scope execute debug e2e; do
   assert_contains "$(cat skills/$s/SKILL.md)" 'registrar-aprendizado' "/6 $s registra aprendizado"

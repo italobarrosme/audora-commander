@@ -1,6 +1,6 @@
 ---
 name: memory
-description: 'Use quando precisar criar, consultar ou atualizar o MEMORY de um projeto — bootstrap em projeto sem MEMORY.md (inclui oferta e ativação do Graphify), carga de contexto no início de uma demanda, registro de nó, delta ou aprendizado, compactação, ou consulta ao índice de código (consultar-codigo) pelas fases plan, debug e execute.'
+description: 'Use quando precisar criar, consultar ou atualizar o MEMORY de um projeto — bootstrap em projeto sem MEMORY.md (inclui oferta e ativação do Graphify), carga de contexto no início de uma demanda, registro de nó, delta ou aprendizado, ou compactação.'
 ---
 
 # memory — a memória do produto
@@ -13,9 +13,7 @@ LEI DE FERRO: REQUISITO NÃO ESCRITO NO MEMORY É REQUISITO QUE NÃO EXISTE
 
 O MEMORY é a memória externa durável do produto: propósito, constituição,
 aprendizados, requisitos, estado e decisões. O código guarda o "como"; o
-MEMORY guarda o "o quê / por quê / estado / o que aprendemos". O código em
-si NÃO vive aqui — é indexado pelo **Graphify** (`graphify-out/`, fora do
-git, só código, sem API key) e consultado pela operação 7.
+MEMORY guarda o "o quê / por quê / estado / o que aprendemos".
 
 **Schema** (`memory-schema: 1`, linha 1): `MEMORY.md` na raiz é o ÍNDICE
 MESTRE (Propósito + Constituição + Aprendizados + 1 linha rica por nó); o
@@ -46,7 +44,6 @@ operação — nunca a pasta inteira.**
 | registrar-delta | inline |
 | registrar-aprendizado | inline |
 | compactar | references/compactar.md |
-| consultar-codigo | references/consultar-codigo.md |
 
 Uma **reference ausente** ou ilegível não interrompe nada: avise em 1 linha
 qual arquivo faltou e siga a operação pelo que este roteador garante — Lei de
@@ -75,7 +72,6 @@ Consulta estrutural NUNCA carrega corpos — grep resolve:
 nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
 
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
-Código: nunca "varrer o repo para entender" — operação 7.
 
 ## Operações inline
 
@@ -122,7 +118,7 @@ Código: nunca "varrer o repo para entender" — operação 7.
 ## Conflito MEMORY vs código
 
 Detecção acontece no escopo da demanda: a skill plan lê os arquivos
-afetados (via operação 7, `references/consultar-codigo.md`) e algo contradiz
+afetados e algo contradiz
 um nó → sinaliza. Registre a divergência no nó, apresente ao humano, ele
 decide. Nunca escolha em silêncio.
 
@@ -138,8 +134,6 @@ decide. Nunca escolha em silêncio.
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |
 | "O nó inferido parece certo, sigo com ele" | Inferido é hipótese. Confirme com o humano antes de construir em cima. |
 | "Instalo o Graphify sem perguntar, é só uma ferramenta" | Instalar no ambiente do humano é decisão dele. Pergunte; recusado fica recusado. |
-| "Leio o arquivo direto, o índice deve estar velho" | Consulta primeiro; velho → `graphify update .` UMA vez; depois degrada AVISANDO. |
-| "Graphify falhou, paro a demanda até arrumar" | Índice é atalho, não portão. Avise e caia para grep/Read na mesma fase. |
 | "Auto-resolvo o conflito de merge do MEMORY" | MEMORY é memória do sistema. Conflito fora dos seus nós = humano decide. |
 
 ## PRÓXIMA SKILL

@@ -25,9 +25,7 @@ o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
    coleta, não investigação.
 2. **Evidência completa.** Ler a MENSAGEM DE ERRO INTEIRA e o stack trace até
    o fim. Ler o código do caminho que falha — o que ele faz, não o que você
-   lembra que fazia. Constituição `graphify: ativo` → skill memory, operação
-   consultar-codigo (`graphify path "<entrada>" "<símbolo que falha>"`,
-   `graphify affected`) antes de abrir arquivos; senão grep. Diff recente
+   lembra que fazia. Diff recente
    (`git log -p` / `git diff`) se o defeito é novo: o que mudou desde que
    funcionava?
 3. **Hipóteses — uma por vez.** Listar hipóteses ordenadas por probabilidade.

@@ -9,7 +9,7 @@
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 S=skills; T=templates; R=skills/memory/references; V=skills/validate/references
-BASE_LIST="$S/audora-commander/SKILL.md $S/memory/SKILL.md $R/registrar-no.md $T/no-template.md $S/scope/SKILL.md $S/plan/SKILL.md $R/consultar-codigo.md $T/plano-template.md $S/execute/SKILL.md $S/validate/SKILL.md $T/bloco-fechamento-template.md"
+BASE_LIST="$S/audora-commander/SKILL.md $S/memory/SKILL.md $R/registrar-no.md $T/no-template.md $S/scope/SKILL.md $S/plan/SKILL.md $T/plano-template.md $S/execute/SKILL.md $S/validate/SKILL.md $T/bloco-fechamento-template.md"
 FULL_EXTRA="$R/compactar.md $V/sync.md $V/decisoes-vivas.md"
 TETO_BASE=54900
 TETO_FULL=60300

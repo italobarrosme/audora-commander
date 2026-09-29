@@ -24,11 +24,6 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
    concluídas. Tarefa marcada `expandir: sim` → quebrar em subtarefas AGORA
    (chegou a vez dela), pelo formato do template.
 3. **Ciclo por tarefa**:
-   - **Localizar** (só quando a tarefa toca código fora dos arquivos que o
-     plano lista — chamador, helper, vizinho): Constituição `graphify: ativo`
-     → skill memory, operação consultar-codigo (`graphify affected "X"` para
-     impacto) ANTES de qualquer Read; senão grep. Nunca varrer o repo "para
-     entender".
    - **RED**: escrever UM teste mínimo do comportamento (nome claro citando o
      endereço do critério `<id>/<n>` quando houver, uma coisa só, código real
      — mock apenas se inevitável). Rodar. Confirmar na
