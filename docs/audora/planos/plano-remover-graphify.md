@@ -75,6 +75,10 @@ PATH do Bash — consultar-codigo degradado, avisado).
   sem autorização do humano registrada para apagar
   `tests/test-graphify-status.sh` — nada da T6 foi tocado. Retomar pela T6
   passo 1 depois do "sim" (registrar em `## decisoes` do nó).
+- 2026-09-29 (execute, subagente): autorização registrada no nó (f9ec3e3);
+  T6 (77b82c1) e T7 (116e694) verdes. Gate final em árvore limpa (HEAD 116e694):
+  `GATE: passou`, exit 0; suíte 14 arquivos, 861 asserts (somados da saída),
+  0 com falha.
 - `$SCRATCH` nos comandos = scratchpad da sessão de execução (sem um,
   `SCRATCH="$(mktemp -d)"`). Suíte/gate passam de 120s → `run_in_background`
   e ler o arquivo de saída.
