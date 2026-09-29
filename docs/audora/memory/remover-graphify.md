@@ -45,6 +45,6 @@ gate-asserts: queda aprovada no escopo (/13) — asserts de graphify-status, con
 
 ## e2e
 
-pendente
+pulado-pelo-humano (2026-09-29: "pula o e2e passa so o validate")
 
 ## feedback-reprovacao
