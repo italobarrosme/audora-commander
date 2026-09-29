@@ -132,4 +132,17 @@ assert_empty "$out" "remover-graphify/8 --remover em projeto limpo é silencioso
 rm -rf "$P"; mkdir -p "$P/graphify-out"; fake '' ''; lim --remover .
 assert_eq 'removido pasta graphify-out/' "$out" "remover-graphify/4 fora de repo git remove sem versionado"
 assert_no_file "$ROOT/hooks/graphify-status" "remover-graphify/10 classificador do índice removido"
+# A1 (/2,/5) — hook do Graphify = hooks[].command casando ^graphify\b: hook alheio no
+# MESMO grupo fica; substring em comando alheio não é resto e o arquivo não é reescrito
+mkvazio; mkdir -p "$P/.claude"; printf 'graphify-out/\n' >> "$P/.gitignore"
+printf '%s\n' '{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"graphify hook-guard search"},{"type":"command","command":"meu-guard"}]}]}}' > "$P/.claude/settings.json"
+printf '%s\n' '{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"rm -rf old-graphify-backup"}]}]}}' > "$P/.claude/settings.local.json"
+git -C "$P" add -A; git -C "$P" commit -qm a1; fake '' ''; lim .
+assert_eq "$(printf '%s\n' 'gitignore .gitignore' 'settings .claude/settings.json')" "$out" "remover-graphify/2 A1 substring graphify em comando alheio não é resto"
+antes_l="$(md5sum < "$P/.claude/settings.local.json")"; lim --remover .
+sj="$(cat "$P/.claude/settings.json")"
+assert_contains "$sj" '"meu-guard"' "remover-graphify/5 A1 hook alheio do mesmo grupo fica"
+assert_contains "$sj" '"matcher": "Bash"' "remover-graphify/5 A1 grupo com hook alheio mantém o matcher"
+assert_not_contains "$sj" 'graphify' "remover-graphify/5 A1 só o hook do Graphify sai do grupo"
+assert_eq "$antes_l" "$(md5sum < "$P/.claude/settings.local.json")" "remover-graphify/5 A1 settings sem hook do Graphify não é reescrito"
 report
