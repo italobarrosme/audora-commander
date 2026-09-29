@@ -94,6 +94,6 @@ devolvem à fase chamadora; leitura por seção (`leitura-por-secao`) e limpeza
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-contexto-por-fase.md
 
 ## feedback-reprovacao
