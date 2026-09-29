@@ -89,6 +89,10 @@ PATH do Bash — consultar-codigo degradado, avisado).
 - 2026-09-29 (execute, T15): gate final da rodada em árvore limpa (HEAD 60756eb):
   `GATE: passou`, exit 0; suíte 14 arquivos, 898 asserts (somados da saída),
   0 com falha.
+- 2026-09-29 (execute, rodada 2 — B1 + menores, subagente): T16–T21 RED→GREEN,
+  gate exit 0 em cada uma (commits 5df023d, 48df224, 329e1f5, c767e83, f1b395d,
+  9cda0eb). Gate final em árvore limpa (HEAD 9cda0eb): `GATE: passou`, exit 0;
+  suíte 14 arquivos, 935 asserts (somados da saída), 0 com falha.
 - `$SCRATCH` nos comandos = scratchpad da sessão de execução (sem um,
   `SCRATCH="$(mktemp -d)"`). Suíte/gate passam de 120s → `run_in_background`
   e ler o arquivo de saída.
@@ -914,5 +918,5 @@ PATH do Bash — consultar-codigo degradado, avisado).
 ## Tarefa 22: gate final da rodada 2
 
 - **depende-de**: [Tarefa 21]
-- [ ] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
+- [x] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
   → `0`, `GATE: passou`; total de asserts SOMADO da saída; registrar nas Notas.
