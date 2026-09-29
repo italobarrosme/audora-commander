@@ -2,6 +2,8 @@
 # memory-graphify/9; remover-graphify/12 — este repositório usa MEMORY, sem resto do Graphify.
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
+DPATH="$(path_sem_uv)"
+guarda_sem_uv "$DPATH"   # remover-graphify/13 — o script nunca alcança uv/pipx reais
 assert_file MEMORY.md "/9 MEMORY.md"
 assert_eq "memory-schema: 1" "$(head -1 MEMORY.md | tr -d '\r')" "/9 schema"
 m="$(cat MEMORY.md)"
@@ -15,7 +17,7 @@ assert_file docs/audora/arquivo/2026-09-27-memory-graphify.md "limpeza-codigo-mo
 run_hook memory-validate "$ROOT/MEMORY.md"; assert_eq 0 "$code" "/9 memory-validate verde"; assert_empty "$out" "/9 stderr vazio"
 run_hook memory-guard "$ROOT/MEMORY.md";    assert_eq 0 "$code" "/9 memory-guard verde"
 grep -q 'graphify-out' .gitignore && ko "remover-graphify/12 .gitignore ainda cita graphify-out" || ok
-assert_empty "$(bash hooks/graphify-limpeza .)" "remover-graphify/12 repo sem resto do Graphify"
+assert_empty "$(PATH="$DPATH" bash hooks/graphify-limpeza .)" "remover-graphify/12 repo sem resto do Graphify"
 for t in '_PINNED' 'O post-commit do Graphify' 'e `graphify` não estão no PATH'; do
   assert_contains "$(grep -F -- "$t" MEMORY.md)" '[invalidado-em: 2026-09-29]' "remover-graphify/12 aprendizado '$t' invalidado, não apagado"
 done

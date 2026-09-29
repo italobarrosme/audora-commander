@@ -19,3 +19,28 @@ run_hook() {
   out="$(printf '{"tool_name":"Edit","tool_input":{"file_path":"%s"}}' "$p" | bash "$ROOT/hooks/$1" 2>&1 >/dev/null)"; code=$?
 }
 report() { echo "$(basename "$0"): PASS=$PASS FAIL=$FAIL"; [ "$FAIL" -eq 0 ]; }
+# path_sem_uv — o PATH atual sem nenhum dir que tenha uv/pipx.
+path_sem_uv() {
+  local d x r="" IFS=:
+  for d in $PATH; do
+    [ -n "$d" ] || continue
+    for x in uv uv.exe pipx pipx.exe; do [ -e "$d/$x" ] && continue 2; done
+    r="${r:+$r:}$d"
+  done
+  printf '%s' "$r"
+}
+# guarda_sem_uv <PATH> [<dir dos falsos>] — script com efeito fora do repo
+# (uv/pipx uninstall) nunca alcança o uv/pipx REAIS (incidente 2026-09-29).
+# Algum dir do PATH (fora o dos falsos) com uv/pipx, ou `command -v` fora do
+# esperado → ko e aborta o arquivo ANTES de rodar o script.
+guarda_sem_uv() {
+  local d x reais="" esp_uv="" esp_px=""
+  [ -n "${2:-}" ] && { esp_uv="$2/uv"; esp_px="$2/pipx"; }
+  local IFS=:
+  for d in $1; do
+    [ -n "$d" ] && [ "$d" != "${2:-}" ] || continue
+    for x in uv uv.exe pipx pipx.exe; do [ -e "$d/$x" ] && reais="$reais $d/$x"; done
+  done
+  [ -z "$reais" ] && [ "$(PATH="$1"; command -v uv)" = "$esp_uv" ] && [ "$(PATH="$1"; command -v pipx)" = "$esp_px" ] && { ok; return 0; }
+  ko "fixture alcança uv/pipx reais:${reais:- command -v fora do esperado} — abortado sem rodar o script"; report; exit 1
+}

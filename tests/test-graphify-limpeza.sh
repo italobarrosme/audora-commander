@@ -11,7 +11,9 @@ printf '%s\n' '#!/usr/bin/env bash' 'echo "pipx $*" >> "$FAKE_LOG"' \
 chmod +x "$B/uv" "$B/pipx"
 fake() { export FAKE_UV_LIST="$1" FAKE_PIPX_LIST="$2" FAKE_UV_EXIT="${3:-0}" FAKE_PIPX_EXIT="${4:-0}"; : > "$FAKE_LOG"; }
 P="$SP/proj"
-lim() { out="$(cd "$P" && PATH="$B:$PATH" bash "$L" "$@" 2>&1)"; code=$?; }
+FIXPATH="$B:$(path_sem_uv)"
+guarda_sem_uv "$FIXPATH" "$B"   # remover-graphify/13 — só uv/pipx falsos alcançáveis
+lim() { out="$(cd "$P" && PATH="$FIXPATH" bash "$L" "$@" 2>&1)"; code=$?; }
 mkvazio() {
   rm -rf "$P"; mkdir -p "$P"
   git -C "$P" init -q; git -C "$P" config user.email t@t; git -C "$P" config user.name t
