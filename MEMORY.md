@@ -96,6 +96,7 @@ time pequeno em projetos web/mobile/api.
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - validate-estado-no | delivered | Estado validado no nó → docs/audora/arquivo/2026-09-28-validate-estado-no.md
 - contexto-por-fase | delivered | Contexto zerado por fase → docs/audora/arquivo/2026-09-29-contexto-por-fase.md
+- remover-graphify | in-progress | Remover Graphify | Remover o Graphify por completo do plugin — oferta, índice, consulta e status | graphify, remocao, indice, consultar-codigo, breaking | skills/memory/, hooks/graphify-status
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
