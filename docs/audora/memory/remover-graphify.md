@@ -35,6 +35,9 @@ e gravação da recusa.
   projetos que usam o plugin (bullet `graphify:` da Constituição e
   post-commit instalado pelo bootstrap).
 - 2026-09-29: decisões do scope (6 do humano, 4 da IA) na spec.
+- 2026-09-29 (humano): autorizada a remoção de `tests/test-graphify-status.sh`
+  na T6 (humano: "sim") — o script testado sai; detecção coberta por
+  `tests/test-graphify-limpeza.sh`.
 
 gate-asserts: queda aprovada no escopo (/13) — asserts de graphify-status, consultar-codigo, etapa Graphify do bootstrap e dogfood antigo saem com o comportamento; limpeza (/2–/8) coberta por tests/test-graphify-limpeza.sh.
 
