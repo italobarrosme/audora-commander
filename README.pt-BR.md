@@ -175,8 +175,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   respondida no nó.
 - **Portões humanos**: o portão de escopo — espera sua aprovação explícita
   (antecipado só em autopilot elegível, ratificado no portão final).
-- **Próxima**: `plan`, com `/clear` recomendado — o plano se reancora nos
-  artefatos escritos.
+- **Próxima**: `plan`, depois de uma PARADA — você roda `/clear` e digita
+  `plan de <id>`; dizer "segue" roda a fase num subagente de contexto limpo.
 
 ### `plan`
 
@@ -193,7 +193,7 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   `expandir: sim` só é detalhada quando chega a vez dela.
 - **O que deixa no disco**: `docs/audora/planos/plano-<id>.md`.
 - **Portões humanos**: HIGH → portão de plano; MEDIUM segue direto.
-- **Próxima**: `execute`.
+- **Próxima**: `execute`, depois de uma PARADA (`execute de <id>`).
 
 ### `execute`
 
@@ -213,7 +213,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **O que deixa no disco**: código e testes, um commit por etapa verde, a
   lista "Decisões tomadas pela IA" no plano.
 - **Portões humanos**: nenhum no meio; você decide sobre nó `blocked`.
-- **Próxima**: `validate`, que oferece o e2e.
+- **Próxima**: `validate`, que oferece o e2e — depois de uma PARADA em
+  MEDIUM/HIGH; LIGHT/HOTFIX seguem direto.
 
 ### `e2e`
 

@@ -174,8 +174,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   decision in the node.
 - **Human gates**: the scope gate — waits for your explicit approval
   (skipped only under eligible autopilot, ratified at the final gate).
-- **Next**: `plan`, with `/clear` recommended — the plan re-anchors on the
-  written artifacts.
+- **Next**: `plan`, after a STOP — you run `/clear` and type `plan de <id>`;
+  saying "segue" runs it in a clean-context subagent instead.
 
 ### `plan`
 
@@ -192,7 +192,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
   their turn comes.
 - **What it leaves on disk**: `docs/audora/planos/plano-<id>.md`.
 - **Human gates**: HIGH → plan gate; MEDIUM goes straight on.
-- **Next**: `execute`.
+- **Next**: `execute`, after a STOP (`execute de <id>`).
 
 ### `execute`
 
@@ -212,7 +212,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
 - **What it leaves on disk**: code and tests, one commit per green step,
   the "Decisões tomadas pela IA" list in the plan.
 - **Human gates**: none mid-way; you decide on a `blocked` node.
-- **Next**: `validate`, which offers the e2e.
+- **Next**: `validate`, which offers the e2e — after a STOP in MEDIUM/HIGH;
+  LIGHT/HOTFIX go straight on.
 
 ### `e2e`
 

@@ -137,8 +137,10 @@ Regras:
    fora-de-escopo explícito? sem contradição com constituição/nós vizinhos?
 5. **Perguntas em lote**: perguntas independentes vão juntas (até 4 por lote);
    pergunta cuja resposta muda outra vai em série.
-6. **`/clear` é do humano; fim de fase é o gatilho**: ao fechar fase, skill
-   instrui: "Fase fechada. Artefatos salvos: [lista]. Seguro dar /clear agora."
+6. **Fim de fase é PARADA; `/clear` é do humano**: ao fechar scope, plan ou
+   execute de MEDIUM/HIGH, a skill PARA e não emenda a fase seguinte — imprime
+   "PARADA: rode /clear e, na sessão nova: `<fase> de <id>`". "Segue" sem
+   /clear roda a fase seguinte em subagente de contexto zerado.
    Antes de `/clear` no meio de demanda: despejar notas de sessão no arquivo do
    plano (abordagens descartadas + porquê, estado parcial, próximos passos).
 7. **Estrutura sempre, extensão proporcional**: P4 governa o tamanho, P3 a

@@ -56,4 +56,12 @@ assert_contains "$ex" 'sem plano-arquivo → recusar nomeando o que falta' "/9 e
 # contrato: a frase que a skill espera existe no motor (passa já no red)
 assert_contains "$(tr -d '\r' < hooks/loop)" 'LOOP: rodada recusada' "/11 motor imprime a recusa esperada"
 
+# --- /1 /13 — docs descrevem a parada (READMEs EN/PT e fundamentos) ---
+en="$(tr -d '\r' < README.md)"; pt="$(tr -d '\r' < README.pt-BR.md)"
+assert_contains "$en" 'after a STOP' "/1 README EN descreve a parada"
+assert_contains "$pt" 'depois de uma PARADA' "/1 README PT descreve a parada"
+assert_not_contains "$en" '`/clear` recommended' "/13 README EN sem recomendação solta"
+assert_not_contains "$pt" '`/clear` recomendado' "/13 README PT sem recomendação solta"
+assert_contains "$(tr -d '\r' < docs/fundamentos.md)" 'a skill PARA e não emenda a fase seguinte' "/1 fundamentos P3 regra 6"
+
 report
