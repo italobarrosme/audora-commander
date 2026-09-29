@@ -227,4 +227,12 @@ mkvazio; printf '%s\n' 'node_modules/' '# comentário alheio' '# graphify: índi
 assert_eq "$(printf '%s\n' 'node_modules/' '# comentário alheio' '*.log')" "$(cat "$P/.gitignore")" "remover-graphify/5 M1 comentário do Graphify acima de graphify-out/ sai; alheio fica"
 mkvazio; printf '%s\n' '# Graphify também gera cache' 'dist/' 'graphify-out/' > "$P/.gitignore"; lim --remover .
 assert_eq "$(printf '%s\n' '# Graphify também gera cache' 'dist/')" "$(cat "$P/.gitignore")" "remover-graphify/5 M1 comentário que não está logo acima fica"
+# M2 (/2,/5) — "## graphify" dentro de bloco cercado não é seção; cerca dentro da seção não a fecha
+mkvazio; printf '%s\n' '# P' '```md' '## graphify' 'exemplo' '```' 'texto depois' '### sub' > "$P/CLAUDE.md"; fake '' ''; lim .
+assert_empty "$out" "remover-graphify/2 M2 ## graphify dentro de cerca não é resto"
+antes_c="$(md5sum < "$P/CLAUDE.md")"; printf 'graphify-out/\n' >> "$P/.gitignore"; lim --remover .
+assert_eq 'removido gitignore .gitignore' "$out" "remover-graphify/4 M2 só o .gitignore sai"
+assert_eq "$antes_c" "$(md5sum < "$P/CLAUDE.md")" "remover-graphify/5 M2 CLAUDE.md com ## graphify cercado fica intocado"
+mkvazio; printf '%s\n' '# P' '## graphify' '~~~sh' '## x' '~~~' 'y' '## Outra' 'fim' > "$P/CLAUDE.md"; lim --remover .
+assert_eq "$(printf '%s\n' '# P' '## Outra' 'fim')" "$(cat "$P/CLAUDE.md")" "remover-graphify/5 M2 cerca dentro da seção do Graphify sai junto; ## Outra fica"
 report

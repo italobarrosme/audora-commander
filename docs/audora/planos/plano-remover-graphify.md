@@ -875,7 +875,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
 - **GREEN**: detecção e remoção do CLAUDE.md em perl com estado de cerca
   (```` ``` ````/`~~~`, fecha no mesmo caractere); cabeçalho dentro de cerca
   não abre nem fecha seção.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/2,5): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/2,5): ...`
 
 ## Tarefa 19: M3 — pacote no uv E no pipx sai dos dois
 

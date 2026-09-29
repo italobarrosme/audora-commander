@@ -94,7 +94,10 @@ for s in .claude/settings.json .claude/settings.local.json; do
   json_graphify "$s" detectar; r=$?
   if [ "$r" -eq 0 ] || { [ "$r" -eq 2 ] && grep -qi graphify "$s"; }; then restos+=("settings $s"); fi
 done
-[ -f CLAUDE.md ] && grep -qE '^## [Gg]raphify[[:space:]]*$' CLAUDE.md && restos+=("claude-md CLAUDE.md")
+# CLAUDE.md: cabeçalho dentro de bloco cercado (``` ou ~~~, fecha no mesmo caractere)
+# não abre nem fecha seção. $fora = linha fora de cerca e não é linha de cerca.
+CERCA='BEGIN { $f = "" } if (/^ {0,3}(`{3,}|~{3,})/) { my $k = substr($1, 0, 1); if ($f eq "") { $f = $k } elsif ($k eq $f) { $f = "" } $fora = 0 } else { $fora = $f eq "" }'
+[ -f CLAUDE.md ] && perl -ne "$CERCA"' if ($fora && /^## [Gg]raphify\s*$/) { $a = 1; last } END { $? = $a ? 0 : 1 }' CLAUDE.md && restos+=("claude-md CLAUDE.md")
 
 if [ "${#restos[@]}" -gt 0 ]; then
   if command -v uv >/dev/null 2>&1 && uv tool list 2>/dev/null | grep -q '^graphifyy '; then
@@ -145,7 +148,7 @@ for item in "${restos[@]}"; do
     settings)
       json_graphify "$alvo" remover > "$tmp" && grava "$alvo" || ok=0 ;;
     claude-md)
-      perl -ne 'if (/^## [Gg]raphify\s*$/) { $s = 1; next } $s = 0 if $s && /^##? /; print unless $s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+      perl -ne "$CERCA"' if ($fora && /^## [Gg]raphify\s*$/) { $s = 1; next } $s = 0 if $s && $fora && /^##? /; print unless $s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     pacote)
       inst="${alvo#*(}"; inst="${inst%)}"
       if [ "$inst" = uv ]; then uv tool uninstall graphifyy >/dev/null 2>&1 || ok=0
