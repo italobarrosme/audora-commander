@@ -820,3 +820,97 @@ PATH do Bash — consultar-codigo degradado, avisado).
 - **depende-de**: [Tarefa 14]
 - [x] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
   → `0`, `GATE: passou`; total de asserts SOMADO da saída; registrar nas Notas.
+
+---
+
+## Rodada de correção pós-reprovação 2 (B1 + menores)
+
+> 2º portão final reprovou /2, /4, /5 (B1, falso positivo, M1–M4 e cosmético
+> em `## feedback-reprovacao` do nó). Humano: "A" — corrigir tudo com as
+> correções sugeridas, sem novo portão de plano. Cada tarefa começa pelo teste
+> que reproduz o furo. SEGURANÇA: `hooks/graphify-limpeza` só roda pela
+> fixture de `tests/test-graphify-limpeza.sh` (`path_sem_uv` +
+> `guarda_sem_uv`, `uv`/`pipx` falsos); `--remover` só em `mktemp -d`.
+
+## Tarefa 16: B1 — hook do Graphify = binário `graphify` no primeiro token
+
+- **depende-de**: [Tarefa 15]
+- **requisito**: **remover-graphify/2** (listar só o que é do Graphify) e
+  **/5** (só a parte do Graphify sai; JSON válido).
+- **teste que reproduz**: formato REAL do Graphify no settings
+  (`"\"C:\Users\Italo Barros\.local\bin\graphify.EXE\" hook-guard search"`)
+  e variantes `/usr/local/bin/graphify hook-guard ...`, `uvx graphify ...`,
+  `graphify.exe ...` (sem aspas) → cada uma sozinha é detectada; negativos
+  `rm -rf old-graphify-backup`, `graphify-backup.sh`,
+  `./scripts/graphify-backup.sh` → cada um sozinho não é resto. Todos num
+  settings só → `--remover` tira as 4 variantes (grupos que ficam vazios
+  saem) e preserva os negativos e o hook alheio do mesmo grupo.
+- **GREEN**: em `json_graphify`, o `command` é partido nos 2 primeiros tokens
+  (aspas duplas/simples ou sem aspas); hook do Graphify = basename do 1º token
+  casa `^graphify(\.exe)?$` (qualquer caixa), ou 1º token é `uvx` e o 2º casa
+  o mesmo.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/2,5): ...`
+
+## Tarefa 17: M1 — comentário do Graphify acima de `graphify-out/` sai junto
+
+- **depende-de**: [Tarefa 16]
+- **requisito**: **remover-graphify/5**.
+- **teste que reproduz**: `.gitignore` `node_modules/`, `# comentário alheio`,
+  `# graphify: índice local`, `graphify-out/`, `*.log` → depois do
+  `--remover`, exatamente `node_modules/`, `# comentário alheio`, `*.log`.
+- **GREEN**: linhas de comentário imediatamente acima de `graphify-out/` que
+  citam graphify (qualquer caixa) saem junto; comentário que não cita fica.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5): ...`
+
+## Tarefa 18: M2 — `## graphify` dentro de bloco cercado não é seção
+
+- **depende-de**: [Tarefa 17]
+- **requisito**: **remover-graphify/2** e **/5**.
+- **teste que reproduz**: CLAUDE.md com `## graphify` só dentro de cerca
+  (```` ``` ````) → não é resto e, no `--remover` puxado por outro resto,
+  fica byte a byte igual; seção real com cerca contendo `## x` dentro dela →
+  a seção sai inteira (cerca junto) e o `## Outra` depois fica.
+- **GREEN**: detecção e remoção do CLAUDE.md em perl com estado de cerca
+  (```` ``` ````/`~~~`, fecha no mesmo caractere); cabeçalho dentro de cerca
+  não abre nem fecha seção.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/2,5): ...`
+
+## Tarefa 19: M3 — pacote no uv E no pipx sai dos dois
+
+- **depende-de**: [Tarefa 18]
+- **requisito**: **remover-graphify/3** e **/4**.
+- **teste que reproduz**: `fake 'graphifyy v0.9.11' 'graphifyy 0.9.11'` com
+  um resto → detecção lista `pacote graphifyy (uv)` E
+  `pacote graphifyy (pipx)`; `--remover` chama `uv tool uninstall graphifyy`
+  e `pipx uninstall graphifyy` e relata os dois `removido`.
+- **GREEN**: detecção consulta os dois instaladores (sem `elif`); cabeçalho
+  do script atualizado.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/3,4): ...`
+
+## Tarefa 20: M4 — falha de escrita só pela linha `falhou`
+
+- **depende-de**: [Tarefa 19]
+- **requisito**: **remover-graphify/6**.
+- **teste que reproduz**: `.gitignore` com `graphify-out/` em modo 444
+  (somente leitura) → `--remover` sai 1, saída (stdout+stderr) exatamente
+  `falhou gitignore .gitignore — à mão: ...`, sem `Permission denied`;
+  arquivo intocado e não relatado como `versionado`.
+- **GREEN**: `grava` redireciona o stderr ANTES do `>` (aprendizado
+  2026-09-28: redirecionamento roda da esquerda para a direita).
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/6): ...`
+
+## Tarefa 21: cosmético — `versionado` com nome não-ASCII legível
+
+- **depende-de**: [Tarefa 20]
+- **requisito**: **remover-graphify/4**.
+- **teste que reproduz**: `graphify-out/relatório.json` versionado →
+  `--remover` relata `versionado graphify-out/relatório.json` (hoje sai
+  `"graphify-out/relat\303\263rio.json"`).
+- **GREEN**: `git -c core.quotePath=false diff --name-only ...`.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/4): ...`
+
+## Tarefa 22: gate final da rodada 2
+
+- **depende-de**: [Tarefa 21]
+- [ ] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
+  → `0`, `GATE: passou`; total de asserts SOMADO da saída; registrar nas Notas.
