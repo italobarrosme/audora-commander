@@ -7,7 +7,7 @@ assert_eq "memory-schema: 1" "$(head -1 templates/MEMORY-template.md 2>/dev/null
 for sec in '## Propósito [carga: sempre]' '## Constituição [carga: sempre]' '## Aprendizados [carga: sempre]' '## Índice de nós [carga: sempre]'; do
   assert_contains "$t" "$sec" "/4 seção $sec"
 done
-assert_contains "$t" '**graphify**:' "/4 bullet graphify na Constituição"
+assert_empty "$(grep -li graphify templates/*.md)" "remover-graphify/1,10 templates sem Graphify"
 assert_contains "$t" 'docs/audora/memory/<id>.md' "/5 caminho do nó"
 assert_contains "$t" '| <fase> | <aprendizado' "/6 formato de aprendizado"
 n="$(cat templates/no-template.md)"

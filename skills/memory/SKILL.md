@@ -1,6 +1,6 @@
 ---
 name: memory
-description: 'Use quando precisar criar, consultar ou atualizar o MEMORY de um projeto — bootstrap em projeto sem MEMORY.md (inclui oferta e ativação do Graphify), carga de contexto no início de uma demanda, registro de nó, delta ou aprendizado, ou compactação.'
+description: 'Use quando precisar criar, consultar ou atualizar o MEMORY de um projeto — bootstrap em projeto sem MEMORY.md, carga de contexto no início de uma demanda (inclui a oferta de limpar restos do Graphify), registro de nó, delta ou aprendizado, ou compactação.'
 ---
 
 # memory — a memória do produto
@@ -27,7 +27,7 @@ skill confere o mesmo.
 
 **Raiz do plugin**: scripts auxiliares ficam dois níveis acima do diretório
 base desta skill (o Skill tool imprime esse diretório ao carregar). Ex.:
-`bash "<raiz do plugin>/hooks/graphify-status" .`.
+`bash "<raiz do plugin>/hooks/graphify-limpeza" .`.
 
 ## Onde mora cada operação
 
@@ -81,11 +81,19 @@ nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
    travar, não seguir sem MEMORY, não inventar um.
 2. Identificar no índice os nós relacionados (linha rica + depende-de);
    Read SÓ de `docs/audora/memory/<id>.md` desses nós.
-3. Devolver: Constituição (inclui o bullet `graphify`) + Aprendizados + nós
+3. Devolver: Constituição + Aprendizados + nós
    relevantes para a fase que chamou.
 4. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
    gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
    só se o humano pedir.
+5. **Restos do Graphify** (o framework não usa mais): rodar
+   `bash "<raiz do plugin>/hooks/graphify-limpeza" .` (1 linha por resto).
+   Saída vazia → seguir sem citar o assunto. Com linhas → ANTES da demanda,
+   listar SÓ o que saiu e perguntar uma vez: "Remover tudo?". Aprovou →
+   `bash "<raiz do plugin>/hooks/graphify-limpeza" --remover .` e relatar
+   item a item (`removido`, `falhou` + comando à mão, `versionado`); falha
+   não trava a demanda; NÃO commitar. Recusou → não mexer, não gravar nada;
+   a próxima carga oferece de novo.
 
 ### 4. registrar-delta (mudança no meio da demanda)
 
@@ -98,7 +106,7 @@ nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
 3. Delta é consolidado no corpo no sync pós-merge (operação compactar,
    item 0, chamada pela validate) — nunca antes.
 4. **Constituição** (como-rodar descoberto, padrão novo, ferramenta de e2e
-   escolhida, estado do `graphify`): editar o bullet direto no índice
+   escolhida): editar o bullet direto no índice
    mestre, mesma validação — é o que e2e/scope chamam de "registrar na
    Constituição".
 
@@ -133,7 +141,6 @@ decide. Nunca escolha em silêncio.
 | "Aprendizado eu guardo no sync final" | Sync final é depois do /clear. Aprendizado é NA HORA, 1 linha. |
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |
 | "O nó inferido parece certo, sigo com ele" | Inferido é hipótese. Confirme com o humano antes de construir em cima. |
-| "Instalo o Graphify sem perguntar, é só uma ferramenta" | Instalar no ambiente do humano é decisão dele. Pergunte; recusado fica recusado. |
 | "Auto-resolvo o conflito de merge do MEMORY" | MEMORY é memória do sistema. Conflito fora dos seus nós = humano decide. |
 
 ## PRÓXIMA SKILL

@@ -44,8 +44,16 @@ for g in "$MR"/*.md; do
   assert_contains "$m" "references/$(basename "$g")" "/7 sem órfã: $(basename "$g")"
 done
 # /2 — conteúdo de cada operação movida está na SUA reference
-for s in 'hooks/graphify-status' 'uv tool install graphifyy' 'pipx install graphifyy' 'graphify --version' 'graphify update .' 'graphify hook install' 'graphify-out/' '.gitignore' 'graphify: ativo' 'graphify: recusado' 'graphify: sem-codigo'; do
-  assert_contains "$(cat "$MR/bootstrap.md" 2>/dev/null)" "$s" "/2 bootstrap cita '$s'"
+# remover-graphify/1 — bootstrap não oferece nem instala o Graphify; o gate fecha o bootstrap
+grep -qi 'graphify' "$MR/bootstrap.md" && ko "remover-graphify/1 bootstrap cita graphify" || ok
+assert_contains "$(cat "$MR/bootstrap.md")" '**Etapa gate** (sempre, ao fim do bootstrap)' "remover-graphify/1 gate fecha o bootstrap"
+# remover-graphify/2..8 — carregar-contexto oferece a limpeza (asserido DENTRO da seção)
+cc="$(awk '/^### 1\. carregar-contexto/{f=1;next} /^### /{f=0} f' "$MS")"
+for s in 'hooks/graphify-limpeza" .' 'Saída vazia → seguir sem citar o assunto' 'listar SÓ o que saiu' 'Remover tudo?' 'graphify-limpeza" --remover .' 'item a item' 'não trava a demanda' 'NÃO commitar' 'não gravar nada' 'a próxima carga oferece de novo'; do
+  assert_contains "$cc" "$s" "remover-graphify/2-8 carregar-contexto: '$s'"
+done
+for s in 'hooks/graphify-status' 'Instalo o Graphify' 'inclui oferta e ativação do Graphify'; do
+  assert_not_contains "$m" "$s" "remover-graphify/1,10 memory sem '$s'"
 done
 for s in 'docs/audora/arquivo/' 'aprendizados-historico.md' 'git mv'; do
   assert_contains "$(cat "$MR/compactar.md" 2>/dev/null)" "$s" "/2 compactar cita '$s'"

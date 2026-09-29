@@ -6,8 +6,7 @@ memory-schema: 1
 > o estado de cada demanda. Requisito não escrito aqui é requisito que não
 > existe. Este arquivo é o ÍNDICE MESTRE; o corpo de cada nó vive em
 > `docs/audora/memory/<id>.md` (1 nó = 1 arquivo, ver
-> templates/no-template.md). O CÓDIGO não vive aqui: é indexado pelo
-> Graphify em `graphify-out/` (fora do git) e consultado pela skill memory.
+> templates/no-template.md).
 
 ## Propósito [carga: sempre]
 
@@ -25,9 +24,6 @@ cumpre, ou documenta exceção no nó.
 - **padroes**: <convenções que o código segue: estilo, nomenclatura, camadas>
 - **como-rodar**: <comando(s) exatos para subir o projeto localmente — usado
   pela skill e2e. Ex.: `npm run dev` na porta 3000>
-- **graphify**: <ativo | recusado | sem-codigo — gravado no bootstrap pela
-  skill memory; ausente = ainda não perguntado. `ativo` = índice em
-  `graphify-out/` + git hook post-commit instalado>
 
 ## Aprendizados [carga: sempre]
 
