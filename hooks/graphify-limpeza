@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Detecta (e, com --remover, remove) restos do Graphify num projeto.
+# Script auxiliar (chamado via Bash pela skill memory, não é hook do Claude).
+# Uso: graphify-limpeza [--remover] [dir]   (dir default: .)
+# Detecção: stdout, 1 linha por resto "<tipo> <alvo>", NESTA ordem:
+#   constituicao MEMORY.md
+#   git-hook <hooks>/post-commit
+#   git-hook <hooks>/post-checkout
+#   pasta graphify-out/
+#   gitignore .gitignore
+#   settings .claude/settings.json
+#   settings .claude/settings.local.json
+#   claude-md CLAUDE.md
+#   pacote graphifyy (uv) | pacote graphifyy (pipx)   (só se houver outro resto)
+# Saída vazia = limpo. Exit 0 sempre. Não escreve nada.
+set -uo pipefail
+
+remover=0
+[ "${1:-}" = "--remover" ] && { remover=1; shift; }
+cd "${1:-.}" || exit 1
+
+# json_graphify <arquivo> <detectar|remover>
+# exit 0 = tem hook do Graphify (remover: imprime o JSON sem ele), 1 = não tem, 2 = JSON inválido.
+json_graphify() {
+  MODO="$2" perl -MJSON::PP -0777 -e '
+    my $j = eval { JSON::PP->new->utf8->decode(scalar <STDIN>) };
+    exit 2 unless ref $j eq "HASH";
+    my $H = $j->{hooks}; exit 1 unless ref $H eq "HASH";
+    my $enc = JSON::PP->new->utf8->canonical; my $n = 0;
+    for my $ev (keys %$H) {
+      next unless ref $H->{$ev} eq "ARRAY";
+      my @fica = grep { $enc->encode($_) !~ /graphify/i } @{ $H->{$ev} };
+      my $tirou = @{ $H->{$ev} } - @fica; $n += $tirou;
+      if ($tirou && !@fica) { delete $H->{$ev} } else { $H->{$ev} = \@fica }
+    }
+    exit 1 unless $n;
+    delete $j->{hooks} unless %$H;
+    print JSON::PP->new->utf8->canonical->pretty->space_before(0)->indent_length(2)->encode($j) if $ENV{MODO} eq "remover";
+    exit 0' < "$1"
+}
+
+restos=()
+[ -f MEMORY.md ] && grep -qE '^- \*\*graphify\*\*:' MEMORY.md && restos+=("constituicao MEMORY.md")
+hk="$(git rev-parse --git-path hooks 2>/dev/null)"
+if [ -n "$hk" ]; then
+  for h in post-commit post-checkout; do
+    [ -f "$hk/$h" ] && grep -qE '^# graphify-(checkout-)?hook-start' "$hk/$h" && restos+=("git-hook $hk/$h")
+  done
+fi
+[ -d graphify-out ] && restos+=("pasta graphify-out/")
+[ -f .gitignore ] && grep -qE '^/?graphify-out/?[[:space:]]*$' .gitignore && restos+=("gitignore .gitignore")
+for s in .claude/settings.json .claude/settings.local.json; do
+  [ -f "$s" ] || continue
+  json_graphify "$s" detectar; r=$?
+  if [ "$r" -eq 0 ] || { [ "$r" -eq 2 ] && grep -qi graphify "$s"; }; then restos+=("settings $s"); fi
+done
+[ -f CLAUDE.md ] && grep -qE '^## [Gg]raphify[[:space:]]*$' CLAUDE.md && restos+=("claude-md CLAUDE.md")
+
+if [ "${#restos[@]}" -gt 0 ]; then
+  if command -v uv >/dev/null 2>&1 && uv tool list 2>/dev/null | grep -q '^graphifyy '; then
+    restos+=("pacote graphifyy (uv)")
+  elif command -v pipx >/dev/null 2>&1 && pipx list --short 2>/dev/null | grep -q '^graphifyy '; then
+    restos+=("pacote graphifyy (pipx)")
+  fi
+fi
+
+[ "${#restos[@]}" -eq 0 ] && exit 0
+printf '%s\n' "${restos[@]}"
+exit 0
