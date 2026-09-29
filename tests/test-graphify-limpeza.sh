@@ -235,4 +235,12 @@ assert_eq 'removido gitignore .gitignore' "$out" "remover-graphify/4 M2 só o .g
 assert_eq "$antes_c" "$(md5sum < "$P/CLAUDE.md")" "remover-graphify/5 M2 CLAUDE.md com ## graphify cercado fica intocado"
 mkvazio; printf '%s\n' '# P' '## graphify' '~~~sh' '## x' '~~~' 'y' '## Outra' 'fim' > "$P/CLAUDE.md"; lim --remover .
 assert_eq "$(printf '%s\n' '# P' '## Outra' 'fim')" "$(cat "$P/CLAUDE.md")" "remover-graphify/5 M2 cerca dentro da seção do Graphify sai junto; ## Outra fica"
+# M3 (/3,/4) — pacote no uv E no pipx: os dois listados, os dois desinstalados
+mkvazio; mkdir "$P/graphify-out"; fake 'graphifyy v0.9.11' 'graphifyy 0.9.11'; lim .
+assert_eq "$(printf '%s\n' 'pasta graphify-out/' 'pacote graphifyy (uv)' 'pacote graphifyy (pipx)')" "$out" "remover-graphify/3 M3 pacote nos dois instaladores lista os dois"
+: > "$FAKE_LOG"; lim --remover .
+assert_eq 0 "$code" "remover-graphify/4 M3 remoção dos dois sai 0"
+assert_contains "$(cat "$FAKE_LOG")" 'uv tool uninstall graphifyy' "remover-graphify/4 M3 desinstala do uv"
+assert_contains "$(cat "$FAKE_LOG")" 'pipx uninstall graphifyy' "remover-graphify/4 M3 desinstala do pipx"
+assert_eq "$(printf '%s\n' 'removido pasta graphify-out/' 'removido pacote graphifyy (uv)' 'removido pacote graphifyy (pipx)')" "$out" "remover-graphify/4 M3 relata os dois pacotes"
 report

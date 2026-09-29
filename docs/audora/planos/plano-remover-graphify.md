@@ -887,7 +887,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   e `pipx uninstall graphifyy` e relata os dois `removido`.
 - **GREEN**: detecção consulta os dois instaladores (sem `elif`); cabeçalho
   do script atualizado.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/3,4): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/3,4): ...`
 
 ## Tarefa 20: M4 — falha de escrita só pela linha `falhou`
 

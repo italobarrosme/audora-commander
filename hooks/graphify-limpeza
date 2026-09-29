@@ -11,7 +11,7 @@
 #   settings .claude/settings.json
 #   settings .claude/settings.local.json
 #   claude-md CLAUDE.md
-#   pacote graphifyy (uv) | pacote graphifyy (pipx)   (só se houver outro resto)
+#   pacote graphifyy (uv), pacote graphifyy (pipx)   (cada um que o tiver; só se houver outro resto)
 # Constituição = bullet "- **graphify**:" DENTRO da seção "## Constituição".
 # Saída vazia = limpo. Exit 0. Não escreve nada.
 # --remover: por item, na ordem acima, "removido <tipo> <alvo>" ou
@@ -102,7 +102,8 @@ CERCA='BEGIN { $f = "" } if (/^ {0,3}(`{3,}|~{3,})/) { my $k = substr($1, 0, 1);
 if [ "${#restos[@]}" -gt 0 ]; then
   if command -v uv >/dev/null 2>&1 && uv tool list 2>/dev/null | grep -q '^graphifyy '; then
     restos+=("pacote graphifyy (uv)")
-  elif command -v pipx >/dev/null 2>&1 && pipx list --short 2>/dev/null | grep -q '^graphifyy '; then
+  fi
+  if command -v pipx >/dev/null 2>&1 && pipx list --short 2>/dev/null | grep -q '^graphifyy '; then
     restos+=("pacote graphifyy (pipx)")
   fi
 fi
