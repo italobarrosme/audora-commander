@@ -56,8 +56,6 @@ Worktree novo é checkout limpo: **tudo que o git ignora não veio junto**.
    (`.git/hooks` resolve para o repositório comum). Hook instalado por um
    worktree dispara em todos, e `post-checkout` dispara na própria criação do
    worktree. Repo com hooks instalados → avisar o humano.
-4. **Índice de código** — artefato fora do git não vem junto; a fase que
-   precisar dele reindexa ou degrada, conforme a skill `memory`.
 
 ### 3. situar (listar)
 

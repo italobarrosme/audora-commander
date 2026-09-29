@@ -75,6 +75,7 @@ assert_contains "$m" 'sem travar a fase' "/4 roteador degrada sem travar"
 # remover-graphify/9,/10 — fases e worktree sem Graphify e sem consulta ao índice de código
 for s in audora-commander scope plan execute e2e validate debug worktree; do
   grep -qiE 'graphify|consultar-codigo' "skills/$s/SKILL.md" && ko "remover-graphify/9 $s cita graphify/consultar-codigo" || ok
+  grep -qiE '(í|Í|i)ndice de c(ó|o)digo' "skills/$s/SKILL.md" && ko "remover-graphify/10 $s cita índice de código" || ok
 done
 assert_no_file "$MR/consultar-codigo.md" "remover-graphify/9 reference consultar-codigo removida"
 for s in 'consultar-codigo' 'operação 7' 'graphify query' 'graphify update'; do
