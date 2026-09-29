@@ -110,6 +110,21 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `core.excludesFile` local num arquivo inexistente — o ignore global desta
   máquina (`~/.config/git/ignore`: `**/.claude/settings.local.json`) deixava
   o arquivo fora do índice e o assert `versionado` falhava por ambiente.
+- 2026-09-29 (execute, correção): fixture tira do PATH todo diretório com
+  `uv`/`pipx` (helper `path_sem_uv` em `tests/lib.sh`) em vez de só
+  antepor os falsos — o real nunca fica alcançável, nem por acidente.
+- 2026-09-29 (execute, A1): hook do Graphify = entrada de `hooks[]` cujo
+  `command` casa `^\s*graphify\b` (espaço inicial tolerado).
+- 2026-09-29 (execute, A4): `versionado` sai de `git diff --name-only
+  --relative -- <caminhos mexidos>` — mesmo efeito do `status --porcelain`
+  sugerido (só rastreado, inclui apagado), mas com caminho relativo ao dir
+  do projeto (porcelain é relativo à raiz do repo).
+- 2026-09-29 (execute, menores): filtros de texto passam de awk/grep para
+  `perl -ne` — awk e grep do Git Bash descartam o `\r`. Números do JSON
+  preservados por marcador string antes do decode (JSON::PP normaliza
+  `1.50`→`1.5` e transforma inteiro grande em string).
+- 2026-09-29 (execute, menores): dir inexistente → mensagem no stderr e
+  exit 2 (distinto de 1 = falha parcial), documentado no cabeçalho.
 
 ---
 
@@ -679,3 +694,119 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
   → `0`, `GATE: passou`. Registrar no plano (Notas) o total de asserts e o
   exit.
+
+---
+
+## Rodada de correção pós-reprovação (A1–A5 + menores)
+
+> Portão final reprovou /4, /5 e /10 (achados em `## feedback-reprovacao` do
+> nó). Correção aprovada pelo humano com as correções sugeridas — dispensa
+> novo portão de plano. Cada tarefa começa pelo teste que reproduz o furo.
+> SEGURANÇA: `hooks/graphify-limpeza` só roda com `uv`/`pipx` FALSOS e com o
+> PATH sem o diretório do uv/pipx reais (incidente 2026-09-29); `--remover`
+> só em fixture `mktemp -d`. A T8 blinda isso ANTES de qualquer outra rodada.
+
+## Tarefa 8: fixture sem uv/pipx reais no PATH
+
+- **depende-de**: []
+- **requisito**: **remover-graphify/13** (suíte cobre /2–/8 sem efeito fora
+  do repo) — aprendizado 2026-09-29: o `lim` usa `PATH="$B:$PATH"`, que
+  mantém alcançável o uv real (`AppData/Local/hermes/bin`,
+  `Python314/Scripts`); `test-dogfood.sh` roda o script com o PATH real.
+- **arquivos**: `tests/lib.sh` (helper `path_sem_uv`),
+  `tests/test-graphify-limpeza.sh`, `tests/test-dogfood.sh`.
+- **teste que reproduz**: guarda no topo das duas fixtures — nenhum diretório
+  do PATH da fixture (fora `$B`) tem `uv`/`uv.exe`/`pipx`/`pipx.exe`, e
+  `command -v uv` dentro da fixture é `$B/uv`; guarda falha → `ko` e `exit 1`
+  ANTES de rodar o script. RED: com o PATH atual a guarda falha.
+- **GREEN**: `path_sem_uv` (PATH sem dir que tenha uv/pipx) na `lib.sh`;
+  `FIXPATH="$B:$(path_sem_uv)"` no `lim`; dogfood roda com `PATH="$(path_sem_uv)"`.
+- [ ] RED  - [ ] GREEN (arquivo + gate)  - [ ] commit `test(remover-graphify/13): ...`
+
+## Tarefa 9: A1 — settings filtra por `hooks[].command` `^graphify\b`
+
+- **depende-de**: [Tarefa 8]
+- **requisito**: **remover-graphify/5** (preservar o resto; JSON válido) e
+  **/2** (listar só o que é do Graphify).
+- **teste que reproduz**: settings.json com grupo `Bash` contendo
+  `graphify hook-guard search` + `meu-guard`; settings.local.json só com
+  `rm -rf old-graphify-backup`; `.gitignore` com `graphify-out/`. Detecção =
+  exatamente `gitignore .gitignore` + `settings .claude/settings.json`;
+  `--remover` → `meu-guard` e matcher `Bash` ficam, `graphify` sai;
+  settings.local.json byte a byte igual (não reescrito).
+- **GREEN**: `json_graphify` filtra dentro de cada grupo as entradas de
+  `hooks[]` com `command =~ /^\s*graphify\b/`; grupo só sai se ficou vazio;
+  evento só sai se ficou vazio.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5): ...`
+
+## Tarefa 10: A2 — seção do CLAUDE.md termina no próximo H1 ou H2
+
+- **depende-de**: [Tarefa 9]
+- **requisito**: **remover-graphify/5**.
+- **teste que reproduz**: CLAUDE.md `# Projeto`, `## graphify`, `x`,
+  `# Anexo`, `y` → depois do `--remover`, exatamente `# Projeto`, `# Anexo`, `y`.
+- **GREEN**: fim da seção em `^#{1,2} ` (`/^##? /`).
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5): ...`
+
+## Tarefa 11: A3 — hook com start sem end falha e fica intocado
+
+- **depende-de**: [Tarefa 10]
+- **requisito**: **remover-graphify/5** e **/6** (falha → comando à mão).
+- **teste que reproduz**: post-commit `#!/bin/sh`, `# graphify-hook-start`,
+  `python rebuild`, `echo meu-hook-depois` → `--remover` sai 1,
+  `falhou git-hook .git/hooks/post-commit — à mão:`, arquivo idêntico.
+- **GREEN**: o filtro do hook sai ≠ 0 quando termina dentro do bloco → `ok=0`.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5,6): ...`
+
+## Tarefa 12: A4 — arquivo versionado removido sai como `versionado`
+
+- **depende-de**: [Tarefa 11]
+- **requisito**: **remover-graphify/4**.
+- **teste que reproduz**: `mkproj` (graphify-out/graph.json commitado) +
+  `core.hooksPath .githooks` com `post-checkout` só do Graphify e
+  `post-commit` misto, ambos commitados → `--remover` relata
+  `versionado graphify-out/graph.json`, `versionado .githooks/post-checkout`
+  e `versionado .githooks/post-commit`.
+- **GREEN**: caminhos que o script mexeu com sucesso (arquivo reescrito,
+  hook apagado, pasta apagada) → `git diff --name-only --relative -- <caminhos>`
+  → `versionado <arquivo>`.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/4): ...`
+
+## Tarefa 13: A5 — worktree sem "Índice de código"
+
+- **depende-de**: [Tarefa 12]
+- **requisito**: **remover-graphify/10**.
+- **teste que reproduz**: no laço do /9 em `tests/test-skills.sh`,
+  `grep -qiE '(í|Í|i)ndice de c(ó|o)digo'` em cada uma das 8 skills → `ko`
+  (forma com alternação: `[íi]` em bracket não casa `Í` por byte). RED:
+  `worktree` item 4.
+- **GREEN**: apagar o item 4 (2 linhas) de `skills/worktree/SKILL.md`.
+- [ ] RED  - [ ] GREEN  - [ ] commit `docs(remover-graphify/10): ...`
+
+## Tarefa 14: menores baratos
+
+- **depende-de**: [Tarefa 13]
+- **requisito**: **remover-graphify/5** (preservar o resto), **/2** (só a
+  Constituição), contrato do cabeçalho do script.
+- **testes que reproduzem**:
+  - CRLF sem newline final em MEMORY.md, `.gitignore`, CLAUDE.md, hook e
+    settings.json → depois do `--remover`, conteúdo exato com `\r\n` e sem
+    newline final (awk/grep do Git Bash comem o `\r`).
+  - settings com `1.50`, `10000000000000000000000`, `1e3` → ficam literais
+    (JSON::PP escreve `1.5`, `"1000…"` string, `1000`).
+  - `- **graphify**:` em `## Notas` (fora da Constituição) → não é resto; no
+    `--remover` com os dois, o de `## Notas` fica.
+  - dir inexistente → exit 2 e `diretório inexistente` no stderr (hoje: `cd`
+    falha com exit 1, contra "Exit 0 sempre" do cabeçalho); cabeçalho documenta.
+- **GREEN**: filtros de texto em `perl -ne` (preserva `\r`); `grava` tira o
+  `\r?\n` final quando o original não terminava em newline; números do JSON
+  viram marcador `"\u0001N<literal>"` antes do decode e voltam depois do
+  encode; saída do JSON em CRLF se o original era CRLF; bullet casado só entre
+  `^## Constitui` e o próximo `^## `.
+- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/2,5): ...`
+
+## Tarefa 15: gate final da rodada
+
+- **depende-de**: [Tarefa 14]
+- [ ] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
+  → `0`, `GATE: passou`; total de asserts SOMADO da saída; registrar nas Notas.
