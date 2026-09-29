@@ -39,9 +39,20 @@ Regras:
    quando ajudar. Caminho prometido, planejado ou inventado é falha do bloco —
    se o arquivo ainda não existe, ele não entra.
 4. **Próximo**: uma ação concreta, não "continuar". Se a próxima ação é um
-   portão humano, diga isso. Próxima fase se reancora só pelos artefatos (nó,
-   plano, relatório) → somar `— /clear recomendado (na sessão nova: "<fase> de <id>")`;
-   a decisão é do humano. Em autopilot, omitir: não há pausa entre fases.
+   portão humano, diga isso. Fim de scope, plan ou execute de MEDIUM/HIGH →
+   PARADA (seção Parada entre fases).
+
+## Parada entre fases
+
+Fim de scope, plan ou execute de MEDIUM/HIGH é PARADA: a fase NÃO emenda a fase seguinte na mesma resposta. O **Próximo** do bloco fica:
+
+**Próximo** — PARADA: rode /clear e, na sessão nova, `<fase> de <id>`
+
+Sem parada: porta de entrada → 1ª fase; LIGHT, HOTFIX; e2e ↔ validate; autopilot (execute pelo motor, seção na skill execute).
+
+- Humano diz "segue", "continua" ou "sem clear" → a fase seguinte roda em subagente de contexto zerado pelo `templates/fase-subagente-template.md`; a sessão principal recebe só o bloco dele.
+- Retomada (`<fase> de <id>`) com id fora do índice ou artefato da fase ausente → recusar nomeando o que falta e a fase certa.
+- Fase interrompida, bloqueada ou reprovada não tem PARADA: o **Próximo** é a decisão humana pendente.
 
 ## Categoria LIGHT e HOTFIX
 
