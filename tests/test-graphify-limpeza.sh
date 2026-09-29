@@ -148,4 +148,10 @@ assert_eq "$antes_l" "$(md5sum < "$P/.claude/settings.local.json")" "remover-gra
 # A2 (/5) — a seção do Graphify no CLAUDE.md termina no próximo H1 ou H2; o H1 seguinte fica
 mkvazio; printf '%s\n' '# Projeto' '## graphify' 'x' '# Anexo' 'y' > "$P/CLAUDE.md"; fake '' ''; lim --remover .
 assert_eq "$(printf '%s\n' '# Projeto' '# Anexo' 'y')" "$(cat "$P/CLAUDE.md")" "remover-graphify/5 A2 H1 depois da seção do Graphify fica"
+# A3 (/5,/6) — hook com marcador start sem end: falha com comando à mão, arquivo intocado
+mkvazio; printf '%s\n' '#!/bin/sh' '# graphify-hook-start' 'python rebuild' 'echo meu-hook-depois' > "$P/.git/hooks/post-commit"
+antes_h="$(md5sum < "$P/.git/hooks/post-commit")"; fake '' ''; lim --remover .
+assert_eq 1 "$code" "remover-graphify/6 A3 hook sem marcador end sai 1"
+assert_contains "$out" 'falhou git-hook .git/hooks/post-commit — à mão:' "remover-graphify/6 A3 hook sem end vira comando à mão"
+assert_eq "$antes_h" "$(md5sum 2>/dev/null < "$P/.git/hooks/post-commit")" "remover-graphify/5 A3 hook sem end fica intocado"
 report

@@ -104,7 +104,7 @@ for item in "${restos[@]}"; do
     constituicao)
       awk '/^- \*\*graphify\*\*:/{s=1;next} s&&/^[[:space:]]+[^[:space:]]/{next} {s=0;print}' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     git-hook)
-      if awk '/^# graphify-(checkout-)?hook-start/{s=1;next} s&&/^# graphify-(checkout-)?hook-end/{s=0;next} !s' "$alvo" > "$tmp"; then
+      if awk '/^# graphify-(checkout-)?hook-start/{s=1;next} s&&/^# graphify-(checkout-)?hook-end/{s=0;next} !s; END{exit s}' "$alvo" > "$tmp"; then   # start sem end → falha, intocado
         if ! grep -qvE '^(#!.*)?[[:space:]]*$' "$tmp"; then rm -f "$alvo" 2>/dev/null; [ -e "$alvo" ] && ok=0
         else grava "$alvo" || ok=0; fi
       else ok=0; fi ;;
