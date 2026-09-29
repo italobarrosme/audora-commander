@@ -243,4 +243,19 @@ assert_eq 0 "$code" "remover-graphify/4 M3 remoção dos dois sai 0"
 assert_contains "$(cat "$FAKE_LOG")" 'uv tool uninstall graphifyy' "remover-graphify/4 M3 desinstala do uv"
 assert_contains "$(cat "$FAKE_LOG")" 'pipx uninstall graphifyy' "remover-graphify/4 M3 desinstala do pipx"
 assert_eq "$(printf '%s\n' 'removido pasta graphify-out/' 'removido pacote graphifyy (uv)' 'removido pacote graphifyy (pipx)')" "$out" "remover-graphify/4 M3 relata os dois pacotes"
+# M4 (/6) — sem permissão de escrita: relata SÓ pela linha falhou (nada vaza no stderr), arquivo intocado
+mkvazio; mkdir -p "$P/.claude"
+perl -pi -e 'print "- **graphify**: ativo\n" if /^- \*\*gate\*\*:/' "$P/MEMORY.md"
+printf 'graphify-out/\n' >> "$P/.gitignore"
+printf '%s\n' '# P' '## graphify' 'x' '## Outra' > "$P/CLAUDE.md"
+hk1 'graphify hook-guard search' > "$P/.claude/settings.json"
+printf '%s\n' '#!/bin/sh' 'echo meu' '# graphify-hook-start' 'x' '# graphify-hook-end' > "$P/.git/hooks/post-commit"
+RO="MEMORY.md .gitignore CLAUDE.md .claude/settings.json .git/hooks/post-commit"
+antes_ro="$(cd "$P" && md5sum $RO)"; (cd "$P" && chmod a-w $RO); fake '' ''; lim --remover .
+(cd "$P" && chmod u+w $RO)
+assert_eq 1 "$code" "remover-graphify/6 M4 sem permissão sai 1"
+assert_not_contains "$out" 'Permission denied' "remover-graphify/6 M4 Permission denied não vaza"
+assert_empty "$(printf '%s\n' "$out" | grep -v '^falhou ')" "remover-graphify/6 M4 só linhas falhou (sem versionado, sem stderr)"
+assert_eq 5 "$(printf '%s\n' "$out" | grep -c '^falhou .* — à mão: ')" "remover-graphify/6 M4 um falhou com comando à mão por arquivo"
+assert_eq "$antes_ro" "$(cd "$P" && md5sum $RO)" "remover-graphify/6 M4 arquivos sem permissão ficam intocados"
 report

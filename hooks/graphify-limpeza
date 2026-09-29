@@ -118,7 +118,7 @@ mudou=(); falhas=0
 # Filtros de texto em perl: awk/grep do Git Bash descartam o \r (CRLF viraria LF).
 grava() {
   if [ -s "$1" ] && [ -n "$(tail -c1 "$1")" ]; then perl -0777 -pi -e 's/\r?\n\z//' "$tmp" || return 1; fi
-  cat "$tmp" > "$1" 2>/dev/null && mudou+=("$1")
+  { cat "$tmp" > "$1"; } 2>/dev/null && mudou+=("$1")   # erro do próprio ">" (sem permissão) não vaza: relato só pela linha falhou
 }
 amao() {
   case "$1" in

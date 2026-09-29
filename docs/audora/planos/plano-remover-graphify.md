@@ -899,7 +899,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   arquivo intocado e não relatado como `versionado`.
 - **GREEN**: `grava` redireciona o stderr ANTES do `>` (aprendizado
   2026-09-28: redirecionamento roda da esquerda para a direita).
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/6): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/6): ...`
 
 ## Tarefa 21: cosmético — `versionado` com nome não-ASCII legível
 
