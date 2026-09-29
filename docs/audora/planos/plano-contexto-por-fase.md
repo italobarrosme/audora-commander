@@ -50,6 +50,10 @@ em `test-docs.sh`. Gate não fica verde sem restaurar — decisão do humano
 - Asserts de `otimizacao-tokens/4` substituídos 1:1 (critério superado por esta demanda), mantendo a contagem.
 - validate e audora-commander não mudam: e2e ↔ validate e entrada → 1ª fase já emendam; validate está no teto de 7700 bytes.
 - Retomada inválida (/9) coberta na regra geral do template + plan e execute; validate fica de fora pelo teto de bytes.
+- (execute) Teste novo lê arquivo com `tr -d '\r' 2>/dev/null < "$F"` — na ordem do plano (`< "$F" 2>/dev/null`) o erro de arquivo ausente vazava no stderr do RED; saída limpa.
+- (execute) Tarefa 3 deu 6 FAIL no RED, não 7: `scope imprime a retomada` já casava o texto antigo ("na sessão nova: `plan de <id>`"); os 2 asserts de PARADA do scope mordem.
+- (execute) Tarefa 5 sem mudança: carga BASE 54888 ≤ 54900 — folga de só 12 bytes; próxima demanda que tocar a carga BASE vai estourar o teto.
+- (execute) Tarefa 7 ganhou 2ª mutação (`/clear recomendado` no template → `/13` reprova) além da do plan.
 
 ## Notas de sessão
 
@@ -79,7 +83,7 @@ em `test-docs.sh`. Gate não fica verde sem restaurar — decisão do humano
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — criar `tests/test-contexto-por-fase.sh`:
+- [x] **1. Escrever teste que falha** — criar `tests/test-contexto-por-fase.sh`:
 
 ~~~bash
 #!/usr/bin/env bash
@@ -115,8 +119,8 @@ assert_contains "$b2" '## Parada entre fases' "contexto-por-fase/1 template tem 
 assert_contains "$b2" 'autopilot (execute pelo motor' "contexto-por-fase/10 autopilot sem parada"
 ~~~
 
-- [ ] **2. Rodar e ver falhar pelo motivo certo** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 10 `FAIL:` (seção ausente + template ainda contém "/clear recomendado"), `PASS=0 FAIL=10`, `exit=1`. `bash tests/test-templates.sh` → 2 FAIL novos.
-- [ ] **3. Implementar o mínimo** — em `templates/bloco-fechamento-template.md`:
+- [x] **2. Rodar e ver falhar pelo motivo certo** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 10 `FAIL:` (seção ausente + template ainda contém "/clear recomendado"), `PASS=0 FAIL=10`, `exit=1`. `bash tests/test-templates.sh` → 2 FAIL novos.
+- [x] **3. Implementar o mínimo** — em `templates/bloco-fechamento-template.md`:
   - regra 4, trocar as duas últimas frases ("Próxima fase se reancora … não há pausa entre fases.") por: `Fim de scope, plan ou execute de MEDIUM/HIGH → PARADA (seção Parada entre fases).`
   - acrescentar, antes de `## Categoria LIGHT e HOTFIX`, a seção abaixo (formato exato; cada frase asserida numa linha só):
 
@@ -134,8 +138,8 @@ Sem parada: porta de entrada → 1ª fase; LIGHT, HOTFIX; e2e ↔ validate; auto
 - Fase interrompida, bloqueada ou reprovada não tem PARADA: o **Próximo** é a decisão humana pendente.
 ~~~
 
-- [ ] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → `PASS=10 FAIL=0`, `exit=0`; `bash tests/test-templates.sh` → `FAIL=0`.
-- [ ] **5. Commit** — `git add templates/bloco-fechamento-template.md tests/test-contexto-por-fase.sh tests/test-templates.sh && git commit -m "feat(contexto-por-fase/1,2,3,4,9,12,13): PARADA entre fases no template de fechamento"`.
+- [x] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → `PASS=10 FAIL=0`, `exit=0`; `bash tests/test-templates.sh` → `FAIL=0`.
+- [x] **5. Commit** — `git add templates/bloco-fechamento-template.md tests/test-contexto-por-fase.sh tests/test-templates.sh && git commit -m "feat(contexto-por-fase/1,2,3,4,9,12,13): PARADA entre fases no template de fechamento"`.
 
 ## Tarefa 2: Template do subagente de fase
 
@@ -156,7 +160,7 @@ Sem parada: porta de entrada → 1ª fase; LIGHT, HOTFIX; e2e ↔ validate; auto
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — inserir antes da linha `report`:
+- [x] **1. Escrever teste que falha** — inserir antes da linha `report`:
 
 ~~~bash
 # --- /5 /6 /7 /8 /11 — template do subagente de fase ---
@@ -174,8 +178,8 @@ assert_contains "$fs" 'reancore só pelos artefatos em disco' "/8 reancoragem pe
 assert_contains "$fs" 'uma tarefa por subagente' "/11 fallback do motor: uma tarefa por subagente"
 ~~~
 
-- [ ] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 10 FAIL novos (arquivo ausente), `PASS=10 FAIL=10`, `exit=1`.
-- [ ] **3. Implementar** — criar `templates/fase-subagente-template.md` (formato exato do prompt; cada frase asserida numa linha):
+- [x] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 10 FAIL novos (arquivo ausente), `PASS=10 FAIL=10`, `exit=1`.
+- [x] **3. Implementar** — criar `templates/fase-subagente-template.md` (formato exato do prompt; cada frase asserida numa linha):
 
 ~~~markdown
 # Template — prompt do subagente de fase
@@ -200,8 +204,8 @@ Regras da sessão principal:
 - Bloco devolvido com portão (plano HIGH, portão final da validate) → apresentar aqui e ESPERAR a decisão explícita.
 ~~~
 
-- [ ] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → `PASS=20 FAIL=0`, `exit=0`.
-- [ ] **5. Commit** — `git add templates/fase-subagente-template.md tests/test-contexto-por-fase.sh && git commit -m "feat(contexto-por-fase/5,6,7,8): template do subagente de fase"`.
+- [x] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → `PASS=20 FAIL=0`, `exit=0`.
+- [x] **5. Commit** — `git add templates/fase-subagente-template.md tests/test-contexto-por-fase.sh && git commit -m "feat(contexto-por-fase/5,6,7,8): template do subagente de fase"`.
 
 ## Tarefa 3: scope e plan param; plan recusa retomada sem escopo
 
@@ -216,7 +220,7 @@ Regras da sessão principal:
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — inserir antes de `report`:
+- [x] **1. Escrever teste que falha** — inserir antes de `report`:
 
 ~~~bash
 # --- /1 /9 /13 — scope e plan param; plan recusa retomada sem escopo ---
@@ -236,8 +240,8 @@ assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'recusar nomeando o que f
 for s in scope plan; do assert_contains "$(cat skills/$s/SKILL.md)" 'PARADA: rode /clear' "contexto-por-fase/1 $s para (substitui otimizacao-tokens/4)"; done
 ~~~
 
-- [ ] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 7 FAIL novos, `exit=1`; `bash tests/test-skills.sh` → 2 FAIL.
-- [ ] **3. Implementar** —
+- [x] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 7 FAIL novos, `exit=1`; `bash tests/test-skills.sh` → 2 FAIL.
+- [x] **3. Implementar** —
   - `skills/scope/SKILL.md` item 8, citação vira (3 linhas):
     `> Fase de escopo fechada. Artefatos salvos: [nó/spec].` /
     `> PARADA: rode /clear e, na sessão nova: \`plan de <id>\`.` /
@@ -247,8 +251,8 @@ for s in scope plan; do assert_contains "$(cat skills/$s/SKILL.md)" 'PARADA: rod
     `> PARADA: rode /clear e, na sessão nova: \`execute de <id>\`.` /
     `> Em autopilot, sem parada: seguir para a execute (motor).`
   - `skills/plan/SKILL.md` item 1, somar a frase: `Retomada (\`plan de <id>\`) com id fora do índice ou nó sem critérios aprovados → recusar nomeando o que falta e voltar ao scope.`
-- [ ] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh` → `FAIL=0`; `bash tests/test-skills.sh` → `FAIL=0`.
-- [ ] **5. Commit** — `git add skills/scope/SKILL.md skills/plan/SKILL.md tests/test-skills.sh tests/test-contexto-por-fase.sh && git commit -m "feat(contexto-por-fase/1,9,13): scope e plan fecham com PARADA"`.
+- [x] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh` → `FAIL=0`; `bash tests/test-skills.sh` → `FAIL=0`.
+- [x] **5. Commit** — `git add skills/scope/SKILL.md skills/plan/SKILL.md tests/test-skills.sh tests/test-contexto-por-fase.sh && git commit -m "feat(contexto-por-fase/1,9,13): scope e plan fecham com PARADA"`.
 
 ## Tarefa 4: execute — parada, LIGHT emenda, autopilot pelo motor
 
@@ -265,7 +269,7 @@ for s in scope plan; do assert_contains "$(cat skills/$s/SKILL.md)" 'PARADA: rod
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — inserir antes de `report`:
+- [x] **1. Escrever teste que falha** — inserir antes de `report`:
 
 ~~~bash
 # --- /1 /3 /9 /10 /11 — execute: parada, LIGHT emenda, autopilot pelo motor ---
@@ -282,8 +286,8 @@ assert_contains "$ex" 'sem plano-arquivo → recusar nomeando o que falta' "/9 e
 assert_contains "$(tr -d '\r' < hooks/loop)" 'LOOP: rodada recusada' "/11 motor imprime a recusa esperada"
 ~~~
 
-- [ ] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 6 FAIL novos (o assert de contrato passa), `exit=1`.
-- [ ] **3. Implementar** — em `skills/execute/SKILL.md`:
+- [x] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 6 FAIL novos (o assert de contrato passa), `exit=1`.
+- [x] **3. Implementar** — em `skills/execute/SKILL.md`:
   - item 1: `MEDIUM/HIGH sem plano-arquivo → volte à skill plan.` → `MEDIUM/HIGH sem plano-arquivo → recusar nomeando o que falta e voltar à skill plan.`
   - após a seção `## Volta de loop (motor \`hooks/loop\`)`, seção nova:
 
@@ -294,8 +298,8 @@ Nó MEDIUM com `autopilot: elegivel` → a execute roda pelo motor, sem parada: 
 ~~~
 
   - bloco de fechamento, `- **Próximo**: validate (que oferece o e2e antes do portão).` → `- **Próximo**: MEDIUM/HIGH → PARADA: rode /clear e, na sessão nova: \`validate de <id>\`; LIGHT/HOTFIX → validate na mesma sessão (sem parada).`
-- [ ] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh` → `FAIL=0`; `bash tests/test-skills.sh` → `FAIL=0` (execute ≤ 250 linhas).
-- [ ] **5. Commit** — `git add skills/execute/SKILL.md tests/test-contexto-por-fase.sh && git commit -m "feat(contexto-por-fase/1,3,9,10,11): execute para, LIGHT emenda, autopilot pelo motor"`.
+- [x] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh` → `FAIL=0`; `bash tests/test-skills.sh` → `FAIL=0` (execute ≤ 250 linhas).
+- [x] **5. Commit** — `git add skills/execute/SKILL.md tests/test-contexto-por-fase.sh && git commit -m "feat(contexto-por-fase/1,3,9,10,11): execute para, LIGHT emenda, autopilot pelo motor"`.
 
 ## Tarefa 5: Carga BASE dentro do teto
 
@@ -308,11 +312,11 @@ Nó MEDIUM com `autopilot: elegivel` → a execute roda pelo motor, sem parada: 
 
 Passos:
 
-- [ ] **1. Medir** — `bash tests/test-carga.sh; echo "exit=$?"` → ler `carga MEDIUM (bytes): base=… full=…`. `base ≤ 54900` → pular para o passo 4.
-- [ ] **2. Enxugar primeiro** — acima do teto: cortar redundância no template de fechamento (prosa que repete a seção de parada) e medir de novo.
-- [ ] **3. Subir teto só com motivo** — ainda acima: `TETO_BASE` = `base` medido + 3%, arredondado para cima em centenas; comentário no `tests/test-carga.sh` citando `contexto-por-fase` e o motivo (texto de parada troca ~bytes estáticos por corte de contexto por fase); registrar em "Decisões tomadas pela IA" deste plano para o portão.
-- [ ] **4. Verde** — `bash tests/test-carga.sh; echo "exit=$?"` → `FAIL=0`, `exit=0`.
-- [ ] **5. Commit** (se algo mudou) — `git add tests/test-carga.sh templates/bloco-fechamento-template.md && git commit -m "chore(contexto-por-fase): carga BASE medida após a parada"`.
+- [x] **1. Medir** — `bash tests/test-carga.sh; echo "exit=$?"` → ler `carga MEDIUM (bytes): base=… full=…`. `base ≤ 54900` → pular para o passo 4.
+- [x] **2. Enxugar primeiro** — acima do teto: cortar redundância no template de fechamento (prosa que repete a seção de parada) e medir de novo.
+- [x] **3. Subir teto só com motivo** — ainda acima: `TETO_BASE` = `base` medido + 3%, arredondado para cima em centenas; comentário no `tests/test-carga.sh` citando `contexto-por-fase` e o motivo (texto de parada troca ~bytes estáticos por corte de contexto por fase); registrar em "Decisões tomadas pela IA" deste plano para o portão.
+- [x] **4. Verde** — `bash tests/test-carga.sh; echo "exit=$?"` → `FAIL=0`, `exit=0`.
+- [x] **5. Commit** (se algo mudou) — `git add tests/test-carga.sh templates/bloco-fechamento-template.md && git commit -m "chore(contexto-por-fase): carga BASE medida após a parada"`.
 
 ## Tarefa 6: Docs descrevem a parada (READMEs EN/PT, fundamentos)
 
@@ -327,7 +331,7 @@ Passos:
 
 Passos:
 
-- [ ] **1. Escrever teste que falha** — inserir antes de `report`:
+- [x] **1. Escrever teste que falha** — inserir antes de `report`:
 
 ~~~bash
 # --- /1 /13 — docs descrevem a parada (READMEs EN/PT e fundamentos) ---
@@ -339,13 +343,13 @@ assert_not_contains "$pt" '`/clear` recomendado' "/13 README PT sem recomendaç�
 assert_contains "$(tr -d '\r' < docs/fundamentos.md)" 'a skill PARA e não emenda a fase seguinte' "/1 fundamentos P3 regra 6"
 ~~~
 
-- [ ] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 5 FAIL novos, `exit=1`.
-- [ ] **3. Implementar** —
+- [x] **2. Rodar e ver falhar** — `bash tests/test-contexto-por-fase.sh; echo "exit=$?"` → 5 FAIL novos, `exit=1`.
+- [x] **3. Implementar** —
   - README.md, scope: `- **Next**: \`plan\`, after a STOP — you run \`/clear\` and type \`plan de <id>\`; saying "segue" runs it in a clean-context subagent instead.` · plan: `- **Next**: \`execute\`, after a STOP (\`execute de <id>\`).` · execute: `- **Next**: \`validate\`, which offers the e2e — after a STOP in MEDIUM/HIGH; LIGHT/HOTFIX go straight on.`
   - README.pt-BR.md, scope: `- **Próxima**: \`plan\`, depois de uma PARADA — você roda \`/clear\` e digita \`plan de <id>\`; dizer "segue" roda a fase num subagente de contexto limpo.` · plan: `- **Próxima**: \`execute\`, depois de uma PARADA (\`execute de <id>\`).` · execute: `- **Próxima**: \`validate\`, que oferece o e2e — depois de uma PARADA em MEDIUM/HIGH; LIGHT/HOTFIX seguem direto.`
   - docs/fundamentos.md, P3 regra 6 vira: `6. **Fim de fase é PARADA; \`/clear\` é do humano**: ao fechar scope, plan ou execute de MEDIUM/HIGH, a skill PARA e não emenda a fase seguinte — imprime "PARADA: rode /clear e, na sessão nova: \`<fase> de <id>\`". "Segue" sem /clear roda a fase seguinte em subagente de contexto zerado.` (mantém a frase seguinte sobre notas de sessão).
-- [ ] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh` → `FAIL=0`; `bash tests/test-docs.sh` → só os 5 FAIL pré-existentes do `.claude-plugin/` (ou 0, se restaurado).
-- [ ] **5. Commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-contexto-por-fase.sh && git commit -m "docs(contexto-por-fase/1,13): READMEs e fundamentos descrevem a PARADA"`.
+- [x] **4. Rodar e ver passar** — `bash tests/test-contexto-por-fase.sh` → `FAIL=0`; `bash tests/test-docs.sh` → só os 5 FAIL pré-existentes do `.claude-plugin/` (ou 0, se restaurado).
+- [x] **5. Commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-contexto-por-fase.sh && git commit -m "docs(contexto-por-fase/1,13): READMEs e fundamentos descrevem a PARADA"`.
 
 ## Tarefa 7: Gate da demanda e prova por mutação
 
@@ -358,8 +362,8 @@ assert_contains "$(tr -d '\r' < docs/fundamentos.md)" 'a skill PARA e não emend
 
 Passos:
 
-- [ ] **1. Mutação** — `sed -i 's/PARADA: rode \/clear/Recomendo \/clear/' skills/plan/SKILL.md; bash tests/test-contexto-por-fase.sh > "$TEMP/mut.log" 2>&1; echo "exit=$?"` → `exit=1` com `FAIL: /1 plan instrui a parada` e `FAIL: /13 plan não volta a só recomendar`.
-- [ ] **2. Restaurar** — `git checkout skills/plan/SKILL.md` (já commitado na Tarefa 3) e rodar de novo → `FAIL=0`.
-- [ ] **3. Gate** — `bash hooks/gate contexto-por-fase > "$TEMP/gate.log" 2>&1; echo "exit=$?"` → `exit=0` e `GATE: passou` (exige `.claude-plugin/` restaurado).
-- [ ] **4. Total de asserts somado da saída real** — `bash tests/run.sh 2>&1 | grep -o 'PASS=[0-9]*' | cut -d= -f2 | awk '{s+=$1} END{print s}'` → linha de base 741 + 39 do arquivo novo = 780 (mesma contagem nos arquivos antigos).
-- [ ] **5. Sem commit** — só evidência para a validate.
+- [x] **1. Mutação** — `sed -i 's/PARADA: rode \/clear/Recomendo \/clear/' skills/plan/SKILL.md; bash tests/test-contexto-por-fase.sh > "$TEMP/mut.log" 2>&1; echo "exit=$?"` → `exit=1` com `FAIL: /1 plan instrui a parada` e `FAIL: /13 plan não volta a só recomendar`.
+- [x] **2. Restaurar** — `git checkout skills/plan/SKILL.md` (já commitado na Tarefa 3) e rodar de novo → `FAIL=0`.
+- [x] **3. Gate** — `bash hooks/gate contexto-por-fase > "$TEMP/gate.log" 2>&1; echo "exit=$?"` → `exit=0` e `GATE: passou` (exige `.claude-plugin/` restaurado).
+- [x] **4. Total de asserts somado da saída real** — `bash tests/run.sh 2>&1 | grep -o 'PASS=[0-9]*' | cut -d= -f2 | awk '{s+=$1} END{print s}'` → linha de base 741 + 39 do arquivo novo = 780 (mesma contagem nos arquivos antigos).
+- [x] **5. Sem commit** — só evidência para a validate.
