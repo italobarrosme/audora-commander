@@ -12,25 +12,34 @@
 #   settings .claude/settings.local.json
 #   claude-md CLAUDE.md
 #   pacote graphifyy (uv) | pacote graphifyy (pipx)   (só se houver outro resto)
-# Saída vazia = limpo. Exit 0 sempre. Não escreve nada.
+# Constituição = bullet "- **graphify**:" DENTRO da seção "## Constituição".
+# Saída vazia = limpo. Exit 0. Não escreve nada.
 # --remover: por item, na ordem acima, "removido <tipo> <alvo>" ou
 #   "falhou <tipo> <alvo> — à mão: <comando>"; depois "versionado <arquivo>"
 #   para cada arquivo rastreado que o script alterou ou apagou. Nunca commita.
 #   Só a parte do Graphify sai; hook que só tinha o Graphify sai inteiro.
+#   Arquivo reescrito mantém CRLF/LF, a ausência de newline final e os números
+#   do JSON como estavam (chaves do JSON saem em ordem alfabética).
 #   Exit 0 = tudo removido | 1 = algum falhou (os demais seguem). Sem resto → silêncio, 0.
+# dir inexistente (os dois modos): "diretório inexistente" no stderr, exit 2.
 set -uo pipefail
 
 remover=0
 [ "${1:-}" = "--remover" ] && { remover=1; shift; }
-cd "${1:-.}" || exit 1
+[ -d "${1:-.}" ] || { echo "graphify-limpeza: diretório inexistente: ${1:-.}" >&2; exit 2; }
+cd "${1:-.}" || exit 2
 
 # json_graphify <arquivo> <detectar|remover>
 # exit 0 = tem hook do Graphify (remover: imprime o JSON sem ele), 1 = não tem, 2 = JSON inválido.
 # Hook do Graphify = entrada de hooks.<evento>[].hooks[] cujo command casa ^graphify\b;
 # o grupo só sai se ficou vazio, o evento idem (hook alheio no mesmo grupo fica).
+# Números viram a string-marcador "\u0001N<literal>" antes do decode e voltam
+# literais depois do encode (JSON::PP normaliza 1.50→1.5 e inteiro grande→string).
 json_graphify() {
   MODO="$2" perl -MJSON::PP -0777 -e '
-    my $j = eval { JSON::PP->new->utf8->decode(scalar <STDIN>) };
+    my $t = scalar <STDIN>; my $crlf = $t =~ /\r\n/;
+    $t =~ s/("(?:[^"\\]|\\.)*")|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/defined $1 ? $1 : "\"\\u0001N$2\""/ge;
+    my $j = eval { JSON::PP->new->utf8->decode($t) };
     exit 2 unless ref $j eq "HASH";
     my $H = $j->{hooks}; exit 1 unless ref $H eq "HASH";
     my $eh = sub { my $h = shift; ref $h eq "HASH" && defined $h->{command} && !ref $h->{command} && $h->{command} =~ /^\s*graphify\b/ };
@@ -51,12 +60,15 @@ json_graphify() {
     }
     exit 1 unless $n;
     delete $j->{hooks} unless %$H;
-    print JSON::PP->new->utf8->canonical->pretty->space_before(0)->indent_length(2)->encode($j) if $ENV{MODO} eq "remover";
-    exit 0' < "$1"
+    exit 0 unless $ENV{MODO} eq "remover";
+    my $o = JSON::PP->new->utf8->canonical->pretty->space_before(0)->indent_length(2)->encode($j);
+    $o =~ s/"\\u0001N([^"]*)"/$1/g;
+    $o =~ s/\n/\r\n/g if $crlf;
+    print $o; exit 0' < "$1"
 }
 
 restos=()
-[ -f MEMORY.md ] && grep -qE '^- \*\*graphify\*\*:' MEMORY.md && restos+=("constituicao MEMORY.md")
+[ -f MEMORY.md ] && perl -ne '$c = /^## Constitui/ if /^## /; if ($c && /^- \*\*graphify\*\*:/) { $f = 1; last } END { $? = $f ? 0 : 1 }' MEMORY.md && restos+=("constituicao MEMORY.md")
 hk="$(git rev-parse --git-path hooks 2>/dev/null)"
 if [ -n "$hk" ]; then
   for h in post-commit post-checkout; do
@@ -86,7 +98,12 @@ fi
 # --- remoção: item a item, na ordem da detecção; falha não para os demais ---
 tmp="$(mktemp)"; trap 'rm -f "$tmp"' EXIT
 mudou=(); falhas=0
-grava() { cat "$tmp" > "$1" 2>/dev/null && mudou+=("$1"); }   # preserva o modo do arquivo
+# grava <arquivo>: $tmp por cima (preserva o modo); original sem newline final → sem ele também.
+# Filtros de texto em perl: awk/grep do Git Bash descartam o \r (CRLF viraria LF).
+grava() {
+  if [ -s "$1" ] && [ -n "$(tail -c1 "$1")" ]; then perl -0777 -pi -e 's/\r?\n\z//' "$tmp" || return 1; fi
+  cat "$tmp" > "$1" 2>/dev/null && mudou+=("$1")
+}
 amao() {
   case "$1" in
     constituicao) echo 'apague o bullet "- **graphify**:" da Constituição em MEMORY.md' ;;
@@ -102,9 +119,9 @@ for item in "${restos[@]}"; do
   tipo="${item%% *}"; alvo="${item#* }"; ok=1; inst=""
   case "$tipo" in
     constituicao)
-      awk '/^- \*\*graphify\*\*:/{s=1;next} s&&/^[[:space:]]+[^[:space:]]/{next} {s=0;print}' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
-    git-hook)
-      if awk '/^# graphify-(checkout-)?hook-start/{s=1;next} s&&/^# graphify-(checkout-)?hook-end/{s=0;next} !s; END{exit s}' "$alvo" > "$tmp"; then   # start sem end → falha, intocado
+      perl -ne '$c = /^## Constitui/ if /^## /; if ($c && /^- \*\*graphify\*\*:/) { $s = 1; next } next if $s && /^[ \t]+\S/; $s = 0; print' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+    git-hook)   # start sem end → falha, arquivo intocado
+      if perl -ne 'if (/^# graphify-(checkout-)?hook-start/) { $s = 1; next } if ($s && /^# graphify-(checkout-)?hook-end/) { $s = 0; next } print unless $s; END { $? = $s ? 3 : 0 }' "$alvo" > "$tmp"; then
         if ! grep -qvE '^(#!.*)?[[:space:]]*$' "$tmp"; then
           rm -f "$alvo" 2>/dev/null; if [ -e "$alvo" ]; then ok=0; else mudou+=("$alvo"); fi
         else grava "$alvo" || ok=0; fi
@@ -112,11 +129,11 @@ for item in "${restos[@]}"; do
     pasta)
       rm -rf graphify-out 2>/dev/null; mudou+=(graphify-out); [ -e graphify-out ] && ok=0 ;;
     gitignore)
-      { grep -vE '^/?graphify-out/?[[:space:]]*$' "$alvo" > "$tmp" || true; } && grava "$alvo" || ok=0 ;;
+      perl -ne 'print unless /^\/?graphify-out\/?\s*$/' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     settings)
       json_graphify "$alvo" remover > "$tmp" && grava "$alvo" || ok=0 ;;
     claude-md)
-      awk '/^## [Gg]raphify[[:space:]]*$/{s=1;next} s&&/^##? /{s=0} !s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+      perl -ne 'if (/^## [Gg]raphify\s*$/) { $s = 1; next } $s = 0 if $s && /^##? /; print unless $s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     pacote)
       inst="${alvo#*(}"; inst="${inst%)}"
       if [ "$inst" = uv ]; then uv tool uninstall graphifyy >/dev/null 2>&1 || ok=0

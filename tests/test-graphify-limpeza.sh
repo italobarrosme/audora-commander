@@ -46,7 +46,7 @@ mkproj; fake '' ''; lim .
 assert_eq 0 "$code" "remover-graphify/2 detecção sai 0"
 assert_eq "$RESTOS" "$out" "remover-graphify/2 lista os 8 restos"
 # /2 — SÓ o que existe, um tipo por vez
-mkvazio; printf '%s\n' '- **graphify**: recusado' >> "$P/MEMORY.md"; fake '' ''; lim .
+mkvazio; perl -pi -e 'print "- **graphify**: recusado\n" if /^- \*\*gate\*\*:/' "$P/MEMORY.md"; fake '' ''; lim .   # dentro da Constituição
 assert_eq 'constituicao MEMORY.md' "$out" "remover-graphify/2 bullet graphify com qualquer valor"
 mkvazio; printf 'graphify-out/\n' >> "$P/.gitignore"; fake 'graphifyy v0.9.11' ''; lim .
 assert_eq "$(printf '%s\n' 'gitignore .gitignore' 'pacote graphifyy (uv)')" "$out" "remover-graphify/2,3 só o .gitignore + pacote uv"
@@ -165,4 +165,35 @@ assert_eq 0 "$code" "remover-graphify/4 A4 remoção com hooks versionados sai 0
 for v in graphify-out/graph.json .githooks/post-checkout .githooks/post-commit; do
   assert_contains "$out" "versionado $v" "remover-graphify/4 A4 relata versionado $v"
 done
+# menores (/5) — CRLF e ausência de newline final preservados; números do settings literais
+vis() { perl -0777 -pe 's/\r/\\r/g; s/\n/\\n/g' 2>/dev/null < "$1"; }
+mkvazio; mkdir -p "$P/.claude"
+printf '## Constituição\r\n- **stack**: bash\r\n- **graphify**: ativo\r\n- **gate**: x' > "$P/MEMORY.md"
+printf 'node_modules/\r\ngraphify-out/\r\n*.log' > "$P/.gitignore"
+printf '# P\r\n## graphify\r\nx\r\n## Outra\r\nfim' > "$P/CLAUDE.md"
+printf '#!/bin/sh\r\necho meu\r\n# graphify-hook-start\r\nx\r\n# graphify-hook-end\r\necho fim' > "$P/.git/hooks/post-commit"
+printf '{\r\n  "n": 1.50,\r\n  "big": 10000000000000000000000,\r\n  "e": 1e3,\r\n  "hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "graphify x"}]}]}\r\n}' > "$P/.claude/settings.json"
+fake '' ''; lim --remover .
+assert_eq 0 "$code" "remover-graphify/5 CRLF remoção sai 0"
+assert_eq '## Constituição\r\n- **stack**: bash\r\n- **gate**: x' "$(vis "$P/MEMORY.md")" "remover-graphify/5 MEMORY.md mantém CRLF e sem newline final"
+assert_eq 'node_modules/\r\n*.log' "$(vis "$P/.gitignore")" "remover-graphify/5 .gitignore mantém CRLF e sem newline final"
+assert_eq '# P\r\n## Outra\r\nfim' "$(vis "$P/CLAUDE.md")" "remover-graphify/5 CLAUDE.md mantém CRLF e sem newline final"
+assert_eq '#!/bin/sh\r\necho meu\r\necho fim' "$(vis "$P/.git/hooks/post-commit")" "remover-graphify/5 hook mantém CRLF e sem newline final"
+assert_eq '{\r\n  "big": 10000000000000000000000,\r\n  "e": 1e3,\r\n  "n": 1.50\r\n}' "$(vis "$P/.claude/settings.json")" "remover-graphify/5 settings mantém CRLF, sem newline final e números literais"
+mkvazio; printf 'node_modules/\r\ngraphify-out/' > "$P/.gitignore"; fake '' ''; lim --remover .
+assert_eq 'node_modules/' "$(vis "$P/.gitignore")" "remover-graphify/5 última linha removida não deixa \\r\\n sobrando"
+mkvazio; printf 'a\ngraphify-out/\nb\n' > "$P/.gitignore"; lim --remover .
+assert_eq 'a\nb\n' "$(vis "$P/.gitignore")" "remover-graphify/5 LF com newline final continua igual"
+# menores (/2,/5) — bullet graphify: só DENTRO da Constituição é resto
+mkvazio; printf '%s\n' '' '## Notas' '- **graphify**: citado em nota, não é Constituição' >> "$P/MEMORY.md"; fake '' ''; lim .
+assert_empty "$out" "remover-graphify/2 bullet graphify fora da Constituição não é resto"
+printf '%s\n' '## Constituição' '- **graphify**: ativo' '- **gate**: x' '## Notas' '- **graphify**: nota' > "$P/MEMORY.md"; lim --remover .
+assert_eq "$(printf '%s\n' '## Constituição' '- **gate**: x' '## Notas' '- **graphify**: nota')" "$(cat "$P/MEMORY.md")" "remover-graphify/5 só o bullet da Constituição sai"
+# menores — dir inexistente: erro no stderr e exit 2, coerente com o cabeçalho
+lim "$SP/nao-existe"
+assert_eq 2 "$code" "graphify-limpeza dir inexistente sai 2"
+assert_contains "$out" 'diretório inexistente' "graphify-limpeza dir inexistente avisa"
+lim --remover "$SP/nao-existe"
+assert_eq 2 "$code" "graphify-limpeza --remover dir inexistente sai 2"
+assert_contains "$(sed -n '1,25p' "$L")" 'dir inexistente' "graphify-limpeza cabeçalho documenta dir inexistente"
 report
