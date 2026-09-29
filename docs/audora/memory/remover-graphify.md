@@ -45,6 +45,14 @@ e gravação da recusa.
   as correções sugeridas pela revisão — dispensa novo portão de plano
   para essa rodada.
 
+- 2026-09-29 (humano): portão final APROVADO na 3ª passagem. Bloqueantes
+  teóricos (husky `.husky/_`, `core.hooksPath` custom ou worktree ligado,
+  hook inline antigo no settings) ausentes nos 12 projetos (levantamento só
+  leitura) e fora da letra do /2 — viram meta futura. `.claude/CLAUDE.md` e
+  `.claude/skills/graphify/` (só SellInfoTurbo) limpos à mão. Regra "nunca
+  varrer o repo para entender" (saiu da execute e da memory) fica em aberto
+  para conversa — não promover decisão viva sobre localização de código.
+
 gate-asserts: queda aprovada no escopo (/13) — asserts de graphify-status, consultar-codigo, etapa Graphify do bootstrap e dogfood antigo saem com o comportamento; limpeza (/2–/8) coberta por tests/test-graphify-limpeza.sh.
 
 ## delta
