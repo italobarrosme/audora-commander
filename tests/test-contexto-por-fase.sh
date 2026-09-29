@@ -43,4 +43,17 @@ assert_contains "$(tr -d '\r' < skills/scope/SKILL.md)" 'na sessão nova: `plan 
 assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'na sessão nova: `execute de <id>`' "/1 plan imprime a retomada"
 assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'recusar nomeando o que falta' "/9 plan recusa retomada sem escopo"
 
+# --- /1 /3 /9 /10 /11 — execute: parada, LIGHT emenda, autopilot pelo motor ---
+ex="$(tr -d '\r' < skills/execute/SKILL.md)"
+bf="$(sec skills/execute/SKILL.md '## Bloco de fechamento')"
+assert_contains "$bf" 'PARADA: rode /clear e, na sessão nova: `validate de <id>`' "/1 execute MEDIUM/HIGH para"
+assert_contains "$bf" 'LIGHT/HOTFIX → validate na mesma sessão' "/3 LIGHT/HOTFIX emendam"
+ap="$(sec skills/execute/SKILL.md '## Autopilot MEDIUM (motor)')"
+assert_contains "$ap" 'hooks/loop" <id>' "/10 autopilot roda o motor"
+assert_contains "$ap" 'LOOP: rodada recusada' "/11 reconhece a recusa do motor"
+assert_contains "$ap" 'uma tarefa por subagente' "/11 fallback em subagentes limpos"
+assert_contains "$ex" 'sem plano-arquivo → recusar nomeando o que falta' "/9 execute recusa retomada sem plano"
+# contrato: a frase que a skill espera existe no motor (passa já no red)
+assert_contains "$(tr -d '\r' < hooks/loop)" 'LOOP: rodada recusada' "/11 motor imprime a recusa esperada"
+
 report

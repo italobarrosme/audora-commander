@@ -17,8 +17,8 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 ## Fluxo
 
 1. **Reancorar**: reler o plano (`docs/audora/planos/plano-<id>.md`) e o nó do
-   MEMORY. MEDIUM/HIGH sem plano-arquivo → volte à skill plan. LIGHT/HOTFIX:
-   sem plano; os critérios do nó guiam direto. Repetir esta releitura no
+   MEMORY. MEDIUM/HIGH sem plano-arquivo → recusar nomeando o que falta e
+   voltar à skill plan. LIGHT/HOTFIX: sem plano; os critérios do nó guiam direto. Repetir esta releitura no
    início de CADA sessão e após qualquer compactação de contexto.
 2. **Ordem mecânica**: próxima tarefa = a que tem todas as `depende-de`
    concluídas. Tarefa marcada `expandir: sim` → quebrar em subtarefas AGORA
@@ -71,6 +71,10 @@ o motor roda o gate ao fim da volta, commita no verde e marca a tarefa; no
 vermelho o diff vira patch em `docs/audora/planos/loop/<id>/` e o
 diagnóstico vai para as Notas de sessão do plano.
 
+## Autopilot MEDIUM (motor)
+
+Nó MEDIUM com `autopilot: elegivel` → a execute roda pelo motor, sem parada: `bash "<raiz do plugin>/hooks/loop" <id>` (em background; ler a saída inteira). Saída com `LOOP: rodada recusada` → avisar em 1 linha o que faltou e rodar as tarefas em subagentes de contexto zerado, uma tarefa por subagente, pelo `templates/fase-subagente-template.md` — o autopilot segue. Rodada terminada → validate na mesma sessão.
+
 ## Quando algo dá errado
 
 - **Teste falha por motivo desconhecido** → skill **debug** (modo sintoma):
@@ -105,7 +109,7 @@ de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sess
   tarefa, com o resultado ao lado (red/green, asserts, exit code). Essa lista
   sai **só no fim da fase**, nunca a cada tarefa verde.
 - **Arquivos**: os que a execução tocou, do diff real.
-- **Próximo**: validate (que oferece o e2e antes do portão).
+- **Próximo**: MEDIUM/HIGH → PARADA: rode /clear e, na sessão nova: `validate de <id>`; LIGHT/HOTFIX → validate na mesma sessão (sem parada).
 
 ## PRÓXIMA SKILL
 
