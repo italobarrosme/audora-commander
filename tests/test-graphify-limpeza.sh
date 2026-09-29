@@ -16,6 +16,7 @@ mkvazio() {
   rm -rf "$P"; mkdir -p "$P"
   git -C "$P" init -q; git -C "$P" config user.email t@t; git -C "$P" config user.name t
   git -C "$P" config core.autocrlf false
+  git -C "$P" config core.excludesFile "$SP/sem-ignore-global"   # ignore global da máquina não vaza na fixture
   printf '%s\n' 'memory-schema: 1' '' '## Constituição [carga: sempre]' '' '- **stack**: bash' \
     '- **gate**: `bash gate`' '' '## Aprendizados [carga: sempre]' '' \
     '- 2026-08-26 | execute | graphify hook install grava _PINNED vazio' > "$P/MEMORY.md"
@@ -75,4 +76,57 @@ snap() { (cd "$P" && find . -path ./.git/objects -prune -o -type f -print | sort
 antes="$(snap)"; lim .; lim .
 assert_eq "$antes" "$(snap)" "remover-graphify/7 detecção (2x) não altera arquivo nenhum"
 assert_contains "$out" 'pacote graphifyy (uv)' "remover-graphify/7 a oferta volta na carga seguinte"
+# /4 — aprovado: remove tudo, relata item a item, lista versionados, não commita
+mkproj; fake 'graphifyy v0.9.11' ''; lim --remover .
+assert_eq 0 "$code" "remover-graphify/4 remoção completa sai 0"
+while IFS= read -r l; do assert_contains "$out" "removido $l" "remover-graphify/4 relata $l"; done <<< "$RESTOS"
+assert_contains "$out" 'removido pacote graphifyy (uv)' "remover-graphify/3,4 relata o pacote"
+assert_contains "$(cat "$FAKE_LOG")" 'uv tool uninstall graphifyy' "remover-graphify/3,4 desinstala pelo instalador que o tem"
+for v in MEMORY.md .gitignore .claude/settings.json .claude/settings.local.json CLAUDE.md; do
+  assert_contains "$out" "versionado $v" "remover-graphify/4 relata versionado $v"
+done
+assert_eq 2 "$(git -C "$P" rev-list --count HEAD)" "remover-graphify/4 não commita"
+fake '' ''; lim .
+assert_empty "$out" "remover-graphify/4 depois da remoção não sobra resto"
+# /5 — só a parte do Graphify sai; o resto fica
+pc="$(cat "$P/.git/hooks/post-commit" 2>/dev/null)"
+assert_contains "$pc" 'echo meu-hook' "remover-graphify/5 hook preserva o conteúdo alheio"
+assert_not_contains "$pc" 'graphify' "remover-graphify/5 bloco do Graphify saiu do hook"
+assert_no_file "$P/.git/hooks/post-checkout" "remover-graphify/5 hook só do Graphify sai inteiro"
+assert_no_file "$P/graphify-out" "remover-graphify/4 pasta graphify-out/ removida"
+assert_eq "$(printf '%s\n' 'node_modules/' '*.log')" "$(cat "$P/.gitignore")" "remover-graphify/5 .gitignore preserva as outras linhas"
+for s in .claude/settings.json .claude/settings.local.json; do
+  perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)' < "$P/$s" 2>/dev/null && ok || ko "remover-graphify/5 $s JSON inválido"
+  assert_not_contains "$(cat "$P/$s")" 'graphify' "remover-graphify/5 $s sem hook do Graphify"
+done
+sj="$(cat "$P/.claude/settings.json")"
+assert_contains "$sj" 'meu-lint' "remover-graphify/5 settings preserva hook alheio"
+assert_contains "$sj" 'Bash(ls:*)' "remover-graphify/5 settings preserva permissions"
+cm="$(cat "$P/CLAUDE.md")"
+for s in '# Projeto' '## Regras' 'use tabs' '## Outra' 'fim'; do assert_contains "$cm" "$s" "remover-graphify/5 CLAUDE.md preserva '$s'"; done
+assert_not_contains "$cm" 'graphify' "remover-graphify/5 seção do Graphify saiu do CLAUDE.md"
+assert_not_contains "$cm" '### detalhe' "remover-graphify/5 subseção do Graphify saiu junto"
+mm="$(cat "$P/MEMORY.md")"
+assert_not_contains "$mm" 'graphify' "remover-graphify/5 bullet e continuação saíram da Constituição"
+assert_contains "$mm" '- **stack**: bash' "remover-graphify/5 Constituição preserva stack"
+assert_contains "$mm" '- **gate**: `bash gate`' "remover-graphify/5 Constituição preserva gate"
+# /6 — falha num item não trava os demais; relata o comando à mão
+mkproj; printf '{"hooks": graphify quebrado' > "$P/.claude/settings.json"; fake 'graphifyy v0.9.11' '' 1; lim --remover .
+assert_eq 1 "$code" "remover-graphify/6 falha parcial sai 1"
+assert_contains "$out" 'falhou settings .claude/settings.json — à mão:' "remover-graphify/6 JSON inválido vira comando à mão"
+assert_eq '{"hooks": graphify quebrado' "$(cat "$P/.claude/settings.json")" "remover-graphify/6 arquivo que falhou fica intocado"
+assert_contains "$out" 'falhou pacote graphifyy (uv) — à mão: uv tool uninstall graphifyy' "remover-graphify/6 desinstalação com erro vira comando à mão"
+assert_contains "$out" 'removido settings .claude/settings.local.json' "remover-graphify/6 segue no item seguinte"
+assert_contains "$out" 'removido claude-md CLAUDE.md' "remover-graphify/6 segue até o fim"
+assert_not_contains "$out" 'versionado .claude/settings.json' "remover-graphify/6 arquivo que falhou não é relatado como alterado"
+# /3,/4 — pacote via pipx é desinstalado pelo pipx
+mkvazio; mkdir "$P/graphify-out"; fake '' 'graphifyy 0.9.11'; lim --remover .
+assert_contains "$(cat "$FAKE_LOG")" 'pipx uninstall graphifyy' "remover-graphify/3,4 desinstala via pipx"
+assert_contains "$out" 'removido pacote graphifyy (pipx)' "remover-graphify/4 relata o pacote pipx"
+# /8 — --remover sem resto: silêncio; /4 — fora de repo git: sem versionado
+mkvazio; fake 'graphifyy v0.9.11' ''; lim --remover .
+assert_eq 0 "$code" "remover-graphify/8 --remover em projeto limpo sai 0"
+assert_empty "$out" "remover-graphify/8 --remover em projeto limpo é silencioso"
+rm -rf "$P"; mkdir -p "$P/graphify-out"; fake '' ''; lim --remover .
+assert_eq 'removido pasta graphify-out/' "$out" "remover-graphify/4 fora de repo git remove sem versionado"
 report

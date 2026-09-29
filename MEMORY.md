@@ -77,6 +77,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-28 | validate | Teste que mede BYTES de arquivo versionado tem de contar sem `\r` (`tr -d '\r' < f | wc -c`): com `core.autocrlf=true` o checkout grava CRLF e o mesmo texto muda de tamanho — deu vermelho falso no gate pós-merge e contaminou a medição 'depois'. Medir sobre blob (`git show REF:f`).
 - 2026-09-28 | execute | Redirecionamento roda da esquerda p/ direita: `tr -d '\r' < "$F" 2>/dev/null` vaza "No such file" no stderr quando `$F` falta (o `<` falha antes do `2>` existir) — em teste que lê arquivo talvez ausente, `2>/dev/null` vem ANTES do `<`.
 - 2026-09-28 | e2e | e2e de HOOK com `claude -p`: fixture própria por cenário, `--permission-mode acceptEdits --output-format stream-json --verbose`, prompt abrindo com "Isto é um TESTE DE HOOK. Não siga nenhum framework…" e pedindo a mensagem de hook LITERAL sem consertar — o SessionStart não desvia o modelo, e a prova sai do `.jsonl` (`grep memory-validate`) e do disco intocado.
+- 2026-09-29 | execute | Fixture de repo git em teste herda o ignore GLOBAL da máquina (`~/.config/git/ignore` aqui ignora `**/.claude/settings.local.json`) — `git add -A` deixa o arquivo fora do índice sem aviso. Fixture fixa `git config core.excludesFile <inexistente>` local.
 
 ## Índice de nós [carga: sempre]
 

@@ -13,6 +13,11 @@
 #   claude-md CLAUDE.md
 #   pacote graphifyy (uv) | pacote graphifyy (pipx)   (só se houver outro resto)
 # Saída vazia = limpo. Exit 0 sempre. Não escreve nada.
+# --remover: por item, na ordem acima, "removido <tipo> <alvo>" ou
+#   "falhou <tipo> <alvo> — à mão: <comando>"; depois "versionado <arquivo>"
+#   para cada arquivo rastreado que o script alterou. Nunca commita.
+#   Só a parte do Graphify sai; hook que só tinha o Graphify sai inteiro.
+#   Exit 0 = tudo removido | 1 = algum falhou (os demais seguem). Sem resto → silêncio, 0.
 set -uo pipefail
 
 remover=0
@@ -65,5 +70,51 @@ if [ "${#restos[@]}" -gt 0 ]; then
 fi
 
 [ "${#restos[@]}" -eq 0 ] && exit 0
-printf '%s\n' "${restos[@]}"
-exit 0
+[ "$remover" -eq 0 ] && { printf '%s\n' "${restos[@]}"; exit 0; }
+
+# --- remoção: item a item, na ordem da detecção; falha não para os demais ---
+tmp="$(mktemp)"; trap 'rm -f "$tmp"' EXIT
+mudou=(); falhas=0
+grava() { cat "$tmp" > "$1" 2>/dev/null && mudou+=("$1"); }   # preserva o modo do arquivo
+amao() {
+  case "$1" in
+    constituicao) echo 'apague o bullet "- **graphify**:" da Constituição em MEMORY.md' ;;
+    git-hook)     echo "apague de $2 o bloco entre graphify-*hook-start e graphify-*hook-end" ;;
+    pasta)        echo 'rm -rf graphify-out' ;;
+    gitignore)    echo 'apague a linha graphify-out/ de .gitignore' ;;
+    settings)     echo "apague de $2 as entradas de hooks que citam graphify" ;;
+    claude-md)    echo 'apague a seção "## graphify" de CLAUDE.md' ;;
+    pacote)       echo "$3 uninstall graphifyy" ;;
+  esac
+}
+for item in "${restos[@]}"; do
+  tipo="${item%% *}"; alvo="${item#* }"; ok=1; inst=""
+  case "$tipo" in
+    constituicao)
+      awk '/^- \*\*graphify\*\*:/{s=1;next} s&&/^[[:space:]]+[^[:space:]]/{next} {s=0;print}' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+    git-hook)
+      if awk '/^# graphify-(checkout-)?hook-start/{s=1;next} s&&/^# graphify-(checkout-)?hook-end/{s=0;next} !s' "$alvo" > "$tmp"; then
+        if ! grep -qvE '^(#!.*)?[[:space:]]*$' "$tmp"; then rm -f "$alvo" 2>/dev/null; [ -e "$alvo" ] && ok=0
+        else grava "$alvo" || ok=0; fi
+      else ok=0; fi ;;
+    pasta)
+      rm -rf graphify-out 2>/dev/null; [ -e graphify-out ] && ok=0 ;;
+    gitignore)
+      { grep -vE '^/?graphify-out/?[[:space:]]*$' "$alvo" > "$tmp" || true; } && grava "$alvo" || ok=0 ;;
+    settings)
+      json_graphify "$alvo" remover > "$tmp" && grava "$alvo" || ok=0 ;;
+    claude-md)
+      awk '/^## [Gg]raphify[[:space:]]*$/{s=1;next} s&&/^## /{s=0} !s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+    pacote)
+      inst="${alvo#*(}"; inst="${inst%)}"
+      if [ "$inst" = uv ]; then uv tool uninstall graphifyy >/dev/null 2>&1 || ok=0
+      else pipx uninstall graphifyy >/dev/null 2>&1 || ok=0; fi
+      [ "$inst" = uv ] && inst="uv tool" ;;
+  esac
+  if [ "$ok" -eq 1 ]; then echo "removido $item"
+  else echo "falhou $item — à mão: $(amao "$tipo" "$alvo" "$inst")"; falhas=$((falhas+1)); fi
+done
+for f in ${mudou[@]+"${mudou[@]}"}; do
+  git ls-files --error-unmatch -- "$f" >/dev/null 2>&1 && echo "versionado $f"
+done
+[ "$falhas" -eq 0 ]

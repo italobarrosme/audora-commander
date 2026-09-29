@@ -97,6 +97,10 @@ PATH do Bash — consultar-codigo degradado, avisado).
   não tem motivo para aparecer (8 skills, fundamentos, manifests, templates,
   hooks exceto o script); nos READMEs e na skill memory, que descrevem a
   oferta, por frases proibidas. `test-docs` deixa de exigir Graphify no PRD.
+- 2026-09-29 (execute, T2): fixture de `test-graphify-limpeza.sh` fixa
+  `core.excludesFile` local num arquivo inexistente — o ignore global desta
+  máquina (`~/.config/git/ignore`: `**/.claude/settings.local.json`) deixava
+  o arquivo fora do índice e o assert `versionado` falhava por ambiente.
 
 ---
 
