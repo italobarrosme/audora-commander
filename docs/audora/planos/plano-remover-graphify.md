@@ -65,6 +65,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
 ## Notas de sessão
 
 - 2026-09-29 (plan): suíte base verde — 780 asserts, 14 arquivos, exit 0.
+- 2026-09-29: plano aprovado no portão HIGH (humano: "continue"); execute via subagente de contexto zerado.
 - Até a T3 remover os hooks de git do Graphify deste repo, commitar com
   `GRAPHIFY_SKIP_HOOK=1 git commit ...` (evita reconstrução em background).
 - Commits: `git add` com caminhos listados, nunca `-A`. Rodar gate/suíte
