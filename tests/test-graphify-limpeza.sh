@@ -222,4 +222,9 @@ done
 for s in '"Read"' '"Glob"' '"Grep"'; do
   assert_not_contains "$sj" "$s" "remover-graphify/5 B1 grupo $s que ficou vazio sai"
 done
+# M1 (/5) — comentário que cita graphify logo acima de graphify-out/ sai junto; o resto fica
+mkvazio; printf '%s\n' 'node_modules/' '# comentário alheio' '# graphify: índice local' 'graphify-out/' '*.log' > "$P/.gitignore"; fake '' ''; lim --remover .
+assert_eq "$(printf '%s\n' 'node_modules/' '# comentário alheio' '*.log')" "$(cat "$P/.gitignore")" "remover-graphify/5 M1 comentário do Graphify acima de graphify-out/ sai; alheio fica"
+mkvazio; printf '%s\n' '# Graphify também gera cache' 'dist/' 'graphify-out/' > "$P/.gitignore"; lim --remover .
+assert_eq "$(printf '%s\n' '# Graphify também gera cache' 'dist/')" "$(cat "$P/.gitignore")" "remover-graphify/5 M1 comentário que não está logo acima fica"
 report

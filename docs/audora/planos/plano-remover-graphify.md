@@ -862,7 +862,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `--remover`, exatamente `node_modules/`, `# comentário alheio`, `*.log`.
 - **GREEN**: linhas de comentário imediatamente acima de `graphify-out/` que
   citam graphify (qualquer caixa) saem junto; comentário que não cita fica.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/5): ...`
 
 ## Tarefa 18: M2 — `## graphify` dentro de bloco cercado não é seção
 

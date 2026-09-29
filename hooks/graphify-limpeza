@@ -17,7 +17,8 @@
 # --remover: por item, na ordem acima, "removido <tipo> <alvo>" ou
 #   "falhou <tipo> <alvo> — à mão: <comando>"; depois "versionado <arquivo>"
 #   para cada arquivo rastreado que o script alterou ou apagou. Nunca commita.
-#   Só a parte do Graphify sai; hook que só tinha o Graphify sai inteiro.
+#   Só a parte do Graphify sai; hook que só tinha o Graphify sai inteiro;
+#   no .gitignore, comentários que citam graphify logo acima de graphify-out/ saem junto.
 #   Arquivo reescrito mantém CRLF/LF, a ausência de newline final e os números
 #   do JSON como estavam (chaves do JSON saem em ordem alfabética).
 #   Exit 0 = tudo removido | 1 = algum falhou (os demais seguem). Sem resto → silêncio, 0.
@@ -139,8 +140,8 @@ for item in "${restos[@]}"; do
       else ok=0; fi ;;
     pasta)
       rm -rf graphify-out 2>/dev/null; mudou+=(graphify-out); [ -e graphify-out ] && ok=0 ;;
-    gitignore)
-      perl -ne 'print unless /^\/?graphify-out\/?\s*$/' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+    gitignore)  # comentários que citam graphify logo acima da linha saem junto
+      perl -ne 'if (/^\s*#/) { push @c, $_; next } if (/^\/?graphify-out\/?\s*$/) { pop @c while @c && $c[-1] =~ /graphify/i; print @c; @c = (); next } print @c, $_; @c = (); END { print @c }' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     settings)
       json_graphify "$alvo" remover > "$tmp" && grava "$alvo" || ok=0 ;;
     claude-md)
