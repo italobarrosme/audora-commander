@@ -36,6 +36,8 @@ e gravação da recusa.
   post-commit instalado pelo bootstrap).
 - 2026-09-29: decisões do scope (6 do humano, 4 da IA) na spec.
 
+gate-asserts: queda aprovada no escopo (/13) — asserts de graphify-status, consultar-codigo, etapa Graphify do bootstrap e dogfood antigo saem com o comportamento; limpeza (/2–/8) coberta por tests/test-graphify-limpeza.sh.
+
 ## delta
 
 ## e2e
