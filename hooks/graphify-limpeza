@@ -115,7 +115,7 @@ for item in "${restos[@]}"; do
     settings)
       json_graphify "$alvo" remover > "$tmp" && grava "$alvo" || ok=0 ;;
     claude-md)
-      awk '/^## [Gg]raphify[[:space:]]*$/{s=1;next} s&&/^## /{s=0} !s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
+      awk '/^## [Gg]raphify[[:space:]]*$/{s=1;next} s&&/^##? /{s=0} !s' "$alvo" > "$tmp" && grava "$alvo" || ok=0 ;;
     pacote)
       inst="${alvo#*(}"; inst="${inst%)}"
       if [ "$inst" = uv ]; then uv tool uninstall graphifyy >/dev/null 2>&1 || ok=0

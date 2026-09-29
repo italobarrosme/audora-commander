@@ -145,4 +145,7 @@ assert_contains "$sj" '"meu-guard"' "remover-graphify/5 A1 hook alheio do mesmo 
 assert_contains "$sj" '"matcher": "Bash"' "remover-graphify/5 A1 grupo com hook alheio mantém o matcher"
 assert_not_contains "$sj" 'graphify' "remover-graphify/5 A1 só o hook do Graphify sai do grupo"
 assert_eq "$antes_l" "$(md5sum < "$P/.claude/settings.local.json")" "remover-graphify/5 A1 settings sem hook do Graphify não é reescrito"
+# A2 (/5) — a seção do Graphify no CLAUDE.md termina no próximo H1 ou H2; o H1 seguinte fica
+mkvazio; printf '%s\n' '# Projeto' '## graphify' 'x' '# Anexo' 'y' > "$P/CLAUDE.md"; fake '' ''; lim --remover .
+assert_eq "$(printf '%s\n' '# Projeto' '# Anexo' 'y')" "$(cat "$P/CLAUDE.md")" "remover-graphify/5 A2 H1 depois da seção do Graphify fica"
 report
