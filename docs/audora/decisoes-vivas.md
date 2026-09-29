@@ -26,6 +26,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-09-01 | decisoes-vivas-poda | Decisão que dá para impor por teste, hook ou config não entra em decisoes-vivas.md — o lugar dela é o teste; prosa duplicada deriva do que descreve.
 - 2026-09-27 | limpeza-codigo-morto | Mudança incompatível não ganha seção de renomeação nem aviso de versão anterior enquanto a adesão for pequena — o custo aceito é projeto com arquivo antigo ficar sem orientação do framework.
 - 2026-09-29 | contexto-por-fase | Retomada de fase é pelo comando impresso `<fase> de <id>` digitado pelo humano — sem SessionStart sugerindo a retomada e sem campo `fase:` no nó.
+- 2026-09-29 | remover-graphify | Script com efeito fora do repo (desinstalar pacote, mexer na máquina) só roda em teste ou revisão com executáveis falsos e PATH sem os reais — e o prompt do subagente revisor diz isso.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro

@@ -78,6 +78,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-29 | execute | Fixture de repo git em teste herda o ignore GLOBAL da máquina (`~/.config/git/ignore` aqui ignora `**/.claude/settings.local.json`) — `git add -A` deixa o arquivo fora do índice sem aviso. Fixture fixa `git config core.excludesFile <inexistente>` local.
 
 - 2026-09-29 | validate | Script com efeito FORA do repo (`uv/pipx uninstall`) testado ou revisado por subagente precisa de `uv`/`pipx` FALSOS no PATH, e o prompt do revisor tem de dizer isso — a revisão adversarial rodou `graphify-limpeza --remover` com o `uv` real e desinstalou o `graphifyy` da máquina sem autorização.
+- 2026-09-29 | execute | Reescrever arquivo filtrando com awk/grep do Git Bash perde o `\r` (CRLF vira LF) — filtro que precisa preservar CRLF e newline final usa `perl -ne`.
+- 2026-09-29 | execute | `JSON::PP` (perl, sem jq) reescreve JSON sem ordem de chaves e normaliza números (`1.50`→`1.5`, inteiro grande vira string) — preservar número exige marcador string antes do decode.
 
 ## Índice de nós [carga: sempre]
 
@@ -97,7 +99,7 @@ time pequeno em projetos web/mobile/api.
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - validate-estado-no | delivered | Estado validado no nó → docs/audora/arquivo/2026-09-28-validate-estado-no.md
 - contexto-por-fase | delivered | Contexto zerado por fase → docs/audora/arquivo/2026-09-29-contexto-por-fase.md
-- remover-graphify | in-progress | Remover Graphify | Remover o Graphify por completo do plugin — oferta, índice, consulta e status | graphify, remocao, indice, consultar-codigo, breaking | skills/memory/, hooks/graphify-limpeza
+- remover-graphify | delivered | Remover Graphify → docs/audora/arquivo/2026-09-29-remover-graphify.md
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/

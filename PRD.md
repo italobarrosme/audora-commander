@@ -6,8 +6,8 @@
 
 Plugin de Claude Code (padrão Superpowers) que implementa um framework de
 desenvolvimento de software assistido por IA, guiado por 5 Princípios de AI
-Coding: memória dinâmica do produto (MEMORY vivo, com o código indexado por
-baixo pelo Graphify), planejamento just-in-time, separação "O Quê"/"Como",
+Coding: memória dinâmica do produto (MEMORY vivo), planejamento
+just-in-time, separação "O Quê"/"Como",
 processo proporcional ao risco da demanda, e IA executa / humano decide.
 Público-alvo: dev solo ou time pequeno construindo web/mobile/api com Claude
 Code.
@@ -16,16 +16,16 @@ Code.
 
 - Markdown (skills, templates, docs) + JSON (plugin.json, marketplace.json,
   hooks.json) + bash (hooks: `session-start`, `memory-guard`,
-  `memory-validate`; scripts auxiliares `graphify-status` e `gate`; sem jq —
-  awk/sed/grep/perl do Git for Windows).
+  `memory-validate`; scripts auxiliares `graphify-limpeza`, `gate` e `loop`;
+  sem jq — awk/sed/grep/perl do Git for Windows).
 - Suíte de regressão do plugin em bash: `tests/run.sh` + `tests/test-*.sh`
-  (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`).
-- Dependência externa opcional: [Graphify](https://github.com/safishamsi/graphify)
-  (`graphifyy` no PyPI, Python 3.10+; índice de código local via tree-sitter,
-  sem API key). Oferecido pela skill `memory`; ausência degrada para
-  grep/Read com aviso.
+  (fixtures em `mktemp -d`, `tests/lib.sh` com asserts, `run_hook` e
+  `path_sem_uv`/`guarda_sem_uv` — script com efeito fora do repo só alcança
+  `uv`/`pipx` falsos).
+- Sem dependência externa de índice de código: o Graphify saiu na 0.10.0;
+  a localização de código é a busca normal do harness.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.9.0.
+  Versão 0.10.0.
 
 ## Arquitetura
 
@@ -35,28 +35,24 @@ Code.
   HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
   Projeto sem `MEMORY.md` → oferece bootstrap.
 - `memory` — dona do MEMORY (memória externa do produto, `memory-schema: 1`):
-  `MEMORY.md` é índice mestre (Propósito, Constituição — inclui o bullet
-  `graphify: ativo | recusado | sem-codigo` —, Aprendizados, linha rica por
-  nó); corpo de cada nó em `docs/audora/memory/<id>.md` com frontmatter
-  grep-ável e critérios EARS numerados `<id>/<n>`; decisões duráveis em
-  `docs/audora/decisoes-vivas.md`; arquivamento por `git mv` para
-  `docs/audora/arquivo/`. Operações: carregar-contexto, bootstrap (com a
-  etapa Graphify: oferta de instalação, `graphify update .`, git hook
-  post-commit, `graphify-out/` no gitignore), registrar-no, registrar-delta,
-  registrar-aprendizado (1 linha `data | fase | aprendizado`, na hora, por
-  qualquer fase), compactar, e consultar-codigo — protocolo único de consulta
-  ao índice (`graphify query/path/affected`, ler só os `src=` apontados,
-  degradação avisada em falha). A skill é um **roteador**:
-  `carregar-contexto`, `registrar-delta` e `registrar-aprendizado` ficam inline
-  no `SKILL.md` (143 linhas); `bootstrap`, `registrar-no`, `compactar` e
-  `consultar-codigo` vivem em `skills/memory/references/`, lidas UMA por
-  operação — reference ausente avisa e degrada, sem travar a fase.
+  `MEMORY.md` é índice mestre (Propósito, Constituição, Aprendizados, linha
+  rica por nó); corpo de cada nó em `docs/audora/memory/<id>.md` com
+  frontmatter grep-ável e critérios EARS numerados `<id>/<n>`; decisões
+  duráveis em `docs/audora/decisoes-vivas.md`; arquivamento por `git mv` para
+  `docs/audora/arquivo/`. Operações: carregar-contexto (inclui a oferta de
+  limpar restos do Graphify, abaixo), bootstrap (MEMORY + etapa gate, sem
+  índice de código), registrar-no, registrar-delta, registrar-aprendizado
+  (1 linha `data | fase | aprendizado`, na hora, por qualquer fase) e
+  compactar. A skill é um **roteador**: `carregar-contexto`,
+  `registrar-delta` e `registrar-aprendizado` ficam inline no `SKILL.md`
+  (150 linhas); `bootstrap`, `registrar-no` e `compactar` vivem em
+  `skills/memory/references/`, lidas UMA por operação — reference ausente
+  avisa e degrada, sem travar a fase.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
 - `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes
   (código completo do teste + assinaturas; implementação só quando não-óbvia);
-  localiza código via consultar-codigo quando `graphify: ativo`.
-- `execute` — TDD red-green com evidência real; commit por etapa verde;
-  consultar-codigo antes de tocar código vizinho da tarefa. MEDIUM em
+  localiza código pela busca normal do harness.
+- `execute` — TDD red-green com evidência real; commit por etapa verde. MEDIUM em
   autopilot elegível roda pelo motor `hooks/loop`; motor recusando a rodada
   → uma tarefa por subagente de contexto zerado.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
@@ -66,11 +62,20 @@ Code.
   arquiva o nó por movimento). Roteador: fluxo até o portão inline; sync,
   filtro de decisões vivas e Fechamento LIGHT em `skills/validate/references/`;
   reference ausente mantém o portão e não roda o sync.
-- `debug` — debug com causa raiz demonstrada (modo sintoma; caminho que falha
-  via consultar-codigo quando ativo) ou caçada de defeitos por classes com
-  verificação de cada achado (modo caçada).
+- `debug` — debug com causa raiz demonstrada (modo sintoma) ou caçada de
+  defeitos por classes com verificação de cada achado (modo caçada).
 
-scope, e2e e validate não consultam o Graphify (não exploram código cru).
+Limpeza do Graphify: o plugin não oferece, instala, consulta nem cita mais o
+índice de código. Em projeto com restos, a carga de contexto roda
+`hooks/graphify-limpeza [dir]` (só detecta, 1 linha por resto: bullet
+`graphify:` na Constituição, bloco em `post-commit`/`post-checkout`,
+`graphify-out/`, linha no `.gitignore`, hook em `.claude/settings(.local).json`,
+seção `## graphify` no `CLAUDE.md`, e o pacote `graphifyy` no uv/pipx — este
+só quando há outro resto) e oferece remover tudo antes da demanda. Aprovado →
+`--remover` tira só a parte do Graphify (preserva CRLF, newline final,
+números do JSON e hooks alheios), relata `removido` / `falhou` + comando à
+mão / `versionado` por item e nunca commita. Recusa não é gravada — a oferta
+volta na próxima carga. Projeto sem resto não ouve falar do Graphify.
 
 Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
 a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
@@ -89,14 +94,38 @@ dentro do enum EN no índice E no frontmatter de cada nó, nó sem `estado:`, e
 — só na escrita do índice — estado índice ≠ nó; transição é nó primeiro,
 índice depois) — erro volta ao modelo via exit 2; arquivo sem
 `memory-schema: 1` na linha 1 é ignorado; sem bash, as skills seguem sendo a
-fonte normativa. `hooks/graphify-status [dir]` classifica o índice de código
-(`ausente | sem-indice | sem-codigo | ativo`) lendo `file_type` do
-`graphify-out/graph.json`.
+fonte normativa.
 
 Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios)
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Graphify removido em 2026-09-29 (nó `remover-graphify`, HIGH, versão 0.10.0,
+breaking: sai o bullet `graphify:` da Constituição e o post-commit que o
+bootstrap instalava). Motivo medido nos 12 projetos que usam o plugin: 78
+consultas ao índice contra 1.044 Read e 181 Grep (~6% das buscas de código),
+10 de 41 checagens de status dando `ausente` por PATH, e uma reconstrução por
+commit em todos. Saíram a etapa Graphify do bootstrap, a operação
+`consultar-codigo`, `hooks/graphify-status` (teste apagado com autorização do
+humano) e toda menção em skills, templates, manifests, READMEs e
+`docs/fundamentos.md`; plan, execute e debug usam a busca normal do harness,
+sem regra substituta. No lugar entrou `hooks/graphify-limpeza`: a carga de
+contexto detecta os restos e oferece a limpeza, inclusive `uv`/`pipx
+uninstall graphifyy` (arquitetura acima). Este repositório ficou limpo
+(dogfood) e os aprendizados sobre o Graphify foram marcados
+`[invalidado-em:]`. Suíte 780 → 935 asserts (`tests/test-graphify-limpeza.sh`
+com repo git real e `uv`/`pipx` falsos; queda de `graphify-status` e
+`consultar-codigo` justificada por `gate-asserts:`). Portão final reprovado
+duas vezes pela revisão adversarial — filtro do settings agindo no grupo e
+sem casar o formato real do Graphify (caminho absoluto entre aspas), seção do
+`CLAUDE.md` engolindo o H1 seguinte, hook sem marcador de fim, versionado não
+relatado, pacote só no uv — e aprovado na 3ª passagem. Incidente: a 1ª revisão
+rodou `--remover` com o `uv` real e desinstalou o `graphifyy` desta máquina
+(humano: não reinstalar); daí a decisão viva de executáveis falsos. e2e pulado
+pelo humano. Os 12 projetos locais recebem a oferta na próxima demanda; no
+SellInfoTurbo `.claude/CLAUDE.md` e `.claude/skills/graphify/` foram limpos à
+mão. Pendências aceitas no portão: metas 4 e 5.
 
 Contexto zerado por fase entregue em 2026-09-29 (nó `contexto-por-fase`,
 MEDIUM). Ataca o custo de token dominante medido em 2026-09-28: a demanda
@@ -449,3 +478,14 @@ automática (recomendada) vs. manual.
    e2e aceitas no portão) — unificar a pontuação (template com vírgula,
    skills com dois-pontos), recusa de retomada imprimindo o bloco de fase
    bloqueada, e folga na carga BASE (12 bytes do teto).
+4. Candidato a nó: bordas da limpeza do Graphify (`remover-graphify`,
+   aceitas no portão; ausentes nos 12 projetos por levantamento só leitura e
+   fora da letra do /2) — hooks de git em husky (`.husky/_`), em
+   `core.hooksPath` custom e em worktree ligado; hook inline antigo do
+   Graphify no settings; bordas de Markdown/JSON apontadas pela revisão; e
+   dois formatos reais que o Graphify grava e a limpeza não cobre:
+   `.claude/CLAUDE.md` e `.claude/skills/graphify/`.
+5. Pergunta aberta (`remover-graphify`): a regra "nunca varrer o repo para
+   entender" saiu da execute e da memory junto com o Graphify — decidir em
+   conversa se volta, em que forma, ou se fica fora. Até lá, nenhuma decisão
+   viva sobre localização de código.

@@ -1,9 +1,9 @@
 ---
 id: remover-graphify
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, .gitignore, MEMORY.md, README.md, README.pt-BR.md, docs/audora/planos/plano-remover-graphify.md, docs/audora/specs/remover-graphify-escopo.md, docs/fundamentos.md, hooks/graphify-limpeza, hooks/graphify-status, hooks/session-start, skills/debug/SKILL.md, skills/execute/SKILL.md, skills/memory/SKILL.md, skills/memory/references/bootstrap.md, skills/memory/references/consultar-codigo.md, skills/plan/SKILL.md, skills/worktree/SKILL.md, templates/MEMORY-template.md, tests/lib.sh, tests/test-carga.sh, tests/test-docs.sh, tests/test-dogfood.sh, tests/test-graphify-limpeza.sh, tests/test-graphify-status.sh, tests/test-session-start.sh, tests/test-skills.sh, tests/test-templates.sh, docs/audora/decisoes-vivas.md, PRD.md]
 keywords: [graphify, remocao, indice, consultar-codigo, breaking]
 resumo: Remover o Graphify por completo do plugin — oferta, índice, consulta e status.
 atualizado-em: 2026-09-29
