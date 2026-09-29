@@ -70,6 +70,11 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `GRAPHIFY_SKIP_HOOK=1 git commit ...` (evita reconstrução em background).
 - Commits: `git add` com caminhos listados, nunca `-A`. Rodar gate/suíte
   redirecionando para arquivo e ler o exit real (`> log 2>&1; echo $?`).
+- 2026-09-29 (execute, subagente): T1–T5 verdes, gate exit 0 em cada uma
+  (commits 7cca981, 3556406, a210b87, adedb1f, ef4eb54). PARADO antes da T6:
+  sem autorização do humano registrada para apagar
+  `tests/test-graphify-status.sh` — nada da T6 foi tocado. Retomar pela T6
+  passo 1 depois do "sim" (registrar em `## decisoes` do nó).
 - `$SCRATCH` nos comandos = scratchpad da sessão de execução (sem um,
   `SCRATCH="$(mktemp -d)"`). Suíte/gate passam de 120s → `run_in_background`
   e ler o arquivo de saída.
