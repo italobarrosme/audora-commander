@@ -161,6 +161,6 @@ for item in "${restos[@]}"; do
 done
 # versionado = arquivo rastreado que o script alterou OU apagou (inclui o que havia dentro da pasta)
 if [ "${#mudou[@]}" -gt 0 ]; then
-  git --no-pager diff --name-only --relative -- "${mudou[@]}" 2>/dev/null | sed 's/^/versionado /'
+  git -c core.quotePath=false --no-pager diff --name-only --relative -- "${mudou[@]}" 2>/dev/null | sed 's/^/versionado /'
 fi
 [ "$falhas" -eq 0 ]

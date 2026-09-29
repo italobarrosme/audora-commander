@@ -258,4 +258,8 @@ assert_not_contains "$out" 'Permission denied' "remover-graphify/6 M4 Permission
 assert_empty "$(printf '%s\n' "$out" | grep -v '^falhou ')" "remover-graphify/6 M4 só linhas falhou (sem versionado, sem stderr)"
 assert_eq 5 "$(printf '%s\n' "$out" | grep -c '^falhou .* — à mão: ')" "remover-graphify/6 M4 um falhou com comando à mão por arquivo"
 assert_eq "$antes_ro" "$(cd "$P" && md5sum $RO)" "remover-graphify/6 M4 arquivos sem permissão ficam intocados"
+# cosmético (/4) — versionado com nome não-ASCII sai legível, sem aspas nem escape octal
+mkvazio; mkdir "$P/graphify-out"; echo '{}' > "$P/graphify-out/relatório.json"
+git -C "$P" add graphify-out; git -C "$P" commit -qm acento; fake '' ''; lim --remover .
+assert_eq "$(printf '%s\n' 'removido pasta graphify-out/' 'versionado graphify-out/relatório.json')" "$out" "remover-graphify/4 versionado com acento legível"
 report

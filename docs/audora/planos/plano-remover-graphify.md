@@ -909,7 +909,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `--remover` relata `versionado graphify-out/relatório.json` (hoje sai
   `"graphify-out/relat\303\263rio.json"`).
 - **GREEN**: `git -c core.quotePath=false diff --name-only ...`.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/4): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/4): ...`
 
 ## Tarefa 22: gate final da rodada 2
 
