@@ -75,3 +75,24 @@ pulado-pelo-humano (2026-09-29: "pula o e2e passa so o validate")
     reescrever settings que não tem hook do Graphify e não normalizar
     números; bullet `graphify:` casado só dentro da Constituição;
     diretório inexistente coerente com o cabeçalho do script.
+
+- 2026-09-29 (2º portão final, humano: "A" — reprovar e corrigir). Gate
+  passou (898 asserts); A1–A5 e menores da 1ª rodada confirmados
+  corrigidos. Refutados de novo /2, /4, /5:
+  - B1 (bloqueante): filtro `^\s*graphify\b` do settings não casa o
+    formato REAL do Graphify — `"\"C:\Users\...\.local\bin\graphify.EXE\"
+    hook-guard search"` (caminho absoluto entre aspas); também escapam
+    `/usr/local/bin/graphify ...` e `uvx graphify ...`. Casar o binário
+    `graphify` (`.exe`/`.EXE`, qualquer caixa) no primeiro token, com ou sem
+    aspas e caminho; fixture com o formato real.
+  - Falso positivo: `graphify-backup.sh` casa `^graphify\b` e vira resto.
+  - M1 (/5): comentário do Graphify acima de `graphify-out/` no
+    `.gitignore` fica órfão.
+  - M2 (/5): `## graphify` dentro de bloco de código cercado no CLAUDE.md
+    apaga até o fim do arquivo — ignorar cabeçalho dentro de cerca.
+  - M3 (/3): pacote no uv E no pipx — só o do uv é removido; remover dos
+    dois.
+  - M4 (/6): `Permission denied` vaza no stderr; relatar só pela linha
+    `falhou`.
+  - Cosmético (/4): nome não-ASCII com escape octal — `-c
+    core.quotePath=false`.
