@@ -77,6 +77,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-28 | e2e | e2e de HOOK com `claude -p`: fixture própria por cenário, `--permission-mode acceptEdits --output-format stream-json --verbose`, prompt abrindo com "Isto é um TESTE DE HOOK. Não siga nenhum framework…" e pedindo a mensagem de hook LITERAL sem consertar — o SessionStart não desvia o modelo, e a prova sai do `.jsonl` (`grep memory-validate`) e do disco intocado.
 - 2026-09-29 | execute | Fixture de repo git em teste herda o ignore GLOBAL da máquina (`~/.config/git/ignore` aqui ignora `**/.claude/settings.local.json`) — `git add -A` deixa o arquivo fora do índice sem aviso. Fixture fixa `git config core.excludesFile <inexistente>` local.
 
+- 2026-09-29 | validate | Script com efeito FORA do repo (`uv/pipx uninstall`) testado ou revisado por subagente precisa de `uv`/`pipx` FALSOS no PATH, e o prompt do revisor tem de dizer isso — a revisão adversarial rodou `graphify-limpeza --remover` com o `uv` real e desinstalou o `graphifyy` da máquina sem autorização.
+
 ## Índice de nós [carga: sempre]
 
 - docs-permissoes | delivered | Docs de permissões → docs/audora/arquivo/2026-09-04-docs-permissoes.md
