@@ -86,6 +86,9 @@ PATH do Bash — consultar-codigo degradado, avisado).
   com `core.hooksPath` vazio (não disparar os hooks falsos); o teste antigo
   "bullet com qualquer valor" anexava o bullet depois de `## Aprendizados` —
   passou a inseri-lo DENTRO da Constituição (menor aprovado: só lá é resto).
+- 2026-09-29 (execute, T15): gate final da rodada em árvore limpa (HEAD 60756eb):
+  `GATE: passou`, exit 0; suíte 14 arquivos, 898 asserts (somados da saída),
+  0 com falha.
 - `$SCRATCH` nos comandos = scratchpad da sessão de execução (sem um,
   `SCRATCH="$(mktemp -d)"`). Suíte/gate passam de 120s → `run_in_background`
   e ler o arquivo de saída.
@@ -815,5 +818,5 @@ PATH do Bash — consultar-codigo degradado, avisado).
 ## Tarefa 15: gate final da rodada
 
 - **depende-de**: [Tarefa 14]
-- [ ] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
+- [x] Árvore limpa; `bash hooks/gate remover-graphify > "$SCRATCH/gate-final.log" 2>&1; echo $?`
   → `0`, `GATE: passou`; total de asserts SOMADO da saída; registrar nas Notas.
