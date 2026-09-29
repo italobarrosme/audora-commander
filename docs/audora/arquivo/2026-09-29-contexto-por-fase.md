@@ -1,12 +1,12 @@
 ---
 id: contexto-por-fase
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [templates/bloco-fechamento-template.md, templates/fase-subagente-template.md, skills/scope/SKILL.md, skills/plan/SKILL.md, skills/execute/SKILL.md, tests/test-contexto-por-fase.sh, tests/test-skills.sh, tests/test-templates.sh, README.md, README.pt-BR.md, docs/fundamentos.md, MEMORY.md, PRD.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-contexto-por-fase.md, docs/audora/planos/plano-contexto-por-fase.md]
 keywords: [contexto, clear, fase, tokens, parada]
 resumo: Toda fase termina e para, mandando /clear e o comando de retomada, sem emendar a fase seguinte na mesma sessão.
-atualizado-em: 2026-09-28
+atualizado-em: 2026-09-29
 ---
 
 # contexto-por-fase
@@ -89,6 +89,15 @@ devolvem à fase chamadora; leitura por seção (`leitura-por-secao`) e limpeza
   motor recusando → subagente(s) limpos (descartados: emendar inline, parar).
 - 2026-09-28 (IA): MEDIUM — só comportamento das skills, sem mudar formato
   de artefato persistido.
+- 2026-09-29 (humano, PARADA pós-execute): "aprovado" sem /clear → validate
+  preparada em subagente de contexto zerado (dogfood do /5).
+- 2026-09-29 (humano, oferta de e2e): "segue" → e2e enxuto, 3 cenários
+  `claude -p` (/1, /9). Descartado: e2e de "segue" e autopilot (custo).
+- 2026-09-29 (humano, portão final): aprovado como está — ratifica a troca
+  1:1 dos asserts de `otimizacao-tokens/4` e deixa sem correção as 4
+  observações do e2e (vírgula vs dois-pontos na PARADA, recusa sem bloco,
+  "aprovar o plano" em MEDIUM, pergunta extra). Descartado: corrigir a
+  pontuação antes do sync.
 
 ## delta
 

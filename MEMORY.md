@@ -95,7 +95,7 @@ time pequeno em projetos web/mobile/api.
 - comandos-ingles | delivered | Comandos em inglês → docs/audora/arquivo/2026-08-25-comandos-ingles.md
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - validate-estado-no | delivered | Estado validado no nó → docs/audora/arquivo/2026-09-28-validate-estado-no.md
-- contexto-por-fase | in-progress | Contexto zerado por fase | Toda fase termina e para, mandando /clear e o comando de retomada, sem emendar a fase seguinte na mesma sessão | contexto, clear, fase, tokens, parada | skills/, templates/bloco-fechamento-template.md
+- contexto-por-fase | delivered | Contexto zerado por fase → docs/audora/arquivo/2026-09-29-contexto-por-fase.md
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/

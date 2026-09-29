@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-09-28
+> Última atualização: 2026-09-29
 
 ## O que é e para que serve
 
@@ -56,7 +56,9 @@ Code.
   (código completo do teste + assinaturas; implementação só quando não-óbvia);
   localiza código via consultar-codigo quando `graphify: ativo`.
 - `execute` — TDD red-green com evidência real; commit por etapa verde;
-  consultar-codigo antes de tocar código vizinho da tarefa.
+  consultar-codigo antes de tocar código vizinho da tarefa. MEDIUM em
+  autopilot elegível roda pelo motor `hooks/loop`; motor recusando a rodada
+  → uma tarefa por subagente de contexto zerado.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
   fortemente recomendada).
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
@@ -69,6 +71,15 @@ Code.
   verificação de cada achado (modo caçada).
 
 scope, e2e e validate não consultam o Graphify (não exploram código cru).
+
+Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
+a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
+`<fase> de <id>`; a fase nova se reancora só pelos artefatos em disco.
+"Segue" sem `/clear` roda a fase seguinte num subagente de contexto zerado
+(`templates/fase-subagente-template.md`), que nunca aprova portão e devolve
+pergunta humana à sessão principal. Sem parada: entrada → 1ª fase, LIGHT,
+HOTFIX, e2e ↔ validate e autopilot. Regra única na seção `## Parada entre
+fases` de `templates/bloco-fechamento-template.md`.
 
 Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
 PostToolUse (Edit|Write) validam escritas no MEMORY: `memory-guard` (tetos
@@ -86,6 +97,25 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Contexto zerado por fase entregue em 2026-09-29 (nó `contexto-por-fase`,
+MEDIUM). Ataca o custo de token dominante medido em 2026-09-28: a demanda
+inteira numa sessão só (contexto 60k → 450–705k, 56–116M de cache read por
+demanda). Fim de scope, plan ou execute de MEDIUM/HIGH virou PARADA: `/clear`
++ `<fase> de <id>`, sem emendar a fase seguinte — o `/clear recomendado` da
+`otimizacao-tokens` foi substituído (asserts trocados 1:1, ratificado no
+portão). "Segue" roda a fase seguinte em subagente limpo pelo template novo
+`templates/fase-subagente-template.md`; autopilot MEDIUM executa pelo motor,
+com fallback em subagentes se ele recusar; retomada com id fora do índice ou
+artefato ausente recusa nomeando o que falta (regra geral no template; plan e
+execute com regra própria — validate ficou de fora pelo teto de 7700 bytes).
+Suíte 741 → 780 asserts (`tests/test-contexto-por-fase.sh`, 39), guarda /13
+provado por 4 mutações. e2e com 3 sessões `claude -p` reais: `plan de <id>`
+fecha com PARADA sem iniciar a execute; `execute de <id>` sem plano e
+`plan de <id-inexistente>` recusam. Pendências aceitas no portão: a PARADA
+usa vírgula no template e dois-pontos em plan/execute; recusa sai em prosa,
+sem bloco; carga BASE a 12 bytes do teto (54888 / 54900). `/clear`
+automático não existe no Claude Code — fica com o humano.
 
 Estado validado no nó entregue em 2026-09-28 (nó `validate-estado-no`, MEDIUM,
 fecha a antiga meta 1): `memory-validate` passa a ler o `estado:` do
@@ -115,7 +145,7 @@ versão 0.9.0). Três frentes. **Contexto**: skill memory, `MEMORY.md` e
 template do bloco já carregados na sessão não são reinvocados nem relidos
 (e2e real: 1 leitura de cada numa demanda LIGHT atravessando 4 fases); o bloco
 de fechamento recomenda `/clear` quando a próxima fase se reancora pelos
-artefatos (omitido em autopilot); a `validate` virou roteador + 3 references
+artefatos (omitido em autopilot; virou PARADA em 2026-09-29, `contexto-por-fase`); a `validate` virou roteador + 3 references
 (11603 → 7635 bytes na carga base, LIGHT deixa de carregar sync e filtro).
 **Plano**: carrega o código completo do teste, assinaturas e comandos —
 implementação só quando não-óbvia, então a saída deixa de ser paga duas vezes.
@@ -415,3 +445,7 @@ automática (recomendada) vs. manual.
 2. Candidato a nó: eliminar o erro transitório na CRIAÇÃO de nó ("arquivo
    sem linha no índice" ao escrever o nó antes do índice), fora do escopo de
    `validate-estado-no`.
+3. Candidato a nó: acabamento da PARADA (`contexto-por-fase`, observações do
+   e2e aceitas no portão) — unificar a pontuação (template com vírgula,
+   skills com dois-pontos), recusa de retomada imprimindo o bloco de fase
+   bloqueada, e folga na carga BASE (12 bytes do teto).
