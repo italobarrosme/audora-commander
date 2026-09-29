@@ -68,8 +68,9 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
    o escopo no portão final. Marcador aberto → parar e imprimir o bloco de
    fechamento com a fase desmarcada e o marcador (parada, nunca suposição).
 8. **Fechar a fase** (após aprovação):
-   > Fase de escopo fechada. Artefatos salvos: [nó/spec]. Recomendo /clear
-   > agora — nada importante vive só na conversa; na sessão nova: `plan de <id>`.
+   > Fase de escopo fechada. Artefatos salvos: [nó/spec].
+   > PARADA: rode /clear e, na sessão nova: `plan de <id>`.
+   > Não comece o plano nesta resposta (seção Parada entre fases do template de fechamento).
 
 ## Requisito de produto vs decisão de implementação
 

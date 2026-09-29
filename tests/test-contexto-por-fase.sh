@@ -33,4 +33,14 @@ assert_contains "$fs" '[PRECISA-CLARIFICAR' "/7 marcador aberto interrompe"
 assert_contains "$fs" 'reancore só pelos artefatos em disco' "/8 reancoragem pelos artefatos"
 assert_contains "$fs" 'uma tarefa por subagente' "/11 fallback do motor: uma tarefa por subagente"
 
+# --- /1 /9 /13 — scope e plan param; plan recusa retomada sem escopo ---
+for s in scope plan; do
+  k="$(tr -d '\r' < skills/$s/SKILL.md)"
+  assert_contains "$k" 'PARADA: rode /clear' "/1 $s instrui a parada"
+  assert_not_contains "$k" 'Recomendo /clear' "/13 $s não volta a só recomendar"
+done
+assert_contains "$(tr -d '\r' < skills/scope/SKILL.md)" 'na sessão nova: `plan de <id>`' "/1 scope imprime a retomada"
+assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'na sessão nova: `execute de <id>`' "/1 plan imprime a retomada"
+assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'recusar nomeando o que falta' "/9 plan recusa retomada sem escopo"
+
 report

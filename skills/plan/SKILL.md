@@ -19,7 +19,8 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 ## Fluxo
 
 1. **Contexto**: carregar nó da demanda + constituição (skill memory). Ler o
-   artefato de escopo aprovado (nó ou spec dedicada).
+   artefato de escopo aprovado (nó ou spec dedicada). Retomada (`plan de <id>`)
+   com id fora do índice ou nó sem critérios aprovados → recusar nomeando o que falta e voltar ao scope.
 2. **Passada 1 — localizar**: a partir do escopo, achar onde a mudança mora.
    Constituição com `graphify: ativo` → skill memory, operação
    consultar-codigo (`graphify query "<símbolo/rota/domínio>"`, `graphify
@@ -62,7 +63,8 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
    aprovação. MEDIUM: plano salvo, seguir direto.
 9. **Fechar a fase**:
    > Fase de plano fechada. Artefato salvo: docs/audora/planos/plano-<id>.md.
-   > Recomendo /clear agora — a execução começa relendo o plano (`execute de <id>`).
+   > PARADA: rode /clear e, na sessão nova: `execute de <id>`.
+   > Em autopilot, sem parada: seguir para a execute (motor).
 
 ## Replanejamento (durante a execução)
 
