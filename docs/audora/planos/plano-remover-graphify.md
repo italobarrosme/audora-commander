@@ -79,6 +79,13 @@ PATH do Bash — consultar-codigo degradado, avisado).
   T6 (77b82c1) e T7 (116e694) verdes. Gate final em árvore limpa (HEAD 116e694):
   `GATE: passou`, exit 0; suíte 14 arquivos, 861 asserts (somados da saída),
   0 com falha.
+- 2026-09-29 (execute, correção A1–A5, subagente): T8–T14 RED→GREEN, gate
+  exit 0 em cada uma (commits fe92372, 27e1fc8, 0856a21, 7cb8f79, 23686c2,
+  1456bcf, 10702e0). Ajustes de fixture: A4 precisa de `add -f` em
+  `graphify-out/graph.json` (o `.gitignore` do `mkproj` já o ignora) e commit
+  com `core.hooksPath` vazio (não disparar os hooks falsos); o teste antigo
+  "bullet com qualquer valor" anexava o bullet depois de `## Aprendizados` —
+  passou a inseri-lo DENTRO da Constituição (menor aprovado: só lá é resto).
 - `$SCRATCH` nos comandos = scratchpad da sessão de execução (sem um,
   `SCRATCH="$(mktemp -d)"`). Suíte/gate passam de 120s → `run_in_background`
   e ler o arquivo de saída.
@@ -721,7 +728,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   ANTES de rodar o script. RED: com o PATH atual a guarda falha.
 - **GREEN**: `path_sem_uv` (PATH sem dir que tenha uv/pipx) na `lib.sh`;
   `FIXPATH="$B:$(path_sem_uv)"` no `lim`; dogfood roda com `PATH="$(path_sem_uv)"`.
-- [ ] RED  - [ ] GREEN (arquivo + gate)  - [ ] commit `test(remover-graphify/13): ...`
+- [x] RED  - [x] GREEN (arquivo + gate)  - [x] commit `test(remover-graphify/13): ...`
 
 ## Tarefa 9: A1 — settings filtra por `hooks[].command` `^graphify\b`
 
@@ -737,7 +744,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
 - **GREEN**: `json_graphify` filtra dentro de cada grupo as entradas de
   `hooks[]` com `command =~ /^\s*graphify\b/`; grupo só sai se ficou vazio;
   evento só sai se ficou vazio.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/5): ...`
 
 ## Tarefa 10: A2 — seção do CLAUDE.md termina no próximo H1 ou H2
 
@@ -746,7 +753,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
 - **teste que reproduz**: CLAUDE.md `# Projeto`, `## graphify`, `x`,
   `# Anexo`, `y` → depois do `--remover`, exatamente `# Projeto`, `# Anexo`, `y`.
 - **GREEN**: fim da seção em `^#{1,2} ` (`/^##? /`).
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/5): ...`
 
 ## Tarefa 11: A3 — hook com start sem end falha e fica intocado
 
@@ -756,7 +763,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   `python rebuild`, `echo meu-hook-depois` → `--remover` sai 1,
   `falhou git-hook .git/hooks/post-commit — à mão:`, arquivo idêntico.
 - **GREEN**: o filtro do hook sai ≠ 0 quando termina dentro do bloco → `ok=0`.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/5,6): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/5,6): ...`
 
 ## Tarefa 12: A4 — arquivo versionado removido sai como `versionado`
 
@@ -770,7 +777,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
 - **GREEN**: caminhos que o script mexeu com sucesso (arquivo reescrito,
   hook apagado, pasta apagada) → `git diff --name-only --relative -- <caminhos>`
   → `versionado <arquivo>`.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/4): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/4): ...`
 
 ## Tarefa 13: A5 — worktree sem "Índice de código"
 
@@ -781,7 +788,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   (forma com alternação: `[íi]` em bracket não casa `Í` por byte). RED:
   `worktree` item 4.
 - **GREEN**: apagar o item 4 (2 linhas) de `skills/worktree/SKILL.md`.
-- [ ] RED  - [ ] GREEN  - [ ] commit `docs(remover-graphify/10): ...`
+- [x] RED  - [x] GREEN  - [x] commit `docs(remover-graphify/10): ...`
 
 ## Tarefa 14: menores baratos
 
@@ -803,7 +810,7 @@ PATH do Bash — consultar-codigo degradado, avisado).
   viram marcador `"\u0001N<literal>"` antes do decode e voltam depois do
   encode; saída do JSON em CRLF se o original era CRLF; bullet casado só entre
   `^## Constitui` e o próximo `^## `.
-- [ ] RED  - [ ] GREEN  - [ ] commit `fix(remover-graphify/2,5): ...`
+- [x] RED  - [x] GREEN  - [x] commit `fix(remover-graphify/2,5): ...`
 
 ## Tarefa 15: gate final da rodada
 
