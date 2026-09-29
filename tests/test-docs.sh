@@ -4,13 +4,23 @@ source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)' < "$j" 2>/dev/null && ok || ko "$j JSON inválido"
-  assert_contains "$(cat "$j")" '"version": "0.9.0"' "otimizacao-tokens $j versão 0.9.0"
+  assert_contains "$(cat "$j")" '"version": "0.10.0"' "remover-graphify/11 $j versão 0.10.0"
 done
-assert_contains "$(cat .claude-plugin/plugin.json)" '"graphify"' "/19 keyword graphify"
+assert_not_contains "$(tr 'A-Z' 'a-z' < .claude-plugin/plugin.json; tr 'A-Z' 'a-z' < .claude-plugin/marketplace.json)" 'graphify' "remover-graphify/10 manifests sem Graphify"
 en="$(cat README.md)"; pt="$(cat README.pt-BR.md)"
-for s in 'MEMORY.md' '`memory`' 'docs/audora/memory/' 'graphify-out/' 'uv tool install graphifyy' 'memory-validate'; do
+for s in 'MEMORY.md' '`memory`' 'docs/audora/memory/' 'memory-validate'; do
   assert_contains "$en" "$s" "/19 README EN cita $s"; assert_contains "$pt" "$s" "/19 README PT cita $s"
 done
+# remover-graphify/10 — READMEs: Graphify só na oferta de limpeza; princípio 1 sem índice de código
+assert_contains "$en" 'Graphify leftovers' "remover-graphify/10 README EN descreve a limpeza"
+assert_contains "$pt" 'restos do Graphify' "remover-graphify/10 README PT descreve a limpeza"
+for s in 'uv tool install graphifyy' 'consultar-codigo' 'graphify query' 'graphify update' 'indexes the code' 'code index' 'code graph'; do
+  assert_not_contains "$en" "$s" "remover-graphify/10 README EN sem '$s'"
+done
+for s in 'uv tool install graphifyy' 'consultar-codigo' 'graphify query' 'graphify update' 'indexa o código' 'índice de código' 'índice do código'; do
+  assert_not_contains "$pt" "$s" "remover-graphify/10 README PT sem '$s'"
+done
+assert_not_contains "$(tr 'A-Z' 'a-z' < docs/fundamentos.md)" 'graphify' "remover-graphify/10 fundamentos sem Graphify"
 assert_contains "$en" '| `worktree` |' "skill-worktree/1 README EN lista worktree"
 assert_contains "$pt" '| `worktree` |' "skill-worktree/1 README PT lista worktree"
 assert_contains "$en" 'The 9 skills' "skill-worktree/1 README EN diz 9 skills"
@@ -19,7 +29,7 @@ assert_empty "$(grep -rn '8 skills' README.md README.pt-BR.md PRD.md 2>/dev/null
 blocos() { awk '/^```/{f=!f; next} f' "$1"; }
 assert_eq "$(blocos README.md | md5sum)" "$(blocos README.pt-BR.md | md5sum)" "/19 blocos de código idênticos EN/PT"
 p="$(cat PRD.md)"
-for s in 'MEMORY.md' 'memory-guard' 'memory-validate' 'graphify-status' 'Graphify' 'tests/'; do assert_contains "$p" "$s" "/19 PRD cita $s"; done
+for s in 'MEMORY.md' 'memory-guard' 'memory-validate' 'tests/'; do assert_contains "$p" "$s" "/19 PRD cita $s"; done
 # docs-permissoes/1,/2,/3 — READMEs ensinam a reduzir prompts de permissão do harness.
 assert_contains "$en" '## Reducing permission prompts' "docs-permissoes/1 README EN tem a seção"
 assert_contains "$pt" '## Reduzindo prompts de permissão' "docs-permissoes/2 README PT tem a seção"

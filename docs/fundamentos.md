@@ -20,9 +20,7 @@ escala com risco; portão de aprovação nunca escala para baixo (HARD-GATE).
 
 **Fundamento:** LLM não tem memória entre sessões. Código guarda o "como"; o
 "o quê / por quê / estado" evapora se não for escrito. O MEMORY é a memória
-externa durável do produto — o NOTES.md estruturado do projeto. O código em si
-não vive nele: é indexado pelo Graphify (índice local, só código) e consultado
-sob demanda.
+externa durável do produto — o NOTES.md estruturado do projeto.
 
 **Lei de Ferro:** `REQUISITO NÃO ESCRITO NO MEMORY É REQUISITO QUE NÃO EXISTE`
 
@@ -43,7 +41,7 @@ Regras:
    Nunca carregar a pasta de nós inteira; consulta estrutural é grep.
 3. **Constituição** (inspirado em Spec Kit): seção curta e estável no topo do
    `MEMORY.md` com princípios inegociáveis do projeto (stack, restrições,
-   padrões, `como-rodar`, estado do Graphify, gate). Toda fase valida contra
+   padrões, `como-rodar`, gate). Toda fase valida contra
    ela: cumpre ou documenta exceção.
 4. **Aprendizados na hora**: armadilha, preferência do humano ou padrão que
    vale para toda demanda futura vira 1 linha `data | fase | aprendizado` em
@@ -82,8 +80,7 @@ Contexto just-in-time (Anthropic): referência leve agora, conteúdo na hora.
 **Lei de Ferro:** `PLANO SEM LEITURA DO CÓDIGO ATUAL É PLANO INVÁLIDO`
 
 Regras:
-1. **Duas passadas**: (1) localizar candidatos a partir do escopo — consulta ao
-   índice do Graphify quando ativo, senão grep/glob; (2) ler os arquivos que o
+1. **Duas passadas**: (1) localizar candidatos a partir do escopo; (2) ler os arquivos que o
    plano vai tocar. Plano lista explicitamente os arquivos lidos; etapa que
    toca arquivo não listado invalida o plano naquele ponto.
 2. **Plano é ARQUIVO** (`docs/audora/planos/plano-<id>.md`), estilo
@@ -298,7 +295,6 @@ Regras:
 | Carga seletiva sempre/auto (Kiro steering) | memory |
 | Constituição enxuta (Spec Kit) | memory |
 | Bootstrap brownfield com nós `inferido` (crítica adversarial) | memory |
-| Índice de código consultado antes de ler arquivo (Graphify) | memory → plan, execute, debug |
 | `[PRECISA-CLARIFICAR]` (Spec Kit) | scope |
 | Critérios EARS testáveis (Kiro) | scope → execute |
 | Checklist de auto-revisão de spec (Spec Kit) | scope |

@@ -6,8 +6,7 @@ Plugin de Claude Code: framework de desenvolvimento de software assistido por
 IA, guiado por 5 princípios:
 
 1. **Memória Dinâmica** — MEMORY.md é a memória viva do produto (requisitos,
-   decisões, aprendizados); o Graphify indexa o código por baixo. Requisito
-   não escrito não existe.
+   decisões, aprendizados). Requisito não escrito não existe.
 2. **Planejamento Just-in-Time** — plano nasce lendo o código atual, cobre uma
    demanda, morre depois dela.
 3. **"O Quê" separado do "Como"** — escopo fecha em artefato escrito antes de
@@ -42,11 +41,6 @@ Fundamentos completos: [docs/fundamentos.md](docs/fundamentos.md).
 - Git, para clonar o repositório. No Windows, use o
   [Git for Windows](https://git-scm.com/download/win) — ele fornece o bash
   usado pelo instalador e pelos hooks do plugin.
-- Opcional, mas recomendado:
-  [Graphify](https://github.com/safishamsi/graphify)
-  (`uv tool install graphifyy`, Python 3.10+) — índice local do código, sem
-  API key. A skill `memory` oferece instalar na primeira demanda e degrada
-  para grep/Read se você recusar.
 
 ## Instalação
 
@@ -97,7 +91,7 @@ da instalação" mais abaixo neste README.
 | Skill | Papel |
 |---|---|
 | `audora-commander` | Porta de entrada: classifica a demanda por risco (LIGHT/MEDIUM/HIGH/HOTFIX) e roteia |
-| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e comanda o Graphify: oferta de instalação, índice do código, `consultar-codigo` para plan/debug/execute. Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação. Os hooks `memory-guard` e `memory-validate` conferem toda escrita no MEMORY |
+| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e oferece limpar restos do Graphify encontrados no projeto. Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação. Os hooks `memory-guard` e `memory-validate` conferem toda escrita no MEMORY |
 | `scope` | Fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR], portão de escopo |
 | `plan` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
 | `execute` | TDD red-green com evidência real; commit por etapa verde |
@@ -135,25 +129,26 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 ### `memory`
 
 - **Quando dispara**: chamada pelas outras skills (carregar contexto,
-  registrar nó, delta ou aprendizado, consultar código) ou direto por você.
+  registrar nó, delta ou aprendizado) ou direto por você.
 - **O que faz**: é dona do MEMORY — o índice mestre `MEMORY.md` (Propósito,
   Constituição, Aprendizados, uma linha rica por nó) mais um arquivo por nó.
-  Sete operações: `carregar-contexto`, `bootstrap`, `registrar-no`,
-  `registrar-delta`, `registrar-aprendizado`, `compactar`,
-  `consultar-codigo`. Roteador: operações quentes inline, o resto em
+  Seis operações: `carregar-contexto`, `bootstrap`, `registrar-no`,
+  `registrar-delta`, `registrar-aprendizado`, `compactar`.
+  Roteador: operações quentes inline, o resto em
   `skills/memory/references/`, lidas uma por operação. Leitura seletiva
   (índice + só os nós que a demanda toca; grep para consulta estrutural); o
-  que já foi carregado na sessão não é relido. O bootstrap oferece instalar
-  o Graphify (`uv tool install graphifyy`) e gerar o gate mecânico — uma vez
-  cada; recusa fica registrada. `consultar-codigo` roda `graphify query` /
-  `path` / `affected` e lê só os arquivos `src=`; qualquer falha degrada para
-  grep com aviso. Os hooks `memory-guard` (tetos de linhas) e
+  que já foi carregado na sessão não é relido. O bootstrap oferece gerar
+  o gate mecânico — uma vez; recusa fica registrada. Quando a carga de
+  contexto acha restos do Graphify no projeto, lista só o que achou
+  (inclusive o pacote `graphifyy`, se instalado) e pergunta uma vez se
+  remove tudo; nunca commita, e a recusa não é gravada — a oferta volta na
+  próxima vez. Os hooks `memory-guard` (tetos de linhas) e
   `memory-validate` (schema, índice ↔ pasta, enum, ciclos,
   estado em cada arquivo de nó) bloqueiam escrita quebrada.
 - **O que deixa no disco**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
-  `docs/audora/decisoes-vivas.md`, nós arquivados em `docs/audora/arquivo/`,
-  `graphify-out/` (no gitignore) e, se aceito, o script `gate` do projeto.
-- **Portões humanos**: instalar o Graphify e gerar o gate são decisão sua;
+  `docs/audora/decisoes-vivas.md`, nós arquivados em `docs/audora/arquivo/`
+  e, se aceito, o script `gate` do projeto.
+- **Portões humanos**: gerar o gate e remover restos do Graphify são decisão sua;
   conflito de merge no MEMORY fora dos nós da demanda é seu.
 - **Próxima**: devolve à fase que chamou; invocada direto → oferece
   classificar uma demanda.
@@ -181,8 +176,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 ### `plan`
 
 - **Quando dispara**: depois do escopo aprovado (MEDIUM/HIGH).
-- **O que faz**: duas passadas — localizar (consulta ao Graphify quando
-  ativo, senão grep) e depois ler os arquivos que o plano vai tocar,
+- **O que faz**: duas passadas — localizar e depois ler
+  os arquivos que o plano vai tocar,
   listados no cabeçalho. Conflito MEMORY vs código para e vai para você.
   Escreve tarefas autossuficientes: critérios EARS copiados verbatim,
   decisões relevantes, interfaces com assinatura exata, caminhos exatos,
@@ -200,8 +195,7 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **Quando dispara**: plano aprovado (MEDIUM/HIGH) ou demanda LIGHT/HOTFIX
   pronta para código.
 - **O que faz**: relê o plano e o nó no início de toda sessão; a próxima
-  tarefa é a primeira com as dependências concluídas. Por tarefa: localiza
-  vizinhos pelo índice de código; RED — um teste mínimo citando `<id>/<n>`,
+  tarefa é a primeira com as dependências concluídas. Por tarefa: RED — um teste mínimo citando `<id>/<n>`,
   visto falhando pelo motivo certo; GREEN — o mínimo, com a suíte toda verde
   (ou o `gate:` da Constituição saindo 0); REFACTOR; COMMIT citando o
   critério. Os testes cobrem integração real e caminhos de erro e borda.
@@ -264,8 +258,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   comportamento inesperado ou critério de e2e reprovado; sem sintoma
   nenhum, como caçada de defeitos.
 - **O que faz**: modo sintoma — reprodução determinística (de preferência
-  um teste que falha), evidência completa (erro inteiro, caminho que falha
-  pelo índice de código, diff recente), uma hipótese por vez testada pelo
+  um teste que falha), evidência completa (erro inteiro, caminho que falha,
+  diff recente), uma hipótese por vez testada pelo
   experimento mais barato que a distingue, causa raiz que explica todos os
   sintomas, fix via TDD. Três hipóteses refutadas → para e escala para você.
   Modo caçada — varre classes de defeito (referências cruzadas, contratos e
@@ -304,8 +298,7 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 1. Você pede: "adiciona filtro por data na listagem de pedidos".
 2. `audora-commander` classifica: MEDIUM (lógica nova, sem dado/auth/contrato).
 3. `scope` pergunta o que falta, fecha critérios EARS, você aprova (portão).
-4. `plan` consulta o índice do código (Graphify), lê só os arquivos
-   apontados e gera `docs/audora/planos/plano-<id>.md`.
+4. `plan` lê o código atual que a demanda toca e gera `docs/audora/planos/plano-<id>.md`.
 5. `execute` implementa por TDD, commit a cada etapa verde.
 6. `validate` oferece o `e2e` (recomendado): projeto sobe, critérios são
    exercitados de verdade, relatório sai em `docs/audora/e2e/`.
@@ -341,8 +334,6 @@ mais sandbox. Configure o harness — não conte com prosa para segurar o agente
 - `docs/audora/e2e/` — relatórios E2E por demanda.
 - `docs/audora/specs/` — specs de escopo de demandas HIGH.
 - `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill debug).
-- `graphify-out/` — índice de código do Graphify (no gitignore, regenerável
-  com `graphify update .`; um hook post-commit mantém atualizado).
 
 ## Checklist de validação da instalação
 

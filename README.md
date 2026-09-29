@@ -6,8 +6,8 @@ A Claude Code plugin: an AI-assisted software development framework guided by
 5 principles:
 
 1. **Dynamic Memory** — MEMORY.md is the product's living memory
-   (requirements, decisions, learnings); Graphify indexes the code
-   underneath. A requirement that is not written down does not exist.
+   (requirements, decisions, learnings). A requirement that is not written
+   down does not exist.
 2. **Just-in-Time Planning** — a plan is born by reading the current code,
    covers one demand, and dies after it.
 3. **"What" separated from "How"** — scope is closed in a written artifact
@@ -42,11 +42,6 @@ Full foundations: [docs/fundamentos.md](docs/fundamentos.md) (in Portuguese).
 - Git, to clone the repository. On Windows, use
   [Git for Windows](https://git-scm.com/download/win) — it provides the bash
   used by the installer and by the plugin's hooks.
-- Optional but recommended:
-  [Graphify](https://github.com/safishamsi/graphify)
-  (`uv tool install graphifyy`, Python 3.10+) — a local code graph, no API
-  key. The `memory` skill offers to install it on the first demand and
-  degrades to grep/Read if you decline.
 
 ## Installation
 
@@ -96,7 +91,7 @@ checklist" further down in this README.
 | Skill | Role |
 |---|---|
 | `audora-commander` | Entry point: classifies the demand by risk (LIGHT/MEDIUM/HIGH/HOTFIX) and routes it |
-| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and drives Graphify: install offer, code graph, `consultar-codigo` for plan/debug/execute. Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation. Hooks `memory-guard` and `memory-validate` check every write to the MEMORY |
+| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and offers to clean up Graphify leftovers found in the project. Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation. Hooks `memory-guard` and `memory-validate` check every write to the MEMORY |
 | `scope` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
 | `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
 | `execute` | Red-green TDD with real evidence; commit per green step |
@@ -134,26 +129,27 @@ Details per skill: [Skills in detail](#skills-in-detail).
 ### `memory`
 
 - **When it fires**: called by the other skills (load context, register a
-  node, delta or learning, look up code), or directly by you.
+  node, delta or learning), or directly by you.
 - **What it does**: owns the MEMORY — the master index `MEMORY.md` (Purpose,
   Constitution, Learnings, one rich line per node) plus one file per node.
-  Seven operations: `carregar-contexto`, `bootstrap`, `registrar-no`,
-  `registrar-delta`, `registrar-aprendizado`, `compactar`,
-  `consultar-codigo`. Router: hot operations inline, the rest in
+  Six operations: `carregar-contexto`, `bootstrap`, `registrar-no`,
+  `registrar-delta`, `registrar-aprendizado`, `compactar`.
+  Router: hot operations inline, the rest in
   `skills/memory/references/`, read one per operation. Selective reading
   (index + only the nodes the demand touches; grep for structural queries);
   whatever is already loaded in the session is not read again. The bootstrap
-  offers to install Graphify (`uv tool install graphifyy`) and to generate
-  the mechanical gate — once each; a refusal sticks. `consultar-codigo` runs
-  `graphify query` / `path` / `affected` and reads only the `src=` files;
-  any failure degrades to grep with a warning. Hooks `memory-guard` (line
+  offers to generate the mechanical gate — once; a refusal sticks. When
+  loading context finds Graphify leftovers in the project, it lists only
+  what it found (including the `graphifyy` package, if installed) and asks
+  once to remove everything; it never commits, and a refusal is not
+  recorded — the offer comes back next time. Hooks `memory-guard` (line
   ceilings) and `memory-validate` (schema, index ↔ folder, enum, cycles,
   state in each node file) block broken writes.
 - **What it leaves on disk**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
-  `docs/audora/decisoes-vivas.md`, archived nodes in `docs/audora/arquivo/`,
-  `graphify-out/` (gitignored) and, if accepted, the project's `gate` script.
-- **Human gates**: installing Graphify and generating the gate are your
-  call; MEMORY merge conflicts outside the demand's own nodes are yours.
+  `docs/audora/decisoes-vivas.md`, archived nodes in `docs/audora/arquivo/`
+  and, if accepted, the project's `gate` script.
+- **Human gates**: generating the gate and removing Graphify leftovers
+  are your call; MEMORY merge conflicts outside the demand's own nodes are yours.
 - **Next**: back to the phase that called it; invoked directly → offers to
   classify a demand.
 
@@ -180,8 +176,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
 ### `plan`
 
 - **When it fires**: after the scope is approved (MEDIUM/HIGH).
-- **What it does**: two passes — locate (Graphify query when active,
-  otherwise grep) and then read the files the plan will touch, listed in the
+- **What it does**: two passes — locate and then read
+  the files the plan will touch, listed in the
   header. A MEMORY vs code conflict stops and goes to you. Writes
   self-sufficient tasks: EARS criteria copied verbatim, relevant decisions,
   interfaces with exact signatures, exact paths, `depende-de`, and 2–5
@@ -200,7 +196,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
   ready for code.
 - **What it does**: re-reads the plan and the node at the start of every
   session; the next task is the first one whose dependencies are done. Per
-  task: locate neighbors through the code index; RED — one minimal test
+  task: RED — one minimal test
   citing `<id>/<n>`, seen failing for the right reason; GREEN — the minimum,
   with the whole suite green (or the Constitution's `gate:` exiting 0);
   REFACTOR; COMMIT citing the criterion. Tests must cover real integrations
@@ -262,8 +258,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   unexpected behavior or a failed e2e criterion; with no symptom at all, as
   a defect hunt.
 - **What it does**: symptom mode — deterministic reproduction (ideally a
-  failing test), full evidence (whole error, failing path through the code
-  index, recent diff), one hypothesis at a time tested by the cheapest
+  failing test), full evidence (whole error, the failing
+  path, recent diff), one hypothesis at a time tested by the cheapest
   distinguishing experiment, a root cause that explains every symptom, fix
   via TDD. Three refuted hypotheses → stops and escalates to you. Hunt mode
   — sweeps defect classes (cross references, contracts and schemas, living
@@ -300,8 +296,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
 1. You ask: "add a date filter to the orders list".
 2. `audora-commander` classifies it: MEDIUM (new logic; no data/auth/contract).
 3. `scope` asks what is missing, closes the EARS criteria, you approve (gate).
-4. `plan` queries the code graph (Graphify), reads only the files it points
-   to, and generates `docs/audora/planos/plano-<id>.md`.
+4. `plan` reads the current code the demand touches and generates `docs/audora/planos/plano-<id>.md`.
 5. `execute` implements via TDD, committing at each green step.
 6. `validate` offers `e2e` (recommended): the project boots, the criteria are
    exercised for real, and a report lands in `docs/audora/e2e/`.
@@ -338,8 +333,6 @@ rely on prose to stop the agent.
 - `docs/audora/e2e/` — E2E reports per demand.
 - `docs/audora/specs/` — scope specs for HIGH demands.
 - `docs/audora/depuracao/` — defect hunt reports (debug skill).
-- `graphify-out/` — the Graphify code graph (gitignored, regenerable with
-  `graphify update .`; a post-commit hook keeps it fresh).
 
 ## Installation validation checklist
 
