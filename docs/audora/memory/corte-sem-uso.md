@@ -57,6 +57,6 @@ templates/loop-prompt-template.md.
 
 ## e2e
 
-pendente
+passou (2026-09-30) — 12/12 critérios; relatório [../e2e/e2e-corte-sem-uso.md](../e2e/e2e-corte-sem-uso.md). Plugin via `--plugin-dir` (cache global intocado, escolha do humano).
 
 ## feedback-reprovacao
