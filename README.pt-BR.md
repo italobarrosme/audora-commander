@@ -116,7 +116,6 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   pagamento? efeito irreversível fora do repo? Qualquer sim → HIGH; vários
   arquivos ou lógica nova → MEDIUM; o resto → LIGHT. HOTFIX só quando você
   declara. Anuncia a categoria (você pode corrigir), registra o nó e roteia.
-  Aceita "autopilot" / "roda até o validate" em LIGHT e MEDIUM (HIGH recusa).
   Catraca de mão única: sobe a categoria sozinha no meio do caminho, desce só
   com a sua aprovação. Demanda gigante é quebrada em menores.
 - **O que deixa no disco**: o nó `docs/audora/memory/<id>.md`
@@ -160,13 +159,11 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   `[PRECISA-CLARIFICAR: …]`, nunca suposição. Escreve o objetivo, critérios
   EARS numerados (`<id>/<n>`, "QUANDO … O SISTEMA DEVE …", com erro e borda)
   e o fora-de-escopo explícito, e faz auto-revisão (sem marcador aberto, tudo
-  testável, sem conflito com a Constituição). Em autopilot, registra se todo
-  critério é automatizável.
+  testável, sem conflito com a Constituição).
 - **O que deixa no disco**: MEDIUM → os três campos no nó; HIGH → spec
   dedicada `docs/audora/specs/<id>-escopo.md`; uma linha por decisão
   respondida no nó.
-- **Portões humanos**: o portão de escopo — espera sua aprovação explícita
-  (antecipado só em autopilot elegível, ratificado no portão final).
+- **Portões humanos**: o portão de escopo — espera sua aprovação explícita.
 - **Próxima**: `plan`, depois de uma PARADA — você roda `/clear` e digita
   `plan de <id>`; dizer "segue" roda a fase num subagente de contexto limpo.
 
@@ -198,9 +195,7 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   critério. Os testes cobrem integração real e caminhos de erro e borda.
   Micro-decisões vão para o plano, aprendizados para o MEMORY na hora.
   HOTFIX: teste de reprodução antes do fix. Falha desconhecida → `debug`;
-  beco sem saída → nó `blocked` e você decide. Como volta do motor de loop
-  (`hooks/loop`), faz UMA tarefa e nunca commita — o motor roda o gate,
-  commita a volta verde e guarda a vermelha como patch.
+  beco sem saída → nó `blocked` e você decide.
 - **O que deixa no disco**: código e testes, um commit por etapa verde, a
   lista "Decisões tomadas pela IA" no plano.
 - **Portões humanos**: nenhum no meio; você decide sobre nó `blocked`.
@@ -230,10 +225,10 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **Quando dispara**: execução (e e2e, se rodado) terminada.
 - **O que faz**: oferece o e2e; exige evidência 1:1 por critério — comando
   rodado agora com a saída, ou item explícito para conferência humana; monta
-  o roteiro de validação: comportamento, diff de teste separado, premissas do
-  autopilot, relatório da rodada do loop, decisões vivas propostas (filtro de
-  entrada em `references/decisoes-vivas.md`) e, em HIGH, sumário por arquivo
-  mais revisão adversarial por subagente de contexto limpo. Efeito
+  o roteiro de validação: comportamento, diff de teste separado, decisões vivas
+  propostas (filtro de entrada em `references/decisoes-vivas.md`) e, em
+  HIGH, sumário por arquivo mais revisão adversarial por subagente de
+  contexto limpo. Efeito
   irreversível fora do repo nunca é disparado pela IA. Depois da aprovação,
   quando o trabalho entra na main, roda o sync de `references/sync.md`:
   consolida o delta, promove decisões vivas e aprendizados, nó →
@@ -244,7 +239,7 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **O que deixa no disco**: nó arquivado
   `docs/audora/arquivo/AAAA-MM-DD-<id>.md`, plano arquivado,
   `docs/audora/decisoes-vivas.md`, `PRD.md` atualizado.
-- **Portões humanos**: o portão final — nunca antecipado, em toda categoria
+- **Portões humanos**: o portão final, em toda categoria
   (aprovar, reprovar ou aprovar em parte).
 - **Próxima**: nenhuma — a demanda termina; a próxima começa em
   `audora-commander`.

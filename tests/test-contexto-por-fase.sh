@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# contexto-por-fase — parada entre fases, retomada, "segue" em subagente, autopilot pelo motor.
+# contexto-por-fase — parada entre fases, retomada, "segue" em subagente.
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 # sec <arquivo> '<cabeçalho exato>' → corpo da seção, sem \r (checkout CRLF)
@@ -13,7 +13,7 @@ assert_contains "$pa" 'NÃO emenda a fase seguinte na mesma resposta' "/1 fase n
 assert_contains "$pa" 'porta de entrada → 1ª fase' "/2 entrada emenda"
 assert_contains "$pa" 'LIGHT, HOTFIX' "/3 LIGHT e HOTFIX emendam"
 assert_contains "$pa" 'e2e ↔ validate' "/4 e2e e validate na mesma sessão"
-assert_contains "$pa" 'autopilot (execute pelo motor' "/10 autopilot sem parada"
+assert_not_contains "$pa" 'autopilot' "corte-sem-uso/6 parada sem exceção de autopilot"
 assert_contains "$pa" 'templates/fase-subagente-template.md' "/5 segue aponta o template do subagente"
 assert_contains "$pa" 'recusar nomeando o que falta e a fase certa' "/9 retomada inválida recusa"
 assert_contains "$pa" 'interrompida, bloqueada ou reprovada não tem PARADA' "/12 fase parada sem retomada"
@@ -31,7 +31,6 @@ assert_contains "$fs" 'portão é apresentado na sessão principal' "/6 portão 
 assert_contains "$fs" 'devolva a pergunta' "/7 input humano volta à principal"
 assert_contains "$fs" '[PRECISA-CLARIFICAR' "/7 marcador aberto interrompe"
 assert_contains "$fs" 'reancore só pelos artefatos em disco' "/8 reancoragem pelos artefatos"
-assert_contains "$fs" 'uma tarefa por subagente' "/11 fallback do motor: uma tarefa por subagente"
 
 # --- /1 /9 /13 — scope e plan param; plan recusa retomada sem escopo ---
 for s in scope plan; do
@@ -43,18 +42,12 @@ assert_contains "$(tr -d '\r' < skills/scope/SKILL.md)" 'na sessão nova: `plan 
 assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'na sessão nova: `execute de <id>`' "/1 plan imprime a retomada"
 assert_contains "$(tr -d '\r' < skills/plan/SKILL.md)" 'recusar nomeando o que falta' "/9 plan recusa retomada sem escopo"
 
-# --- /1 /3 /9 /10 /11 — execute: parada, LIGHT emenda, autopilot pelo motor ---
+# --- /1 /3 /9 — execute: parada, LIGHT emenda ---
 ex="$(tr -d '\r' < skills/execute/SKILL.md)"
 bf="$(sec skills/execute/SKILL.md '## Bloco de fechamento')"
 assert_contains "$bf" 'PARADA: rode /clear e, na sessão nova: `validate de <id>`' "/1 execute MEDIUM/HIGH para"
 assert_contains "$bf" 'LIGHT/HOTFIX → validate na mesma sessão' "/3 LIGHT/HOTFIX emendam"
-ap="$(sec skills/execute/SKILL.md '## Autopilot MEDIUM (motor)')"
-assert_contains "$ap" 'hooks/loop" <id>' "/10 autopilot roda o motor"
-assert_contains "$ap" 'LOOP: rodada recusada' "/11 reconhece a recusa do motor"
-assert_contains "$ap" 'uma tarefa por subagente' "/11 fallback em subagentes limpos"
 assert_contains "$ex" 'sem plano-arquivo → recusar nomeando o que falta' "/9 execute recusa retomada sem plano"
-# contrato: a frase que a skill espera existe no motor (passa já no red)
-assert_contains "$(tr -d '\r' < hooks/loop)" 'LOOP: rodada recusada' "/11 motor imprime a recusa esperada"
 
 # --- /1 /13 — docs descrevem a parada (READMEs EN/PT e fundamentos) ---
 en="$(tr -d '\r' < README.md)"; pt="$(tr -d '\r' < README.pt-BR.md)"

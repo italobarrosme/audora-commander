@@ -55,18 +55,9 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
    - Todo critério em EARS e testável?
    - Fora-de-escopo explícito (não vazio)?
    - Sem contradição com a constituição ou com nós vizinhos (`depende-de`)?
-   - Nó com `autopilot: declarado` → todo critério tem verificação
-     automatizável (teste, e2e, comando)? Sim → gravar `autopilot: elegivel`
-     no nó; não → `autopilot: inelegivel (<id>/<n>)` citando o primeiro
-     critério culpado, avisar e seguir o fluxo normal.
 7. **Portão humano de escopo**: apresentar objetivo + critérios +
    fora-de-escopo e ESPERAR aprovação explícita. Apresentar e já começar o
    plano na mesma resposta é pular o portão. Reprovou → ajustar e reapresentar.
-   Exceção — **portão antecipado** (autopilot): nó `autopilot: elegivel` e
-   zero marcador aberto → o humano já aprovou na entrada; registrar a
-   antecipação em `## decisoes` do nó e seguir para plan — a validate ratifica
-   o escopo no portão final. Marcador aberto → parar e imprimir o bloco de
-   fechamento com a fase desmarcada e o marcador (parada, nunca suposição).
 8. **Fechar a fase** (após aprovação):
    > Fase de escopo fechada. Artefatos salvos: [nó/spec].
    > PARADA: rode /clear e, na sessão nova: `plan de <id>`.
@@ -100,7 +91,7 @@ fora-de-escopo?
 | "O escopo tá claro na conversa, não preciso escrever" | Conversa morre no /clear. Artefato escrito ou escopo não existe. |
 | "Critério em prosa serve, EARS é burocracia" | Prosa aceita ambiguidade; EARS não. Ambiguidade hoje é retrabalho amanhã. |
 | "Mando as 4 perguntas de uma vez, ganho tempo" | Só se forem independentes. Pergunta que depende de outra, em lote, gera resposta sobre premissa errada. |
-| "Apresento o escopo e já começo o plano" | Portão é portão. Apresente e ESPERE o sim. Exceção única: portão antecipado por autopilot elegível (item 7). |
+| "Apresento o escopo e já começo o plano" | Portão é portão. Apresente e ESPERE o sim. |
 
 ## Bloco de fechamento
 

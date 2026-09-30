@@ -140,6 +140,9 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   outro conteúdo dos projetos"; anotado no relatório, levar ao portão.
 - 2026-09-30 (execute): o plano-arquivo (não versionado ao fim do plan) entra
   no commit da T1, junto com as notas de sessão.
+- 2026-09-30 (execute T2): em `tests/test-docs.sh` a linha 14 é cabeçalho
+  do bloco que segue (17+) — ficou, reescrita para "READMEs sem instalação
+  ou consulta do Graphify"; saíram só 15–16.
 
 ---
 

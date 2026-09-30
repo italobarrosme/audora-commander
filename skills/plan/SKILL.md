@@ -59,7 +59,6 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 9. **Fechar a fase**:
    > Fase de plano fechada. Artefato salvo: docs/audora/planos/plano-<id>.md.
    > PARADA: rode /clear e, na sessão nova: `execute de <id>`.
-   > Em autopilot, sem parada: seguir para a execute (motor).
 
 ## Replanejamento (durante a execução)
 

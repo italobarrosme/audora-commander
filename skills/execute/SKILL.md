@@ -58,18 +58,6 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 6. **HOTFIX**: escrever ANTES o teste que reproduz o defeito (red), depois o
    fix (green). Sem teste de reprodução não há hotfix — há chute.
 
-## Volta de loop (motor `hooks/loop`)
-
-Sessão iniciada pelo motor executa UMA tarefa do plano e NADA mais. A volta
-NÃO commita, NÃO marca checkbox, NÃO toca outra tarefa e NÃO roda o gate —
-o motor roda o gate ao fim da volta, commita no verde e marca a tarefa; no
-vermelho o diff vira patch em `docs/audora/planos/loop/<id>/` e o
-diagnóstico vai para as Notas de sessão do plano.
-
-## Autopilot MEDIUM (motor)
-
-Nó MEDIUM com `autopilot: elegivel` → a execute roda pelo motor, sem parada: `bash "<raiz do plugin>/hooks/loop" <id>` (em background; ler a saída inteira). Saída com `LOOP: rodada recusada` → avisar em 1 linha o que faltou e rodar as tarefas em subagentes de contexto zerado, uma tarefa por subagente, pelo `templates/fase-subagente-template.md` — o autopilot segue. Rodada terminada → validate na mesma sessão.
-
 ## Quando algo dá errado
 
 - **Teste falha por motivo desconhecido** → skill **debug** (modo sintoma):

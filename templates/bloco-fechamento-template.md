@@ -48,7 +48,7 @@ Fim de scope, plan ou execute de MEDIUM/HIGH é PARADA: a fase NÃO emenda a fas
 
 **Próximo** — PARADA: rode /clear e, na sessão nova, `<fase> de <id>`
 
-Sem parada: porta de entrada → 1ª fase; LIGHT, HOTFIX; e2e ↔ validate; autopilot (execute pelo motor, seção na skill execute).
+Sem parada: porta de entrada → 1ª fase; LIGHT, HOTFIX; e2e ↔ validate.
 
 - Humano diz "segue", "continua" ou "sem clear" → a fase seguinte roda em subagente de contexto zerado pelo `templates/fase-subagente-template.md`; a sessão principal recebe só o bloco dele.
 - Retomada (`<fase> de <id>`) com id fora do índice ou artefato da fase ausente → recusar nomeando o que falta e a fase certa.

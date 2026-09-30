@@ -13,10 +13,7 @@ revisão, nunca tirar a revisão.
   **caminho percorrido pelo usuário** — tela, rota, fluxo, saída de CLI.
   LIGHT interno (refactor,
   doc, config, teste) não recebe a oferta. Pedido explícito do humano roda
-  sempre, em qualquer caso. Em autopilot, mesma condicional: LIGHT interno
-  segue SEM e2e (nada muda); LIGHT que toca caminho do usuário aplica a
-  regra do item 1 sem pergunta — com ferramenta (ou web) roda; sem, registra
-  o pulo no nó.
+  sempre, em qualquer caso.
 - **Roteiro** (item 3): versão curta — evidência 1:1 por critério, o diff
   (arquivos de teste separados), e 1 linha de como conferir. Sem sumário por arquivo; sem seção de decisões
   vivas quando não há nenhuma.

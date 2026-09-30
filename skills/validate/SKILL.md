@@ -37,12 +37,6 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
    Aceitou → skill e2e, volte aqui com o relatório. Recusou → registrar no nó
    `e2e: pulado-pelo-humano` e seguir.
-   Nó em autopilot (LIGHT: `autopilot: declarado`+`elegivel` da entrada;
-   MEDIUM: `autopilot: elegivel` — `inelegivel` segue o fluxo normal) →
-   SEM pergunta: Constituição com `ferramenta-e2e` OU projeto web
-   (Playwright é o default da skill e2e) → rodar o e2e direto; sem nenhum
-   dos dois → registrar `e2e: pulado-por-autopilot-sem-ferramenta` no nó,
-   visível no portão.
    Categoria LIGHT: a oferta é condicional — `references/fechamento-light.md`.
 2. **Gate de evidência 1:1** — para CADA critério de aceite do nó, citado
    pelo endereço `<id>/<n>`:
@@ -59,12 +53,6 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
    - **Diff de teste** (sempre, toda categoria): listar o diff dos
      arquivos de teste separado do resto — teste apagado ou skip/only é a
      fraude que o gate reprova; o roteiro a expõe ao humano.
-   - **Premissas e decisões tomadas sem portão** (só em autopilot): o escopo
-     fechado no portão antecipado e cada decisão tomada sem espera — o humano
-     ratifica tudo AQUI.
-   - **Relatório de rodada** (demanda executada pelo motor de loop): a seção
-     `## Métricas de rodada (loop)` do plano (voltas, custo, causa da parada,
-     notas) entra no roteiro, com os patches de voltas vermelhas apontados.
    - **Decisões vivas propostas** (sempre): quais decisões do nó seguem
      valendo para demandas futuras, passadas pelo filtro de entrada de
      `references/decisoes-vivas.md` — o humano aprova/corta no portão; o sync
@@ -93,14 +81,6 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
    exato + rollback, apresentar, e o HUMANO executa ou autoriza aquele
    comando específico. Você nunca dispara sozinho.
 
-## Autopilot no portão
-
-O portão final NUNCA é antecipado — autopilot antecipa só os portões do
-meio; a aprovação explícita do humano acontece AQUI, em toda categoria. O
-roteiro soma a seção "Premissas e decisões tomadas sem portão" (item 3) e o
-veredito do humano cobre também essas premissas — reprovar uma premissa
-segue o fluxo de reprovação normal (item 5).
-
 ## Red flags — pare e corrija
 
 | Racionalização | Realidade |
@@ -119,12 +99,7 @@ Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
 de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sessão
 → não reler). Nesta fase:
 
-- **Produzido**: o veredito do portão e o que o sync consolidou; em TODA
-  demanda, incluir o contador
-  `paradas humanas: N (lotes de perguntas, ofertas, portões, outras esperas)`.
-  N sai de artefatos duráveis, nunca da memória da conversa: linhas de lote
-  em `## decisoes` do nó, campo `e2e`, portões da categoria — e TODA fase
-  que esperar input fora desses registra 1 linha em `## decisoes` na hora.
+- **Produzido**: o veredito do portão e o que o sync consolidou.
 - **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado.
 - **Próximo**: nenhum — o fluxo da demanda encerra aqui.
 

@@ -92,7 +92,7 @@ Regras:
 3. **Tarefa autossuficiente** (inspirado em BMAD story file): cada tarefa embute
    requisito (critérios `<id>/<n>` do nó, verbatim), decisões relevantes,
    critério de done e interfaces consumidas/produzidas. Sessão limpa (ou
-   subagente, ou volta do motor de loop) executa sem redescobrir contexto.
+   subagente) executa sem redescobrir contexto.
 4. **Dependências explícitas + expansão sob demanda** (inspirado em Taskmaster):
    tarefas declaram `depende-de`; "qual a próxima?" é resposta mecânica, nunca
    tarefa bloqueada. Tarefa complexa (`expandir: sim`) é quebrada em
@@ -161,12 +161,12 @@ gênero é ignorar isto — quem calibra, ganha.
 Regras:
 1. **Quatro categorias com roteamento explícito**:
 
-   | Categoria | Fases | Portões humanos | Autopilot |
-   |---|---|---|---|
-   | LIGHT | execute → validate | resultado | resultado (e2e sem oferta) |
-   | MEDIUM | scope → plan → execute → [e2e] → validate | escopo, resultado | resultado (+ lotes do escopo) |
-   | HIGH | scope → plan → execute → [e2e] → validate | escopo, plano, resultado | recusado |
-   | HOTFIX | execute → validate (registro retroativo) | diff + evidência (único) | — |
+   | Categoria | Fases | Portões humanos |
+   |---|---|---|
+   | LIGHT | execute → validate | resultado |
+   | MEDIUM | scope → plan → execute → [e2e] → validate | escopo, resultado |
+   | HIGH | scope → plan → execute → [e2e] → validate | escopo, plano, resultado |
+   | HOTFIX | execute → validate (registro retroativo) | diff + evidência (único) |
 
    `[e2e]` = opcional, fortemente recomendado (ver P5.x).
 
@@ -224,15 +224,6 @@ Regras:
    categoria. IA prepara comando + rollback; humano executa ou autoriza aquele
    comando específico.
 8. **Decisões do humano registradas no MEMORY** — decisão vira memória durável.
-9. **Portão antecipado por declaração** (autopilot): o humano pode declarar
-   ("autopilot" / "roda até o validate") em demanda LIGHT/MEDIUM — os portões
-   do meio ficam aprovados na entrada e as decisões tomadas sem portão são
-   ratificadas no final; o portão final NUNCA é antecipado; HIGH recusa
-   (catraca do P4). Elegibilidade: todo critério com verificação
-   automatizável, senão o fluxo normal segue com o critério culpado nomeado.
-10. **Motor de loop** (`hooks/loop`): demanda elegível pode rodar o plano volta
-    a volta, cada volta um `claude -p` com contexto zerado; quem julga é o
-    gate, fora do agente — verde commita, vermelho guarda patch e nota.
 
 ---
 

@@ -29,5 +29,5 @@ assert_contains "$b" 'reprovada' "/7 template trata fase interrompida ou reprova
 # contexto-por-fase/1,/10 — PARADA substitui a recomendação de /clear (otimizacao-tokens/4)
 b2="$(cat templates/bloco-fechamento-template.md)"
 assert_contains "$b2" '## Parada entre fases' "contexto-por-fase/1 template tem a seção de parada"
-assert_contains "$b2" 'autopilot (execute pelo motor' "contexto-por-fase/10 autopilot sem parada"
+assert_not_contains "$b2" 'autopilot' "corte-sem-uso/6 parada sem autopilot"
 report

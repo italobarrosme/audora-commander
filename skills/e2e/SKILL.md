@@ -16,9 +16,7 @@ projeto e percorre a demanda como o usuário final percorreria — a evidência
 mais próxima do que o humano vai validar no portão.
 
 Opcional por decisão do humano; recomendada com força. Recusa é registrada no
-nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio. Autopilot declarado
-vale como essa decisão do humano, antecipada — a validate aplica sem nova
-pergunta (roda, ou registra `e2e: pulado-por-autopilot-sem-ferramenta`).
+nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 
 ## Fluxo
 

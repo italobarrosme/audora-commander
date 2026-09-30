@@ -115,8 +115,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
   data or migration? public API/contract? auth, security or payment?
   irreversible effect outside the repo? Any yes → HIGH; several files or new
   logic → MEDIUM; otherwise LIGHT. HOTFIX only when you declare it. Announces
-  the category (you can correct it), registers the node and routes. Accepts
-  "autopilot" / "roda até o validate" for LIGHT and MEDIUM (HIGH refuses).
+  the category (you can correct it), registers the node and routes.
   One-way ratchet: raises the category on its own mid-way, lowers it only
   with your approval. Oversized demands are split into smaller ones.
 - **What it leaves on disk**: the node `docs/audora/memory/<id>.md`
@@ -159,13 +158,11 @@ Details per skill: [Skills in detail](#skills-in-detail).
   `[PRECISA-CLARIFICAR: …]`, never a guess. Writes the objective, numbered
   EARS criteria (`<id>/<n>`, "WHEN … THE SYSTEM SHALL …", error and edge
   cases included) and an explicit out-of-scope, then self-reviews (no open
-  marker, everything testable, no clash with the Constitution). Under
-  autopilot it records whether every criterion is automatable.
+  marker, everything testable, no clash with the Constitution).
 - **What it leaves on disk**: MEDIUM → the three fields in the node; HIGH →
   a dedicated spec `docs/audora/specs/<id>-escopo.md`; one line per answered
   decision in the node.
-- **Human gates**: the scope gate — waits for your explicit approval
-  (skipped only under eligible autopilot, ratified at the final gate).
+- **Human gates**: the scope gate — waits for your explicit approval.
 - **Next**: `plan`, after a STOP — you run `/clear` and type `plan de <id>`;
   saying "segue" runs it in a clean-context subagent instead.
 
@@ -198,9 +195,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
   REFACTOR; COMMIT citing the criterion. Tests must cover real integrations
   and error/edge paths. Micro-decisions go to the plan, learnings to the
   MEMORY on the spot. HOTFIX: reproduction test before the fix. Unknown
-  failure → `debug`; dead end → node `blocked` and you decide. As a lap of
-  the loop engine (`hooks/loop`) it does ONE task and never commits — the
-  engine runs the gate, commits green laps and keeps red ones as patches.
+  failure → `debug`; dead end → node `blocked` and you decide.
 - **What it leaves on disk**: code and tests, one commit per green step,
   the "Decisões tomadas pela IA" list in the plan.
 - **Human gates**: none mid-way; you decide on a `blocked` node.
@@ -231,9 +226,9 @@ Details per skill: [Skills in detail](#skills-in-detail).
 - **What it does**: offers the e2e; demands 1:1 evidence per criterion — a
   command run now with its output, or an explicit item for human check;
   builds the validation script: behavior, test diff shown separately,
-  autopilot premises, loop round report, proposed durable decisions (entry
-  filter in `references/decisoes-vivas.md`), and for HIGH a per-file summary
-  plus an adversarial review by a clean-context subagent. Irreversible
+  proposed durable decisions (entry filter in
+  `references/decisoes-vivas.md`), and for HIGH a per-file summary plus an
+  adversarial review by a clean-context subagent. Irreversible
   effects outside the repo are never fired by the AI. After approval, when
   the work lands on main, runs the sync in `references/sync.md`: consolidate
   the delta, promote durable decisions and learnings, node → `delivered`,
@@ -244,7 +239,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
 - **What it leaves on disk**: archived node
   `docs/audora/arquivo/AAAA-MM-DD-<id>.md`, archived plan,
   `docs/audora/decisoes-vivas.md`, updated `PRD.md`.
-- **Human gates**: the final gate — never anticipated, in every category
+- **Human gates**: the final gate, in every category
   (approve, reject or approve in part).
 - **Next**: none — the demand ends; a new one starts at `audora-commander`.
 

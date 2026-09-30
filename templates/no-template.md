@@ -17,10 +17,6 @@ atualizado-em: 2026-08-24
      origem: humano | inferido (inferido NÃO vale como verdade até o humano
        confirmar)
      depende-de: lista de ids de nós do índice
-     autopilot: (opcional) declarado | elegivel | inelegivel (<id>/<n>) —
-       declarado pela porta de entrada; elegibilidade gravada pela
-       auto-revisão do scope (LIGHT e declaração tardia: pela porta de
-       entrada, na hora)
      arquivos: paths/globs tocados pela demanda — preenchido no sync da validate
        via `git diff --name-only`, nunca de memória
      keywords + resumo: espelham a linha do índice mestre (mesma edição) -->
@@ -63,8 +59,7 @@ login social; recuperação de senha (nó próprio).
 ## e2e
 
 pendente
-<!-- pendente | relatorio: ../e2e/e2e-<id>.md | pulado-pelo-humano
-     | pulado-por-autopilot-sem-ferramenta -->
+<!-- pendente | relatorio: ../e2e/e2e-<id>.md | pulado-pelo-humano -->
 
 ## feedback-reprovacao
 
