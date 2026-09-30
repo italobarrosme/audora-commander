@@ -80,8 +80,8 @@ Contexto just-in-time (Anthropic): referência leve agora, conteúdo na hora.
 **Lei de Ferro:** `PLANO SEM LEITURA DO CÓDIGO ATUAL É PLANO INVÁLIDO`
 
 Regras:
-1. **Duas passadas**: (1) localizar candidatos a partir do escopo; (2) ler os arquivos que o
-   plano vai tocar. Plano lista explicitamente os arquivos lidos; etapa que
+1. **Duas passadas**: (1) localizar candidatos a partir do escopo; (2) ler por trecho o que o
+   plano vai tocar, listando cada leitura como `caminho:início-fim`. Plano lista explicitamente os arquivos lidos; etapa que
    toca arquivo não listado invalida o plano naquele ponto.
 2. **Plano é ARQUIVO** (`docs/audora/planos/plano-<id>.md`), estilo
    Superpowers: header (objetivo, arquitetura, nó do MEMORY, arquivos lidos),
@@ -92,7 +92,9 @@ Regras:
 3. **Tarefa autossuficiente** (inspirado em BMAD story file): cada tarefa embute
    requisito (critérios `<id>/<n>` do nó, verbatim), decisões relevantes,
    critério de done e interfaces consumidas/produzidas. Sessão limpa (ou
-   subagente) executa sem redescobrir contexto.
+   subagente) executa sem redescobrir contexto. A tarefa é mapa (critério →
+   caso de teste → `caminho:linha`, com a asserção exata quando o critério
+   deixa o valor aberto); o código nasce na execute.
 4. **Dependências explícitas + expansão sob demanda** (inspirado em Taskmaster):
    tarefas declaram `depende-de`; "qual a próxima?" é resposta mecânica, nunca
    tarefa bloqueada. Tarefa complexa (`expandir: sim`) é quebrada em

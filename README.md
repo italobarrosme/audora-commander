@@ -173,9 +173,12 @@ Details per skill: [Skills in detail](#skills-in-detail).
   header. A MEMORY vs code conflict stops and goes to you. Writes
   self-sufficient tasks: EARS criteria copied verbatim, relevant decisions,
   interfaces with exact signatures, exact paths, `depende-de`, and 2–5
-  minute steps (red → verify → implement → green → commit). Steps carry the
-  full TEST code, exact signatures and commands; implementation code only
-  when it is not obvious (algorithm, regex, SQL, exact format). No
+  minute steps (red → verify → implement → green → commit). Each task is a
+  map: criterion → test case → `path:line` of the change point, the
+  snippets to read (`path:start-end`) and, when the criterion leaves the
+  value open, the exact `input → expected output`; test and implementation
+  code are written in `execute`. A broad question goes to an exploration
+  subagent that returns `path:line`, checked by reading. No
   placeholders. Complex tasks marked `expandir: sim` are detailed only when
   their turn comes.
 - **What it leaves on disk**: `docs/audora/planos/plano-<id>.md`.
@@ -187,7 +190,11 @@ Details per skill: [Skills in detail](#skills-in-detail).
 - **When it fires**: approved plan (MEDIUM/HIGH) or a LIGHT/HOTFIX demand
   ready for code.
 - **What it does**: re-reads the plan and the node at the start of every
-  session; the next task is the first one whose dependencies are done. Per
+  session; the next task is the first one whose dependencies are done.
+  Reads code by snippet: what the map points to (a file over 200 lines is
+  never read whole), a symbol search outside it, and import, inheritance,
+  registration or config links; the 3rd read outside the map is added to
+  it, and modifying a file outside the map goes back to `plan`. Per
   task: RED — one minimal test
   citing `<id>/<n>`, seen failing for the right reason; GREEN — the minimum,
   with the whole suite green (or the Constitution's `gate:` exiting 0);
@@ -251,7 +258,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   failing test), full evidence (whole error, the failing
   path, recent diff), one hypothesis at a time tested by the cheapest
   distinguishing experiment, a root cause that explains every symptom, fix
-  via TDD. Three refuted hypotheses → stops and escalates to you. Hunt mode
+  via TDD. Symptom mode locates code like `execute` — by snippet, symbol
+  search and links. Three refuted hypotheses → stops and escalates to you. Hunt mode
   — sweeps defect classes (cross references, contracts and schemas, living
   docs and counts, error edges, configuration and execution) and verifies
   every finding before reporting it.

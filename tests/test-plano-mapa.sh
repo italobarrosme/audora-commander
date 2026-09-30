@@ -59,4 +59,16 @@ dc="$(flat skills/debug/SKILL.md '## Modo caçada (sem sintoma)')"
 assert_contains "$dc" 'Varredura por classes de defeito' "plano-mapa/12 caçada continua varredura por classes"
 assert_not_contains "$dc" 'mais de 200 linhas' "plano-mapa/12 caçada sem regra de trecho"
 
+# --- /1 /5 /12 — docs descrevem o mapa e a leitura por trecho ---
+en="$(flat README.md)"; pt="$(flat README.pt-BR.md)"; fu="$(flat docs/fundamentos.md)"
+assert_contains "$en" 'Each task is a map' "plano-mapa/1 README EN: tarefa é mapa"
+assert_not_contains "$en" 'full TEST code' "plano-mapa/1 README EN sem teste completo"
+assert_contains "$pt" 'Cada tarefa é um mapa' "plano-mapa/1 README PT: tarefa é mapa"
+assert_not_contains "$pt" 'código completo do TESTE' "plano-mapa/1 README PT sem teste completo"
+assert_contains "$en" 'Reads code by snippet' "plano-mapa/5 README EN: execute lê por trecho"
+assert_contains "$pt" 'Lê código por trecho' "plano-mapa/5 README PT: execute lê por trecho"
+assert_contains "$en" 'Symptom mode locates code like `execute`' "plano-mapa/12 README EN: debug localiza como execute"
+assert_contains "$pt" 'O modo sintoma localiza código como a `execute`' "plano-mapa/12 README PT: debug localiza como execute"
+assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é mapa"
+
 report

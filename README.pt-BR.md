@@ -175,9 +175,13 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   Escreve tarefas autossuficientes: critérios EARS copiados verbatim,
   decisões relevantes, interfaces com assinatura exata, caminhos exatos,
   `depende-de` e passos de 2–5 minutos (red → verificar → implementar →
-  green → commit). Os passos levam o código completo do TESTE, assinaturas e
-  comandos exatos; código de implementação só quando não é óbvio (algoritmo,
-  regex, SQL, formato exato). Zero placeholder. Tarefa complexa marcada
+  green → commit). Cada tarefa é um mapa: critério → caso de teste →
+  `caminho:linha` do ponto de mudança, os trechos a ler
+  (`caminho:início-fim`) e, quando o critério deixa o valor aberto, a
+  asserção exata `entrada → saída esperada`; o código do teste e o da
+  implementação nascem na `execute`. Pergunta ampla vai para um subagente
+  de exploração que devolve `caminho:linha`, conferido por leitura. Zero
+  placeholder. Tarefa complexa marcada
   `expandir: sim` só é detalhada quando chega a vez dela.
 - **O que deixa no disco**: `docs/audora/planos/plano-<id>.md`.
 - **Portões humanos**: HIGH → portão de plano; MEDIUM segue direto.
@@ -188,7 +192,11 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **Quando dispara**: plano aprovado (MEDIUM/HIGH) ou demanda LIGHT/HOTFIX
   pronta para código.
 - **O que faz**: relê o plano e o nó no início de toda sessão; a próxima
-  tarefa é a primeira com as dependências concluídas. Por tarefa: RED — um teste mínimo citando `<id>/<n>`,
+  tarefa é a primeira com as dependências concluídas. Lê código por trecho:
+  o que o mapa aponta (arquivo com mais de 200 linhas nunca inteiro), busca
+  do símbolo fora dele e ligações de import, herança, registro ou
+  configuração; a 3ª leitura fora do mapa entra nele, e modificar arquivo
+  fora do mapa volta ao `plan`. Por tarefa: RED — um teste mínimo citando `<id>/<n>`,
   visto falhando pelo motivo certo; GREEN — o mínimo, com a suíte toda verde
   (ou o `gate:` da Constituição saindo 0); REFACTOR; COMMIT citando o
   critério. Os testes cobrem integração real e caminhos de erro e borda.
@@ -252,7 +260,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   um teste que falha), evidência completa (erro inteiro, caminho que falha,
   diff recente), uma hipótese por vez testada pelo
   experimento mais barato que a distingue, causa raiz que explica todos os
-  sintomas, fix via TDD. Três hipóteses refutadas → para e escala para você.
+  sintomas, fix via TDD. O modo sintoma localiza código como a `execute` —
+  por trecho, busca do símbolo e ligações. Três hipóteses refutadas → para e escala para você.
   Modo caçada — varre classes de defeito (referências cruzadas, contratos e
   schemas, documentação viva e contagens, bordas de erro, configuração e
   execução) e verifica cada achado antes de reportar.
