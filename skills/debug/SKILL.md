@@ -25,7 +25,11 @@ o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
    coleta, não investigação.
 2. **Evidência completa.** Ler a MENSAGEM DE ERRO INTEIRA e o stack trace até
    o fim. Ler o código do caminho que falha — o que ele faz, não o que você
-   lembra que fazia. Diff recente
+   lembra que fazia — localizando como a execute: arquivo com mais de 200
+   linhas é lido pelo trecho, nunca inteiro; fora do plano, buscar o símbolo
+   e ler só o trecho apontado; a mudança toca import, herança, registro ou
+   configuração → seguir a ligação e ler o trecho ligado; `caminho:linha` que
+   não bate → relocalizar pela busca do símbolo. Diff recente
    (`git log -p` / `git diff`) se o defeito é novo: o que mudou desde que
    funcionava?
 3. **Hipóteses — uma por vez.** Listar hipóteses ordenadas por probabilidade.

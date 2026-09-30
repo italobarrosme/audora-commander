@@ -47,4 +47,16 @@ assert_contains "$el" '(`caminho:linha` não bate): relocalizar pela busca do s�
 assert_contains "$el" '**Plano no formato antigo** (código completo do teste): executar como está, sem pedir conversão' "plano-mapa/11 execute: formato antigo aceito"
 assert_contains "$(flat skills/execute/SKILL.md '## Fluxo')" 'o caso e as asserções vêm do mapa' "plano-mapa/1 execute: teste nasce do mapa"
 
+# --- /12 — debug sintoma localiza como a execute (mesmas frases); caçada segue varredura ---
+for par in "skills/execute/SKILL.md|## Localização de código" "skills/debug/SKILL.md|## Modo sintoma"; do
+  f="${par%%|*}"; h="${par#*|}"; t="$(flat "$f" "$h")"
+  for s in 'mais de 200 linhas é lido pelo trecho, nunca inteiro' 'buscar o símbolo e ler só o trecho apontado' \
+           'seguir a ligação e ler o trecho ligado' 'relocalizar pela busca do símbolo'; do
+    assert_contains "$t" "$s" "plano-mapa/12 $f ($h) tem '$s'"
+  done
+done
+dc="$(flat skills/debug/SKILL.md '## Modo caçada (sem sintoma)')"
+assert_contains "$dc" 'Varredura por classes de defeito' "plano-mapa/12 caçada continua varredura por classes"
+assert_not_contains "$dc" 'mais de 200 linhas' "plano-mapa/12 caçada sem regra de trecho"
+
 report
