@@ -46,5 +46,10 @@ for r in README.md README.pt-BR.md; do
 done
 assert_contains "$(tr -d '\r' < README.md)" '## The 8 skills' "corte-sem-uso/9 README EN diz 8 skills"
 assert_contains "$(tr -d '\r' < README.pt-BR.md)" '## As 8 skills' "corte-sem-uso/9 README PT diz 8 skills"
+# --- /10 versão 0.11.0 nos dois manifests ---
+for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
+  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.11.0"' "corte-sem-uso/10 $j declara 0.11.0"
+  assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.10.0"' "corte-sem-uso/10 $j sem 0.10.0"
+done
 
 report

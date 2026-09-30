@@ -46,6 +46,13 @@ de categoria, históricos, commit nos projetos limpos.
   `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover`.
 - gate-asserts: queda aprovada no escopo (/11) — asserts de test-graphify-limpeza, test-loop, test-autopilot e test-worktree saem com o comportamento removido; ausência guardada por tests/test-corte-sem-uso.sh.
 
+## medicao
+
+Bytes (blobs LF). skills: 74760 → 58010; templates: 26128 → 23626;
+test-carga BASE 51800 → 46575, FULL 57040 → 51815. Saíram skills/worktree
+(1 skill), hooks/loop, hooks/graphify-limpeza,
+templates/loop-prompt-template.md.
+
 ## delta
 
 ## e2e

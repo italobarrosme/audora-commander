@@ -98,6 +98,11 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   restos: nenhum`. 1º gate reprovou por falha intermitente de
   `docs-permissoes/1` (não reproduziu; aprendizado registrado); 2º gate
   exit 0, 935 asserts.
+- 2026-09-30 (execute T2–T5): gate reprovou só pelos testes autorizados em
+  T2 (graphify-limpeza), T3 (autopilot, loop) e T4 (worktree), com a linha
+  de justificativa. T5: suíte 11 arquivos, 631 asserts, exit 0; gate exit 0.
+  Carga: skills 74760 → 58010, templates 26128 → 23626, BASE 51800 → 46575,
+  FULL 57040 → 51815; tetos 48000 / 53400.
 
 ## Decisões tomadas pela IA
 
