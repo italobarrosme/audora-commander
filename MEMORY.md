@@ -100,6 +100,7 @@ time pequeno em projetos web/mobile/api.
 - validate-estado-no | delivered | Estado validado no nó → docs/audora/arquivo/2026-09-28-validate-estado-no.md
 - contexto-por-fase | delivered | Contexto zerado por fase → docs/audora/arquivo/2026-09-29-contexto-por-fase.md
 - remover-graphify | delivered | Remover Graphify → docs/audora/arquivo/2026-09-29-remover-graphify.md
+- corte-sem-uso | in-progress | Corte do sem uso | Remover do plugin o que não tem uso medido — autopilot, motor de loop, skill worktree e graphify-limpeza (após limpar os 12 projetos) | corte, autopilot, loop, worktree, graphify-limpeza, simplificacao, breaking | hooks/loop, skills/worktree/, hooks/graphify-limpeza
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
