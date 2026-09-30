@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Estrutura das 9 skills + contratos de conteúdo (memory: /2,/3,/6,/10-17; fases: /14,/18).
+# Estrutura das 8 skills + contratos de conteúdo (memory: /2,/3,/6,/10-17; fases: /14,/18).
 # memory-fatiada/1,/2,/3,/4,/6,/7 — a skill memory é roteador + references: cada
 # string é asserida no arquivo CERTO, não num cat único que não distingue local.
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
-for s in audora-commander memory scope plan execute e2e validate debug worktree; do
+for s in audora-commander memory scope plan execute e2e validate debug; do
   f="skills/$s/SKILL.md"
   assert_file "$f" "skill $s existe"
   [ -f "$f" ] || continue
@@ -67,8 +67,8 @@ done
 # /4 — degradação declarada no roteador
 assert_contains "$m" 'reference ausente' "/4 roteador declara reference ausente"
 assert_contains "$m" 'sem travar a fase' "/4 roteador degrada sem travar"
-# remover-graphify/9,/10 — fases e worktree sem Graphify e sem consulta ao índice de código
-for s in audora-commander scope plan execute e2e validate debug worktree; do
+# remover-graphify/9,/10 — fases sem Graphify e sem consulta ao índice de código
+for s in audora-commander scope plan execute e2e validate debug; do
   grep -qiE 'graphify|consultar-codigo' "skills/$s/SKILL.md" && ko "remover-graphify/9 $s cita graphify/consultar-codigo" || ok
   grep -qiE '(í|Í|i)ndice de c(ó|o)digo' "skills/$s/SKILL.md" && ko "remover-graphify/10 $s cita índice de código" || ok
 done
@@ -81,7 +81,7 @@ for s in scope execute debug e2e; do
 done
 a="$(cat skills/audora-commander/SKILL.md)"
 assert_contains "$a" 'skill `memory`' "/2 porta de entrada usa skill memory"
-assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "limpeza-codigo-morto/3 9 skills"
+assert_eq "8" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "corte-sem-uso/9 8 skills"
 assert_contains "$a" 'de qualquer outra coisa. Nunca seguir sem MEMORY' "limpeza-codigo-morto/1 porta de entrada oferece bootstrap sem aviso legado"
 assert_contains "$a" 'MEMORY ausente → oferecer bootstrap antes' "memory-graphify/2 porta de entrada oferece bootstrap"
 v="$(cat skills/validate/references/sync.md 2>/dev/null)"
@@ -95,7 +95,7 @@ for s in audora-commander scope plan execute e2e validate debug; do
   assert_contains "$c" 'bloco-fechamento-template.md' "/8 $s aponta o template"
 done
 # resumo-de-fase/9 — skills-ferramenta NAO definem bloco proprio
-for s in memory worktree; do
+for s in memory; do
   c="$(cat "skills/$s/SKILL.md" 2>/dev/null)"
   assert_not_contains "$c" '## Bloco de fechamento' "/9 $s (ferramenta) sem bloco proprio"
 done

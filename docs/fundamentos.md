@@ -265,8 +265,6 @@ Regras:
 - **Subagentes**: recebem no prompt o nó do MEMORY + etapa do plano + critério
   de done. Editam só os arquivos dos nós da própria demanda; conflito fora
   deles sobe para o humano.
-- **Worktree sob pedido**: isolamento em git worktree só por pedido explícito
-  do humano (skill worktree) — isola arquivo, não porta, banco ou hooks.
 - **Demandas concorrentes**: máximo 3 nós `in-progress`. Demanda nova com
   outras abertas → porta de entrada lista e pergunta: pausar, continuar ou
   abandonar.

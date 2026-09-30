@@ -24,7 +24,7 @@ com IA sem estrutura: requisito que se perde entre conversas, plano que vira
 código sem ninguém aprovar o escopo antes, e "pronto" que ninguém verificou
 de verdade.
 
-Instalado num projeto, o plugin adiciona 9 skills encadeadas — da
+Instalado num projeto, o plugin adiciona 8 skills encadeadas — da
 classificação de risco da demanda até o portão de validação final — que
 mantêm uma memória viva do produto (`MEMORY.md`), transformam escopo em
 artefato escrito antes do código, e cobram evidência real (testes rodados,
@@ -86,7 +86,7 @@ Reinicie a sessão (ou rode `/clear`) — o hook de SessionStart passa a
 injetar o ponteiro do framework. Em seguida, rode o "Checklist de validação
 da instalação" mais abaixo neste README.
 
-## As 9 skills
+## As 8 skills
 
 | Skill | Papel |
 |---|---|
@@ -98,7 +98,6 @@ da instalação" mais abaixo neste README.
 | `e2e` | Levanta o projeto e exercita a demanda de ponta a ponta (opcional, fortemente recomendada) |
 | `validate` | Portão humano final: evidência 1:1 com critérios, sync MEMORY → PRD |
 | `debug` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
-| `worktree` | Isolamento sob demanda em git worktree: ciclo de vida de uma demanda, fan-out de N agentes, integração em série, portão humano na remoção |
 
 Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 
@@ -264,27 +263,6 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   melhorias viram nó é decisão sua.
 - **Próxima**: `execute` (fix via TDD), `validate` ou decisão sua.
 
-### `worktree`
-
-- **Quando dispara**: só quando você pede explicitamente para isolar uma
-  demanda, listar worktrees, despachar agentes em paralelo, integrar ou
-  limpar — nunca por iniciativa própria.
-- **O que faz**: isola a demanda com o worktree nativo do harness
-  (`EnterWorktree` / `ExitWorktree`), com o nome do id do nó; prepara o
-  ambiente (arquivos ignorados via `.worktreeinclude`, dependências, aviso de
-  que os hooks do git são compartilhados — nunca copia segredo em
-  silêncio); lista cada worktree com caminho, branch, nó, limpo? e commits
-  não integrados; despacha N agentes em domínios de arquivo não-sobrepostos,
-  criados e integrados um de cada vez; antes de remover, confere sujo, não
-  integrado, arquivo ignorado e junction apontando para fora.
-- **O que deixa no disco**: `.claude/worktrees/<id>/` e uma branch por
-  demanda; caminho e branch registrados no nó.
-- **Portões humanos**: descartar worktree que ainda tem trabalho
-  (`discard_changes`) é sempre seu; limpeza de órfãos é oferecida, nunca
-  executada.
-- **Próxima**: a fase que a demanda pedia (`execute`, ou `scope`/`plan`);
-  trabalho integrado → `validate`.
-
 ## Fluxo de uso (exemplo: demanda MEDIUM)
 
 1. Você pede: "adiciona filtro por data na listagem de pedidos".
@@ -332,7 +310,7 @@ mais sandbox. Configure o harness — não conte com prosa para segurar o agente
 Rode na sessão interativa após instalar:
 
 - [ ] 1. QUANDO o marketplace for adicionado e o plugin instalado, o Claude
-  Code DEVE listar as 9 skills com prefixo `audora-commander:` (verifique com
+  Code DEVE listar as 8 skills com prefixo `audora-commander:` (verifique com
   a listagem de skills da sessão).
 - [ ] 2. QUANDO uma sessão nova iniciar, o contexto DEVE conter o ponteiro
   "Framework audora-commander ativo" (pergunte ao Claude o que o hook

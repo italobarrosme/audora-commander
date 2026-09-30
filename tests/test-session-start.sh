@@ -10,4 +10,5 @@ h="$(cat "$ROOT/hooks/hooks.json")"
 assert_contains "$h" 'memory-guard' "hooks.json memory-guard"; assert_contains "$h" 'memory-validate' "hooks.json memory-validate"
 assert_not_contains "$o" 'Graphify' "remover-graphify/10 session-start sem Graphify"
 assert_empty "$(cd "$ROOT" && grep -li graphify hooks/*)" "corte-sem-uso/5 hooks sem Graphify"
+assert_not_contains "$o" 'worktree' "corte-sem-uso/9 session-start sem worktree"
 report

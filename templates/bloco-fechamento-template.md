@@ -2,7 +2,7 @@
 
 > Formato canônico do bloco que TODA skill de fase imprime no terminal ao
 > terminar (`audora-commander`, `scope`, `plan`, `execute`, `e2e`, `validate`,
-> `debug`). Skill-ferramenta (`memory`, `worktree`) NÃO imprime bloco próprio:
+> `debug`). Skill-ferramenta (`memory`) NÃO imprime bloco próprio:
 > devolve à fase chamadora e quem imprime é ela.
 >
 > O bloco é **saída de terminal**, nunca arquivo versionado. Markdown puro —

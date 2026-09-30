@@ -4,5 +4,5 @@
   "version": "0.10.0",
   "author": { "name": "Italo Barros", "email": "italobarros.me@gmail.com" },
   "license": "MIT",
-  "keywords": ["workflow", "tdd", "planning", "best-practices", "memory", "worktree"]
+  "keywords": ["workflow", "tdd", "planning", "best-practices", "memory"]
 }

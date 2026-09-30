@@ -19,11 +19,6 @@ for s in 'uv tool install graphifyy' 'consultar-codigo' 'graphify query' 'graphi
   assert_not_contains "$pt" "$s" "remover-graphify/10 README PT sem '$s'"
 done
 assert_not_contains "$(tr 'A-Z' 'a-z' < docs/fundamentos.md)" 'graphify' "remover-graphify/10 fundamentos sem Graphify"
-assert_contains "$en" '| `worktree` |' "skill-worktree/1 README EN lista worktree"
-assert_contains "$pt" '| `worktree` |' "skill-worktree/1 README PT lista worktree"
-assert_contains "$en" 'The 9 skills' "skill-worktree/1 README EN diz 9 skills"
-assert_contains "$pt" 'As 9 skills' "skill-worktree/1 README PT diz 9 skills"
-assert_empty "$(grep -rn '8 skills' README.md README.pt-BR.md PRD.md 2>/dev/null)" "skill-worktree/1 zero '8 skills' residual"
 blocos() { awk '/^```/{f=!f; next} f' "$1"; }
 assert_eq "$(blocos README.md | md5sum)" "$(blocos README.pt-BR.md | md5sum)" "/19 blocos de código idênticos EN/PT"
 p="$(cat PRD.md)"

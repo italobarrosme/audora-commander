@@ -25,7 +25,7 @@ without structure: requirements lost between conversations, plans that become
 code without anyone approving the scope first, and "done" that nobody
 actually verified.
 
-Installed in a project, the plugin adds 9 chained skills — from risk
+Installed in a project, the plugin adds 8 chained skills — from risk
 classification of the demand to the final validation gate — that keep a
 living memory of the product (`MEMORY.md`), turn scope into a written
 artifact before any code, and demand real evidence (tests actually run, e2e
@@ -86,7 +86,7 @@ Restart the session (or run `/clear`) — the SessionStart hook starts
 injecting the framework pointer. Then run the "Installation validation
 checklist" further down in this README.
 
-## The 9 skills
+## The 8 skills
 
 | Skill | Role |
 |---|---|
@@ -98,7 +98,6 @@ checklist" further down in this README.
 | `e2e` | Boots the project and exercises the demand end to end (optional, strongly recommended) |
 | `validate` | Final human gate: evidence mapped 1:1 to criteria, MEMORY → PRD sync |
 | `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
-| `worktree` | On-demand isolation in a git worktree: lifecycle of one demand, fan-out of N agents, serial integration, human gate on removal |
 
 Details per skill: [Skills in detail](#skills-in-detail).
 
@@ -263,25 +262,6 @@ Details per skill: [Skills in detail](#skills-in-detail).
   which improvements become nodes is up to you.
 - **Next**: `execute` (fix via TDD), `validate`, or your decision.
 
-### `worktree`
-
-- **When it fires**: only when you explicitly ask to isolate a demand, list
-  worktrees, fan out agents, integrate or clean up — never on its own.
-- **What it does**: isolates a demand with the harness's native worktree
-  (`EnterWorktree` / `ExitWorktree`), named after the node id; prepares the
-  environment (ignored files via `.worktreeinclude`, dependencies, a warning
-  that git hooks are shared — never copies secrets silently); lists every
-  worktree with path, branch, node, clean? and unintegrated commits; fans out
-  N agents over non-overlapping file domains, created and integrated one at
-  a time; before removal checks dirty, unintegrated and ignored files and
-  junctions pointing outside.
-- **What it leaves on disk**: `.claude/worktrees/<id>/` and a branch per
-  demand; path and branch recorded in the node.
-- **Human gates**: discarding a worktree that still has work
-  (`discard_changes`) is always yours; orphan cleanup is offered, never run.
-- **Next**: the phase the demand needed (`execute`, or `scope`/`plan`);
-  integrated work → `validate`.
-
 ## Usage flow (example: a MEDIUM demand)
 
 1. You ask: "add a date filter to the orders list".
@@ -330,7 +310,7 @@ rely on prose to stop the agent.
 Run in the interactive session after installing:
 
 - [ ] 1. WHEN the marketplace is added and the plugin installed, Claude Code
-  MUST list the 9 skills with the `audora-commander:` prefix (check the
+  MUST list the 8 skills with the `audora-commander:` prefix (check the
   session's skill listing).
 - [ ] 2. WHEN a new session starts, the context MUST contain the
   "Framework audora-commander ativo" pointer (ask Claude what the hook
