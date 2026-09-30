@@ -103,6 +103,9 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   de justificativa. T5: suíte 11 arquivos, 631 asserts, exit 0; gate exit 0.
   Carga: skills 74760 → 58010, templates 26128 → 23626, BASE 51800 → 46575,
   FULL 57040 → 51815; tetos 48000 / 53400.
+- 2026-09-30 (execute, gate final /11): árvore limpa, HEAD 7f3e1fc, gate exit 0
+  (`GATE: passou`), 631 asserts; 3 commits citam a autorização; apagados em
+  tests/ = exatamente os 4 autorizados.
 
 ## Decisões tomadas pela IA
 
@@ -184,7 +187,7 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   detecção) sai 0 com todo projeto `(limpo)`; relatório sem linha
   `fora dos restos:` diferente de `nenhum`; commit feito.
 
-- [ ] **1. Escrever o verificador/executor** — gravar via Write (heredoc
+- [x] **1. Escrever o verificador/executor** — gravar via Write (heredoc
   grande quebra no Bash tool) `$SCRATCH/limpeza-projetos.sh`:
 
   ```bash
@@ -257,32 +260,32 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   echo "projetos com pendência: $pend"
   [ "$pend" -eq 0 ]
   ```
-- [ ] **2. Red** — `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" > "$SCRATCH/det-antes.txt" 2>&1; echo $?`
+- [x] **2. Red** — `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" > "$SCRATCH/det-antes.txt" 2>&1; echo $?`
   → `1`; ler o arquivo inteiro: 15 blocos `## …`, `projetos com pendência: 13`,
   SellInfoTurbo listando também `claude-md .claude/CLAUDE.md` e
   `skill .claude/skills/graphify/`; nenhum `.next/standalone`. Divergiu das
   Notas de sessão → parar e reportar antes de seguir.
-- [ ] **3. PARADA pontual (P5 regra 7)** — apresentar ao humano: a lista do
+- [x] **3. PARADA pontual (P5 regra 7)** — apresentar ao humano: a lista do
   passo 2, o comando exato `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover`,
   e o rollback (`cp -rp "$SCRATCH/backup/<projeto>/." "<projeto>/"` restaura
   hooks e arquivos; `graphify-out/` sem backup). Só com o "sim": registrar em
   `## decisoes` do nó `- 2026-MM-DD (humano): autorizada a limpeza dos 13 projetos pelo comando <comando>`.
-- [ ] **4. Executar** — `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover > "$SCRATCH/remover.log" 2>&1; echo $?`
+- [x] **4. Executar** — `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover > "$SCRATCH/remover.log" 2>&1; echo $?`
   → esperado `0` e `projetos com pendência: 0`. Exit 1: ler
   `$SCRATCH/relatorio.md`; item `falhou` fica relatado com o comando à mão
   (/1 aceita); `fora dos restos:` ≠ `nenhum` → PARAR e mostrar ao humano
   (violação de /2; rollback do backup se ele pedir).
-- [ ] **5. Green** — `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" > "$SCRATCH/det-depois.txt" 2>&1; echo $?`
+- [x] **5. Green** — `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" > "$SCRATCH/det-depois.txt" 2>&1; echo $?`
   → `0`, todo bloco `(limpo)` (salvo item `falhou` relatado). Conferir /3:
   `grep -ci graphify "C:/Users/Italo Barros/workspace/VTURBO/SellInfoTurbo/.claude/CLAUDE.md"`
   → `0`; `ls "C:/Users/Italo Barros/workspace/VTURBO/SellInfoTurbo/.claude/skills"` → não existe.
   Conferir /2 sem commit: `git -C <projeto> log -1 --format=%H` igual ao de antes (sem commit novo).
-- [ ] **6. Relatório** — criar `docs/audora/e2e/limpeza-graphify-projetos.md`:
+- [x] **6. Relatório** — criar `docs/audora/e2e/limpeza-graphify-projetos.md`:
   cabeçalho `# Limpeza do Graphify nos projetos locais — corte-sem-uso/1–4`,
   1 parágrafo (data, HEAD do plugin usado, PATH sem `uv`/`pipx`, SEM commit
   nos projetos, backup em `$SCRATCH/backup`, `graphify-out/` sem backup) e,
   abaixo, o conteúdo de `$SCRATCH/relatorio.md` inteiro.
-- [ ] **7. Commit** — gate antes (`bash hooks/gate corte-sem-uso > "$SCRATCH/gate.log" 2>&1; echo $?` → `0`; só docs mudaram), então
+- [x] **7. Commit** — gate antes (`bash hooks/gate corte-sem-uso > "$SCRATCH/gate.log" 2>&1; echo $?` → `0`; só docs mudaram), então
   `git add docs/audora/e2e/limpeza-graphify-projetos.md docs/audora/memory/corte-sem-uso.md && git commit -m "docs(corte-sem-uso/1-4): restos do Graphify limpos nos projetos locais (sem commit neles); relatório"`.
 
 ## Tarefa 2: `graphify-limpeza` sai
@@ -314,10 +317,10 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
 - **done quando**: suíte verde; gate reprova só por `arquivo de teste
   apagado: tests/test-graphify-limpeza.sh`; commit feito.
 
-- [ ] **1. Válvula** — em `docs/audora/memory/corte-sem-uso.md`, no fim de
+- [x] **1. Válvula** — em `docs/audora/memory/corte-sem-uso.md`, no fim de
   `## decisoes`, a linha (vale para a demanda inteira):
   `gate-asserts: queda aprovada no escopo (/11) — asserts de test-graphify-limpeza, test-loop, test-autopilot e test-worktree saem com o comportamento removido; ausência guardada por tests/test-corte-sem-uso.sh.`
-- [ ] **2. Teste red** — criar `tests/test-corte-sem-uso.sh`:
+- [x] **2. Teste red** — criar `tests/test-corte-sem-uso.sh`:
 
   ```bash
   #!/usr/bin/env bash
@@ -339,10 +342,10 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
 
   report
   ```
-- [ ] **3. Rodar red** — `bash tests/test-corte-sem-uso.sh; echo $?` → `1`,
+- [x] **3. Rodar red** — `bash tests/test-corte-sem-uso.sh; echo $?` → `1`,
   com `FAIL: corte-sem-uso/5 superfície sem Graphify`, `... script de
   limpeza removido`, `... teste da limpeza removido`, `... sem oferta de limpeza`.
-- [ ] **4. Implementar**:
+- [x] **4. Implementar**:
   - `git rm hooks/graphify-limpeza tests/test-graphify-limpeza.sh`.
   - `skills/memory/SKILL.md`: description sem `(inclui a oferta de limpar
     restos do Graphify)`; exemplo de "Raiz do plugin" vira
@@ -361,13 +364,13 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   - `tests/test-skills.sh`: apagar 50–54 (limpeza na carga de contexto).
   - `tests/test-docs.sh`: apagar 14–16 (READMEs descrevem a limpeza).
   - `tests/test-session-start.sh` linha 12 → `assert_empty "$(cd "$ROOT" && grep -li graphify hooks/*)" "corte-sem-uso/5 hooks sem Graphify"`.
-- [ ] **5. Green** — `grep -rn 'path_sem_uv\|guarda_sem_uv\|graphify-limpeza' tests skills templates hooks` → só
+- [x] **5. Green** — `grep -rn 'path_sem_uv\|guarda_sem_uv\|graphify-limpeza' tests skills templates hooks` → só
   `tests/test-corte-sem-uso.sh`. Suíte em background
   (`bash tests/run.sh > "$SCRATCH/suite.log" 2>&1; echo $?`) → `0`, 14
   arquivos. Gate: `bash hooks/gate corte-sem-uso > "$SCRATCH/gate.log" 2>&1; echo $?`
   → `1` com `GATE: asserts N → M com justificativa no nó` e UM motivo:
   `arquivo de teste apagado: tests/test-graphify-limpeza.sh`.
-- [ ] **6. Commit** — `git add tests/test-corte-sem-uso.sh skills/memory/SKILL.md README.md README.pt-BR.md MEMORY.md docs/audora/memory/corte-sem-uso.md tests/lib.sh tests/test-skills.sh tests/test-dogfood.sh tests/test-docs.sh tests/test-session-start.sh && git commit -m "refactor(corte-sem-uso/5,11): graphify-limpeza e seu teste removidos (remoção autorizada no escopo, decisão 2026-09-30 do nó)"`
+- [x] **6. Commit** — `git add tests/test-corte-sem-uso.sh skills/memory/SKILL.md README.md README.pt-BR.md MEMORY.md docs/audora/memory/corte-sem-uso.md tests/lib.sh tests/test-skills.sh tests/test-dogfood.sh tests/test-docs.sh tests/test-session-start.sh && git commit -m "refactor(corte-sem-uso/5,11): graphify-limpeza e seu teste removidos (remoção autorizada no escopo, decisão 2026-09-30 do nó)"`
   (as remoções já estão no índice pelo `git rm`).
 
 ## Tarefa 3: autopilot e motor de loop saem
@@ -402,7 +405,7 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
     `tests/test-templates.sh`
 - **done quando**: suíte verde; gate reprova só pelos 2 testes apagados; commit feito.
 
-- [ ] **1. Teste red** — em `tests/test-corte-sem-uso.sh`, antes do `report`:
+- [x] **1. Teste red** — em `tests/test-corte-sem-uso.sh`, antes do `report`:
 
   ```bash
   # --- /6 autopilot e motor fora de skills, templates e docs; portões do meio sempre humanos ---
@@ -426,11 +429,11 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   pa="$(tr -d '\r' < templates/bloco-fechamento-template.md | awk '/^## Parada entre fases/{f=1;next} /^## /{f=0} f')"
   assert_contains "$pa" 'templates/fase-subagente-template.md' "corte-sem-uso/8 segue aponta o subagente"
   ```
-- [ ] **2. Rodar red** — `bash tests/test-corte-sem-uso.sh; echo $?` → `1`,
+- [x] **2. Rodar red** — `bash tests/test-corte-sem-uso.sh; echo $?` → `1`,
   FAIL em: skills e templates sem autopilot/motor; READMEs e fundamentos;
   scope sem exceção; template de nó; os 4 `removido`; bullet `loop:`;
   template sem motor; placeholder `{{TAREFA}}`. (Os asserts de "segue" já passam — guardam o que fica.)
-- [ ] **3. Skills** —
+- [x] **3. Skills** —
   - `audora-commander`: parágrafo `[e2e]` (57–58) vira
     `` `[e2e]` = opcional, oferecido SEMPRE pela validate com recomendação forte. ``;
     apagar a seção `## Autopilot (declaração do humano)` (73–89, até a linha em branco antes de `## Red flags`).
@@ -448,7 +451,7 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
     `- **Produzido**: o veredito do portão e o que o sync consolidou.` (sai o contador `paradas humanas` e as 4 linhas que o explicam).
   - `validate/references/fechamento-light.md`: o bullet da oferta termina em
     `Pedido explícito do humano roda sempre, em qualquer caso.` (sai `Em autopilot, … o pulo no nó.`).
-- [ ] **4. Templates e Constituição** —
+- [x] **4. Templates e Constituição** —
   - `no-template.md`: apagar o comentário do campo `autopilot:` (20–23) e
     `| pulado-por-autopilot-sem-ferramenta` do enum de `## e2e` (a linha 66 passa a fechar o comentário: `<!-- pendente | relatorio: ../e2e/e2e-<id>.md | pulado-pelo-humano -->`).
   - `bloco-fechamento-template.md` linha 51 →
@@ -461,7 +464,7 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
     apagar a regra `` `{{TAREFA}}` vazio … `` (18).
   - `MEMORY.md`: apagar o bullet `- **loop**: …` da Constituição (2 linhas).
   - `git rm hooks/loop templates/loop-prompt-template.md tests/test-loop.sh tests/test-autopilot.sh`.
-- [ ] **5. Docs** —
+- [x] **5. Docs** —
   - `README.md`: apagar `Accepts "autopilot" / "roda até o validate" for
     LIGHT and MEDIUM (HIGH refuses).` (119); `Under autopilot it records
     whether every criterion is automatable.` (166–167); ` (skipped only under
@@ -479,13 +482,13 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
     apagar a 34 (`uma tarefa por subagente`), 51–54 (`ap=` e seus 3 asserts),
     56–57 (contrato com `hooks/loop`); comentário 46 → `# --- /1 /3 /9 — execute: parada, LIGHT emenda ---`.
   - `tests/test-templates.sh` linha 32 → `assert_not_contains "$b2" 'autopilot' "corte-sem-uso/6 parada sem autopilot"`.
-- [ ] **6. Green** — `bash tests/test-corte-sem-uso.sh; echo $?` → `0`.
+- [x] **6. Green** — `bash tests/test-corte-sem-uso.sh; echo $?` → `0`.
   `grep -rniE 'autopilot|hooks/loop|motor' skills templates` → vazio.
   `grep -n 'pulado-por-autopilot' skills templates -r` → vazio. Suíte
   (background) → `0`, 12 arquivos; `test-carga` abaixo dos tetos. Gate →
   `1` com a linha de justificativa e SÓ 2 motivos: `arquivo de teste
   apagado: tests/test-autopilot.sh` e `… tests/test-loop.sh`.
-- [ ] **7. Commit** — `git add skills/audora-commander/SKILL.md skills/scope/SKILL.md skills/plan/SKILL.md skills/execute/SKILL.md skills/e2e/SKILL.md skills/validate/SKILL.md skills/validate/references/fechamento-light.md templates/no-template.md templates/bloco-fechamento-template.md templates/fase-subagente-template.md MEMORY.md README.md README.pt-BR.md docs/fundamentos.md tests/test-corte-sem-uso.sh tests/test-contexto-por-fase.sh tests/test-templates.sh && git commit -m "refactor(corte-sem-uso/6,7,8,11): autopilot e motor de loop removidos; portões do meio sempre humanos (remoção de test-autopilot e test-loop autorizada no escopo, decisão 2026-09-30 do nó)"`.
+- [x] **7. Commit** — `git add skills/audora-commander/SKILL.md skills/scope/SKILL.md skills/plan/SKILL.md skills/execute/SKILL.md skills/e2e/SKILL.md skills/validate/SKILL.md skills/validate/references/fechamento-light.md templates/no-template.md templates/bloco-fechamento-template.md templates/fase-subagente-template.md MEMORY.md README.md README.pt-BR.md docs/fundamentos.md tests/test-corte-sem-uso.sh tests/test-contexto-por-fase.sh tests/test-templates.sh && git commit -m "refactor(corte-sem-uso/6,7,8,11): autopilot e motor de loop removidos; portões do meio sempre humanos (remoção de test-autopilot e test-loop autorizada no escopo, decisão 2026-09-30 do nó)"`.
 
 ## Tarefa 4: skill `worktree` sai
 
@@ -506,7 +509,7 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
 - **done quando**: `ls -d skills/*/ | wc -l` = 8; suíte verde; gate reprova
   só por `tests/test-worktree.sh`; commit feito.
 
-- [ ] **1. Teste red** — em `tests/test-corte-sem-uso.sh`, antes do `report`:
+- [x] **1. Teste red** — em `tests/test-corte-sem-uso.sh`, antes do `report`:
 
   ```bash
   # --- /9 8 skills, nenhuma superfície cita a skill worktree ---
@@ -522,11 +525,11 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   assert_contains "$(tr -d '\r' < README.md)" '## The 8 skills' "corte-sem-uso/9 README EN diz 8 skills"
   assert_contains "$(tr -d '\r' < README.pt-BR.md)" '## As 8 skills' "corte-sem-uso/9 README PT diz 8 skills"
   ```
-- [ ] **2. Rodar red** — `bash tests/test-corte-sem-uso.sh; echo $?` → `1`,
+- [x] **2. Rodar red** — `bash tests/test-corte-sem-uso.sh; echo $?` → `1`,
   FAIL em: 8 skills (obtido 9); skill removida; teste removido; sem
   worktree (skills/worktree, bloco-fechamento, session-start, plugin.json,
   fundamentos); tabela, seção e `9 skills` nos 2 READMEs; `The 8`/`As 8`.
-- [ ] **3. Implementar** —
+- [x] **3. Implementar** —
   - `git rm -r skills/worktree tests/test-worktree.sh`.
   - `hooks/session-start`: tirar `; isolamento em git worktree, só a pedido explícito: worktree` (a frase fica `…; bug ou comportamento inesperado: debug. Instrução direta …`).
   - `bloco-fechamento-template.md` linha 5: `` Skill-ferramenta (`memory`) NÃO imprime bloco próprio: ``.
@@ -543,12 +546,12 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   - `tests/test-docs.sh`: apagar 24–28 (worktree listada, 9 skills, "zero 8 skills").
   - `tests/test-session-start.sh`: antes do `report`,
     `assert_not_contains "$o" 'worktree' "corte-sem-uso/9 session-start sem worktree"`.
-- [ ] **4. Green** — `bash tests/test-corte-sem-uso.sh; echo $?` → `0`;
+- [x] **4. Green** — `bash tests/test-corte-sem-uso.sh; echo $?` → `0`;
   `bash hooks/session-start | perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)'; echo $?` → `0`;
   suíte (background) → `0`, 11 arquivos (`test-docs` confere as subseções
   das 8 skills nos READMEs). Gate → `1` com a linha de justificativa e SÓ
   `arquivo de teste apagado: tests/test-worktree.sh`.
-- [ ] **5. Commit** — `git add hooks/session-start templates/bloco-fechamento-template.md .claude-plugin/plugin.json README.md README.pt-BR.md docs/fundamentos.md tests/test-corte-sem-uso.sh tests/test-skills.sh tests/test-docs.sh tests/test-session-start.sh && git commit -m "refactor(corte-sem-uso/9,11): skill worktree removida, 8 skills (remoção de test-worktree autorizada no escopo, decisão 2026-09-30 do nó)"`.
+- [x] **5. Commit** — `git add hooks/session-start templates/bloco-fechamento-template.md .claude-plugin/plugin.json README.md README.pt-BR.md docs/fundamentos.md tests/test-corte-sem-uso.sh tests/test-skills.sh tests/test-docs.sh tests/test-session-start.sh && git commit -m "refactor(corte-sem-uso/9,11): skill worktree removida, 8 skills (remoção de test-worktree autorizada no escopo, decisão 2026-09-30 do nó)"`.
 
 ## Tarefa 5: versão 0.11.0, carga medida e gate final
 
@@ -575,7 +578,7 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
 - **done quando**: gate em árvore limpa sai `0`; `## medicao` no nó com
   antes → depois; commit feito.
 
-- [ ] **1. Teste red** — `tests/test-docs.sh` linha 7 →
+- [x] **1. Teste red** — `tests/test-docs.sh` linha 7 →
   `assert_contains "$(cat "$j")" '"version": "0.11.0"' "corte-sem-uso/10 $j versão 0.11.0"`;
   em `tests/test-corte-sem-uso.sh`, antes do `report`:
 
@@ -586,10 +589,10 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
     assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.10.0"' "corte-sem-uso/10 $j sem 0.10.0"
   done
   ```
-- [ ] **2. Rodar red** — `bash tests/test-docs.sh; echo $?` → `1`
+- [x] **2. Rodar red** — `bash tests/test-docs.sh; echo $?` → `1`
   (`corte-sem-uso/10 … versão 0.11.0`); `bash tests/test-corte-sem-uso.sh; echo $?` → `1` (4 FAIL do /10).
-- [ ] **3. Implementar** — `"version": "0.11.0"` nos 2 manifests.
-- [ ] **4. Medir (/12)** — depois de tudo commitado exceto esta tarefa, sobre blobs LF:
+- [x] **3. Implementar** — `"version": "0.11.0"` nos 2 manifests.
+- [x] **4. Medir (/12)** — depois de tudo commitado exceto esta tarefa, sobre blobs LF:
   ```bash
   med() { local t=0 f; for f in $(git ls-tree -r --name-only "$1" -- "$2"); do t=$((t + $(git show "$1:$f" | tr -d '\r' | wc -c))); done; echo "$t"; }
   echo "skills antes=$(med ab68deb skills) depois=$(med HEAD skills)"
@@ -601,12 +604,12 @@ e descreve o que sai — é o esperado: segue a `main` e muda no sync.)
   `Bytes (blobs LF). skills: 74760 → <S>; templates: 26128 → <T>; test-carga BASE 51800 → <B>, FULL 57040 → <F>. Saíram skills/worktree (1 skill), hooks/loop, hooks/graphify-limpeza, templates/loop-prompt-template.md.`
   Em `tests/test-carga.sh`: linha 6 ganha `; corte-sem-uso: BASE 51800 → <B> / FULL 57040 → <F>.`
   e `TETO_BASE`/`TETO_FULL` = `<B>`/`<F>` × 1,03 arredondados para cima em centenas.
-- [ ] **5. Green** — `bash tests/test-corte-sem-uso.sh; echo $?` → `0`;
+- [x] **5. Green** — `bash tests/test-corte-sem-uso.sh; echo $?` → `0`;
   suíte (background) → `0`, 11 arquivos, total de asserts somado da saída
   (anotar nas Notas de sessão). Gate → `0` (`GATE: passou`, com a linha de
   justificativa se a contagem cair; nenhum arquivo de teste apagado nesta tarefa).
-- [ ] **6. Commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-carga.sh docs/audora/memory/corte-sem-uso.md && git commit -m "chore(corte-sem-uso/10,12): versão 0.11.0; carga estática medida antes → depois"`.
-- [ ] **7. Gate final (/11)** — árvore limpa (`git status --short` vazio):
+- [x] **6. Commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-carga.sh docs/audora/memory/corte-sem-uso.md && git commit -m "chore(corte-sem-uso/10,12): versão 0.11.0; carga estática medida antes → depois"`.
+- [x] **7. Gate final (/11)** — árvore limpa (`git status --short` vazio):
   `bash hooks/gate corte-sem-uso > "$SCRATCH/gate-final.log" 2>&1; echo $?`
   → `0`, `GATE: passou`. Conferir /11 no histórico:
   `git log --format=%s ab68deb..HEAD | grep -c 'autorizada no escopo'` → `3`
