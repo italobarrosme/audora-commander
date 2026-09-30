@@ -66,6 +66,18 @@ Reduzir a maior carga de contexto do framework: planos com mediana de 694 linhas
 
 Carga estática (blobs LF, test-carga): BASE 46575 → 47719, FULL 51815 → 52959; tetos 48000 / 53400 intactos.
 
+A/B de 2026-09-30 (/13), com a mesma demanda `slug` (4 critérios EARS; `lib/texto.sh` com 232 linhas) em duas cópias da fixture. A = plugin 0.11.0 (`git archive c23e00a`); B = esta branch. As sessões são `claude -p` com `--plugin-dir` e o plugin instalado desligado. Tokens e custo saem do evento `result`.
+
+| | A (0.11.0) | B (mapa) | B/A |
+|---|---|---|---|
+| plano: linhas / bytes | 200 / 9812 | 145 / 7724 | −27,5% / −21,3% |
+| sessões de plan (2 turnos): cache_read / output / US$ | 1.135.265 / 20.696 / 2,14 | 662.364 / 15.832 / 1,81 | −41,7% / −23,5% / −15,4% |
+| execute: turnos / cache_read / output / US$ | 30 / 965.958 / 9.285 / 0,80 | 34 / 1.133.634 / 9.949 / 0,83 | +13% / +17,4% / +7,2% / +3,7% |
+| leitura de `lib/texto.sh` na execute | arquivo inteiro (232 l.) | 3 trechos (95 l.) | −59% |
+| verde da suíte da fixture | 35/35, exit 0 | 36/36, exit 0 | as duas verdes |
+
+Leitura: o plano encolheu e a execute leu por trecho, como pedem /1 e /5. Mas o custo da execute não caiu; subiu um pouco, porque a execute B escreveu os testes que o plano A trazia prontos. É n=1, numa demanda pequena, e a diferença de ±4% está dentro do ruído de uma rodada só. As duas sessões de plan pararam na mesma divergência da fixture (convenção × nó), e as duas escolheram A no 2º turno. Artefatos: scratchpad da sessão (`plan-*.jsonl`, `exec-*.jsonl`, `fx-a`, `fx-b`).
+
 ## delta
 
 ## e2e

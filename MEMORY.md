@@ -80,6 +80,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-29 | execute | `JSON::PP` (perl, sem jq) reescreve JSON sem ordem de chaves e normaliza números (`1.50`→`1.5`, inteiro grande vira string) — preservar número exige marcador string antes do decode.
 - 2026-09-30 | execute | Suíte teve 1 falha intermitente sem causa demonstrada: `docs-permissoes/1 README EN cita acceptEdits` (mesmo `$en` passou nos termos antes e depois, sem erro no stderr); não reproduziu em 3 suítes, 30 `test-docs` e 700 pipes. SIGPIPE refutado (pipe de 64 KB > README). Se repetir: rodar de novo o arquivo e capturar `PIPESTATUS` do assert antes de corrigir.
 - 2026-09-30 | e2e | e2e de branch NÃO mergeada sem tocar o cache global: `claude.exe -p … --plugin-dir <repo> --settings '{"enabledPlugins":{"audora-commander@audora-commander-dev":false}}'` — o `system/init` mostra só `audora-commander@inline` apontando o repo; `--resume <session_id>` dá o 2º turno ("segue").
+- 2026-09-30 | execute | Subagente que espera `claude -p` longo em background morre pelo watchdog (600 s sem progresso) se esperar ocioso — um turno de plan levou 58 min de relógio. Esperar com polling ativo (`until … ; do sleep; done` em foreground com timeout < 10 min, repetido) ou devolver o controle à sessão principal.
+- 2026-09-30 | execute | `bc` não existe no Git Bash desta máquina (exit 127) — somar asserts com `grep -o 'PASS=[0-9]*' log | cut -d= -f2 | awk '{s+=$1} END{print s}'`.
 - 2026-09-30 | validate | `hooks/gate` compara contra HEAD: com a árvore commitada a queda de asserts (e teste apagado) some e o gate final passa — a prova do `gate-asserts:` é o gate rodado ANTES do commit de cada tarefa, registrado nas notas de sessão.
 
 ## Índice de nós [carga: sempre]

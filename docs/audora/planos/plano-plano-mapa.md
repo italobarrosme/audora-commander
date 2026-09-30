@@ -86,6 +86,18 @@ e por quê, estado parcial, próximos passos. Próxima sessão lê isto primeiro
   `test-skills.sh`: `test-skills` 216/0, `test-contexto-por-fase` 34/0,
   `test-corte-sem-uso` 38/0, `test-templates` 31/0 e `test-carga` com
   base=47702 e full=52942. Os blocos de T5 e T6 não entraram no ensaio.
+- 2026-09-30 (execute T1–T6): em subagente, 6 commits (`93cd33f` a
+  `1db52f5`), cada um com gate `GATE: passou` antes (logs `gate-t1…t6` no
+  scratchpad). Carga BASE 47719 e FULL 52959, dentro dos tetos. Os
+  checkboxes não foram marcados pelo subagente; foram marcados no fechamento
+  da T7.
+- 2026-09-30 (execute T7): o subagente expandiu a T7, montou a fixture
+  `slug` e rodou os plans A e B, e então morreu pelo watchdog (600 s sem
+  progresso) esperando parado o 2º turno do plan A, que levou 58 min de
+  relógio para 10 turnos. A sessão principal retomou da 7.3: commitou o
+  plano nas fixtures, rodou as executes A e B em paralelo (~150 s cada, as
+  duas verdes) e registrou `## medicao` no nó. Lição: subagente que espera
+  `claude -p` longo precisa fazer polling ativo, nunca esperar ocioso.
 
 ## Decisões tomadas pela IA
 
@@ -145,7 +157,7 @@ e por quê, estado parcial, próximos passos. Próxima sessão lê isto primeiro
   - Modificar: `templates/plano-template.md` (linhas 14-19 e 26-58), `tests/test-skills.sh:180`
 - **done quando**: `test-plano-mapa.sh` exit 0; gate `exit=0`; carga BASE ≤ 46450.
 
-- [ ] **1. Escrever o teste que falha** — criar `tests/test-plano-mapa.sh`:
+- [x] **1. Escrever o teste que falha** — criar `tests/test-plano-mapa.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -183,11 +195,11 @@ report
 assert_contains "$pt" 'sem o corpo do teste nem o da implementação' "plano-mapa/1 template: sem corpo de código (substitui otimizacao-tokens/5)"
 ```
 
-- [ ] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
+- [x] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
   9 linhas `FAIL: plano-mapa/…` (5 do laço — só `**done quando**` passa —,
   o `assert_not_contains`, /2 e os 2 de /3), `PASS=1 FAIL=9`, `exit=1`.
   `bash tests/test-skills.sh` → 1 FAIL `plano-mapa/1 template: sem corpo de código`.
-- [ ] **3. Implementar** — `templates/plano-template.md`:
+- [x] **3. Implementar** — `templates/plano-template.md`:
   - Header (14-19) passa a ser exatamente:
 
 ```markdown
@@ -229,10 +241,10 @@ referência a função/tipo não definido em nenhuma tarefa. -->
   Checar que `sem o corpo do teste nem o da implementação` ficou numa linha só
   (o assert de `test-skills.sh` usa `cat`, sem `flat`) e que `TBD` continua
   (`test-skills.sh:181`).
-- [ ] **4. Ver passar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
+- [x] **4. Ver passar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
   `PASS=10 FAIL=0`, `exit=0`; `bash tests/test-carga.sh` → `base=` ≤ 46450;
   gate → `GATE: passou`, `exit=0`.
-- [ ] **5. Commit** — `git add tests/test-plano-mapa.sh templates/plano-template.md tests/test-skills.sh && git commit -m "feat(plano-mapa/1,2,3): template do plano vira mapa — requisito, ponto de mudança, teste, asserção exata, trechos; otimizacao-tokens/5 trocado"`
+- [x] **5. Commit** — `git add tests/test-plano-mapa.sh templates/plano-template.md tests/test-skills.sh && git commit -m "feat(plano-mapa/1,2,3): template do plano vira mapa — requisito, ponto de mudança, teste, asserção exata, trechos; otimizacao-tokens/5 trocado"`
 
 ---
 
@@ -255,7 +267,7 @@ referência a função/tipo não definido em nenhuma tarefa. -->
   - Teste: `tests/test-plano-mapa.sh` (seção nova antes do `report`)
 - **done quando**: `test-plano-mapa.sh` e `test-skills.sh` exit 0; gate `exit=0`; carga BASE ≤ 46850.
 
-- [ ] **1. Escrever o teste que falha** — em `tests/test-plano-mapa.sh`, antes
+- [x] **1. Escrever o teste que falha** — em `tests/test-plano-mapa.sh`, antes
   do `report`:
 
 ```bash
@@ -278,10 +290,10 @@ assert_contains "$pl" 'Tarefa é MAPA, sem o corpo do teste nem o da implementa�
 assert_not_contains "$pl" 'código completo do TESTE' "plano-mapa/1 plan: teste completo fora (substitui otimizacao-tokens/5)"
 ```
 
-- [ ] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
+- [x] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
   6 FAIL `plano-mapa/1..4,9 plan…`, `exit=1`; `bash tests/test-skills.sh` →
   2 FAIL `plano-mapa/1 plan…`.
-- [ ] **3. Implementar** — `skills/plan/SKILL.md`:
+- [x] **3. Implementar** — `skills/plan/SKILL.md`:
   - Itens 2-6 do Fluxo (24-51) passam a ser exatamente (rascunho: 2164 bytes):
 
 ```markdown
@@ -321,10 +333,10 @@ assert_not_contains "$pl" 'código completo do TESTE' "plano-mapa/1 plan: teste 
     `- (d) a execute precisa modificar arquivo fora do mapa — replanejar só aquela etapa.`
   - Red flags: nova linha no fim da tabela:
     `| "O subagente disse que é em X:42, gravo no mapa" | Resposta de subagente é pista. Leia o trecho antes de gravar. |`
-- [ ] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`, `exit=0`;
+- [x] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`, `exit=0`;
   `bash tests/test-skills.sh` e `bash tests/test-contexto-por-fase.sh` →
   `FAIL=0`; `bash tests/test-carga.sh` → `base=` ≤ 46850; gate → `exit=0`.
-- [ ] **5. Commit** — `git add skills/plan/SKILL.md tests/test-plano-mapa.sh tests/test-skills.sh && git commit -m "feat(plano-mapa/1,2,3,4,9): plan escreve o mapa, lê por trecho e confere o subagente de exploração"`
+- [x] **5. Commit** — `git add skills/plan/SKILL.md tests/test-plano-mapa.sh tests/test-skills.sh && git commit -m "feat(plano-mapa/1,2,3,4,9): plan escreve o mapa, lê por trecho e confere o subagente de exploração"`
 
 ---
 
@@ -350,7 +362,7 @@ assert_not_contains "$pl" 'código completo do TESTE' "plano-mapa/1 plan: teste 
   - Teste: `tests/test-plano-mapa.sh`
 - **done quando**: `test-plano-mapa.sh` exit 0; gate `exit=0`; carga BASE ≤ 47800.
 
-- [ ] **1. Escrever o teste que falha** — em `tests/test-plano-mapa.sh`, antes do `report`:
+- [x] **1. Escrever o teste que falha** — em `tests/test-plano-mapa.sh`, antes do `report`:
 
 ```bash
 # --- /5 /6 /7 /8 /9 /10 /11 — execute: localização por trecho ---
@@ -368,9 +380,9 @@ assert_contains "$el" '**Plano no formato antigo** (código completo do teste): 
 assert_contains "$(flat skills/execute/SKILL.md '## Fluxo')" 'o caso e as asserções vêm do mapa' "plano-mapa/1 execute: teste nasce do mapa"
 ```
 
-- [ ] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` → 9 FAIL
+- [x] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` → 9 FAIL
   `plano-mapa/…execute…` (a seção não existe), `exit=1`.
-- [ ] **3. Implementar** — `skills/execute/SKILL.md`:
+- [x] **3. Implementar** — `skills/execute/SKILL.md`:
   - Linha 27, RED: `escrever UM teste mínimo do comportamento (nome claro citando o`
     → `escrever UM teste mínimo do comportamento (o caso e as asserções vêm do mapa; nome claro citando o`
     (quebrar a linha longa onde couber — o assert usa `flat`).
@@ -395,10 +407,10 @@ assert_contains "$(flat skills/execute/SKILL.md '## Fluxo')" 'o caso e as asser�
    está, sem pedir conversão.
 ```
 
-- [ ] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`, `exit=0`;
+- [x] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`, `exit=0`;
   `bash tests/test-contexto-por-fase.sh` → `FAIL=0` (asserts de execute
   intactos); `bash tests/test-carga.sh` → `base=` ≤ 47800; gate → `exit=0`.
-- [ ] **5. Commit** — `git add skills/execute/SKILL.md tests/test-plano-mapa.sh && git commit -m "feat(plano-mapa/5-11): execute localiza código por trecho — mapa, símbolo, ligações, orçamento de 3 leituras, formato antigo aceito"`
+- [x] **5. Commit** — `git add skills/execute/SKILL.md tests/test-plano-mapa.sh && git commit -m "feat(plano-mapa/5-11): execute localiza código por trecho — mapa, símbolo, ligações, orçamento de 3 leituras, formato antigo aceito"`
 
 ---
 
@@ -417,7 +429,7 @@ assert_contains "$(flat skills/execute/SKILL.md '## Fluxo')" 'o caso e as asser�
   - Teste: `tests/test-plano-mapa.sh`
 - **done quando**: `test-plano-mapa.sh` exit 0; gate `exit=0`.
 
-- [ ] **1. Escrever o teste que falha** — antes do `report`:
+- [x] **1. Escrever o teste que falha** — antes do `report`:
 
 ```bash
 # --- /12 — debug sintoma localiza como a execute (mesmas frases); caçada segue varredura ---
@@ -433,11 +445,11 @@ assert_contains "$dc" 'Varredura por classes de defeito' "plano-mapa/12 caçada 
 assert_not_contains "$dc" 'mais de 200 linhas' "plano-mapa/12 caçada sem regra de trecho"
 ```
 
-- [ ] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
+- [x] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` →
   4 FAIL `plano-mapa/12 skills/debug/SKILL.md (## Modo sintoma)…`, `exit=1`.
   Os 4 da execute e os 2 da caçada passam de primeira: são guarda de não-
   regressão (a execute já foi feita em T3; a caçada não muda).
-- [ ] **3. Implementar** — `skills/debug/SKILL.md`, passo 2 do modo sintoma
+- [x] **3. Implementar** — `skills/debug/SKILL.md`, passo 2 do modo sintoma
   (26-30) passa a ser exatamente:
 
 ```markdown
@@ -452,8 +464,8 @@ assert_not_contains "$dc" 'mais de 200 linhas' "plano-mapa/12 caçada sem regra 
    funcionava?
 ```
 
-- [ ] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`, `exit=0`; gate → `exit=0`.
-- [ ] **5. Commit** — `git add skills/debug/SKILL.md tests/test-plano-mapa.sh && git commit -m "feat(plano-mapa/12): debug em modo sintoma localiza como a execute; caçada intocada"`
+- [x] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`, `exit=0`; gate → `exit=0`.
+- [x] **5. Commit** — `git add skills/debug/SKILL.md tests/test-plano-mapa.sh && git commit -m "feat(plano-mapa/12): debug em modo sintoma localiza como a execute; caçada intocada"`
 
 ---
 
@@ -473,7 +485,7 @@ assert_not_contains "$dc" 'mais de 200 linhas' "plano-mapa/12 caçada sem regra 
   - Teste: `tests/test-plano-mapa.sh`
 - **done quando**: `test-plano-mapa.sh` e `test-docs.sh` exit 0; gate `exit=0`.
 
-- [ ] **1. Escrever o teste que falha** — antes do `report`:
+- [x] **1. Escrever o teste que falha** — antes do `report`:
 
 ```bash
 # --- /1 /5 /12 — docs descrevem o mapa e a leitura por trecho ---
@@ -489,9 +501,9 @@ assert_contains "$pt" 'O modo sintoma localiza código como a `execute`' "plano-
 assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é mapa"
 ```
 
-- [ ] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` → 9 FAIL
+- [x] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` → 9 FAIL
   `plano-mapa/…README…|fundamentos…`, `exit=1`.
-- [ ] **3. Implementar** — textos exatos (quebrar linha livremente; o assert usa `flat`):
+- [x] **3. Implementar** — textos exatos (quebrar linha livremente; o assert usa `flat`):
   - `README.md` plan: trocar "Steps carry the full TEST code, exact
     signatures and commands; implementation code only when it is not obvious
     (algorithm, regex, SQL, exact format)." por "Each task is a map: criterion
@@ -528,9 +540,9 @@ assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é
     leitura como `caminho:início-fim`"; regra 3, ao fim: "A tarefa é mapa
     (critério → caso de teste → `caminho:linha`, com a asserção exata quando
     o critério deixa o valor aberto); o código nasce na execute."
-- [ ] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`; `bash tests/test-docs.sh`
+- [x] **4. Ver passar** — `test-plano-mapa.sh` → `FAIL=0`; `bash tests/test-docs.sh`
   → `FAIL=0` (blocos EN/PT idênticos, 5 rótulos por skill); gate → `exit=0`.
-- [ ] **5. Commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-plano-mapa.sh && git commit -m "docs(plano-mapa/1,5,12): READMEs EN/PT e fundamentos descrevem o plano-mapa e a leitura por trecho"`
+- [x] **5. Commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-plano-mapa.sh && git commit -m "docs(plano-mapa/1,5,12): READMEs EN/PT e fundamentos descrevem o plano-mapa e a leitura por trecho"`
 
 ---
 
@@ -553,7 +565,7 @@ assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é
 - **done quando**: `test-plano-mapa.sh` exit 0; gate `exit=0`; `## medicao`
   no nó com a carga BASE/FULL antes → depois.
 
-- [ ] **1. Escrever o teste que falha** — antes do `report`:
+- [x] **1. Escrever o teste que falha** — antes do `report`:
 
 ```bash
 # --- /14 /15 — tetos de carga intactos; versão 0.12.0 ---
@@ -570,22 +582,22 @@ done
   - `tests/test-docs.sh:7` → `  assert_contains "$(cat "$j")" '"version": "0.12.0"' "plano-mapa/15 $j versão 0.12.0"`
   - `tests/test-corte-sem-uso.sh:49` → `# --- /10 versão: 0.11.0 superada pela 0.12.0 (plano-mapa/15); 0.10.0 segue fora ---`
   - `tests/test-corte-sem-uso.sh:51` → `  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.12.0"' "plano-mapa/15 $j declara 0.12.0 (substitui corte-sem-uso/10)"`
-- [ ] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` → 4 FAIL
+- [x] **2. Ver falhar** — `bash tests/test-plano-mapa.sh; echo "exit=$?"` → 4 FAIL
   `plano-mapa/15 …` (os 2 de /14 passam: guarda de teto), `exit=1`;
   `test-docs.sh` e `test-corte-sem-uso.sh` → 2 FAIL cada.
-- [ ] **3. Implementar** — `"version": "0.11.0"` → `"version": "0.12.0"` nos 2
+- [x] **3. Implementar** — `"version": "0.11.0"` → `"version": "0.12.0"` nos 2
   manifests. Rodar `bash tests/test-carga.sh`, anotar `base`/`full` e:
   - `tests/test-carga.sh:6`: acrescentar ao fim da linha de medição
     `; plano-mapa: BASE 46575 → <base> / FULL 51815 → <full>`.
   - Nó `plano-mapa.md`, seção nova `## medicao` (entre `## decisoes` e
     `## delta`): `Carga estática (blobs LF, test-carga): BASE 46575 → <base>, FULL 51815 → <full>; tetos 48000 / 53400 intactos.`
     (o hook `memory-validate` roda na escrita — ler a saída; exit 2 = corrigir).
-- [ ] **4. Ver passar** — gate completo:
+- [x] **4. Ver passar** — gate completo:
   `bash hooks/gate plano-mapa > "$SCRATCH/gate.log" 2>&1; echo "exit=$?"` →
   `GATE: passou`, `exit=0`. Somar asserts da saída real:
   `grep -o 'PASS=[0-9]*' "$SCRATCH/gate.log" | cut -d= -f2 | paste -sd+ | bc`
   e anotar nas notas de sessão (sem total de cabeça — aprendizado 60).
-- [ ] **5. Commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-carga.sh tests/test-plano-mapa.sh docs/audora/memory/plano-mapa.md && git commit -m "chore(plano-mapa/14,15): versão 0.12.0; carga BASE/FULL medida dentro dos tetos"`
+- [x] **5. Commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-carga.sh tests/test-plano-mapa.sh docs/audora/memory/plano-mapa.md && git commit -m "chore(plano-mapa/14,15): versão 0.12.0; carga BASE/FULL medida dentro dos tetos"`
 
 ---
 
@@ -626,3 +638,37 @@ done
 - **done quando**: `## medicao` do nó tem linhas e bytes dos 2 planos, os
   tokens das 2 execute e o `exit=0` da suíte de `fx-b`; gate `exit=0`;
   commit `docs(plano-mapa/13): medição A/B …`.
+
+### Subtarefas de T7 (expandidas na execute, 2026-09-30)
+
+Demanda da fixture: nó `slug` — comando `txt.sh slug` num CLI bash de
+utilitários de texto; `lib/texto.sh` com mais de 200 linhas; registro de
+comandos em `txt.sh` (`COMANDOS` + `case`), que o critério de `ajuda` obriga
+a seguir (/7). Critérios: /1 formato do slug; /2 sem argumento (valor aberto:
+mensagem e código — a convenção `exige_arg` do projeto dá `erro: <cmd> exige
+um texto`, exit 2); /3 texto sem `[a-z0-9]` falha (valor aberto); /4 `ajuda`
+lista `slug`.
+
+- [x] **7.1 fixture** — `$SCRATCH/fixture-mapa.sh <dir>` (Write, não heredoc):
+  `git init -b main`, `core.excludesFile` inexistente, `txt.sh`,
+  `lib/texto.sh` (> 200 linhas), `tests/run.sh`, `PRD.md`, `MEMORY.md`
+  (`memory-schema: 1`, `gate: recusado`), nó `slug` in-progress MEDIUM com
+  escopo aprovado; 1 commit `init`. Gerar `fx-a` e `fx-b`. Done: `bash
+  tests/run.sh` `exit=0` nas duas; `wc -l lib/texto.sh` > 200; `diff -r`
+  sem `.git` vazio.
+- [x] **7.2 plugin A** — `git archive c23e00a | tar -x -C "$SCRATCH/plugin-0.11.0"`.
+  Done: `"version": "0.11.0"` no `plugin.json` extraído e `skills/plan/SKILL.md`
+  com `código completo do TESTE`.
+- [x] **7.3 plan A e B** — `plan de slug` em `fx-a` (`--plugin-dir` A) e
+  `fx-b` (B), em background, `> plan-X.jsonl 2> plan-X.err`. Done: `system/init`
+  com um único `audora-commander` `@inline` no caminho certo;
+  `docs/audora/planos/plano-slug.md` existe; se a sessão parar pedindo
+  input, `--resume <session_id>` com "segue" (anotar). Commit do plano na fixture.
+- [x] **7.4 execute A e B** — sessão NOVA `execute de slug` em cada fixture,
+  `> exec-X.jsonl`. Se parar antes de todas as tarefas verdes, `--resume`
+  com "segue" (anotar; tokens somados por turno).
+- [x] **7.5 extração** — linhas/bytes (`tr -d '\r' | wc -c`) de cada plano;
+  `usage` e `total_cost_usd` de cada evento `result` dos `exec-X.jsonl`;
+  `bash tests/run.sh; echo "exit=$?"` nas duas fixtures.
+- [x] **7.6 registro** — `## medicao` do nó: tabela A/B + receita em 3-5
+  linhas; notas de sessão; gate `exit=0`; commit `docs(plano-mapa/13): …`.
