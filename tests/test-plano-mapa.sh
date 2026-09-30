@@ -33,4 +33,18 @@ assert_contains "$pf" 'Listar no header CADA leitura como `caminho:início-fim`,
 assert_contains "$pf" 'subagente de exploração com UMA pergunta delimitada, que devolve `caminho:linha`; confira o trecho com leitura própria antes de gravar no mapa' "plano-mapa/4 plan: subagente conferido"
 assert_contains "$(flat skills/plan/SKILL.md '## Replanejamento (durante a execução)')" '(d) a execute precisa modificar arquivo fora do mapa' "plano-mapa/9 plan: gatilho de replanejamento"
 
+# --- /5 /6 /7 /8 /9 /10 /11 — execute: localização por trecho ---
+el="$(flat skills/execute/SKILL.md '## Localização de código')"
+for s in 'ao começar a tarefa, ler os trechos que o mapa aponta' \
+         'Arquivo com mais de 200 linhas é lido pelo trecho, nunca inteiro'; do
+  assert_contains "$el" "$s" "plano-mapa/5 execute: '$s'"
+done
+assert_contains "$el" '**Fora do mapa**: buscar o símbolo e ler só o trecho apontado' "plano-mapa/6 execute: busca do símbolo"
+assert_contains "$el" 'a mudança toca import, herança, registro ou configuração → seguir a ligação e ler o trecho ligado, mesmo fora do mapa' "plano-mapa/7 execute: segue ligações"
+assert_contains "$el" 'na 3ª leitura fora do mapa na mesma tarefa, acrescentar ao mapa do plano os `caminho:linha` lidos e seguir' "plano-mapa/8 execute: orçamento de 3 leituras"
+assert_contains "$el" '**Modificar arquivo fora do mapa** → parar a tarefa e voltar ao plan para replanejar só aquela etapa' "plano-mapa/9 execute: modificar fora volta ao plan"
+assert_contains "$el" '(`caminho:linha` não bate): relocalizar pela busca do símbolo e corrigir o mapa, sem ler o arquivo inteiro' "plano-mapa/10 execute: mapa desatualizado"
+assert_contains "$el" '**Plano no formato antigo** (código completo do teste): executar como está, sem pedir conversão' "plano-mapa/11 execute: formato antigo aceito"
+assert_contains "$(flat skills/execute/SKILL.md '## Fluxo')" 'o caso e as asserções vêm do mapa' "plano-mapa/1 execute: teste nasce do mapa"
+
 report

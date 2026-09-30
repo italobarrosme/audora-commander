@@ -24,8 +24,8 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
    concluídas. Tarefa marcada `expandir: sim` → quebrar em subtarefas AGORA
    (chegou a vez dela), pelo formato do template.
 3. **Ciclo por tarefa**:
-   - **RED**: escrever UM teste mínimo do comportamento (nome claro citando o
-     endereço do critério `<id>/<n>` quando houver, uma coisa só, código real
+   - **RED**: escrever UM teste mínimo do comportamento (o caso e as
+     asserções vêm do mapa; nome claro citando o endereço do critério `<id>/<n>` quando houver, uma coisa só, código real
      — mock apenas se inevitável). Rodar. Confirmar na
      SAÍDA REAL que falha pelo motivo certo (feature ausente, não typo).
      Passou de primeira? Você testou comportamento existente — conserte o
@@ -57,6 +57,22 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
    do projeto) → skill memory, registrar-aprendizado, na hora.
 6. **HOTFIX**: escrever ANTES o teste que reproduz o defeito (red), depois o
    fix (green). Sem teste de reprodução não há hotfix — há chute.
+
+## Localização de código
+
+1. **Mapa**: ao começar a tarefa, ler os trechos que o mapa aponta.
+   Arquivo com mais de 200 linhas é lido pelo trecho, nunca inteiro.
+2. **Fora do mapa**: buscar o símbolo e ler só o trecho apontado.
+3. **Ligações**: a mudança toca import, herança, registro ou configuração →
+   seguir a ligação e ler o trecho ligado, mesmo fora do mapa.
+4. **Orçamento**: na 3ª leitura fora do mapa na mesma tarefa,
+   acrescentar ao mapa do plano os `caminho:linha` lidos e seguir.
+5. **Modificar arquivo fora do mapa** → parar a tarefa e voltar ao plan
+   para replanejar só aquela etapa.
+6. **Mapa desatualizado** (`caminho:linha` não bate): relocalizar pela
+   busca do símbolo e corrigir o mapa, sem ler o arquivo inteiro.
+7. **Plano no formato antigo** (código completo do teste): executar como
+   está, sem pedir conversão.
 
 ## Quando algo dá errado
 
