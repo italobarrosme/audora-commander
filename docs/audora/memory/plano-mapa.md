@@ -62,6 +62,10 @@ Reduzir a maior carga de contexto do framework: planos com mediana de 694 linhas
 - 2026-09-30 (IA): bump para `0.12.0` — o formato do plano muda e o antigo continua aceito (/11).
 - 2026-09-30 (humano): escopo aprovado ("aprovado") — confirma as 3 decisões da IA (substituir `otimizacao-tokens/5`, limiar de 200 linhas, `0.12.0`).
 
+## medicao
+
+Carga estática (blobs LF, test-carga): BASE 46575 → 47719, FULL 51815 → 52959; tetos 48000 / 53400 intactos.
+
 ## delta
 
 ## e2e
