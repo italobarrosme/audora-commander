@@ -11,10 +11,10 @@
 **Arquitetura da mudança:** <2-3 frases: abordagem escolhida e por quê>
 
 **Arquivos lidos antes de planejar:** <!-- Lei de Ferro: plano sem leitura do
-código atual é plano inválido. Etapa que toca arquivo fora desta lista invalida
-o plano naquele ponto. -->
-- `caminho/exato/arquivo1.ts` — <o que foi relevante>
-- `caminho/exato/arquivo2.ts` — <o que foi relevante>
+código atual é plano inválido. Uma linha por leitura, `caminho:início-fim`.
+Etapa que toca arquivo fora desta lista invalida o plano naquele ponto. -->
+- `caminho/exato/arquivo1.ts:12-60` — <o que foi relevante nela>
+- `caminho/exato/arquivo2.ts:1-40` — <o que foi relevante nela>
 
 **Conflitos MEMORY vs código encontrados:** <nenhum | descrição + decisão do humano>
 
@@ -28,31 +28,22 @@ e por quê, estado parcial, próximos passos. Próxima sessão lê isto primeiro
 ## Tarefa 1: <nome curto>
 
 - **depende-de**: []
-- **requisito**: <critério(s) de aceite do nó que esta tarefa cobre, copiados
-  verbatim — QUANDO X O SISTEMA DEVE Y>
+- **requisito**: `<id>/<n>` — <critério EARS copiado verbatim do nó>
 - **decisões relevantes**: <decisões do nó/constituição que governam esta tarefa>
-- **interfaces**:
-  - consome: <assinaturas exatas de tarefas anteriores>
-  - produz: <funções/tipos exatos que tarefas seguintes usam>
-- **arquivos**:
-  - Criar: `caminho/exato/novo.ts`
-  - Modificar: `caminho/exato/existente.ts`
-  - Teste: `caminho/exato/novo.test.ts`
+- **interfaces**: consome <assinatura exata> · produz <assinatura exata>
+- **ponto de mudança**: `caminho/arquivo.ts:42` — <símbolo e o que muda>
+- **teste**: `caminho/arquivo.test.ts` — caso "<nome citando `<id>/<n>`>"
+- **asserções**: `entrada → saída esperada`, uma por caso — só quando o
+  critério não fixa o valor (formato, ordem, mensagem, código de saída, borda)
+- **ler**: `caminho/arquivo.ts:30-80`, `caminho/outro.ts:10-25`
 - **done quando**: <condição objetiva verificável>
 
-Passos (2-5 minutos cada; teste completo, zero placeholder — implementação só quando não-óbvio):
+- [ ] **red** — `<comando>` falha com `<saída esperada>` (motivo certo)
+- [ ] **green** — `<comando>` passa e a suíte toda fica verde
+- [ ] **commit** — `git add <arquivos> && git commit -m "<tipo>(<id>/<n>): <msg>"`
 
-- [ ] **1. Escrever teste que falha** — código do teste no plano, completo.
-- [ ] **2. Rodar e ver falhar pelo motivo certo** — comando exato + saída esperada.
-- [ ] **3. Implementar o mínimo para passar** — arquivos + assinaturas exatas;
-  código só se não-óbvio (algoritmo, regex, SQL, formato exato).
-- [ ] **4. Rodar e ver passar (suíte toda verde)** — comando exato + saída esperada.
-- [ ] **5. Commit** — `git add <arquivos> && git commit -m "<tipo>: <mensagem>"`.
-
-<!-- Tarefa complexa: NÃO detalhar subtarefas agora. Marcar `expandir: sim` e
-quebrar em subtarefas somente quando chegar a vez dela (just-in-time). -->
-
-<!-- Proibições (falhas de plano): TBD; TODO; "tratar erros adequadamente";
-"similar à tarefa N" (repita o código); passo sem arquivo, assinatura ou
-comando exatos;
+<!-- Tarefa é mapa: sem o corpo do teste nem o da implementação — nascem na
+execute, UMA vez. Complexa: `expandir: sim`, quebrar só quando chegar a vez.
+Proibições: TBD; TODO; "tratar erros adequadamente"; "similar à tarefa N"
+(repita a asserção); passo sem arquivo, `caminho:linha` ou comando exatos;
 referência a função/tipo não definido em nenhuma tarefa. -->

@@ -177,7 +177,7 @@ pl="$(cat skills/plan/SKILL.md)"; pt="$(cat templates/plano-template.md)"
 assert_contains "$pl" 'implementação só quando não-óbvio' "otimizacao-tokens/5 plan: implementação só se não-óbvia"
 assert_contains "$pl" 'código completo do TESTE' "otimizacao-tokens/5 plan: teste completo"
 assert_not_contains "$pl" 'Código real nos passos' "otimizacao-tokens/5 plan: regra antiga fora"
-assert_contains "$pt" 'implementação só quando não-óbvio' "otimizacao-tokens/5 template: idem"
+assert_contains "$pt" 'sem o corpo do teste nem o da implementação' "plano-mapa/1 template: sem corpo de código (substitui otimizacao-tokens/5)"
 assert_contains "$pt" 'TBD' "otimizacao-tokens/5 template mantém a proibição de placeholder"
 # otimizacao-tokens/2,/3 — validate é roteador + references (texto asserido onde mora)
 VR=skills/validate/references; vv="$(cat skills/validate/SKILL.md)"
