@@ -80,6 +80,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-29 | validate | Script com efeito FORA do repo (`uv/pipx uninstall`) testado ou revisado por subagente precisa de `uv`/`pipx` FALSOS no PATH, e o prompt do revisor tem de dizer isso — a revisão adversarial rodou `graphify-limpeza --remover` com o `uv` real e desinstalou o `graphifyy` da máquina sem autorização.
 - 2026-09-29 | execute | Reescrever arquivo filtrando com awk/grep do Git Bash perde o `\r` (CRLF vira LF) — filtro que precisa preservar CRLF e newline final usa `perl -ne`.
 - 2026-09-29 | execute | `JSON::PP` (perl, sem jq) reescreve JSON sem ordem de chaves e normaliza números (`1.50`→`1.5`, inteiro grande vira string) — preservar número exige marcador string antes do decode.
+- 2026-09-30 | execute | Suíte teve 1 falha intermitente sem causa demonstrada: `docs-permissoes/1 README EN cita acceptEdits` (mesmo `$en` passou nos termos antes e depois, sem erro no stderr); não reproduziu em 3 suítes, 30 `test-docs` e 700 pipes. SIGPIPE refutado (pipe de 64 KB > README). Se repetir: rodar de novo o arquivo e capturar `PIPESTATUS` do assert antes de corrigir.
 
 ## Índice de nós [carga: sempre]
 

@@ -42,6 +42,8 @@ de categoria, históricos, commit nos projetos limpos.
 - 2026-09-30 (humano): escopo aprovado ("aprovado") — autoriza apagar
   `tests/test-graphify-limpeza.sh`, `tests/test-loop.sh`,
   `tests/test-autopilot.sh` e `tests/test-worktree.sh` (/11).
+- 2026-09-30 (humano): autorizada a limpeza dos 13 projetos pelo comando
+  `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover`.
 
 ## delta
 
