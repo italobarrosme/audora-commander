@@ -102,6 +102,7 @@ time pequeno em projetos web/mobile/api.
 - contexto-por-fase | delivered | Contexto zerado por fase → docs/audora/arquivo/2026-09-29-contexto-por-fase.md
 - remover-graphify | delivered | Remover Graphify → docs/audora/arquivo/2026-09-29-remover-graphify.md
 - corte-sem-uso | delivered | Corte do sem uso → docs/audora/arquivo/2026-09-30-corte-sem-uso.md
+- plano-mapa | in-progress | Plano-mapa + localização | Plano vira mapa (critério → teste → caminho:linha) e plan, execute e debug ganham regra de localização de código por trecho, com medição antes e depois | plano, mapa, localizacao, leitura, trecho, explore, tokens, contexto | skills/plan/, skills/execute/, skills/debug/, templates/plano-template.md
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
