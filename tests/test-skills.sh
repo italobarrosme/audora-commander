@@ -172,10 +172,10 @@ assert_no_file hooks/memory-sync "/9 script antigo tambem fora"
 v6="$(cat skills/validate/references/sync.md 2>/dev/null)"
 assert_not_contains "$v6" 'Preencher `arquivos:` do nó via `git diff --name-only` da demanda' "/9 bullet antigo de arquivos: removido do item 6"
 assert_contains "$v6" 'ordem importa' "/9 item 6 declara que a ordem importa"
-# otimizacao-tokens/5 — plano carrega teste e assinaturas, não implementação óbvia
+# plano-mapa/1 — tarefa é mapa, sem corpo de código (substitui otimizacao-tokens/5)
 pl="$(cat skills/plan/SKILL.md)"; pt="$(cat templates/plano-template.md)"
-assert_contains "$pl" 'implementação só quando não-óbvio' "otimizacao-tokens/5 plan: implementação só se não-óbvia"
-assert_contains "$pl" 'código completo do TESTE' "otimizacao-tokens/5 plan: teste completo"
+assert_contains "$pl" 'Tarefa é MAPA, sem o corpo do teste nem o da implementação' "plano-mapa/1 plan: tarefa sem corpo de código"
+assert_not_contains "$pl" 'código completo do TESTE' "plano-mapa/1 plan: teste completo fora (substitui otimizacao-tokens/5)"
 assert_not_contains "$pl" 'Código real nos passos' "otimizacao-tokens/5 plan: regra antiga fora"
 assert_contains "$pt" 'sem o corpo do teste nem o da implementação' "plano-mapa/1 template: sem corpo de código (substitui otimizacao-tokens/5)"
 assert_contains "$pt" 'TBD' "otimizacao-tokens/5 template mantém a proibição de placeholder"

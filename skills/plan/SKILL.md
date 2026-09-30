@@ -22,33 +22,35 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
    artefato de escopo aprovado (nó ou spec dedicada). Retomada (`plan de <id>`)
    com id fora do índice ou nó sem critérios aprovados → recusar nomeando o que falta e voltar ao scope.
 2. **Passada 1 — localizar**: a partir do escopo, achar onde a mudança mora
-   (símbolos, rotas, nomes de domínio). Não ler nada ainda — só listar.
-3. **Passada 2 — ler**: ler os arquivos que o plano vai tocar (os apontados
-   na passada 1 + vizinhos de interface direta). Listar TODOS os
-   lidos no header do plano. Etapa que tocar arquivo fora dessa lista
+   (símbolos, rotas, nomes de domínio) pela busca do símbolo — só listar.
+   Pergunta ampla sobre código que você não conhece → subagente de exploração
+   com UMA pergunta delimitada, que devolve `caminho:linha`; confira
+   o trecho com leitura própria antes de gravar no mapa.
+3. **Passada 2 — ler**: ler por trecho o que o plano vai tocar (pontos da
+   passada 1 + vizinhos de import, herança, registro e configuração).
+   Listar no header CADA leitura como `caminho:início-fim`,
+   com o que foi relevante nela. Etapa que tocar arquivo fora dessa lista
    invalida o plano naquele ponto → parar, ler, atualizar o header, seguir.
 4. **Conflito MEMORY vs código**: leitura contradiz um nó do MEMORY? Parar,
    registrar a divergência no nó (skill memory), apresentar ao humano. Ele
    decide qual é a verdade antes do plano continuar.
 5. **Escrever o plano** pelo template:
-   - Header: objetivo, nó do MEMORY, arquitetura da mudança, arquivos lidos.
-   - Tarefas autossuficientes: cada uma embute requisito (critérios EARS
-     copiados verbatim do nó, com seus endereços `<id>/<n>`), decisões
-     relevantes, interfaces
-     (consome/produz com assinaturas exatas), arquivos com caminhos exatos,
-     critério de done.
+   - Header: objetivo, nó do MEMORY, arquitetura da mudança, trechos lidos.
+   - Tarefa é MAPA, sem o corpo do teste nem o da implementação:
+     requisito (critério EARS verbatim, com o endereço `<id>/<n>`),
+     decisões, interfaces com assinaturas exatas, ponto de mudança
+     `caminho:linha`, arquivo e caso de teste, trechos a ler e done.
+   - Critério que não fixa o valor exato (formato, ordem, mensagem, código
+     de saída, borda) → a tarefa traz a asserção exata `entrada → saída esperada` de cada caso.
    - `depende-de` explícito entre tarefas: "qual a próxima?" é resposta
      mecânica — nunca uma tarefa bloqueada.
-   - Passos de 2-5 minutos com checkbox: teste red → verificar red →
-     implementar → verificar green → commit. Nos passos: código completo do TESTE,
-     assinaturas exatas e comandos com saída esperada; implementação só quando não-óbvio
-     (algoritmo, regex, SQL, formato exato) — a execute escreve o resto UMA vez.
+   - Passos com checkbox: red → green → commit, com comandos exatos.
    - Tarefa complexa: marcar `expandir: sim` e quebrar em subtarefas SÓ
      quando chegar a vez dela (just-in-time — não detalhe tudo no dia 1).
 6. **Proibição de placeholders** — falhas de plano, nunca escreva: "TBD",
    "tratar erros adequadamente", "adicionar validação", "similar à tarefa N"
-   (repita o código), passo sem arquivo, assinatura ou comando exatos, referência a
-   função/tipo não definido em nenhuma tarefa.
+   (repita a asserção), passo sem arquivo, `caminho:linha` ou comando exatos,
+   referência a função/tipo não definido em nenhuma tarefa.
 7. **Self-review** (rodar você mesmo, corrigir inline):
    - Cobertura: cada critério de aceite do nó tem tarefa que o implementa?
    - Scan de placeholder (lista do item 6).
@@ -68,6 +70,7 @@ Gatilhos legítimos — SOMENTE estes:
 - (b) o teste da etapa é impossível de escrever como especificado;
 - (c) a descoberta altera escopo → isso NÃO é replanejar: volte à skill scope
   (reabertura formal).
+- (d) a execute precisa modificar arquivo fora do mapa — replanejar só aquela etapa.
 
 Teste falhando por bug da implementação é DEBUG, não replanejamento. Replaneje
 a etapa afetada, não o plano inteiro.
@@ -87,6 +90,7 @@ próximos passos. A próxima sessão lê isso primeiro.
 | "O plano na conversa basta, arquivo é burocracia" | /clear ou compactação matam a conversa. Arquivo sobrevive. |
 | "Esse arquivo eu não li, mas sei o que tem" | Então o plano é chute. Leia e liste no header. |
 | "Tarefa referencia helper que crio depois" | Referência órfã = plano quebrado. Defina na tarefa que produz. |
+| "O subagente disse que é em X:42, gravo no mapa" | Resposta de subagente é pista. Leia o trecho antes de gravar. |
 
 ## Bloco de fechamento
 
