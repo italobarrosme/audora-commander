@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-09-29
+> Última atualização: 2026-09-30
 
 ## O que é e para que serve
 
@@ -16,20 +16,18 @@ Code.
 
 - Markdown (skills, templates, docs) + JSON (plugin.json, marketplace.json,
   hooks.json) + bash (hooks: `session-start`, `memory-guard`,
-  `memory-validate`; scripts auxiliares `graphify-limpeza`, `gate` e `loop`;
-  sem jq — awk/sed/grep/perl do Git for Windows).
+  `memory-validate`; script auxiliar `gate`; sem jq — awk/sed/grep/perl do
+  Git for Windows).
 - Suíte de regressão do plugin em bash: `tests/run.sh` + `tests/test-*.sh`
-  (fixtures em `mktemp -d`, `tests/lib.sh` com asserts, `run_hook` e
-  `path_sem_uv`/`guarda_sem_uv` — script com efeito fora do repo só alcança
-  `uv`/`pipx` falsos).
+  (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`).
 - Sem dependência externa de índice de código: o Graphify saiu na 0.10.0;
   a localização de código é a busca normal do harness.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.10.0.
+  Versão 0.11.0.
 
 ## Arquitetura
 
-9 skills encadeadas por um roteador central:
+8 skills encadeadas por um roteador central:
 
 - `audora-commander` — porta de entrada: classifica demanda (LIGHT / MEDIUM /
   HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
@@ -39,9 +37,8 @@ Code.
   rica por nó); corpo de cada nó em `docs/audora/memory/<id>.md` com
   frontmatter grep-ável e critérios EARS numerados `<id>/<n>`; decisões
   duráveis em `docs/audora/decisoes-vivas.md`; arquivamento por `git mv` para
-  `docs/audora/arquivo/`. Operações: carregar-contexto (inclui a oferta de
-  limpar restos do Graphify, abaixo), bootstrap (MEMORY + etapa gate, sem
-  índice de código), registrar-no, registrar-delta, registrar-aprendizado
+  `docs/audora/arquivo/`. Operações: carregar-contexto, bootstrap (MEMORY +
+  etapa gate, sem índice de código), registrar-no, registrar-delta, registrar-aprendizado
   (1 linha `data | fase | aprendizado`, na hora, por qualquer fase) e
   compactar. A skill é um **roteador**: `carregar-contexto`,
   `registrar-delta` e `registrar-aprendizado` ficam inline no `SKILL.md`
@@ -52,9 +49,7 @@ Code.
 - `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes
   (código completo do teste + assinaturas; implementação só quando não-óbvia);
   localiza código pela busca normal do harness.
-- `execute` — TDD red-green com evidência real; commit por etapa verde. MEDIUM em
-  autopilot elegível roda pelo motor `hooks/loop`; motor recusando a rodada
-  → uma tarefa por subagente de contexto zerado.
+- `execute` — TDD red-green com evidência real; commit por etapa verde.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
   fortemente recomendada).
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
@@ -65,17 +60,8 @@ Code.
 - `debug` — debug com causa raiz demonstrada (modo sintoma) ou caçada de
   defeitos por classes com verificação de cada achado (modo caçada).
 
-Limpeza do Graphify: o plugin não oferece, instala, consulta nem cita mais o
-índice de código. Em projeto com restos, a carga de contexto roda
-`hooks/graphify-limpeza [dir]` (só detecta, 1 linha por resto: bullet
-`graphify:` na Constituição, bloco em `post-commit`/`post-checkout`,
-`graphify-out/`, linha no `.gitignore`, hook em `.claude/settings(.local).json`,
-seção `## graphify` no `CLAUDE.md`, e o pacote `graphifyy` no uv/pipx — este
-só quando há outro resto) e oferece remover tudo antes da demanda. Aprovado →
-`--remover` tira só a parte do Graphify (preserva CRLF, newline final,
-números do JSON e hooks alheios), relata `removido` / `falhou` + comando à
-mão / `versionado` por item e nunca commita. Recusa não é gravada — a oferta
-volta na próxima carga. Projeto sem resto não ouve falar do Graphify.
+Graphify: o plugin não oferece, instala, consulta, limpa nem cita o índice de
+código.
 
 Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
 a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
@@ -83,7 +69,8 @@ a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
 "Segue" sem `/clear` roda a fase seguinte num subagente de contexto zerado
 (`templates/fase-subagente-template.md`), que nunca aprova portão e devolve
 pergunta humana à sessão principal. Sem parada: entrada → 1ª fase, LIGHT,
-HOTFIX, e2e ↔ validate e autopilot. Regra única na seção `## Parada entre
+HOTFIX e e2e ↔ validate. Todo portão do meio é humano — não há modo que o
+antecipe. Regra única na seção `## Parada entre
 fases` de `templates/bloco-fechamento-template.md`.
 
 Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
@@ -100,6 +87,51 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Corte do sem uso entregue em 2026-09-30 (nó `corte-sem-uso`, HIGH, versão
+0.11.0, breaking). Saiu o que não tinha uso medido em 112 sessões de 11
+projetos: autopilot (0 usos), o motor de loop `hooks/loop` com
+`templates/loop-prompt-template.md` (0 execuções) e a skill `worktree`
+(2 invocações). O plugin ficou com 8 skills. Todo portão do meio voltou a ser
+humano. O campo `autopilot:` saiu do nó, o bullet `loop:` da Constituição e
+`paradas humanas: N` do bloco de fechamento. O "segue" continua rodando a fase
+seguinte em subagente pelo `templates/fase-subagente-template.md`, agora sem
+`{{TAREFA}}` e sem motor.
+
+Antes de apagar `hooks/graphify-limpeza`, os restos do Graphify foram limpos
+uma vez, com autorização do humano, nos projetos locais: 15 com
+`memory-schema: 1`, 13 com resto. Nenhum commit foi feito neles, e o
+SellInfoTurbo incluiu `.claude/CLAUDE.md` e `.claude/skills/graphify/`. O
+relatório está em `docs/audora/e2e/limpeza-graphify-projetos.md`. Depois o
+script saiu junto com a oferta da carga de contexto e `path_sem_uv`/`guarda_sem_uv`.
+
+Os 4 testes apagados (`test-graphify-limpeza`, `test-loop`,
+`test-autopilot`, `test-worktree`) foram autorizados no portão do scope e
+citados nos commits. A ausência do que saiu é guardada por
+`tests/test-corte-sem-uso.sh`.
+
+Carga estática medida em bytes, sobre blobs LF:
+
+| | antes | depois |
+|---|---|---|
+| skills | 74760 | 58010 |
+| templates | 26128 | 23626 |
+| BASE do `test-carga` | 51800 | 46575 |
+| FULL do `test-carga` | 57040 | 51815 |
+
+Os tetos baixaram para 48000 / 53400. A suíte foi de 935 para 631 asserts,
+com `gate-asserts:` no nó.
+
+O e2e rodou 3 sessões `claude -p` com `--plugin-dir`, sem tocar o cache
+global:
+- o init lista 8 skills;
+- `plan` numa fixture com restos do Graphify não oferece limpeza e para no
+  portão humano;
+- "segue" despacha UM subagente pelo template, que faz só execute e fecha em
+  PARADA.
+
+Em modo só leitura, a detecção voltou vazia nos 15 projetos. A revisão
+adversarial não achou bloqueante. Ressalvas aceitas no portão estão na meta 4.
 
 Graphify removido em 2026-09-29 (nó `remover-graphify`, HIGH, versão 0.10.0,
 breaking: sai o bullet `graphify:` da Constituição e o post-commit que o
@@ -125,7 +157,9 @@ rodou `--remover` com o `uv` real e desinstalou o `graphifyy` desta máquina
 (humano: não reinstalar); daí a decisão viva de executáveis falsos. e2e pulado
 pelo humano. Os 12 projetos locais recebem a oferta na próxima demanda; no
 SellInfoTurbo `.claude/CLAUDE.md` e `.claude/skills/graphify/` foram limpos à
-mão. Pendências aceitas no portão: metas 4 e 5.
+mão. Pendências aceitas no portão: metas 4 e 5. (`hooks/graphify-limpeza` e a
+oferta saíram na 0.11.0, `corte-sem-uso`, depois de limpar os projetos locais
+de uma vez.)
 
 Contexto zerado por fase entregue em 2026-09-29 (nó `contexto-por-fase`,
 MEDIUM). Ataca o custo de token dominante medido em 2026-09-28: a demanda
@@ -226,7 +260,8 @@ fraude no plano (restaurada), volta vazia — nada disso vira verde. Suíte
 503 → 600 asserts com `claude` FALSO no PATH (o modelo real nunca roda na
 suíte); demo real de rodada com vermelho no meio termina `DONE` com 2 commits
 e métricas. D4 (paralelo) segue `planned` no roadmap — só depois de rodadas
-reais de D3.
+reais de D3. (O motor foi removido na 0.11.0, `corte-sem-uso`: 0 execuções
+medidas.)
 
 Autopilot entregue em 2026-09-05 (nó `autopilot`, HIGH, D2 do roadmap de loop
 engineering): o humano declara na entrada — "autopilot" / "roda até o
@@ -247,7 +282,8 @@ reconstituível de artefatos duráveis. Campo `autopilot:` documentado no
 `no-template.md`; `memory-validate` intocado (caracterização provou que campo
 desconhecido já passa). Revisão adversarial: 15 achados (4 ALTO), 14
 corrigidos no mesmo ciclo. Suíte 467 → 503 asserts; GREEN da demanda foi
-fechado pelo próprio gate de D1 (`GATE: passou`).
+fechado pelo próprio gate de D1 (`GATE: passou`). (Autopilot removido na
+0.11.0, `corte-sem-uso`: 0 usos medidos.)
 
 Gate mecânico entregue em 2026-09-04 (nó `gate-mecanico`, MEDIUM, D1 do
 roadmap de loop engineering):
@@ -397,7 +433,8 @@ humano obrigatório na remoção; as checagens de "pode apagar?" cobrem sujo,
 não integrado, ignorado copiado no preparo e junction apontando para fora —
 as duas últimas vieram de verificação empírica (`git worktree remove` apaga o
 alvo através de junction e não é bloqueado por arquivo ignorado). Suíte em 295
-asserts; e2e em `docs/audora/e2e/e2e-skill-worktree.md`.
+asserts; e2e em `docs/audora/e2e/e2e-skill-worktree.md`. (Skill removida na
+0.11.0, `corte-sem-uso`: 2 invocações medidas.)
 
 v0.1.0 implementada (2026-08-14) — oito skills (sete originais + a skill de debug
 em 2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
@@ -478,14 +515,20 @@ automática (recomendada) vs. manual.
    e2e aceitas no portão) — unificar a pontuação (template com vírgula,
    skills com dois-pontos), recusa de retomada imprimindo o bloco de fase
    bloqueada, e folga na carga BASE (12 bytes do teto).
-4. Candidato a nó: bordas da limpeza do Graphify (`remover-graphify`,
-   aceitas no portão; ausentes nos 12 projetos por levantamento só leitura e
-   fora da letra do /2) — hooks de git em husky (`.husky/_`), em
-   `core.hooksPath` custom e em worktree ligado; hook inline antigo do
-   Graphify no settings; bordas de Markdown/JSON apontadas pela revisão; e
-   dois formatos reais que o Graphify grava e a limpeza não cobre:
-   `.claude/CLAUDE.md` e `.claude/skills/graphify/`.
-5. Pergunta aberta (`remover-graphify`): a regra "nunca varrer o repo para
-   entender" saiu da execute e da memory junto com o Graphify — decidir em
-   conversa se volta, em que forma, ou se fica fora. Até lá, nenhuma decisão
-   viva sobre localização de código.
+4. Candidato a nó: ressalvas da revisão adversarial do `corte-sem-uso`
+   (aceitas no portão).
+   - As guardas de ausência de `tests/test-corte-sem-uso.sh` deixam passar
+     variações de texto: "loop engine", "nove skills", `|  \`worktree\`  |`
+     com espaço extra e o bullet `**loop:**`.
+   - A guarda do Graphify no próprio repo não cobre `.claude/skills/graphify`,
+     `CLAUDE.md` nem settings.
+   - `hooks/gate` compara contra HEAD. Por isso, depois do commit, não prova
+     o `gate-asserts:` nem teste apagado.
+
+   A antiga meta das bordas da limpeza do Graphify caiu com o script.
+5. Próximas demandas combinadas no `corte-sem-uso` (fora do escopo dele):
+   - plano-mapa e regra de localização de código, que responde à pergunta
+     aberta do `remover-graphify`: a regra "nunca varrer o repo para
+     entender" saiu junto com o Graphify, e até decidir não há decisão viva
+     sobre localização de código;
+   - depois, PRD como foto e critério de parada da revisão adversarial.

@@ -19,14 +19,16 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-08-25 | comandos-ingles | `description` de skill sempre entre aspas simples no YAML — `: ` sem aspas quebra o loader (skill carrega com metadata vazia).
 - 2026-08-25 | comandos-ingles | Mensagens de hook citam caminho ABSOLUTO do plugin (resolvido de `$0`), nunca relativo ao projeto-alvo.
 - 2026-08-25 | comandos-ingles | Estado PT→EN converte TODOS na primeira escrita; schema v1→v2 é on-touch — sempre nomear o substantivo (estado vs schema) ao falar de migração.
-- 2026-08-27 | skill-worktree | `git worktree remove` apaga o conteudo do ALVO atraves de junction/symlink de diretorio — desconectar o link ANTES de remover.
-- 2026-08-27 | skill-worktree | Arquivo ignorado nao bloqueia `git worktree remove` (exit 0, apaga em silencio) e nao aparece em `status --porcelain` — checar ignorados a parte.
-- 2026-08-27 | skill-worktree | Commit nao integrado se detecta com `rev-list --count HEAD --not --remotes`; `@{u}..HEAD` sai 128 em branch sem upstream.
+- 2026-08-27 | skill-worktree | `git worktree remove` apaga o conteudo do ALVO atraves de junction/symlink de diretorio — desconectar o link ANTES de remover. [invalidado-em: 2026-09-30] [substituido-por: docs/audora/arquivo/2026-09-30-corte-sem-uso.md]
+- 2026-08-27 | skill-worktree | Arquivo ignorado nao bloqueia `git worktree remove` (exit 0, apaga em silencio) e nao aparece em `status --porcelain` — checar ignorados a parte. [invalidado-em: 2026-09-30] [substituido-por: docs/audora/arquivo/2026-09-30-corte-sem-uso.md]
+- 2026-08-27 | skill-worktree | Commit nao integrado se detecta com `rev-list --count HEAD --not --remotes`; `@{u}..HEAD` sai 128 em branch sem upstream. [invalidado-em: 2026-09-30] [substituido-por: docs/audora/arquivo/2026-09-30-corte-sem-uso.md]
 - 2026-08-31 | memory-fatiada | Skill grande vira roteador + `references/`: operações quentes e curtas inline, grandes ou raras em arquivo próprio, lidas UMA por operação; reference ausente avisa e degrada.
 - 2026-09-01 | decisoes-vivas-poda | Decisão que dá para impor por teste, hook ou config não entra em decisoes-vivas.md — o lugar dela é o teste; prosa duplicada deriva do que descreve.
 - 2026-09-27 | limpeza-codigo-morto | Mudança incompatível não ganha seção de renomeação nem aviso de versão anterior enquanto a adesão for pequena — o custo aceito é projeto com arquivo antigo ficar sem orientação do framework.
 - 2026-09-29 | contexto-por-fase | Retomada de fase é pelo comando impresso `<fase> de <id>` digitado pelo humano — sem SessionStart sugerindo a retomada e sem campo `fase:` no nó.
 - 2026-09-29 | remover-graphify | Script com efeito fora do repo (desinstalar pacote, mexer na máquina) só roda em teste ou revisão com executáveis falsos e PATH sem os reais — e o prompt do subagente revisor diz isso.
+- 2026-09-30 | corte-sem-uso | Mecanismo do framework sem uso medido (sessões reais) sai inteiro — sem parágrafo residual nem declaração-stub; a medição fundamenta o corte.
+- 2026-09-30 | corte-sem-uso | Apagar arquivo de teste exige autorização do humano no portão do scope, com o nome do arquivo no nó e a autorização citada no commit.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
