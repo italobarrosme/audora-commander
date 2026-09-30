@@ -91,7 +91,7 @@ checklist" further down in this README.
 | Skill | Role |
 |---|---|
 | `audora-commander` | Entry point: classifies the demand by risk (LIGHT/MEDIUM/HIGH/HOTFIX) and routes it |
-| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction) and offers to clean up Graphify leftovers found in the project. Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation. Hooks `memory-guard` and `memory-validate` check every write to the MEMORY |
+| `memory` | Creates and maintains MEMORY.md (bootstrap, nodes, deltas, learnings, compaction). Router: hot ops inline, the rest in `skills/memory/references/`, read one per operation. Hooks `memory-guard` and `memory-validate` check every write to the MEMORY |
 | `scope` | The "What" phase: EARS criteria, [PRECISA-CLARIFICAR] marker, scope gate |
 | `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
 | `execute` | Red-green TDD with real evidence; commit per green step |
@@ -138,18 +138,14 @@ Details per skill: [Skills in detail](#skills-in-detail).
   `skills/memory/references/`, read one per operation. Selective reading
   (index + only the nodes the demand touches; grep for structural queries);
   whatever is already loaded in the session is not read again. The bootstrap
-  offers to generate the mechanical gate — once; a refusal sticks. When
-  loading context finds Graphify leftovers in the project, it lists only
-  what it found (including the `graphifyy` package, if installed) and asks
-  once to remove everything; it never commits, and a refusal is not
-  recorded — the offer comes back next time. Hooks `memory-guard` (line
-  ceilings) and `memory-validate` (schema, index ↔ folder, enum, cycles,
-  state in each node file) block broken writes.
+  offers to generate the mechanical gate — once; a refusal sticks. Hooks
+  `memory-guard` (line ceilings) and `memory-validate` (schema, index ↔
+  folder, enum, cycles, state in each node file) block broken writes.
 - **What it leaves on disk**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
   `docs/audora/decisoes-vivas.md`, archived nodes in `docs/audora/arquivo/`
   and, if accepted, the project's `gate` script.
-- **Human gates**: generating the gate and removing Graphify leftovers
-  are your call; MEMORY merge conflicts outside the demand's own nodes are yours.
+- **Human gates**: generating the gate is your call; MEMORY merge conflicts
+  outside the demand's own nodes are yours.
 - **Next**: back to the phase that called it; invoked directly → offers to
   classify a demand.
 

@@ -44,6 +44,7 @@ de categoria, históricos, commit nos projetos limpos.
   `tests/test-autopilot.sh` e `tests/test-worktree.sh` (/11).
 - 2026-09-30 (humano): autorizada a limpeza dos 13 projetos pelo comando
   `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover`.
+- gate-asserts: queda aprovada no escopo (/11) — asserts de test-graphify-limpeza, test-loop, test-autopilot e test-worktree saem com o comportamento removido; ausência guardada por tests/test-corte-sem-uso.sh.
 
 ## delta
 

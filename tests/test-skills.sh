@@ -47,11 +47,6 @@ done
 # remover-graphify/1 — bootstrap não oferece nem instala o Graphify; o gate fecha o bootstrap
 grep -qi 'graphify' "$MR/bootstrap.md" && ko "remover-graphify/1 bootstrap cita graphify" || ok
 assert_contains "$(cat "$MR/bootstrap.md")" '**Etapa gate** (sempre, ao fim do bootstrap)' "remover-graphify/1 gate fecha o bootstrap"
-# remover-graphify/2..8 — carregar-contexto oferece a limpeza (asserido DENTRO da seção)
-cc="$(awk '/^### 1\. carregar-contexto/{f=1;next} /^### /{f=0} f' "$MS")"
-for s in 'hooks/graphify-limpeza" .' 'Saída vazia → seguir sem citar o assunto' 'listar SÓ o que saiu' 'Remover tudo?' 'graphify-limpeza" --remover .' 'item a item' 'não trava a demanda' 'NÃO commitar' 'não gravar nada' 'a próxima carga oferece de novo'; do
-  assert_contains "$cc" "$s" "remover-graphify/2-8 carregar-contexto: '$s'"
-done
 for s in 'hooks/graphify-status' 'Instalo o Graphify' 'inclui oferta e ativação do Graphify'; do
   assert_not_contains "$m" "$s" "remover-graphify/1,10 memory sem '$s'"
 done

@@ -18,7 +18,7 @@ time pequeno em projetos web/mobile/api.
 ## Constituição [carga: sempre]
 
 - **stack**: Markdown (skills, templates, docs) + JSON (manifests, hooks) +
-  bash (hooks, script `graphify-limpeza`, suíte `tests/`).
+  bash (hooks, suíte `tests/`).
 - **restricoes**: cada SKILL.md e cada arquivo de `skills/*/references/`
   ≤ 250 linhas; conteúdo em português (exceções
   aprovadas: 2026-08-24 README.md principal em inglês, com README.pt-BR.md
@@ -26,7 +26,7 @@ time pequeno em projetos web/mobile/api.
   em inglês — identificadores EN, prosa PT); schemas vivem só em
   `templates/`; hook injeta ponteiro curto, nunca o framework inteiro;
   Windows suportado via wrapper polyglot `.cmd`; código executável só em
-  `hooks/` (hooks + `graphify-limpeza`) e `tests/` (suíte bash).
+  `hooks/` e `tests/` (suíte bash).
 - **padroes**: toda skill tem frontmatter `name`+`description` ("Use
   quando..."), Lei de Ferro em bloco de código no topo, "Anuncie ao começar",
   fluxo numerado, tabela de red flags e seção "PRÓXIMA SKILL"; skill de FASE

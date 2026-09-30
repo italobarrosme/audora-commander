@@ -11,9 +11,7 @@ en="$(cat README.md)"; pt="$(cat README.pt-BR.md)"
 for s in 'MEMORY.md' '`memory`' 'docs/audora/memory/' 'memory-validate'; do
   assert_contains "$en" "$s" "/19 README EN cita $s"; assert_contains "$pt" "$s" "/19 README PT cita $s"
 done
-# remover-graphify/10 — READMEs: Graphify só na oferta de limpeza; princípio 1 sem índice de código
-assert_contains "$en" 'Graphify leftovers' "remover-graphify/10 README EN descreve a limpeza"
-assert_contains "$pt" 'restos do Graphify' "remover-graphify/10 README PT descreve a limpeza"
+# remover-graphify/10 — READMEs sem instalação ou consulta do Graphify; princípio 1 sem índice de código
 for s in 'uv tool install graphifyy' 'consultar-codigo' 'graphify query' 'graphify update' 'indexes the code' 'code index' 'code graph'; do
   assert_not_contains "$en" "$s" "remover-graphify/10 README EN sem '$s'"
 done

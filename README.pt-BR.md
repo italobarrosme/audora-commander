@@ -91,7 +91,7 @@ da instalação" mais abaixo neste README.
 | Skill | Papel |
 |---|---|
 | `audora-commander` | Porta de entrada: classifica a demanda por risco (LIGHT/MEDIUM/HIGH/HOTFIX) e roteia |
-| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação) e oferece limpar restos do Graphify encontrados no projeto. Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação. Os hooks `memory-guard` e `memory-validate` conferem toda escrita no MEMORY |
+| `memory` | Cria e mantém o MEMORY.md (bootstrap, nós, deltas, aprendizados, compactação). Roteador: operações quentes inline, o resto em `skills/memory/references/`, lidas uma por operação. Os hooks `memory-guard` e `memory-validate` conferem toda escrita no MEMORY |
 | `scope` | Fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR], portão de escopo |
 | `plan` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
 | `execute` | TDD red-green com evidência real; commit por etapa verde |
@@ -138,18 +138,15 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   `skills/memory/references/`, lidas uma por operação. Leitura seletiva
   (índice + só os nós que a demanda toca; grep para consulta estrutural); o
   que já foi carregado na sessão não é relido. O bootstrap oferece gerar
-  o gate mecânico — uma vez; recusa fica registrada. Quando a carga de
-  contexto acha restos do Graphify no projeto, lista só o que achou
-  (inclusive o pacote `graphifyy`, se instalado) e pergunta uma vez se
-  remove tudo; nunca commita, e a recusa não é gravada — a oferta volta na
-  próxima vez. Os hooks `memory-guard` (tetos de linhas) e
-  `memory-validate` (schema, índice ↔ pasta, enum, ciclos,
-  estado em cada arquivo de nó) bloqueiam escrita quebrada.
+  o gate mecânico — uma vez; recusa fica registrada. Os hooks
+  `memory-guard` (tetos de linhas) e `memory-validate` (schema, índice ↔
+  pasta, enum, ciclos, estado em cada arquivo de nó) bloqueiam escrita
+  quebrada.
 - **O que deixa no disco**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
   `docs/audora/decisoes-vivas.md`, nós arquivados em `docs/audora/arquivo/`
   e, se aceito, o script `gate` do projeto.
-- **Portões humanos**: gerar o gate e remover restos do Graphify são decisão sua;
-  conflito de merge no MEMORY fora dos nós da demanda é seu.
+- **Portões humanos**: gerar o gate é decisão sua; conflito de merge no
+  MEMORY fora dos nós da demanda é seu.
 - **Próxima**: devolve à fase que chamou; invocada direto → oferece
   classificar uma demanda.
 

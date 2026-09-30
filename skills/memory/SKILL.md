@@ -1,6 +1,6 @@
 ---
 name: memory
-description: 'Use quando precisar criar, consultar ou atualizar o MEMORY de um projeto — bootstrap em projeto sem MEMORY.md, carga de contexto no início de uma demanda (inclui a oferta de limpar restos do Graphify), registro de nó, delta ou aprendizado, ou compactação.'
+description: 'Use quando precisar criar, consultar ou atualizar o MEMORY de um projeto — bootstrap em projeto sem MEMORY.md, carga de contexto no início de uma demanda, registro de nó, delta ou aprendizado, ou compactação.'
 ---
 
 # memory — a memória do produto
@@ -27,7 +27,7 @@ skill confere o mesmo.
 
 **Raiz do plugin**: scripts auxiliares ficam dois níveis acima do diretório
 base desta skill (o Skill tool imprime esse diretório ao carregar). Ex.:
-`bash "<raiz do plugin>/hooks/graphify-limpeza" .`.
+`<raiz do plugin>/templates/gate-template.md`.
 
 ## Onde mora cada operação
 
@@ -86,14 +86,6 @@ nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
 4. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
    gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
    só se o humano pedir.
-5. **Restos do Graphify** (o framework não usa mais): rodar
-   `bash "<raiz do plugin>/hooks/graphify-limpeza" .` (1 linha por resto).
-   Saída vazia → seguir sem citar o assunto. Com linhas → ANTES da demanda,
-   listar SÓ o que saiu e perguntar uma vez: "Remover tudo?". Aprovou →
-   `bash "<raiz do plugin>/hooks/graphify-limpeza" --remover .` e relatar
-   item a item (`removido`, `falhou` + comando à mão, `versionado`); falha
-   não trava a demanda; NÃO commitar. Recusou → não mexer, não gravar nada;
-   a próxima carga oferece de novo.
 
 ### 4. registrar-delta (mudança no meio da demanda)
 
