@@ -45,6 +45,7 @@ de categoria, históricos, commit nos projetos limpos.
 - 2026-09-30 (humano): autorizada a limpeza dos 13 projetos pelo comando
   `bash "$SCRATCH/limpeza-projetos.sh" "$SCRATCH" --remover`.
 - gate-asserts: queda aprovada no escopo (/11) — asserts de test-graphify-limpeza, test-loop, test-autopilot e test-worktree saem com o comportamento removido; ausência guardada por tests/test-corte-sem-uso.sh.
+- 2026-09-30 (humano): portão final APROVADO ("aprovar") — e2e 12/12, revisão adversarial sem bloqueante; ressalvas (guardas de /5 e /11 enganáveis por variação de texto, gate compara contra HEAD) aceitas como estão. Decisões vivas aprovadas como propostas: invalidar as 3 `skill-worktree`; promover "corte inteiro de mecanismo sem uso" e "apagar teste exige autorização no scope".
 
 ## medicao
 
