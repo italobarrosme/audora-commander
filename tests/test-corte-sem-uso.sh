@@ -46,9 +46,9 @@ for r in README.md README.pt-BR.md; do
 done
 assert_contains "$(tr -d '\r' < README.md)" '## The 8 skills' "corte-sem-uso/9 README EN diz 8 skills"
 assert_contains "$(tr -d '\r' < README.pt-BR.md)" '## As 8 skills' "corte-sem-uso/9 README PT diz 8 skills"
-# --- /10 versão: 0.12.0 superada pela 0.13.0 (prd-foto/10); 0.10.0 segue fora ---
+# --- /10 versão: 0.12.0 superada pela 0.14.0 (parada-revisao/10); 0.10.0 segue fora ---
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
-  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.13.0"' "prd-foto/10 $j declara 0.13.0 (substitui plano-mapa/15)"
+  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.14.0"' "parada-revisao/10 $j declara 0.14.0 (substitui prd-foto/10)"
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.10.0"' "corte-sem-uso/10 $j sem 0.10.0"
 done
 
