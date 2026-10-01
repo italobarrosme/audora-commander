@@ -61,6 +61,7 @@ Reduzir a maior carga de contexto do framework: planos com mediana de 694 linhas
 - 2026-09-30 (IA): limiar de "arquivo grande" (/5) = 200 linhas, o dobro da janela de 100 linhas que o SWE-agent mediu como melhor.
 - 2026-09-30 (IA): bump para `0.12.0` — o formato do plano muda e o antigo continua aceito (/11).
 - 2026-09-30 (humano): escopo aprovado ("aprovado") — confirma as 3 decisões da IA (substituir `otimizacao-tokens/5`, limiar de 200 linhas, `0.12.0`).
+- 2026-10-01 (humano): portão final APROVADO ("aprovado"). e2e: 12 critérios passaram, /3 passou com ressalva e /4 e /8 tiveram validação humana pelo texto das skills. Ressalvas aceitas como estão: o plan pode ler arquivo inteiro (/3 exige só o header por trecho), e a execute ficou +3,7% mais cara em n=1. Decisão viva aprovada como proposta: medir por A/B numa fixture `claude -p`, sem meta numérica.
 
 ## medicao
 
