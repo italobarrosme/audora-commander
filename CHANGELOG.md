@@ -1,0 +1,476 @@
+# Changelog — audora-commander
+
+> Histórico de entregas. O `PRD.md` é foto do estado atual (o que é, stack,
+> arquitetura, metas futuras); o que foi entregue, e quando, mora aqui.
+> 1 linha por demanda entregue, de qualquer categoria, escrita no sync da
+> validate — grep-ável. [carga: auto — consultar quando a demanda precisar
+> do histórico.]
+
+Formato: `- AAAA-MM-DD | <versão ou —> | <id> | <1 frase> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`
+
+## Entregas
+
+- 2026-10-01 | 0.13.0 | prd-foto | PRD.md vira foto com teto de 200 linhas cobrado pelo memory-guard, e o histórico de entregas passa a morar no CHANGELOG.md. → docs/audora/arquivo/2026-10-01-prd-foto.md
+
+## Histórico até 2026-10-01
+
+Plano-mapa entregue em 2026-10-01 (nó `plano-mapa`, MEDIUM, versão 0.12.0).
+O motivo foi medido: planos com mediana de 694 linhas (133 planos), relidos a
+cada execute. O estudo ficou local, fora do repositório (`docs/study/` no `.gitignore`).
+O que mudou:
+- A tarefa do plano virou mapa, com a asserção exata quando o critério deixa
+  o valor aberto. O código do teste e o da implementação nascem na execute.
+- plan, execute e debug (modo sintoma) ganharam a regra de localização por
+  trecho descrita na Arquitetura.
+- O formato antigo continua executável.
+- O critério `otimizacao-tokens/5` ("código completo do teste" no plano) foi
+  substituído por `plano-mapa/1`, e seus asserts foram trocados um por um,
+  sem perder nenhum.
+- A guarda é `tests/test-plano-mapa.sh` (50 asserts). Suíte: 631 → 681
+  asserts.
+
+Carga estática (blobs LF): BASE 46575 → 47719 e FULL 51815 → 52959, dentro
+dos tetos 48000 / 53400.
+
+A/B numa fixture (mesma demanda, `claude -p`, 0.11.0 × 0.12.0, n=1):
+
+| | variação |
+|---|---|
+| plano: linhas / bytes | −27,5% / −21,3% |
+| custo do plan | −15,4% |
+| custo da execute | +3,7% (a execute escreve os testes que o plano antigo trazia) |
+| leitura do arquivo grande | −59% |
+
+As duas execuções ficaram verdes. Não houve meta numérica.
+
+O e2e rodou 4 cenários com `--plugin-dir`, e 12 critérios passaram:
+- plano antigo executado sem conversão;
+- mapa com linhas deslocadas, relocalizado pelo símbolo e corrigido;
+- modificar arquivo fora do mapa voltou ao plan só para aquela tarefa;
+- debug sintoma leu o arquivo de 235 linhas só por trecho.
+
+Ressalvas aceitas no portão estão na meta 6.
+
+Corte do sem uso entregue em 2026-09-30 (nó `corte-sem-uso`, HIGH, versão
+0.11.0, breaking). Saiu o que não tinha uso medido em 112 sessões de 11
+projetos: autopilot (0 usos), o motor de loop `hooks/loop` com
+`templates/loop-prompt-template.md` (0 execuções) e a skill `worktree`
+(2 invocações). O plugin ficou com 8 skills. Todo portão do meio voltou a ser
+humano. O campo `autopilot:` saiu do nó, o bullet `loop:` da Constituição e
+`paradas humanas: N` do bloco de fechamento. O "segue" continua rodando a fase
+seguinte em subagente pelo `templates/fase-subagente-template.md`, agora sem
+`{{TAREFA}}` e sem motor.
+
+Antes de apagar `hooks/graphify-limpeza`, os restos do Graphify foram limpos
+uma vez, com autorização do humano, nos projetos locais: 15 com
+`memory-schema: 1`, 13 com resto. Nenhum commit foi feito neles, e o
+SellInfoTurbo incluiu `.claude/CLAUDE.md` e `.claude/skills/graphify/`. O
+relatório está em `docs/audora/e2e/limpeza-graphify-projetos.md`. Depois o
+script saiu junto com a oferta da carga de contexto e `path_sem_uv`/`guarda_sem_uv`.
+
+Os 4 testes apagados (`test-graphify-limpeza`, `test-loop`,
+`test-autopilot`, `test-worktree`) foram autorizados no portão do scope e
+citados nos commits. A ausência do que saiu é guardada por
+`tests/test-corte-sem-uso.sh`.
+
+Carga estática medida em bytes, sobre blobs LF:
+
+| | antes | depois |
+|---|---|---|
+| skills | 74760 | 58010 |
+| templates | 26128 | 23626 |
+| BASE do `test-carga` | 51800 | 46575 |
+| FULL do `test-carga` | 57040 | 51815 |
+
+Os tetos baixaram para 48000 / 53400. A suíte foi de 935 para 631 asserts,
+com `gate-asserts:` no nó.
+
+O e2e rodou 3 sessões `claude -p` com `--plugin-dir`, sem tocar o cache
+global:
+- o init lista 8 skills;
+- `plan` numa fixture com restos do Graphify não oferece limpeza e para no
+  portão humano;
+- "segue" despacha UM subagente pelo template, que faz só execute e fecha em
+  PARADA.
+
+Em modo só leitura, a detecção voltou vazia nos 15 projetos. A revisão
+adversarial não achou bloqueante. Ressalvas aceitas no portão estão na meta 4.
+
+Graphify removido em 2026-09-29 (nó `remover-graphify`, HIGH, versão 0.10.0,
+breaking: sai o bullet `graphify:` da Constituição e o post-commit que o
+bootstrap instalava). Motivo medido nos 12 projetos que usam o plugin: 78
+consultas ao índice contra 1.044 Read e 181 Grep (~6% das buscas de código),
+10 de 41 checagens de status dando `ausente` por PATH, e uma reconstrução por
+commit em todos. Saíram a etapa Graphify do bootstrap, a operação
+`consultar-codigo`, `hooks/graphify-status` (teste apagado com autorização do
+humano) e toda menção em skills, templates, manifests, READMEs e
+`docs/fundamentos.md`; plan, execute e debug usam a busca normal do harness,
+sem regra substituta. No lugar entrou `hooks/graphify-limpeza`: a carga de
+contexto detecta os restos e oferece a limpeza, inclusive `uv`/`pipx
+uninstall graphifyy` (arquitetura acima). Este repositório ficou limpo
+(dogfood) e os aprendizados sobre o Graphify foram marcados
+`[invalidado-em:]`. Suíte 780 → 935 asserts (`tests/test-graphify-limpeza.sh`
+com repo git real e `uv`/`pipx` falsos; queda de `graphify-status` e
+`consultar-codigo` justificada por `gate-asserts:`). Portão final reprovado
+duas vezes pela revisão adversarial — filtro do settings agindo no grupo e
+sem casar o formato real do Graphify (caminho absoluto entre aspas), seção do
+`CLAUDE.md` engolindo o H1 seguinte, hook sem marcador de fim, versionado não
+relatado, pacote só no uv — e aprovado na 3ª passagem. Incidente: a 1ª revisão
+rodou `--remover` com o `uv` real e desinstalou o `graphifyy` desta máquina
+(humano: não reinstalar); daí a decisão viva de executáveis falsos. e2e pulado
+pelo humano. Os 12 projetos locais recebem a oferta na próxima demanda; no
+SellInfoTurbo `.claude/CLAUDE.md` e `.claude/skills/graphify/` foram limpos à
+mão. Pendências aceitas no portão: metas 4 e 5. (`hooks/graphify-limpeza` e a
+oferta saíram na 0.11.0, `corte-sem-uso`, depois de limpar os projetos locais
+de uma vez.)
+
+Contexto zerado por fase entregue em 2026-09-29 (nó `contexto-por-fase`,
+MEDIUM). Ataca o custo de token dominante medido em 2026-09-28: a demanda
+inteira numa sessão só (contexto 60k → 450–705k, 56–116M de cache read por
+demanda). Fim de scope, plan ou execute de MEDIUM/HIGH virou PARADA: `/clear`
++ `<fase> de <id>`, sem emendar a fase seguinte — o `/clear recomendado` da
+`otimizacao-tokens` foi substituído (asserts trocados 1:1, ratificado no
+portão). "Segue" roda a fase seguinte em subagente limpo pelo template novo
+`templates/fase-subagente-template.md`; autopilot MEDIUM executa pelo motor,
+com fallback em subagentes se ele recusar; retomada com id fora do índice ou
+artefato ausente recusa nomeando o que falta (regra geral no template; plan e
+execute com regra própria — validate ficou de fora pelo teto de 7700 bytes).
+Suíte 741 → 780 asserts (`tests/test-contexto-por-fase.sh`, 39), guarda /13
+provado por 4 mutações. e2e com 3 sessões `claude -p` reais: `plan de <id>`
+fecha com PARADA sem iniciar a execute; `execute de <id>` sem plano e
+`plan de <id-inexistente>` recusam. Pendências aceitas no portão: a PARADA
+usa vírgula no template e dois-pontos em plan/execute; recusa sai em prosa,
+sem bloco; carga BASE a 12 bytes do teto (54888 / 54900). `/clear`
+automático não existe no Claude Code — fica com o humano.
+
+Estado validado no nó entregue em 2026-09-28 (nó `validate-estado-no`, MEDIUM,
+fecha a antiga meta 1): `memory-validate` passa a ler o `estado:` do
+frontmatter de cada arquivo de `docs/audora/memory/` (só dentro do
+frontmatter; `\r` e espaços tolerados; `-historico.md` ignorado). Em toda
+escrita no MEMORY, qualquer nó com estado fora do enum ou sem o campo bloqueia.
+A divergência índice × nó só bloqueia na escrita do **índice** — o ponto de
+fechamento —, então a transição legítima (nó primeiro, índice depois) passa
+sem erro transitório; `registrar-no` e o sync da `validate` ensinam essa
+ordem. Suíte 716 → 741 asserts, /9 provado por mutação; e2e com 4 sessões
+`claude -p` reais (bloqueio de enum, de campo ausente e de divergência; a
+transição em duas escritas passou limpa). Custo aceito no escopo: projeto com
+nó de estado inválido passa a ser bloqueado até corrigir. No mesmo dia o nó
+`decisoes-vivas-auditoria` foi descartado pelo humano.
+
+README por skill entregue em 2026-09-28 (nó `readme-skills`, MEDIUM): os dois
+READMEs ganharam a seção "Skills in detail" / "As skills em detalhe", com uma
+subseção por skill e cinco rótulos fixos — quando dispara, o que faz, o que
+deixa no disco, portões humanos e próxima skill —, escrita a partir dos
+SKILL.md da 0.9.0 e conferida por leitura cruzada. A tabela-resumo continua,
+com link para o detalhe. `tests/test-docs.sh` ganhou a guarda que itera
+`skills/*/`: skill nova sem subseção nos dois READMEs reprova a suíte
+nomeando a skill e o README. Suíte 604 → 716 asserts. e2e pulado (doc pura).
+
+Otimização de tokens entregue em 2026-09-28 (nó `otimizacao-tokens`, MEDIUM,
+versão 0.9.0). Três frentes. **Contexto**: skill memory, `MEMORY.md` e
+template do bloco já carregados na sessão não são reinvocados nem relidos
+(e2e real: 1 leitura de cada numa demanda LIGHT atravessando 4 fases); o bloco
+de fechamento recomenda `/clear` quando a próxima fase se reancora pelos
+artefatos (omitido em autopilot; virou PARADA em 2026-09-29, `contexto-por-fase`); a `validate` virou roteador + 3 references
+(11603 → 7635 bytes na carga base, LIGHT deixa de carregar sync e filtro).
+**Plano**: carrega o código completo do teste, assinaturas e comandos —
+implementação só quando não-óbvia, então a saída deixa de ser paga duas vezes
+(substituído pelo plano-mapa em 2026-10-01).
+**Loop**: a volta recebe cabeçalho + tarefa + notas de sessão, nunca as outras
+tarefas (−52% do plano por volta, medido num plano real). Medição honesta: a
+carga estática MEDIUM caiu pouco (BASE 56237 → 53274 bytes, −5,3%; FULL
+58036 → 58483, +0,8% por regras e cabeçalhos novos) — o ganho é comportamental e no
+loop. `tests/test-carga.sh` põe teto em bytes para não voltar a inchar.
+Suíte 550 → 604 asserts, nenhum removido (os da validate mudaram de arquivo).
+e2e: /1 provado ao vivo; /4 só no ramo autopilot, aceito parcial no portão.
+
+Limpeza de código morto entregue em 2026-09-27 (nó `limpeza-codigo-morto`,
+HIGH, versão 0.8.0, breaking sem comunicação por decisão do humano — adesão
+pequena, ninguém impactado). Saiu da superfície do plugin todo resto de
+compatibilidade: o aviso sobre o arquivo de memória antigo (skill `memory` e
+porta de entrada), a seção de renomeação dos dois READMEs e o guarda
+anti-legado da suíte (`tests/test-no-grafo.sh` e asserts de migração, que
+reprovavam até "parágrafo"). Saiu também a sintaxe reservada `chave:id` de
+`depende-de` (federação que nunca veio): `memory-validate` trata `:` como id
+comum. Os nós `memory-graphify` e `plugin-v0.1.0`, `in-progress` desde
+agosto, foram fechados como `delivered` com evidência por critério.
+`docs/fundamentos.md` foi reescrito com a nomenclatura e a mecânica atuais
+(MEMORY, skills em inglês, LIGHT/MEDIUM/HIGH, gate, motor de loop). A
+revisão adversarial (0 ALTO, 2 MÉDIO, 6 BAIXO) pegou cobertura viva que a
+remoção tinha levado junto — devolvida e provada por mutação. e2e com
+`claude -p` real (0.8.0): projeto sem memória recebe oferta de bootstrap
+sem menção a legado; com arquivo antigo no repo, o framework não orienta
+mais e o modelo pergunta (custo aceito, registrado em decisões vivas). Suíte
+593 → 550 asserts (queda justificada: guardas removidos).
+
+Motor de loop entregue em 2026-09-05 (nó `loop-motor`, HIGH, D3 do roadmap de
+loop engineering — fecha a tese "spec = direção, teste = aprovação, loop =
+execução, humano decide nas bordas"): `hooks/loop` roda o plano-arquivo de
+uma demanda `autopilot: elegivel` volta a volta — cada volta é um `claude -p`
+NOVO (contexto zerado) com prompt gerado de
+`templates/loop-prompt-template.md` (nó + plano + UMA tarefa + regras), e
+quem julga é o MOTOR: gate da Constituição fora do processo do agente, commit
+citando `<id>/<n>` e checkbox no verde, patch + nota nas Notas de sessão no
+vermelho. Pré-condições recusam a rodada listando TUDO que falta (elegível,
+`gate:`, `sandbox:` — `nenhum` só com `--confirmo-sem-sandbox` —, branch
+própria, tetos numéricos por parâmetro ou bullet
+`loop: voltas-tarefa=3 voltas-rodada=12 custo-usd=10`). Paradas: `DONE`,
+N vermelhos seguidos → nó `blocked`, teto de voltas/custo
+(`--max-budget-usd`, soma via awk do JSON), `[PRECISA-CLARIFICAR`, com
+métricas por rodada COMMITADAS no plano e retomada sem refazer tarefa
+marcada. A revisão adversarial (15 achados, 4 ALTO) endureceu a volta com
+detecção de VIOLAÇÃO antes do gate: claude falho, commit rogue (desfeito),
+fraude no plano (restaurada), volta vazia — nada disso vira verde. Suíte
+503 → 600 asserts com `claude` FALSO no PATH (o modelo real nunca roda na
+suíte); demo real de rodada com vermelho no meio termina `DONE` com 2 commits
+e métricas. D4 (paralelo) segue `planned` no roadmap — só depois de rodadas
+reais de D3. (O motor foi removido na 0.11.0, `corte-sem-uso`: 0 execuções
+medidas.)
+
+Autopilot entregue em 2026-09-05 (nó `autopilot`, HIGH, D2 do roadmap de loop
+engineering): o humano declara na entrada — "autopilot" / "roda até o
+validate" — e o framework antecipa os portões do MEIO, mantendo SEMPRE o
+portão final da validate (invariante guardado por teste de frase inteira
+dentro da seção, endurecido depois que a revisão adversarial provou por
+mutação que asserts de palavras separadas eram enganáveis). Vale para LIGHT e
+MEDIUM; HIGH recusa nomeando o P4 (provado em sessão `claude -p` real, junto
+com o registro de `autopilot: declarado` por outra sessão real). Elegibilidade
+pela pergunta que decide (todos os critérios automatizáveis?): auto-revisão do
+scope grava `autopilot: elegivel | inelegivel (<id>/<n>)`; LIGHT e declaração
+tardia são gravadas pela porta de entrada na hora. Em autopilot a validate
+decide o e2e sem perguntar (roda com `ferramenta-e2e` OU projeto web;
+sem nada, registra `e2e: pulado-por-autopilot-sem-ferramenta`), o roteiro
+ganha "Premissas e decisões tomadas sem portão" e o bloco de fechamento de
+TODA demanda passa a imprimir `paradas humanas: N` discriminado,
+reconstituível de artefatos duráveis. Campo `autopilot:` documentado no
+`no-template.md`; `memory-validate` intocado (caracterização provou que campo
+desconhecido já passa). Revisão adversarial: 15 achados (4 ALTO), 14
+corrigidos no mesmo ciclo. Suíte 467 → 503 asserts; GREEN da demanda foi
+fechado pelo próprio gate de D1 (`GATE: passou`). (Autopilot removido na
+0.11.0, `corte-sem-uso`: 0 usos medidos.)
+
+Gate mecânico entregue em 2026-09-04 (nó `gate-mecanico`, MEDIUM, D1 do
+roadmap de loop engineering):
+um comando por projeto que responde passou/não passou — suíte, lint e
+typecheck (etapa sem ferramenta na stack é pulada com aviso, nunca falha) mais
+**anti-fraude de teste** sobre o diff não commitado (`git diff HEAD`): arquivo
+de teste apagado reprova nomeando o arquivo; skip/only adicionado reprova com
+arquivo e linha; queda na contagem de asserts reprova com antes → depois,
+salvo justificativa `gate-asserts: <motivo>` no nó da demanda. O schema vive
+em `templates/gate-template.md` (config `GATE_*` com env sobrepondo defaults —
+é o que permite testar o gate na própria suíte sem recursão); a instância
+dogfood deste repo é `hooks/gate`, registrada na Constituição
+(`gate: bash hooks/gate <id-da-demanda>`). A skill `memory` oferta o gate no
+bootstrap (etapa 5) e no início de demanda em projeto sem `gate:` — uma vez,
+recusa registrada gruda; a `execute` passa a tratar GREEN como gate verde
+quando o bullet existe; a `validate` lista o diff dos arquivos de teste
+separado do resto em toda categoria. Suíte 415 → 467 asserts, com fixture de
+repo git real exercitando as três fraudes red-green; e2e com sessão
+`claude -p` real provou a oferta no carregar-contexto e o controle negativo
+(Graphify recusado não reofertado) — relatório em
+`docs/audora/e2e/e2e-gate-mecanico.md`.
+
+Mecanização do sync da validate: **tentada e abandonada** em 2026-09-04 (nó
+`sync-mecanizado`, HIGH). O que ficou é conhecimento documentado, não código.
+
+A ideia era tirar da mão do modelo os passos mecânicos do sync. Quatro
+revisões adversariais reprovaram — uma no plano, antes de virar código, e três
+no diff. A taxa de mutação não se moveu: 55% → 45% → 44% das mutações
+passando verdes, e cada correção abria buraco novo, inclusive uma regressão
+(o corte de título que matava a seta dupla mutilava título legítimo). Os últimos
+bugs vivos foram colisão de sufixo no glob — o id `batch` casava o nó de
+`scope-batch` e o script apontava a demanda errada — e nó renomeado perdendo
+trabalho em silêncio. Diagnóstico: o script fazia cirurgia de string num
+formato Markdown desenhado para humano e LLM, e toda a cirurgia vivia na parte
+de menor valor.
+
+O que sobrou, no item 6.3 da skill `validate`, são os dois comandos e as três
+armadilhas que as revisões acharam: a base da demanda é o **pai do commit que
+criou o arquivo do nó** (nunca `--grep` na mensagem, que casa commit de outra
+demanda que só cita o id); o range vai até HEAD e pode conter outra demanda; o
+`PRD.md` ainda não foi tocado quando o comando roda; e o nó e o `-historico.md`
+aparecem no caminho de antes do `git mv`. O item 6 também foi reescrito numa
+ordem só — antes tinha duas, e seguir a antiga fazia `memory-validate` bloquear
+a escrita seguinte. Suíte 395 asserts.
+
+Regra de entrada e guardas das decisões vivas entregues em 2026-09-01 (nó
+`decisoes-vivas-poda`, HIGH). A skill `validate` passa a filtrar o que entra em
+`docs/audora/decisoes-vivas.md`: só é candidata a decisão que NÃO esteja já
+declarada normativamente, **para o mesmo escopo de aplicação**, em artefato que
+o framework lê — e regra que vale para skills futuras não é duplicata de um
+SKILL.md que só a aplica a si mesmo. Se a decisão PODERIA virar teste e o teste
+não existe, a skill manda escrever o teste na mesma demanda ou manter a
+entrada; sumir em silêncio virou proibido. Artefato que trata a matéria como
+fora do próprio escopo não serve de ponteiro. A suíte ganhou guardas para os
+marcadores `[invalidado-em:]` / `[substituido-por:]`: reprovam arquivo ausente
+ou vazio, ponteiro vazio, ponteiro apontando diretório ou arquivo inexistente,
+marcador sem par, marcador em linha indentada e marcador com qualquer formato
+de data — cada caso provado por mutação. Suíte 380 → 387 asserts.
+
+**A auditoria das 17 entradas NÃO foi entregue** e virou o nó
+`decisoes-vivas-auditoria` (`planned`). Duas revisões adversariais reprovaram a
+classificação, em conjuntos diferentes de entradas, e o diagnóstico foi que o
+critério "já declarada normativamente" admite julgamento demais. As 8 marcações
+foram revertidas e `decisoes-vivas.md` voltou byte-idêntico ao estado
+pré-demanda. O nó novo trocava julgamento por prova: só marcaria se um teste
+da suíte reprovasse a violação, verificado por mutação entrada por entrada.
+Em 2026-09-28 o humano **descartou** o nó antes do scope (arquivado em
+`docs/audora/arquivo/2026-09-28-decisoes-vivas-auditoria.md`): as 17 decisões
+vivas ficam como estão.
+
+Fechamento proporcional do LIGHT entregue em 2026-09-01 (nó `light-enxuto`,
+MEDIUM): a skill `validate` ganhou a seção `## Fechamento LIGHT`. Uma demanda
+LIGHT não tem plano, escopo escrito nem, quase sempre, delta ou decisão
+durável — mas vinha pagando o sync de 8 operações desenhado para MEDIUM/HIGH,
+com um passo vácuo (arquivar plano inexistente) e outros quase sempre vazios.
+Agora: a oferta de e2e só aparece quando a demanda toca caminho percorrido
+pelo usuário; o roteiro vira versão curta (evidência 1:1 + diff + 1 linha de
+como conferir); o sync roda só os passos com conteúdo real; o plano
+inexistente não vira pendência; e o `PRD.md` só recebe promoção se o ajuste
+alterar comportamento que ele já descreve — com silêncio sobre o PRD
+explicitamente proibido. O que NÃO encolhe está na primeira linha da seção:
+portão humano com aprovação explícita e evidência 1:1 por critério. O critério
+/8 é guarda contra erosão futura: a suíte assere DENTRO da seção (extraída por
+`awk`), porque no arquivo inteiro as duas frases já aparecem no fluxo geral e o
+guarda passaria por acidente. MEDIUM e HIGH intocados. Suíte 371 → 377
+asserts, com teste negativo. e2e pulado por decisão humana.
+
+Perguntas em lote entregues em 2026-09-01 (nó `scope-batch`, MEDIUM): a fase
+`scope` deixa de mandar "uma por vez / nunca duas perguntas na mesma mensagem"
+e passa a agrupar as INDEPENDENTES, no máximo 4 por lote (limite do
+`AskUserQuestion`, documentado como limite de ferramenta e não preferência).
+O que decide lote vs série é um **teste de dependência** explícito: a resposta
+de uma pergunta muda o enunciado, as opções ou a própria existência da outra?
+Sim, série; não, mesmo lote. Decisão de formato ou layout passa a exigir
+PREVIEW de cada alternativa; mais de 4 lacunas prioriza as que mais mudam
+escopo e AVISA que há lote seguinte, em vez de truncar em silêncio; cada
+escolha vira uma linha em `## decisoes` do nó com a alternativa descartada.
+Red flag nova cobre o excesso oposto (agrupar perguntas dependentes gera
+resposta sobre premissa errada). O gargalo atacado é wall-clock: a fase
+custava `N perguntas × tempo de resposta humana`. Intocados por
+fora-de-escopo: o portão de escopo, o marcador `[PRECISA-CLARIFICAR]` e o
+direito de não responder — mudou a cadência, nunca o direito. Suíte
+365 → 371 asserts, com teste negativo. e2e pulado por decisão humana.
+
+Bloco de fechamento entregue em 2026-08-31 (nó `resumo-de-fase`, MEDIUM,
+versão 0.7.0): toda skill de FASE passa a encerrar imprimindo no terminal um
+bloco Markdown padronizado — título `<id> · <fase> → <próxima>`, checkbox das
+fases com resumo de até 8 palavras, o que a fase produziu, arquivos tocados
+(caminho real e existente) e próximo passo. A execute fecha com a lista de
+TAREFAS em checkbox, só no fim da fase; a validate aprovada soma o bloco
+**Entrega** com tabela critério → veredito e arquivos do `git diff --name-only`
+real. Categoria LIGHT/HOTFIX omite da lista as fases que não percorre, e fase
+interrompida, bloqueada ou reprovada imprime o bloco mesmo assim, desmarcada e
+com o motivo em 1 linha. O formato é schema, então vive só em
+`templates/bloco-fechamento-template.md` (110 linhas) e cada skill de fase
+aponta para ele em ~8 linhas — nunca cópia. `memory` e `worktree` NÃO imprimem:
+são skills-ferramenta e devolvem à fase chamadora. A Constituição ganhou o
+sétimo padrão obrigatório de skill de fase. Suíte 334 → 365 asserts, com teste
+negativo provando os dois guardas. e2e em duas sessões reais 0.7.0 provou /1,
+/5, /6 e /7 — o contraste LIGHT (3 fases listadas) vs HIGH (5) é a prova do /5;
+/2 foi refinado por delta ao descobrir que contradizia /7 em fase interrompida.
+
+Skill `memory` fatiada em 2026-08-31 (nó `memory-fatiada`, MEDIUM, versão
+0.6.0): a skill mais chamada do framework (7 das 9 a invocam, 18 pontos de
+chamada) virou **roteador + references**. `SKILL.md` caiu de 226 para 143
+linhas (13.331 → 7.979 bytes, −40% por carga); `bootstrap`, `registrar-no`,
+`compactar` e `consultar-codigo` viraram um arquivo cada em
+`skills/memory/references/`, lidos UMA por operação; `carregar-contexto`,
+`registrar-delta` e `registrar-aprendizado` ficaram inline por serem quentes e
+curtos. Contrato das 7 operações preservado. Reference ausente avisa nomeando o
+arquivo e degrada sem travar a fase. **Medido, não estimado**: 66.655 → 46.841
+bytes de carga da skill por demanda MEDIUM (−29%, ~4.953 tokens) — a medição
+existe porque uma decisão viva de 2026-08-25 mandava medir se a travessia
+voltasse a doer. A suíte deixou de asserir por `cat` único e passou a asserir
+por **localização** (arquivo certo), com assert negativo provando que é
+movimento e não cópia; teto de 250 linhas estendido a `skills/*/references/` na
+Constituição. Suíte 295 → 334 asserts. e2e em sessão real 0.6.0 fechou 8 dos 9
+critérios; o /2 foi refinado por delta ao descobrir que o protocolo de
+`consultar-codigo` encadeia `bootstrap` legitimamente.
+
+Skill `worktree` entregue em 2026-08-27 (nó `skill-worktree`, MEDIUM, versão
+0.5.0): nona skill, isolamento de demanda em git worktree sob pedido
+explícito, fan-out de N agentes com domínios de arquivo não-sobrepostos, e
+integração em série. Orquestra o worktree nativo do harness
+(`EnterWorktree`/`ExitWorktree`) em vez de embarcar plumbing de git. Portão
+humano obrigatório na remoção; as checagens de "pode apagar?" cobrem sujo,
+não integrado, ignorado copiado no preparo e junction apontando para fora —
+as duas últimas vieram de verificação empírica (`git worktree remove` apaga o
+alvo através de junction e não é bloqueado por arquivo ignorado). Suíte em 295
+asserts; e2e em `docs/audora/e2e/e2e-skill-worktree.md`. (Skill removida na
+0.11.0, `corte-sem-uso`: 2 invocações medidas.)
+
+v0.1.0 implementada (2026-08-14) — oito skills (sete originais + a skill de debug
+em 2026-08-15), hook SessionStart, templates canônicos, marketplace local, README
+com checklist, memória do produto do próprio repo (dogfooding). Verificações
+estruturais e de JSON verdes.
+
+Nó `skill-depurar` entregue em 2026-08-15: a skill de debug (hoje `debug`) foi testada com
+uma caçada de defeitos real no próprio repositório
+(`docs/audora/depuracao/cacada-2026-08-15.md`), que confirmou e corrigiu 6
+divergências de documentação viva (contagem de skills desatualizada em
+PRD/memória/spec, referências e placeholders inconsistentes entre skills e
+templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.
+Aguardando validação de instalação pelo usuário em sessão interativa
+(checklist no README).
+
+Comandos em inglês entregues em 2026-08-25 (nó `comandos-ingles`, HIGH,
+versão 0.3.0, breaking): skills renomeadas por `git mv` para `graph, scope,
+plan, execute, e2e, validate, debug`; categorias de risco LIGHT / MEDIUM /
+HIGH / HOTFIX; enum de estado dos nós `planned | in-progress | blocked |
+delivered | discarded` (+ `hotfix-pending-record`), com migração TOTAL dos
+estados de um projeto na primeira escrita pela skill `graph` (tabela PT→EN em
+`templates/no-template.md`) e leitura tolerante até lá; o hook de validação
+da memória passou a acusar estado fora do enum na coluna do índice, linha sem
+coluna de estado, e a citar o caminho absoluto de `templates/` do plugin;
+READMEs com seção "Renamed in 0.3.0" (comandos, categorias, estados); prosa do
+framework segue em português (`docs/fundamentos.md` só foi alinhado aos nomes atuais na 0.8.0). Corrigido de quebra um bug pré-existente: `description` do
+frontmatter sem aspas quebrava `claude plugin validate` (skill carregava com
+metadata vazia). Duas rodadas adversariais (plano e diff, 57 agentes, 43
+achados confirmados e integrados); e2e real com sessão `claude -p` listando
+as oito skills EN e o ponteiro do hook; este repositório migrado (dogfood).
+(Migração PT→EN e nomes da 0.3.0 foram substituídos pelo corte seco da 0.4.0.)
+
+Memória do produto v2 entregue em 2026-08-25 (nó arquivado em
+`docs/audora/arquivo/2026-08-25-*`, HIGH, versão 0.2.0): redesenho a partir
+de estudo de mercado multi-agente (2026-08-24, em `docs/specs/`) — índice
+mestre + 1 nó = 1 arquivo (Candidato C), travessia por grep no frontmatter,
+critérios EARS numerados e citáveis (`<id>/<n>`) em
+teste/commit/e2e/roteiro, decisões vivas promovidas no sync, arquivamento
+por movimento, migração gradual com compat v1 permanente, e hooks de
+validação com degradação graciosa. Este repositório foi o primeiro projeto
+migrado (dogfooding). Revisão adversarial de 3 lentes encontrou 20 furos
+antes do portão (wrapper cmd engolindo exit code, CRLF em Linux, contagem de
+critérios), todos corrigidos e re-testados. Benchmark de tokens foi pulado
+por decisão humana — corte de 65-70% é estimativa. (A compat v1 foi removida
+na 0.4.0.)
+
+Skill e2e evoluída em 2026-08-24 (nó `e2e-playwright-docker`): Playwright
+como ferramenta default para projetos web (não-web pergunta ao usuário, com
+escolha registrada na Constituição do projeto-alvo); docker compose como
+infra default do teste (compose existente usado, ausente é gerado pela
+stack via `templates/e2e-infra-template.md`, Docker indisponível cai para o
+como-rodar com aviso); artefatos de e2e versionados no projeto-alvo como
+regressão reaproveitável; falha de infra nunca segue parcial; teardown
+sempre.
+
+Documentação bilíngue entregue em 2026-08-24 (nó `docs-bilingues`): README.md
+principal em inglês na raiz + README.pt-BR.md em português, com links
+cruzados no topo. Comandos e blocos de código idênticos entre os dois;
+exceção de idioma registrada na Constituição do MEMORY (README em inglês,
+demais docs do repositório seguem em português).
+
+Instalador adicionado em 2026-08-16: `install.sh` (bash) + `install.cmd`
+(wrapper polyglot Windows, mesmo padrão de `hooks/run-hook.cmd`) automatizam
+`claude plugin marketplace add` + `claude plugin install` via CLI
+não-interativa, dispensando sessão interativa para o passo de instalação em
+si. Testados de ponta a ponta neste repositório (idempotentes). README
+reorganizado com seção "Para que serve", pré-requisitos e instalação
+automática (recomendada) vs. manual.
+
+<!-- Regras (skill validate, sync):
+1. Linha nova entra no FIM de `## Entregas`; linha antiga nunca é editada.
+2. Versão ausente no projeto → `—`.
+3. O caminho aponta o nó arquivado (o sync escreve a linha depois do
+   `git mv`).
+4. Consulta: `grep -i '<termo>' CHANGELOG.md`. -->

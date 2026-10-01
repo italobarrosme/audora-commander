@@ -107,7 +107,7 @@ time pequeno em projetos web/mobile/api.
 - remover-graphify | delivered | Remover Graphify → docs/audora/arquivo/2026-09-29-remover-graphify.md
 - corte-sem-uso | delivered | Corte do sem uso → docs/audora/arquivo/2026-09-30-corte-sem-uso.md
 - plano-mapa | delivered | Plano-mapa + localização → docs/audora/arquivo/2026-10-01-plano-mapa.md
-- prd-foto | in-progress | PRD-foto | PRD.md vira foto do estado atual (o que é, stack, arquitetura, metas abertas) com teto de tamanho; histórico de entregas sai para CHANGELOG.md em 1 linha por demanda | prd, foto, changelog, sync, teto, contexto, tokens | PRD.md, skills/validate/
+- prd-foto | delivered | PRD-foto → docs/audora/arquivo/2026-10-01-prd-foto.md
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/

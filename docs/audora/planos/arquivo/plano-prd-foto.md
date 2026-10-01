@@ -222,9 +222,9 @@ Tarefa 6.**
 - **ler**: `PRD.md` por seção (1-104, 561-596; 105-560 só pelo `awk` acima), `templates/changelog-template.md`
 - **done quando**: caso verde, `tests/test-docs.sh` verde (PRD ainda cita `MEMORY.md`, `memory-guard`, `memory-validate`, `tests/`), suíte `0`.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/8 dogfood" (PRD com 596 linhas)
-- [ ] **green** — conversão feita; `bash tests/test-prd-foto.sh` passa; `diff` de literalidade vazio; suíte `0`
-- [ ] **commit** — junto do commit do sync: `git add PRD.md CHANGELOG.md tests/test-prd-foto.sh <arquivos do sync>`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/8 dogfood" (PRD com 596 linhas)
+- [x] **green** — conversão feita; `bash tests/test-prd-foto.sh` passa; `diff` de literalidade vazio; suíte `0`
+- [x] **commit** — junto do commit do sync: `git add PRD.md CHANGELOG.md tests/test-prd-foto.sh <arquivos do sync>`
 
 ## Tarefa 8: medição antes × depois (validate)
 

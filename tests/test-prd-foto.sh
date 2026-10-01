@@ -114,4 +114,20 @@ for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.12.0"' "prd-foto/10 $j sem 0.12.0"
 done
 
+# --- /8 — dogfood: PRD.md do plugin é foto; histórico literal no CHANGELOG.md ---
+[ "$(awk 'END{print NR}' PRD.md)" -le 200 ] && ok || ko "prd-foto/8 PRD.md do plugin com até 200 linhas"
+pr="$(tr -d '\r' < PRD.md)"
+assert_not_contains "$pr" '## Estado atual' "prd-foto/8 PRD sem histórico de entregas"
+assert_not_contains "$pr" 'PRD como foto' "prd-foto/3 meta entregue saiu das metas futuras"
+assert_file CHANGELOG.md "prd-foto/8 CHANGELOG.md existe"
+cl="$( { tr -d '\r' < CHANGELOG.md; } 2>/dev/null)"
+assert_contains "$cl" '## Histórico até 2026-' "prd-foto/8 CHANGELOG com o histórico movido"
+assert_contains "$cl" 'Plano-mapa entregue em 2026-10-01 (nó `plano-mapa`, MEDIUM, versão 0.12.0).' "prd-foto/8 histórico literal: plano-mapa"
+assert_contains "$cl" 'Corte do sem uso entregue em 2026-09-30' "prd-foto/8 histórico literal: corte-sem-uso"
+re='^- [0-9]{4}-[0-9]{2}-[0-9]{2} \| 0\.13\.0 \| prd-foto \| .+ → docs/audora/arquivo/[0-9]{4}-[0-9]{2}-[0-9]{2}-prd-foto\.md$'
+assert_eq 1 "$(printf '%s\n' "$cl" | grep -cE "$re")" "prd-foto/2,8 exatamente 1 linha da entrega prd-foto"
+alvo="$(printf '%s\n' "$cl" | grep -E "$re" | sed 's/.* → //')"
+assert_file "${alvo:-ausente}" "prd-foto/2,8 a linha aponta um nó arquivado que existe"
+run_hook memory-guard "$ROOT/PRD.md"; assert_eq 0 "$code" "prd-foto/8 hook aceita a foto"; assert_empty "$out" "prd-foto/8 foto em silêncio"
+
 report
