@@ -87,4 +87,20 @@ for s in 'Ressalva aceita no portão' 'Candidato a nó: ressalvas do `<id>` acei
   assert_contains "$sy" "$s" "parada-revisao/8 sync"
 done
 
+# --- docs — READMEs e fundamentos descrevem a parada (/1, /3, /4, /5) ---
+en="$(flat README.md)"
+for s in 'blocks only on proven findings of three classes' 'the rest becomes a one-line caveat' \
+  'one full pass plus a re-check of the fixed blockers'; do
+  assert_contains "$en" "$s" "parada-revisao docs README EN"
+done
+pt="$(flat README.pt-BR.md)"
+for s in 'bloqueia só achado provado de 3 classes' 'o resto vira ressalva de 1 linha' \
+  '1 passagem completa mais a reverificação dos bloqueantes corrigidos'; do
+  assert_contains "$pt" "$s" "parada-revisao docs README PT"
+done
+fu="$(flat docs/fundamentos.md)"
+for s in 'bloqueia só achado provado de 3 classes (alheio, critério, formato real)' 'nunca uma 3ª passagem'; do
+  assert_contains "$fu" "$s" "parada-revisao docs fundamentos"
+done
+
 report

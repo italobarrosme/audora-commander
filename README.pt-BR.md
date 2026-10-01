@@ -236,7 +236,11 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   o roteiro de validação: comportamento, diff de teste separado, decisões vivas
   propostas (filtro de entrada em `references/decisoes-vivas.md`) e, em
   HIGH, sumário por arquivo mais revisão adversarial por subagente de
-  contexto limpo. Efeito
+  contexto limpo (`references/revisao-adversarial.md`). A revisão bloqueia
+  só achado provado de 3 classes — mexe em coisa fora da demanda, viola
+  critério de aceite, falha com entrada real; o resto vira ressalva de 1
+  linha — e para depois de 1 passagem completa mais a reverificação dos
+  bloqueantes corrigidos. Efeito
   irreversível fora do repo nunca é disparado pela IA. Depois da aprovação,
   quando o trabalho entra na main, roda o sync de `references/sync.md`:
   consolida o delta, promove decisões vivas e aprendizados, nó →

@@ -235,7 +235,12 @@ Details per skill: [Skills in detail](#skills-in-detail).
   builds the validation script: behavior, test diff shown separately,
   proposed durable decisions (entry filter in
   `references/decisoes-vivas.md`), and for HIGH a per-file summary plus an
-  adversarial review by a clean-context subagent. Irreversible
+  adversarial review by a clean-context subagent
+  (`references/revisao-adversarial.md`). The review blocks only on proven
+  findings of three classes — touches something outside the demand, breaks
+  an acceptance criterion, fails on real input; the rest becomes a one-line
+  caveat — and stops after one full pass plus a re-check of the fixed
+  blockers. Irreversible
   effects outside the repo are never fired by the AI. After approval, when
   the work lands on main, runs the sync in `references/sync.md`: consolidate
   the delta, promote durable decisions and learnings, node → `delivered`,

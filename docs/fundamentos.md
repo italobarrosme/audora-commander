@@ -220,7 +220,11 @@ Regras:
 5. **Revisão adversarial por subagente** (inspirado em Superpowers/Anthropic):
    em categoria HIGH, antes do portão final, subagente de contexto limpo ataca o
    diff contra os critérios de aceite e devolve resumo condensado. Revisor sem
-   viés de autor pega o que o autor não vê.
+   viés de autor pega o que o autor não vê. Critério de parada: bloqueia só
+   achado provado de 3 classes (alheio, critério, formato real); o resto vira
+   ressalva de 1 linha no roteiro. Uma passagem completa e, havendo
+   bloqueante corrigido, uma reverificação restrita a ele — nunca uma 3ª
+   passagem. Caçar borda teórica a cada rodada não converge.
 6. **Fluxo de reprovação definido**: nó permanece `in-progress` +
    `feedback-reprovacao`; motivo de escopo → fase scope; motivo de execução →
    fase plan da etapa afetada. Aprovação parcial: o aceito segue o sync, o
