@@ -55,10 +55,19 @@ dogfood (meta 5 sai do `PRD.md`, arquitetura cita a reference nova, linha do
 4. A validate confere a prova do bloqueante antes de aceitá-la (roda o comando, abre o trecho); prova que não se sustenta rebaixa a ressalva — resposta de subagente é pista.
 5. O despacho na reference repete a decisão viva `remover-graphify` (efeito fora do repo → executáveis falsos, dito no prompt).
 6. Teste próprio `tests/test-parada-revisao.sh` com o helper `flat` copiado de `tests/test-prd-foto.sh:7-13`.
+7. (execute) A meta do sync é asserida sem as crases externas — `Candidato a nó: ressalvas do `<id>` aceitas no portão.` — e escrita entre aspas no `sync.md`: crase dentro de crase quebra o inline code; o texto da meta é o das metas 4 e 6 do `PRD.md`.
+8. (execute) A reverificação também é registrada nas Notas de sessão do plano: validate que acha passagem 1 + reverificação não revisa de novo (sustenta /5 entre sessões).
 
 ## Notas de sessão
 
 <!-- Despejar aqui ANTES de /clear no meio da demanda. -->
+
+- 2026-10-01 execute — base antes da demanda: suíte exit 0, 761 asserts.
+- Tarefa 1 (`ed08926`): red 20 FAIL (reference ausente, roteador sem ponteiro); green 27/27; carga BASE 47773 → 47723, FULL 55182 → 55132; roteador 6139 → 6089 bytes; suíte exit 0, 789 asserts (+27 do teste novo, +1 do loop de references de `test-skills.sh`); `GATE: passou` antes do commit.
+- Tarefa 2: red 13 FAIL (seções `## Parada` e `## No roteiro` ausentes); green 40/40; reference 65 linhas; suíte exit 0, 802 asserts (+13); `GATE: passou` antes do commit.
+- Tarefa 3: red 4 FAIL (seção do portão e bullet do sync ausentes); green 48/48; carga BASE 47723 / FULL 55182 → 55350 (registrado em `tests/test-carga.sh:6`); suíte exit 0, 810 asserts (+8); `GATE: passou` antes do commit.
+- Tarefa 4: red 8 FAIL (frases ausentes nos 3 docs); green 56/56, `test-docs.sh` 158/158; suíte exit 0, 818 asserts (+8); `GATE: passou` antes do commit.
+- Tarefa 5: red 5 FAIL (manifests em 0.13.0; 4 testes com assert positivo de 0.13.0); green 61/61; 4 asserts trocados um por um (rótulo "substitui prd-foto/10"); suíte exit 0, 823 asserts = 761 + 61 do teste novo + 1 do loop de references, sem queda; `GATE: passou` antes do commit.
 
 ---
 
@@ -84,9 +93,9 @@ dogfood (meta 5 sai do `PRD.md`, arquitetura cita a reference nova, linha do
 - **ler**: `skills/validate/SKILL.md:18-33,49-66`, `skills/validate/references/decisoes-vivas.md:1-4`, `tests/test-prd-foto.sh:1-13`, `tests/test-carga.sh:1-22`
 - **done quando**: casos verdes; `tests/test-skills.sh` e `tests/test-carga.sh` verdes sem mexer nos asserts deles.
 
-- [ ] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/1", "/2", "/3" (reference ausente) e "/9" (roteador sem ponteiro)
-- [ ] **green** — `bash tests/test-parada-revisao.sh; bash tests/test-skills.sh; bash tests/test-carga.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` ANTES do commit (asserts somados nas Notas de sessão)
-- [ ] **commit** — `git add skills/validate/references/revisao-adversarial.md skills/validate/SKILL.md tests/test-parada-revisao.sh && git commit -m "feat(parada-revisao/1,2,3,9): revisão adversarial em reference HIGH — 3 classes com prova, resto é ressalva"`
+- [x] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/1", "/2", "/3" (reference ausente) e "/9" (roteador sem ponteiro)
+- [x] **green** — `bash tests/test-parada-revisao.sh; bash tests/test-skills.sh; bash tests/test-carga.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` ANTES do commit (asserts somados nas Notas de sessão)
+- [x] **commit** — `git add skills/validate/references/revisao-adversarial.md skills/validate/SKILL.md tests/test-parada-revisao.sh && git commit -m "feat(parada-revisao/1,2,3,9): revisão adversarial em reference HIGH — 3 classes com prova, resto é ressalva"`
 
 ## Tarefa 2: parada — reverificação restrita, sem 3ª passagem, roteiro e revisor indisponível
 
@@ -109,9 +118,9 @@ dogfood (meta 5 sai do `PRD.md`, arquitetura cita a reference nova, linha do
 - **ler**: `skills/validate/references/revisao-adversarial.md` (inteiro, < 60 linhas), `skills/validate/SKILL.md:69-75`
 - **done quando**: casos verdes; asserts da Tarefa 1 seguem verdes.
 
-- [ ] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/4", "/5", "/6", "/7"
-- [ ] **green** — `bash tests/test-parada-revisao.sh` passa; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
-- [ ] **commit** — `git add skills/validate/references/revisao-adversarial.md tests/test-parada-revisao.sh && git commit -m "feat(parada-revisao/4,5,6,7): 1 passagem + reverificação restrita, nunca 3ª; roteiro com passagens e revisor indisponível"`
+- [x] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/4", "/5", "/6", "/7"
+- [x] **green** — `bash tests/test-parada-revisao.sh` passa; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
+- [x] **commit** — `git add skills/validate/references/revisao-adversarial.md tests/test-parada-revisao.sh && git commit -m "feat(parada-revisao/4,5,6,7): 1 passagem + reverificação restrita, nunca 3ª; roteiro com passagens e revisor indisponível"`
 
 ## Tarefa 3: ressalva aceita vai ao nó e às metas do PRD
 
@@ -129,9 +138,9 @@ dogfood (meta 5 sai do `PRD.md`, arquitetura cita a reference nova, linha do
 - **ler**: `skills/validate/references/sync.md:34-51`, `PRD.md:122-140`
 - **done quando**: casos verdes; `tests/test-skills.sh`, `tests/test-carga.sh` e `tests/test-prd-foto.sh` verdes sem mexer nos asserts deles.
 
-- [ ] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/8 portão" e "/8 sync"
-- [ ] **green** — `bash tests/test-parada-revisao.sh; bash tests/test-carga.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
-- [ ] **commit** — `git add skills/validate/references/revisao-adversarial.md skills/validate/references/sync.md tests/test-carga.sh tests/test-parada-revisao.sh && git commit -m "feat(parada-revisao/8): ressalva aceita no portão vai ao nó e, no sync, às metas do PRD"`
+- [x] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/8 portão" e "/8 sync"
+- [x] **green** — `bash tests/test-parada-revisao.sh; bash tests/test-carga.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
+- [x] **commit** — `git add skills/validate/references/revisao-adversarial.md skills/validate/references/sync.md tests/test-carga.sh tests/test-parada-revisao.sh && git commit -m "feat(parada-revisao/8): ressalva aceita no portão vai ao nó e, no sync, às metas do PRD"`
 
 ## Tarefa 4: READMEs e fundamentos
 
@@ -148,9 +157,9 @@ dogfood (meta 5 sai do `PRD.md`, arquitetura cita a reference nova, linha do
 - **ler**: `README.md:230-245`, `README.pt-BR.md:232-245`, `docs/fundamentos.md:214-228`
 - **done quando**: caso verde; `tests/test-docs.sh` verde.
 
-- [ ] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao docs"
-- [ ] **green** — `bash tests/test-parada-revisao.sh; bash tests/test-docs.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
-- [ ] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-parada-revisao.sh && git commit -m "docs(parada-revisao/1,3,4,5): READMEs e fundamentos descrevem a parada da revisão adversarial"`
+- [x] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao docs"
+- [x] **green** — `bash tests/test-parada-revisao.sh; bash tests/test-docs.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
+- [x] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-parada-revisao.sh && git commit -m "docs(parada-revisao/1,3,4,5): READMEs e fundamentos descrevem a parada da revisão adversarial"`
 
 ## Tarefa 5: versão 0.14.0
 
@@ -164,9 +173,9 @@ dogfood (meta 5 sai do `PRD.md`, arquitetura cita a reference nova, linha do
 - **ler**: `.claude-plugin/plugin.json:1-8`, `.claude-plugin/marketplace.json:1-15`, `tests/test-docs.sh:1-10`, `tests/test-corte-sem-uso.sh:45-55`, `tests/test-plano-mapa.sh:72-83`, `tests/test-prd-foto.sh:108-116`
 - **done quando**: suíte `0`; total de asserts (soma de `PASS=`) = total antes da demanda + asserts novos de `tests/test-parada-revisao.sh`, sem queda.
 
-- [ ] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/10" (0.13.0)
-- [ ] **green** — `log=$(mktemp); bash tests/run.sh > "$log" 2>&1; echo $?` → `0`; `grep -o 'PASS=[0-9]*' "$log" | cut -d= -f2 | awk '{s+=$1} END{print s}'`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
-- [ ] **commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-plano-mapa.sh tests/test-prd-foto.sh tests/test-parada-revisao.sh && git commit -m "chore(parada-revisao/10): versão 0.14.0"`
+- [x] **red** — `bash tests/test-parada-revisao.sh` falha em "parada-revisao/10" (0.13.0)
+- [x] **green** — `log=$(mktemp); bash tests/run.sh > "$log" 2>&1; echo $?` → `0`; `grep -o 'PASS=[0-9]*' "$log" | cut -d= -f2 | awk '{s+=$1} END{print s}'`; `bash hooks/gate parada-revisao` → `GATE: passou` antes do commit
+- [x] **commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-plano-mapa.sh tests/test-prd-foto.sh tests/test-parada-revisao.sh && git commit -m "chore(parada-revisao/10): versão 0.14.0"`
 
 **Fim da execute.** No sync da validate (na `main`): meta 5 sai do `PRD.md`;
 a arquitetura da validate cita `revisao-adversarial.md` entre as references;
