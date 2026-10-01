@@ -37,3 +37,29 @@ critério) — prova que não se sustenta também é rebaixada a ressalva.
 
 Todo achado não bloqueante entra no roteiro como ressalva de 1 linha, sem
 voltar à execute e sem disparar nova passagem de revisão.
+
+## Parada
+
+Uma passagem completa e, no máximo, uma reverificação:
+
+1. **Passagem completa.** Sem bloqueante → a revisão termina. Com
+   bloqueante: cada bloqueante vira uma tarefa nova no plano (como na
+   aprovação parcial) e registre nas Notas de sessão do plano
+   `revisão adversarial: passagem 1` com cada bloqueante, sua classe e sua
+   prova. A correção é da execute: imprima `/clear` e `execute de <id>`.
+2. **Reverificação.** Na validate seguinte, Notas com a passagem 1 e as
+   tarefas dos bloqueantes concluídas → reverificação restrita: o revisor confere só aqueles achados contra o diff da correção, sem caçar achado novo.
+   Registre o resultado nas Notas de sessão do plano.
+3. **Fim.** Passagem completa e reverificação encerram a revisão — nunca uma
+   3ª passagem. O achado novo visto na reverificação entra como ressalva;
+   bloqueante ainda aberto e o que restar vai ao portão humano.
+
+## No roteiro
+
+Ao terminar, a revisão entra no roteiro com o nº de passagens (1, ou 1 +
+reverificação), cada bloqueante com classe, prova e estado (corrigido ou
+aberto) e as ressalvas, 1 linha cada.
+
+Subagente revisor que não pôde ser despachado ou falhou → 1 linha no
+roteiro: "revisão adversarial não rodou — <motivo>"; o portão segue com o
+humano revisando o diff.

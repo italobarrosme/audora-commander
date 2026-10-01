@@ -58,4 +58,23 @@ assert_eq 0 "$carga_code" "parada-revisao/9 test-carga.sh sai 0"
 base="$(printf '%s' "$carga_out" | grep -o 'base=[0-9]*' | cut -d= -f2)"
 [ -n "$base" ] && [ "$base" -le 47773 ] && ok || ko "parada-revisao/9 carga BASE '$base' > 47773"
 
+# --- /4 /5 — 1 passagem completa + reverificação restrita; nunca 3ª ---
+p="$(flat "$R" '## Parada')"
+for s in 'cada bloqueante vira uma tarefa nova no plano' 'registre nas Notas de sessão do plano' 'passagem 1' \
+  '`execute de <id>`' 'reverificação restrita: o revisor confere só aqueles achados contra o diff da correção, sem caçar achado novo'; do
+  assert_contains "$p" "$s" "parada-revisao/4 reverificação restrita"
+done
+for s in 'nunca uma 3ª passagem' 'achado novo visto na reverificação entra como ressalva' 'o que restar vai ao portão humano'; do
+  assert_contains "$p" "$s" "parada-revisao/5 sem 3ª passagem"
+done
+
+# --- /6 /7 — o que entra no roteiro; revisor indisponível não trava o portão ---
+q="$(flat "$R" '## No roteiro')"
+for s in 'nº de passagens' 'cada bloqueante com classe, prova e estado (corrigido ou aberto)' 'as ressalvas'; do
+  assert_contains "$q" "$s" "parada-revisao/6 roteiro"
+done
+for s in 'revisão adversarial não rodou' 'o portão segue com o humano revisando o diff'; do
+  assert_contains "$q" "$s" "parada-revisao/7 revisor indisponível"
+done
+
 report
