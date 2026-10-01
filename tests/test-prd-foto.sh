@@ -38,4 +38,17 @@ run_hook memory-guard "$d/OLDPRD.md"; assert_eq 0 "$code" "prd-foto/7 OLDPRD.md 
 rm -f "$d/PRD.md"
 run_hook memory-guard "$d/PRD.md"; assert_eq 0 "$code" "prd-foto/7 PRD.md inexistente → 0"; assert_empty "$out" "prd-foto/7 inexistente em silêncio"
 
+# --- /2 /4 — template do CHANGELOG: 1 linha por entrega + histórico literal ---
+ct="templates/changelog-template.md"
+assert_file "$ct" "prd-foto/2 template existe"
+cf="$(flat "$ct")"
+assert_contains "$cf" '# Changelog — <nome do projeto>' "prd-foto/2 template: título"
+assert_contains "$cf" 'Formato: `- AAAA-MM-DD | <versão ou —> | <id> | <1 frase> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`' "prd-foto/2 template: formato da linha"
+assert_contains "$cf" 'literal, sem reescrita' "prd-foto/4 template: histórico literal"
+le="$(tr -d '\r' 2>/dev/null < "$ct" | awk '$0=="## Entregas"{print NR; exit}')"
+lh="$(tr -d '\r' 2>/dev/null < "$ct" | awk '$0=="## Histórico até AAAA-MM-DD"{print NR; exit}')"
+[ -n "$le" ] && [ -n "$lh" ] && [ "$le" -lt "$lh" ] && ok || ko "prd-foto/2,4 template: ## Entregas ($le) antes de ## Histórico até AAAA-MM-DD ($lh)"
+ex="$(tr -d '\r' 2>/dev/null < "$ct" | grep -cE '^- [0-9]{4}-[0-9]{2}-[0-9]{2} \| [^|]+ \| [a-z0-9-]+ \| [^|]+ → docs/audora/arquivo/[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9-]+\.md$')"
+assert_eq 1 "$ex" "prd-foto/2 template: exatamente 1 linha de exemplo"
+
 report
