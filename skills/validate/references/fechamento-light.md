@@ -21,10 +21,12 @@ revisão, nunca tirar a revisão.
   ORDEM — julgamento, depois `delivered` + `git mv`, e só então `arquivos:`
   (a lista cita o caminho NOVO do nó, então o mv vem antes). Consolidar delta
   e promover decisões vivas rodam SOMENTE se houver delta ou decisão.
+  A linha do `CHANGELOG.md` entra sempre, também em LIGHT (passo 4 do
+  `sync.md`, depois do `git mv`).
 - **Plano**: LIGHT **não tem plano** para arquivar. Pule a etapa sem listá-la
   como pendência.
-- **PRD**: promova apenas se o ajuste alterar comportamento que o `PRD.md` já
-  descreve. Não alterando, registre no nó e diga em 1 linha que o PRD não
+- **PRD**: o `PRD.md` é foto — atualize a foto só se o ajuste mudar o que ela
+  descreve. Não mudando, registre no nó e diga em 1 linha que o PRD não
   mudou e por quê — silêncio sobre o PRD é proibido.
 
 HOTFIX não usa este caminho: tem o dele, com registro retroativo.

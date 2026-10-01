@@ -81,4 +81,12 @@ assert_contains "$vf" '`arquivos:` do diff real, PRD + CHANGELOG, HOTFIX' "prd-f
 assert_contains "$vf" '`PRD.md` atualizado e `CHANGELOG.md` com a linha da entrega' "prd-foto/2 validate: bloco Arquivos cita o CHANGELOG"
 [ "$(tr -d '\r' < skills/validate/SKILL.md | wc -c)" -lt 7700 ] && ok || ko "prd-foto/2 validate < 7700 bytes"
 
+# --- /2 /1 — LIGHT também ganha a linha do CHANGELOG; foto só se mudar ---
+fl="$(flat skills/validate/references/fechamento-light.md)"
+assert_contains "$fl" 'A linha do `CHANGELOG.md` entra sempre, também em LIGHT' "prd-foto/2 LIGHT: linha do CHANGELOG sempre"
+assert_contains "$fl" 'atualize a foto só se o ajuste mudar o que ela descreve' "prd-foto/1 LIGHT: foto só se mudar"
+for s in 'silêncio sobre o PRD é proibido' 'não tem plano' 'caminho percorrido pelo usuário' 'arquivos de teste separados'; do
+  assert_contains "$fl" "$s" "prd-foto/2 LIGHT mantém '$s'"
+done
+
 report
