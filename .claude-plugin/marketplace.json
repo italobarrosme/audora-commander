@@ -6,7 +6,7 @@
     {
       "name": "audora-commander",
       "description": "Framework de desenvolvimento assistido por IA: 5 princípios, MEMORY vivo, processo proporcional ao risco, TDD e portões humanos",
-      "version": "0.12.0",
+      "version": "0.13.0",
       "source": "./",
       "author": { "name": "Italo Barros", "email": "italobarros.me@gmail.com" }
     }

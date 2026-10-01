@@ -71,12 +71,12 @@ assert_contains "$en" 'Symptom mode locates code like `execute`' "plano-mapa/12 
 assert_contains "$pt" 'O modo sintoma localiza código como a `execute`' "plano-mapa/12 README PT: debug localiza como execute"
 assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é mapa"
 
-# --- /14 /15 — tetos de carga intactos; versão 0.12.0 ---
+# --- /14 /15 — teto BASE intacto (FULL: prd-foto/2); versão 0.13.0 (prd-foto/10) ---
 tc="$(tr -d '\r' < tests/test-carga.sh)"
 assert_contains "$tc" 'TETO_BASE=48000' "plano-mapa/14 teto BASE intacto"
 assert_contains "$tc" 'TETO_FULL=56900' "prd-foto/2 teto FULL 56900 — sync com CHANGELOG + template no FULL (substitui plano-mapa/14)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
-  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.12.0"' "plano-mapa/15 $j declara 0.12.0"
+  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.13.0"' "prd-foto/10 $j declara 0.13.0 (substitui plano-mapa/15)"
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.11.0"' "plano-mapa/15 $j sem 0.11.0"
 done
 
