@@ -240,6 +240,6 @@ Tarefa 6.**
 - **ler**: `docs/audora/decisoes-vivas.md` (linha 2026-10-01)
 - **done quando**: `## medicao` no nó arquivado com linhas, bytes e custo A × B.
 
-- [ ] **medir** — os dois `wc` e as duas rodadas, saída em arquivo
-- [ ] **registrar** — seção `## medicao` no nó arquivado
-- [ ] **commit** — `git add docs/audora/arquivo/*-prd-foto.md && git commit -m "docs(prd-foto/9): medição — PRD antes × foto, linhas, bytes e custo de leitura (n=1)"`
+- [x] **medir** — os dois `wc` e as duas rodadas, saída em arquivo
+- [x] **registrar** — seção `## medicao` no nó arquivado
+- [x] **commit** — `git add docs/audora/arquivo/*-prd-foto.md && git commit -m "docs(prd-foto/9): medição — PRD antes × foto, linhas, bytes e custo de leitura (n=1)"`
