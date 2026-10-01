@@ -63,6 +63,8 @@ Tarefa 6.**
 
 <!-- Despejar aqui ANTES de /clear no meio da demanda. -->
 
+- 2026-10-01 execute — Tarefas 1–6 verdes. Suíte base antes da demanda: exit 0, 681 asserts. `bash hooks/gate prd-foto` rodado ANTES de cada commit, todos `GATE: passou` (exit 0), asserts somados: T1 698 · T2 704 · T3 728 · T4 734 · T5 746 · T6 750 (= 681 + 68 de `tests/test-prd-foto.sh` + 1 de `tests/test-carga.sh`), sem queda. Commits: 9ba9cd4, 27df937, 4f67eca, 5c505f6, bb2e882, 4748680. Asserts substituídos (um por um, rótulo "substitui"): `TETO_FULL` em `tests/test-plano-mapa.sh` (plano-mapa/14 → prd-foto/2); versão 0.12.0 → 0.13.0 em `tests/test-docs.sh`, `tests/test-corte-sem-uso.sh`, `tests/test-plano-mapa.sh` (plano-mapa/15 → prd-foto/10).
+
 ---
 
 ## Tarefa 1: hook cobra o teto do PRD
@@ -90,9 +92,9 @@ Tarefa 6.**
 - **ler**: `hooks/memory-guard:1-35`, `tests/lib.sh:16-21`, `tests/test-memory-guard.sh:1-17`
 - **done quando**: `tests/test-prd-foto.sh` verde, `tests/test-memory-guard.sh` intacto e verde.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha nos casos de exit 2 (hook atual sai 0 para PRD)
-- [ ] **green** — `bash tests/test-prd-foto.sh` passa; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate prd-foto` verde
-- [ ] **commit** — `git add hooks/memory-guard tests/test-prd-foto.sh && git commit -m "feat(prd-foto/5,6,7): memory-guard cobra o teto de 200 linhas do PRD.md da raiz"`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha nos casos de exit 2 (hook atual sai 0 para PRD)
+- [x] **green** — `bash tests/test-prd-foto.sh` passa; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate prd-foto` verde
+- [x] **commit** — `git add hooks/memory-guard tests/test-prd-foto.sh && git commit -m "feat(prd-foto/5,6,7): memory-guard cobra o teto de 200 linhas do PRD.md da raiz"`
 
 ## Tarefa 2: template do CHANGELOG
 
@@ -113,9 +115,9 @@ Tarefa 6.**
 - **ler**: `templates/decisoes-vivas-template.md:1-16`
 - **done quando**: template existe e o caso passa.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/2 template" (arquivo ausente)
-- [ ] **green** — `bash tests/test-prd-foto.sh` passa; suíte `0`; gate verde
-- [ ] **commit** — `git add templates/changelog-template.md tests/test-prd-foto.sh && git commit -m "feat(prd-foto/2,4): template do CHANGELOG — 1 linha por entrega e histórico literal"`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/2 template" (arquivo ausente)
+- [x] **green** — `bash tests/test-prd-foto.sh` passa; suíte `0`; gate verde
+- [x] **commit** — `git add templates/changelog-template.md tests/test-prd-foto.sh && git commit -m "feat(prd-foto/2,4): template do CHANGELOG — 1 linha por entrega e histórico literal"`
 
 ## Tarefa 3: sync escreve foto + CHANGELOG
 
@@ -141,9 +143,9 @@ Tarefa 6.**
 - **ler**: `skills/validate/references/sync.md:1-38`, `skills/memory/references/compactar.md:24-29`, `skills/validate/SKILL.md:72-80,96-105`
 - **done quando**: casos verdes e `tests/test-skills.sh` verde sem mexer nos asserts dele.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha nos casos /1–/4 do sync
-- [ ] **green** — `bash tests/test-prd-foto.sh` e `bash tests/test-skills.sh` passam; suíte `0`; gate verde
-- [ ] **commit** — `git add skills/validate/references/sync.md skills/memory/references/compactar.md skills/validate/SKILL.md tests/test-prd-foto.sh && git commit -m "feat(prd-foto/1,2,3,4): sync atualiza a foto do PRD e acrescenta 1 linha ao CHANGELOG"`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha nos casos /1–/4 do sync
+- [x] **green** — `bash tests/test-prd-foto.sh` e `bash tests/test-skills.sh` passam; suíte `0`; gate verde
+- [x] **commit** — `git add skills/validate/references/sync.md skills/memory/references/compactar.md skills/validate/SKILL.md tests/test-prd-foto.sh && git commit -m "feat(prd-foto/1,2,3,4): sync atualiza a foto do PRD e acrescenta 1 linha ao CHANGELOG"`
 
 ## Tarefa 4: LIGHT também ganha a linha
 
@@ -160,9 +162,9 @@ Tarefa 6.**
 - **ler**: `skills/validate/references/fechamento-light.md:1-30`
 - **done quando**: caso verde; `tests/test-skills.sh` e `tests/test-gate.sh` verdes.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/2 LIGHT"
-- [ ] **green** — `bash tests/test-prd-foto.sh` passa; suíte `0`; gate verde
-- [ ] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-prd-foto.sh && git commit -m "feat(prd-foto/2): LIGHT também acrescenta a linha do CHANGELOG"`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/2 LIGHT"
+- [x] **green** — `bash tests/test-prd-foto.sh` passa; suíte `0`; gate verde
+- [x] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-prd-foto.sh && git commit -m "feat(prd-foto/2): LIGHT também acrescenta a linha do CHANGELOG"`
 
 ## Tarefa 5: READMEs e fundamentos
 
@@ -179,9 +181,9 @@ Tarefa 6.**
 - **ler**: `README.md:94-100,130-150,229-250,276-290`, `README.pt-BR.md:94-100,138-142,238-249,283-287`, `docs/fundamentos.md:50-58,258-266`
 - **done quando**: caso verde; `tests/test-docs.sh` verde.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto docs"
-- [ ] **green** — `bash tests/test-prd-foto.sh` e `bash tests/test-docs.sh` passam; suíte `0`; gate verde
-- [ ] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-prd-foto.sh && git commit -m "docs(prd-foto/1,2,5): READMEs e fundamentos descrevem a foto do PRD e o CHANGELOG"`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto docs"
+- [x] **green** — `bash tests/test-prd-foto.sh` e `bash tests/test-docs.sh` passam; suíte `0`; gate verde
+- [x] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-prd-foto.sh && git commit -m "docs(prd-foto/1,2,5): READMEs e fundamentos descrevem a foto do PRD e o CHANGELOG"`
 
 ## Tarefa 6: versão 0.13.0 e carga
 
@@ -197,9 +199,9 @@ Tarefa 6.**
 - **ler**: `.claude-plugin/plugin.json:1-8`, `.claude-plugin/marketplace.json:1-15`, `tests/test-carga.sh:1-22`, `tests/test-corte-sem-uso.sh:45-55`, `tests/test-plano-mapa.sh:74-83`, `tests/test-docs.sh:1-10`
 - **done quando**: suíte `0`, total de asserts (soma de `PASS=` da saída) = antes + asserts novos, sem queda.
 
-- [ ] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/10" (0.12.0)
-- [ ] **green** — `log=$(mktemp); bash tests/run.sh > "$log" 2>&1; echo $?` → `0`; `grep -o 'PASS=[0-9]*' "$log" | cut -d= -f2 | awk '{s+=$1} END{print s}'`; gate verde
-- [ ] **commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-plano-mapa.sh tests/test-carga.sh tests/test-prd-foto.sh && git commit -m "chore(prd-foto/10): versão 0.13.0; carga BASE/FULL medida"`
+- [x] **red** — `bash tests/test-prd-foto.sh` falha em "prd-foto/10" (0.12.0)
+- [x] **green** — `log=$(mktemp); bash tests/run.sh > "$log" 2>&1; echo $?` → `0`; `grep -o 'PASS=[0-9]*' "$log" | cut -d= -f2 | awk '{s+=$1} END{print s}'`; gate verde
+- [x] **commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-plano-mapa.sh tests/test-carga.sh tests/test-prd-foto.sh && git commit -m "chore(prd-foto/10): versão 0.13.0; carga BASE/FULL medida"`
 
 **Fim da execute.** Tarefas 7 e 8 são da validate.
 
