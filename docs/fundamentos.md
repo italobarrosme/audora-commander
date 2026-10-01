@@ -51,8 +51,11 @@ Regras:
    mudanças de requisito são registradas como delta no nó (`ADICIONADO` /
    `MODIFICADO` / `REMOVIDO`). No sync pós-merge, a skill validate consolida o
    delta no corpo, promove decisões duráveis a `docs/audora/decisoes-vivas.md`,
-   marca o nó `delivered`, arquiva por `git mv` em `docs/audora/arquivo/` e
-   promove o resumo ao PRD.md. Direção única MEMORY → PRD.
+   marca o nó `delivered`, arquiva por `git mv` em `docs/audora/arquivo/`,
+   atualiza a foto do PRD.md e acrescenta 1 linha ao CHANGELOG.md. O PRD.md
+   é foto do estado atual (o que é, stack, arquitetura, metas futuras), com
+   teto de 200 linhas cobrado pelo hook `memory-guard`; o histórico de
+   entregas mora no CHANGELOG.md. Direção única MEMORY → PRD.
 6. **Anti-alucinação com dois tipos de decisão** (resolve conflito com P5):
    - *Requisito de produto* (afeta comportamento observável ou critério de
      aceite) → perguntar ao humano ANTES; registrar resposta no nó.
@@ -260,7 +263,8 @@ Regras:
 
 - **Git**: 1 demanda = 1 branch. Commit ao fim de cada etapa com teste verde
   (checkpoint de rollback barato). A skill validate roda no merge: estado do
-  nó, sync de delta, promoção ao PRD, arquivamento do nó e do plano.
+  nó, sync de delta, foto do PRD + linha do CHANGELOG, arquivamento do nó e
+  do plano.
 - **Falha irrecuperável de etapa**: parar; nó → `blocked` + diagnóstico
   registrado; humano escolhe: reverter branch, replanejar do último checkpoint,
   ou abandonar (nó → `discarded` com motivo).

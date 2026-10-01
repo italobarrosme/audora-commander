@@ -96,7 +96,7 @@ checklist" further down in this README.
 | `plan` | The just-in-time "How" phase: a plan file with self-sufficient tasks |
 | `execute` | Red-green TDD with real evidence; commit per green step |
 | `e2e` | Boots the project and exercises the demand end to end (optional, strongly recommended) |
-| `validate` | Final human gate: evidence mapped 1:1 to criteria, MEMORY → PRD sync |
+| `validate` | Final human gate: evidence mapped 1:1 to criteria, MEMORY → PRD snapshot sync, one line in `CHANGELOG.md` |
 | `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
 
 Details per skill: [Skills in detail](#skills-in-detail).
@@ -137,7 +137,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   (index + only the nodes the demand touches; grep for structural queries);
   whatever is already loaded in the session is not read again. The bootstrap
   offers to generate the mechanical gate — once; a refusal sticks. Hooks
-  `memory-guard` (line ceilings) and `memory-validate` (schema, index ↔
+  `memory-guard` (line ceilings, including a root `PRD.md` over 200 lines)
+  and `memory-validate` (schema, index ↔
   folder, enum, cycles, state in each node file) block broken writes.
 - **What it leaves on disk**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
   `docs/audora/decisoes-vivas.md`, archived nodes in `docs/audora/arquivo/`
@@ -238,13 +239,16 @@ Details per skill: [Skills in detail](#skills-in-detail).
   effects outside the repo are never fired by the AI. After approval, when
   the work lands on main, runs the sync in `references/sync.md`: consolidate
   the delta, promote durable decisions and learnings, node → `delivered`,
-  `git mv` to the archive, `arquivos:` from the real diff, summary promoted
-  to `PRD.md`. LIGHT closes through the short path in
+  `git mv` to the archive, `arquivos:` from the real diff, the `PRD.md`
+  snapshot updated (what it is, stack, architecture, future goals — no
+  delivery history) and one line appended to `CHANGELOG.md`; a `PRD.md`
+  that still carries history has it moved, verbatim, to the changelog.
+  LIGHT closes through the short path in
   `references/fechamento-light.md`. A missing reference keeps the gate and
   skips the sync.
 - **What it leaves on disk**: archived node
   `docs/audora/arquivo/AAAA-MM-DD-<id>.md`, archived plan,
-  `docs/audora/decisoes-vivas.md`, updated `PRD.md`.
+  `docs/audora/decisoes-vivas.md`, updated `PRD.md`, `CHANGELOG.md`.
 - **Human gates**: the final gate, in every category
   (approve, reject or approve in part).
 - **Next**: none — the demand ends; a new one starts at `audora-commander`.
@@ -280,8 +284,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
 6. `validate` offers `e2e` (recommended): the project boots, the criteria are
    exercised for real, and a report lands in `docs/audora/e2e/`.
 7. Final gate: a validation script with evidence per criterion. You approve;
-   the MEMORY syncs (decisions, learnings, archive) and PRD.md receives the
-   summary.
+   the MEMORY syncs (decisions, learnings, archive), the PRD.md snapshot is
+   refreshed and CHANGELOG.md gets one line for the delivery.
 
 ## Reducing permission prompts
 

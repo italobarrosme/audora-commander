@@ -89,4 +89,23 @@ for s in 'silêncio sobre o PRD é proibido' 'não tem plano' 'caminho percorrid
   assert_contains "$fl" "$s" "prd-foto/2 LIGHT mantém '$s'"
 done
 
+# --- docs de /1 /2 /5 — READMEs e fundamentos descrevem a foto e o CHANGELOG ---
+en="$(flat README.md)"
+for s in 'the `PRD.md` snapshot updated' 'one line appended to `CHANGELOG.md`' '`PRD.md` over 200 lines'; do
+  assert_contains "$en" "$s" "prd-foto docs README EN: '$s'"
+done
+for s in 'summary promoted to `PRD.md`' 'receives the summary'; do
+  assert_not_contains "$en" "$s" "prd-foto docs README EN sem '$s'"
+done
+pt="$(flat README.pt-BR.md)"
+for s in 'foto do `PRD.md` atualizada' 'uma linha acrescentada ao `CHANGELOG.md`' '`PRD.md` acima de 200 linhas'; do
+  assert_contains "$pt" "$s" "prd-foto docs README PT: '$s'"
+done
+for s in 'resumo promovido ao `PRD.md`' 'PRD.md recebe o resumo'; do
+  assert_not_contains "$pt" "$s" "prd-foto docs README PT sem '$s'"
+done
+fu="$(flat docs/fundamentos.md)"
+assert_contains "$fu" 'atualiza a foto do PRD.md e acrescenta 1 linha ao CHANGELOG.md' "prd-foto docs fundamentos P5"
+assert_not_contains "$fu" 'promove o resumo ao PRD.md' "prd-foto docs fundamentos sem o resumo antigo"
+
 report

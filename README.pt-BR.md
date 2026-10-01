@@ -96,7 +96,7 @@ da instalação" mais abaixo neste README.
 | `plan` | Fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes |
 | `execute` | TDD red-green com evidência real; commit por etapa verde |
 | `e2e` | Levanta o projeto e exercita a demanda de ponta a ponta (opcional, fortemente recomendada) |
-| `validate` | Portão humano final: evidência 1:1 com critérios, sync MEMORY → PRD |
+| `validate` | Portão humano final: evidência 1:1 com critérios, sync MEMORY → foto do PRD, uma linha no `CHANGELOG.md` |
 | `debug` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
 
 Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
@@ -137,7 +137,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   (índice + só os nós que a demanda toca; grep para consulta estrutural); o
   que já foi carregado na sessão não é relido. O bootstrap oferece gerar
   o gate mecânico — uma vez; recusa fica registrada. Os hooks
-  `memory-guard` (tetos de linhas) e `memory-validate` (schema, índice ↔
+  `memory-guard` (tetos de linhas, inclusive o da raiz: `PRD.md` acima de
+  200 linhas) e `memory-validate` (schema, índice ↔
   pasta, enum, ciclos, estado em cada arquivo de nó) bloqueiam escrita
   quebrada.
 - **O que deixa no disco**: `MEMORY.md`, `docs/audora/memory/<id>.md`,
@@ -239,13 +240,16 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   irreversível fora do repo nunca é disparado pela IA. Depois da aprovação,
   quando o trabalho entra na main, roda o sync de `references/sync.md`:
   consolida o delta, promove decisões vivas e aprendizados, nó →
-  `delivered`, `git mv` para o arquivo, `arquivos:` do diff real, resumo
-  promovido ao `PRD.md`. LIGHT fecha pelo caminho curto de
+  `delivered`, `git mv` para o arquivo, `arquivos:` do diff real, foto do
+  `PRD.md` atualizada (o que é, stack, arquitetura, metas futuras — sem
+  histórico de entregas) e uma linha acrescentada ao `CHANGELOG.md`; `PRD.md`
+  que ainda carrega histórico tem o histórico movido, literal, para o
+  changelog. LIGHT fecha pelo caminho curto de
   `references/fechamento-light.md`. Reference ausente mantém o portão e não
   roda o sync.
 - **O que deixa no disco**: nó arquivado
   `docs/audora/arquivo/AAAA-MM-DD-<id>.md`, plano arquivado,
-  `docs/audora/decisoes-vivas.md`, `PRD.md` atualizado.
+  `docs/audora/decisoes-vivas.md`, `PRD.md` atualizado, `CHANGELOG.md`.
 - **Portões humanos**: o portão final, em toda categoria
   (aprovar, reprovar ou aprovar em parte).
 - **Próxima**: nenhuma — a demanda termina; a próxima começa em
@@ -282,8 +286,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 6. `validate` oferece o `e2e` (recomendado): projeto sobe, critérios são
    exercitados de verdade, relatório sai em `docs/audora/e2e/`.
 7. Portão final: roteiro de validação com evidência por critério. Você aprova;
-   o MEMORY sincroniza (decisões, aprendizados, arquivo) e PRD.md recebe o
-   resumo.
+   o MEMORY sincroniza (decisões, aprendizados, arquivo), a foto do PRD.md é
+   atualizada e o CHANGELOG.md ganha uma linha da entrega.
 
 ## Reduzindo prompts de permissão
 
