@@ -1,0 +1,63 @@
+---
+id: prd-foto
+estado: in-progress
+origem: humano
+depende-de: []
+arquivos: []
+keywords: [prd, foto, changelog, sync, teto, contexto, tokens]
+resumo: PRD.md vira foto do estado atual (o que é, stack, arquitetura, metas abertas) com teto de tamanho; histórico de entregas sai para CHANGELOG.md em 1 linha por demanda.
+atualizado-em: 2026-10-01
+---
+
+# prd-foto
+
+## objetivo
+
+O `PRD.md` deixa de crescer por acréscimo a cada demanda: passa a ser uma foto do estado atual do produto, com tamanho limitado, e o histórico de entregas vai para um `CHANGELOG.md` que aponta para os nós arquivados. Base: demanda 3 do estudo de 2026-09-30 (`docs/study/2026-09-30-estudo-leitura-codigo.md:405`, estudo local, não versionado) — o `PRD.md` tem 596 linhas (37 KB), 77% delas histórico, e é lido inteiro por toda fase.
+
+## criterios-aceite
+
+**Sync escreve foto + CHANGELOG (validate)**
+
+- **prd-foto/1** — QUANDO o sync da validate promover uma demanda entregue ao `PRD.md` O SISTEMA DEVE atualizar só as seções da foto que a entrega mudou (o que é, stack, arquitetura, metas futuras) e a data de última atualização, sem acrescentar parágrafo de histórico de entrega.
+- **prd-foto/2** — QUANDO o sync da validate fechar uma demanda entregue, de qualquer categoria, O SISTEMA DEVE acrescentar ao `CHANGELOG.md` da raiz exatamente uma linha `- AAAA-MM-DD | <versão ou —> | <id> | <1 frase> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`, criando o arquivo se não existir.
+- **prd-foto/3** — QUANDO uma meta futura do `PRD.md` for entregue pela demanda O SISTEMA DEVE tirá-la das metas futuras; a entrega fica registrada só na linha do `CHANGELOG.md`.
+- **prd-foto/4** — QUANDO o sync encontrar `PRD.md` com histórico de entregas ou com mais de 200 linhas O SISTEMA DEVE mover o histórico, literal e sem reescrita, para a seção `## Histórico até AAAA-MM-DD` do `CHANGELOG.md` e deixar o `PRD.md` como foto com até 200 linhas.
+
+**Teto mecânico (hook)**
+
+- **prd-foto/5** — QUANDO o `PRD.md` da raiz for escrito (Write/Edit) num projeto cujo `MEMORY.md` começa com `memory-schema: 1` e o arquivo passar de 200 linhas O SISTEMA DEVE devolver erro ao modelo (exit 2) com o nº de linhas, o teto e a instrução de compactar a foto movendo o histórico para o `CHANGELOG.md`.
+- **prd-foto/6** — QUANDO o `PRD.md` escrito tiver até 200 linhas O SISTEMA DEVE aceitar em silêncio (exit 0, stderr vazio) — 200 passa, 201 avisa.
+- **prd-foto/7** — QUANDO o projeto não tiver `MEMORY.md` com `memory-schema: 1`, ou o arquivo escrito for um `PRD.md` fora da raiz, O SISTEMA DEVE ignorar a escrita (exit 0, stderr vazio).
+
+**Dogfood, versão e medição**
+
+- **prd-foto/8** — QUANDO o sync desta demanda rodar no próprio plugin (merge na `main`) O SISTEMA DEVE deixar o `PRD.md` do plugin como foto com até 200 linhas e criar o `CHANGELOG.md` com o histórico atual movido e a linha desta entrega.
+- **prd-foto/9** — QUANDO a demanda fechar O SISTEMA DEVE registrar no nó as linhas e bytes (sem `\r`) do `PRD.md` do plugin antes e depois, e o custo da leitura do PRD numa sessão `claude -p` com o PRD antigo × a foto. Sem meta numérica.
+- **prd-foto/10** — QUANDO o plugin for reinstalado O SISTEMA DEVE declarar a versão `0.13.0` em `plugin.json` e `marketplace.json`.
+
+## fora-de-escopo
+
+Critério de parada da revisão adversarial (nó próprio); leitura por seção de PRD/MEMORY (nó `leitura-por-secao`); converter agora os PRDs dos projetos locais ou script de conversão em massa (a conversão é on-touch, no próximo sync de cada projeto); `PRD.md` de projeto sem `memory-schema: 1`; mudar a instrução global do humano sobre o PRD; a régua de categoria.
+
+## decisoes
+
+- 2026-10-01 (IA): MEDIUM — sem dado persistido, contrato de terceiros, auth ou efeito irreversível; muda o contrato do sync da validate em vários arquivos.
+- 2026-10-01 (humano, ao aceitar a abordagem proposta: "vamos seguir essa demanda"): critério de parada da revisão adversarial (item 6 do estudo, combinado na mesma demanda 3) fica FORA desta demanda — assunto independente, vira nó próprio.
+- 2026-10-01 (humano): teto imposto por hook (`memory-guard` olha o `PRD.md`, exit 2 acima do teto). Descartado: "só regra no sync" (prosa, o modelo segue quando quer).
+- 2026-10-01 (humano): teto de 200 linhas. Descartados: 150 (pouca folga) e 250 (folga demais).
+- 2026-10-01 (humano): histórico atual vai LITERAL para `CHANGELOG.md` + 1 linha por entrega nova apontando o nó arquivado. Descartados: "só linhas" (condensar reescreve histórico) e "sem CHANGELOG" (nada aponta o histórico).
+- 2026-10-01 (humano): projetos que já usam o plugin convertem on-touch, no próximo sync de cada um. Descartados: "só daqui pra frente" (PRD crescido fica para sempre) e "converter agora" (efeito fora do repo sem necessidade).
+- 2026-10-01 (IA): LIGHT também ganha linha no `CHANGELOG.md` (/2, "de qualquer categoria") — entrega é entrega; o PRD em LIGHT segue a regra atual (promove só se mudar o que a foto descreve).
+- 2026-10-01 (IA): o `PRD.md` do próprio plugin é convertido no sync desta demanda, na `main` (/8) — é a regra on-touch aplicada a si mesma, e respeita "PRD só muda pela `main`".
+- 2026-10-01 (IA): medição (/9) segue a decisão viva de 2026-10-01 (A/B `claude -p`, sem meta), reduzida ao custo de leitura do PRD.
+- 2026-10-01 (IA): bump `0.13.0` — o hook passa a cobrar um arquivo novo nos projetos que usam o plugin.
+- 2026-10-01 (humano): escopo aprovado ("aprovar") — confirma as 4 decisões da IA (LIGHT no CHANGELOG, conversão do PRD do plugin no sync na `main`, medição reduzida, `0.13.0`) e o efeito colateral do /5 (qualquer escrita de PRD antigo acima do teto avisa).
+
+## delta
+
+## e2e
+
+pendente
+
+## feedback-reprovacao
