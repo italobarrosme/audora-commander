@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-09-30
+> Última atualização: 2026-10-01
 
 ## O que é e para que serve
 
@@ -21,9 +21,10 @@ Code.
 - Suíte de regressão do plugin em bash: `tests/run.sh` + `tests/test-*.sh`
   (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`).
 - Sem dependência externa de índice de código: o Graphify saiu na 0.10.0;
-  a localização de código é a busca normal do harness.
+  a localização de código é a busca do símbolo pelo harness, com leitura
+  por trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.11.0.
+  Versão 0.12.0.
 
 ## Arquitetura
 
@@ -46,10 +47,24 @@ Code.
   `skills/memory/references/`, lidas UMA por operação — reference ausente
   avisa e degrada, sem travar a fase.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
-- `plan` — fase "Como" just-in-time: plano-arquivo com tarefas autossuficientes
-  (código completo do teste + assinaturas; implementação só quando não-óbvia);
-  localiza código pela busca normal do harness.
-- `execute` — TDD red-green com evidência real; commit por etapa verde.
+- `plan` — fase "Como" just-in-time: plano-arquivo em que cada tarefa é um
+  MAPA, sem corpo de teste nem de implementação. A tarefa traz o requisito
+  `<id>/<n>`, o ponto de mudança `caminho:linha`, o arquivo e o caso de
+  teste, os trechos a ler, o done e, quando o critério deixa o valor
+  aberto, a asserção exata `entrada → saída esperada`. O header lista cada
+  leitura como `caminho:início-fim`. Pergunta ampla vai a um subagente de
+  exploração que devolve `caminho:linha`, conferido por leitura própria.
+- `execute` — TDD red-green com evidência real; commit por etapa verde. O
+  código do teste nasce aqui, do caso e das asserções do mapa. Seção
+  `## Localização de código`:
+  - lê os trechos do mapa, e arquivo com mais de 200 linhas nunca é lido
+    inteiro;
+  - fora do mapa, busca o símbolo e segue ligações de import, herança,
+    registro e configuração;
+  - na 3ª leitura fora do mapa, anota no mapa e segue;
+  - modificar arquivo fora do mapa volta ao plan;
+  - `caminho:linha` desatualizado é relocalizado pelo símbolo;
+  - plano no formato antigo é executado como está.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
   fortemente recomendada).
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
@@ -57,8 +72,9 @@ Code.
   arquiva o nó por movimento). Roteador: fluxo até o portão inline; sync,
   filtro de decisões vivas e Fechamento LIGHT em `skills/validate/references/`;
   reference ausente mantém o portão e não roda o sync.
-- `debug` — debug com causa raiz demonstrada (modo sintoma) ou caçada de
-  defeitos por classes com verificação de cada achado (modo caçada).
+- `debug` — debug com causa raiz demonstrada (modo sintoma, que localiza
+  código como a `execute`) ou caçada de defeitos por classes com
+  verificação de cada achado (modo caçada).
 
 Graphify: o plugin não oferece, instala, consulta, limpa nem cita o índice de
 código.
@@ -87,6 +103,43 @@ Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Estado atual
+
+Plano-mapa entregue em 2026-10-01 (nó `plano-mapa`, MEDIUM, versão 0.12.0).
+O motivo foi medido: planos com mediana de 694 linhas (133 planos), relidos a
+cada execute. O estudo está em `docs/study/2026-09-30-estudo-leitura-codigo.md`.
+O que mudou:
+- A tarefa do plano virou mapa, com a asserção exata quando o critério deixa
+  o valor aberto. O código do teste e o da implementação nascem na execute.
+- plan, execute e debug (modo sintoma) ganharam a regra de localização por
+  trecho descrita na Arquitetura.
+- O formato antigo continua executável.
+- O critério `otimizacao-tokens/5` ("código completo do teste" no plano) foi
+  substituído por `plano-mapa/1`, e seus asserts foram trocados um por um,
+  sem perder nenhum.
+- A guarda é `tests/test-plano-mapa.sh` (50 asserts). Suíte: 631 → 681
+  asserts.
+
+Carga estática (blobs LF): BASE 46575 → 47719 e FULL 51815 → 52959, dentro
+dos tetos 48000 / 53400.
+
+A/B numa fixture (mesma demanda, `claude -p`, 0.11.0 × 0.12.0, n=1):
+
+| | variação |
+|---|---|
+| plano: linhas / bytes | −27,5% / −21,3% |
+| custo do plan | −15,4% |
+| custo da execute | +3,7% (a execute escreve os testes que o plano antigo trazia) |
+| leitura do arquivo grande | −59% |
+
+As duas execuções ficaram verdes. Não houve meta numérica.
+
+O e2e rodou 4 cenários com `--plugin-dir`, e 12 critérios passaram:
+- plano antigo executado sem conversão;
+- mapa com linhas deslocadas, relocalizado pelo símbolo e corrigido;
+- modificar arquivo fora do mapa voltou ao plan só para aquela tarefa;
+- debug sintoma leu o arquivo de 235 linhas só por trecho.
+
+Ressalvas aceitas no portão estão na meta 6.
 
 Corte do sem uso entregue em 2026-09-30 (nó `corte-sem-uso`, HIGH, versão
 0.11.0, breaking). Saiu o que não tinha uso medido em 112 sessões de 11
@@ -211,7 +264,8 @@ de fechamento recomenda `/clear` quando a próxima fase se reancora pelos
 artefatos (omitido em autopilot; virou PARADA em 2026-09-29, `contexto-por-fase`); a `validate` virou roteador + 3 references
 (11603 → 7635 bytes na carga base, LIGHT deixa de carregar sync e filtro).
 **Plano**: carrega o código completo do teste, assinaturas e comandos —
-implementação só quando não-óbvia, então a saída deixa de ser paga duas vezes.
+implementação só quando não-óbvia, então a saída deixa de ser paga duas vezes
+(substituído pelo plano-mapa em 2026-10-01).
 **Loop**: a volta recebe cabeçalho + tarefa + notas de sessão, nunca as outras
 tarefas (−52% do plano por volta, medido num plano real). Medição honesta: a
 carga estática MEDIUM caiu pouco (BASE 56237 → 53274 bytes, −5,3%; FULL
@@ -526,9 +580,17 @@ automática (recomendada) vs. manual.
      o `gate-asserts:` nem teste apagado.
 
    A antiga meta das bordas da limpeza do Graphify caiu com o script.
-5. Próximas demandas combinadas no `corte-sem-uso` (fora do escopo dele):
-   - plano-mapa e regra de localização de código, que responde à pergunta
-     aberta do `remover-graphify`: a regra "nunca varrer o repo para
-     entender" saiu junto com o Graphify, e até decidir não há decisão viva
-     sobre localização de código;
-   - depois, PRD como foto e critério de parada da revisão adversarial.
+5. Próxima demanda combinada no `corte-sem-uso`: PRD como foto e critério
+   de parada da revisão adversarial. O plano-mapa, que estava junto, foi
+   entregue em 2026-10-01.
+6. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
+   - /4 (subagente de exploração conferido) e /8 (3ª leitura fora do mapa)
+     só têm guarda de texto. Nenhuma sessão real chegou a esses gatilhos.
+   - O plan ainda pode ler um arquivo grande inteiro. O critério exige só o
+     header por trecho.
+   - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
+     novo numa demanda maior.
+   - A seção Aprendizados do `MEMORY.md` está com 43 linhas, acima do
+     gatilho de ~40. Compactar exige mexer na guarda de
+     `tests/test-dogfood.sh:18`, que prende os aprendizados invalidados do
+     Graphify no índice.

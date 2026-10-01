@@ -1,12 +1,12 @@
 ---
 id: plano-mapa
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-plano-mapa.md, docs/audora/planos/plano-plano-mapa.md, docs/fundamentos.md, docs/study/2026-09-30-estudo-leitura-codigo.md, skills/debug/SKILL.md, skills/execute/SKILL.md, skills/plan/SKILL.md, templates/plano-template.md, tests/test-carga.sh, tests/test-corte-sem-uso.sh, tests/test-docs.sh, tests/test-plano-mapa.sh, tests/test-skills.sh]
 keywords: [plano, mapa, localizacao, leitura, trecho, explore, tokens, contexto]
 resumo: Plano vira mapa (critério → teste → caminho:linha) e plan, execute e debug ganham regra de localização de código por trecho, com medição antes e depois.
-atualizado-em: 2026-09-30
+atualizado-em: 2026-10-01
 ---
 
 # plano-mapa

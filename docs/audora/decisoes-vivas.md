@@ -29,6 +29,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-09-29 | remover-graphify | Script com efeito fora do repo (desinstalar pacote, mexer na máquina) só roda em teste ou revisão com executáveis falsos e PATH sem os reais — e o prompt do subagente revisor diz isso.
 - 2026-09-30 | corte-sem-uso | Mecanismo do framework sem uso medido (sessões reais) sai inteiro — sem parágrafo residual nem declaração-stub; a medição fundamenta o corte.
 - 2026-09-30 | corte-sem-uso | Apagar arquivo de teste exige autorização do humano no portão do scope, com o nome do arquivo no nó e a autorização citada no commit.
+- 2026-10-01 | plano-mapa | Mudança que altera o custo de contexto das fases é medida por A/B numa fixture `claude -p` (mesma demanda, plugin antes × depois: artefato, tokens e verde) e reportada sem meta numérica.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro
