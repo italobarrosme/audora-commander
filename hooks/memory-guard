@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Hook PostToolUse (Edit|Write): teto de linhas do MEMORY.
-# MEMORY.md (índice mestre) > ~300 linhas ou arquivo de nó > ~100 → exit 2 +
-# stderr (mensagem chega ao modelo no mesmo turno). Fora do MEMORY → exit 0.
+# Hook PostToolUse (Edit|Write): teto de linhas do MEMORY e do PRD.
+# MEMORY.md (índice mestre) > ~300 linhas, arquivo de nó > ~100 ou PRD.md
+# irmão de MEMORY.md com schema > 200 → exit 2 + stderr (mensagem chega ao
+# modelo no mesmo turno). Fora disso → exit 0.
 # Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
 set -uo pipefail
 
@@ -14,6 +15,17 @@ file_path="${file_path//\\//}"
 [ -f "$file_path" ] || exit 0
 
 base="$(basename "$file_path")"
+if [ "$base" = PRD.md ]; then
+  mem="$(dirname "$file_path")/MEMORY.md"
+  [ -f "$mem" ] || exit 0
+  head -1 "$mem" | tr -d '\r' | grep -q '^memory-schema: 1' || exit 0
+  n=$(awk 'END{print NR}' "$file_path")
+  if [ "$n" -gt 200 ]; then
+    echo "memory-guard: PRD.md com $n linhas — teto 200. Compactar a foto: mover o histórico de entregas, literal, para a seção \`## Histórico até AAAA-MM-DD\` do CHANGELOG.md (skill validate, sync)." >&2
+    exit 2
+  fi
+  exit 0
+fi
 case "$file_path" in
   *MEMORY.md)
     head -1 "$file_path" | tr -d '\r' | grep -q '^memory-schema: 1' || exit 0
