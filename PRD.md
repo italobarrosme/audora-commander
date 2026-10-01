@@ -106,7 +106,7 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 Plano-mapa entregue em 2026-10-01 (nó `plano-mapa`, MEDIUM, versão 0.12.0).
 O motivo foi medido: planos com mediana de 694 linhas (133 planos), relidos a
-cada execute. O estudo está em `docs/study/2026-09-30-estudo-leitura-codigo.md`.
+cada execute. O estudo ficou local, fora do repositório (`docs/study/` no `.gitignore`).
 O que mudou:
 - A tarefa do plano virou mapa, com a asserção exata quando o critério deixa
   o valor aberto. O código do teste e o da implementação nascem na execute.
