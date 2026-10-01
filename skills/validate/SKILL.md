@@ -25,6 +25,7 @@ reference por uso — nunca a pasta inteira.**
 |---|---|
 | fluxo até o portão (e2e, evidência, roteiro, portão) | inline |
 | filtro de entrada das decisões vivas (roteiro, item 3) | references/decisoes-vivas.md |
+| revisão adversarial (roteiro, item 3; só HIGH) | references/revisao-adversarial.md |
 | demanda LIGHT | references/fechamento-light.md |
 | sync pós-aprovação (item 6) | references/sync.md |
 
@@ -60,10 +61,8 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
    - **Categoria HIGH** (soma ao anterior): sumário de mudanças por arquivo,
      trechos sensíveis destacados (auth, dinheiro, dados, migração) para
      revisão de código — comportamento E código, não ou.
-   - **Revisão adversarial** (HIGH): despachar subagente de contexto limpo
-     com o diff + critérios, instruído a ATACAR (refutar que os critérios
-     foram atendidos, procurar furo de segurança/borda). Resumo condensado
-     entra no roteiro. Autor não revisa a si mesmo.
+   - **Revisão adversarial** (HIGH): siga `references/revisao-adversarial.md`
+     — despacho, bloqueante, parada e o que entra no roteiro.
 4. **Decisões tomadas pela IA**: listar as micro-decisões acumuladas no plano
    para o humano revisar em lote.
 5. **Portão humano** — apresentar roteiro e ESPERAR decisão explícita:
