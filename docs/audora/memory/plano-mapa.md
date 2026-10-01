@@ -82,6 +82,6 @@ Leitura: o plano encolheu e a execute leu por trecho, como pedem /1 e /5. Mas o 
 
 ## e2e
 
-pendente
+2026-10-01: [relatório](../e2e/e2e-plano-mapa.md). 4 cenários `claude -p` com `--plugin-dir` (E1c formato antigo, E2 mapa deslocado, E3 modificar fora do mapa, E4 debug sintoma). 12 critérios passaram, /3 passou com ressalva e /4 e /8 são não-automatizáveis (validação humana).
 
 ## feedback-reprovacao

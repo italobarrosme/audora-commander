@@ -82,6 +82,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-30 | e2e | e2e de branch NÃO mergeada sem tocar o cache global: `claude.exe -p … --plugin-dir <repo> --settings '{"enabledPlugins":{"audora-commander@audora-commander-dev":false}}'` — o `system/init` mostra só `audora-commander@inline` apontando o repo; `--resume <session_id>` dá o 2º turno ("segue").
 - 2026-09-30 | execute | Subagente que espera `claude -p` longo em background morre pelo watchdog (600 s sem progresso) se esperar ocioso — um turno de plan levou 58 min de relógio. Esperar com polling ativo (`until … ; do sleep; done` em foreground com timeout < 10 min, repetido) ou devolver o controle à sessão principal.
 - 2026-09-30 | execute | `bc` não existe no Git Bash desta máquina (exit 127) — somar asserts com `grep -o 'PASS=[0-9]*' log | cut -d= -f2 | awk '{s+=$1} END{print s}'`.
+- 2026-10-01 | e2e | Fixture clonada (`git clone`) de outra fixture herda a branch de feature que estava na HEAD dela, com o trabalho pronto — a execute acha os commits e só reverifica (rodada do E1 descartada). Depois do clone, apagar toda branch que não seja `main` (`git for-each-ref refs/heads/`).
 - 2026-09-30 | validate | `hooks/gate` compara contra HEAD: com a árvore commitada a queda de asserts (e teste apagado) some e o gate final passa — a prova do `gate-asserts:` é o gate rodado ANTES do commit de cada tarefa, registrado nas notas de sessão.
 
 ## Índice de nós [carga: sempre]
