@@ -74,7 +74,7 @@ assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é
 # --- /14 /15 — tetos de carga intactos; versão 0.12.0 ---
 tc="$(tr -d '\r' < tests/test-carga.sh)"
 assert_contains "$tc" 'TETO_BASE=48000' "plano-mapa/14 teto BASE intacto"
-assert_contains "$tc" 'TETO_FULL=53400' "plano-mapa/14 teto FULL intacto"
+assert_contains "$tc" 'TETO_FULL=56900' "prd-foto/2 teto FULL 56900 — sync com CHANGELOG + template no FULL (substitui plano-mapa/14)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   assert_contains "$(tr -d '\r' < "$j")" '"version": "0.12.0"' "plano-mapa/15 $j declara 0.12.0"
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.11.0"' "plano-mapa/15 $j sem 0.11.0"

@@ -51,4 +51,34 @@ lh="$(tr -d '\r' 2>/dev/null < "$ct" | awk '$0=="## Histórico até AAAA-MM-DD"{
 ex="$(tr -d '\r' 2>/dev/null < "$ct" | grep -cE '^- [0-9]{4}-[0-9]{2}-[0-9]{2} \| [^|]+ \| [a-z0-9-]+ \| [^|]+ → docs/audora/arquivo/[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9-]+\.md$')"
 assert_eq 1 "$ex" "prd-foto/2 template: exatamente 1 linha de exemplo"
 
+# --- /1 /2 /3 /4 — sync atualiza a foto do PRD e acrescenta 1 linha ao CHANGELOG ---
+sy="$(flat skills/validate/references/sync.md)"
+for s in 'atualize só as seções da foto (o que é, stack, arquitetura, metas futuras) que a entrega mudou' \
+         'e a data de última atualização' 'nunca acrescente parágrafo de histórico de entrega'; do
+  assert_contains "$sy" "$s" "prd-foto/1 sync: '$s'"
+done
+assert_not_contains "$sy" 'resumo do que foi entregue' "prd-foto/1 sync: sem o resumo antigo"
+for s in 'exatamente uma linha no `CHANGELOG.md` da raiz, em toda categoria' 'templates/changelog-template.md' \
+         'sem o arquivo, crie-o pelo template' 'acrescente o `CHANGELOG.md` sempre'; do
+  assert_contains "$sy" "$s" "prd-foto/2 sync: '$s'"
+done
+for s in 'Meta futura entregue sai das metas futuras' 'a entrega fica só na linha do `CHANGELOG.md`'; do
+  assert_contains "$sy" "$s" "prd-foto/3 sync: '$s'"
+done
+for s in '`PRD.md` com histórico de entregas ou com mais de 200 linhas' \
+         'mova o histórico, literal e sem reescrita, para `## Histórico até AAAA-MM-DD` do `CHANGELOG.md`' \
+         'foto com até 200 linhas' 'escreva a foto num Write só'; do
+  assert_contains "$sy" "$s" "prd-foto/4 sync: '$s'"
+done
+for s in 'MEMORY → PRD' 'o `PRD.md` ainda não foi tocado' 'ordem importa' 'nó primeiro, índice depois'; do
+  assert_contains "$sy" "$s" "prd-foto/1 sync mantém '$s'"
+done
+cp="$(flat skills/memory/references/compactar.md)"
+assert_not_contains "$cp" 'promoção do resumo' "prd-foto/1 compactar: sem a promoção do resumo"
+assert_contains "$cp" 'foto do `PRD.md` e a linha do `CHANGELOG.md` são da skill validate' "prd-foto/1,2 compactar aponta a validate"
+vf="$(flat skills/validate/SKILL.md)"
+assert_contains "$vf" '`arquivos:` do diff real, PRD + CHANGELOG, HOTFIX' "prd-foto/2 validate: item 6 cita o CHANGELOG"
+assert_contains "$vf" '`PRD.md` atualizado e `CHANGELOG.md` com a linha da entrega' "prd-foto/2 validate: bloco Arquivos cita o CHANGELOG"
+[ "$(tr -d '\r' < skills/validate/SKILL.md | wc -c)" -lt 7700 ] && ok || ko "prd-foto/2 validate < 7700 bytes"
+
 report

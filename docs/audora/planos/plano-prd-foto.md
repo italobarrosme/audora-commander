@@ -57,6 +57,7 @@ Tarefa 6.**
 3. Formato do CHANGELOG em `templates/changelog-template.md`: `## Entregas` (linhas novas no fim) antes de `## Histórico até AAAA-MM-DD`.
 4. O template novo entra no FULL de `tests/test-carga.sh` (é lido no sync).
 5. Tarefas 7 e 8 rodam na validate, depois do portão, no sync na `main`.
+6. (execute) A parte de carga da Tarefa 6 subiu para a Tarefa 3: o `sync.md` novo estourou o FULL (53993 > 53400) e verde é a suíte toda. Template no FULL e teto FULL 56900 num passo só (motivo no nó); o assert de `tests/test-plano-mapa.sh` troca para "prd-foto/2 … (substitui plano-mapa/14)".
 
 ## Notas de sessão
 

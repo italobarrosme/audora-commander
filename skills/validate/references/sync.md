@@ -27,12 +27,27 @@ senão `memory-validate` bloqueia a próxima escrita.
    - o range vai até HEAD e **pode conter commits de outra demanda** se o
      fluxo não foi sequencial — confira `git log --oneline "$cria^..HEAD"`;
    - o `PRD.md` ainda não foi tocado quando você roda isso (o passo 4 é que
-     o toca) — acrescente à lista se for promover;
+     o toca) — acrescente-o à lista se for atualizar a foto, e acrescente o
+     `CHANGELOG.md` sempre;
    - o próprio nó e o `-historico.md` aparecem no caminho ANTIGO, de antes
      do `git mv` — tire os dois da lista.
-4. **Promover ao `PRD.md`**: resumo do que foi entregue + data de última
-   atualização. Direção única MEMORY → PRD, sempre (vale para toda camada
-   derivada: decisoes-vivas e afins fluem DO nó, nunca de volta).
-   Tocou o PRD? Acrescente-o à lista `arquivos:`.
+4. **Foto do `PRD.md` + linha do `CHANGELOG.md`** (depois do `git mv`: a
+   linha cita o caminho arquivado). Direção única MEMORY → PRD, sempre (vale
+   para toda camada derivada: decisoes-vivas e afins fluem DO nó, nunca de
+   volta).
+   - **Foto**: atualize só as seções da foto (o que é, stack, arquitetura,
+     metas futuras) que a entrega mudou, e a data de última atualização;
+     nunca acrescente parágrafo de histórico de entrega. Meta futura
+     entregue sai das metas futuras — a entrega fica só na linha do
+     `CHANGELOG.md`.
+   - **CHANGELOG**: exatamente uma linha no `CHANGELOG.md` da raiz, em toda
+     categoria, no formato de `templates/changelog-template.md` (raiz do
+     plugin); sem o arquivo, crie-o pelo template.
+   - **Conversão** (on-touch): `PRD.md` com histórico de entregas ou com
+     mais de 200 linhas → mova o histórico, literal e sem reescrita, para
+     `## Histórico até AAAA-MM-DD` do `CHANGELOG.md` (data deste sync) e
+     deixe o `PRD.md` como foto com até 200 linhas. O `memory-guard` avisa a
+     cada Edit acima do teto: escreva a foto num Write só.
+   Tocou o PRD ou o CHANGELOG? Acrescente-os à lista `arquivos:`.
 5. HOTFIX: regularizar o registro retroativo (nó `hotfix-pending-record`
    → nó completo).

@@ -75,7 +75,7 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
      novas no plano, demanda continua `in-progress`.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
    direto): seguir `references/sync.md`, NA ORDEM — julgamento, estado e
-   movimento, `arquivos:` do diff real, PRD, HOTFIX.
+   movimento, `arquivos:` do diff real, PRD + CHANGELOG, HOTFIX.
 7. **Efeito irreversível fora do repo** (migração em ambiente compartilhado,
    deploy, e-mail, cobrança) — em QUALQUER categoria: preparar o comando
    exato + rollback, apresentar, e o HUMANO executa ou autoriza aquele
@@ -100,7 +100,8 @@ de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sess
 → não reler). Nesta fase:
 
 - **Produzido**: o veredito do portão e o que o sync consolidou.
-- **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado.
+- **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado e
+  `CHANGELOG.md` com a linha da entrega.
 - **Próximo**: nenhum — o fluxo da demanda encerra aqui.
 
 Aprovada, o bloco de fase é seguido do bloco **Entrega**: tabela

@@ -25,5 +25,5 @@
    antigas) para `docs/audora/memory/<id>-historico.md` + ponteiro de 1
    linha. Aprendizados > ~40 linhas: mover os mais antigos para
    `docs/audora/aprendizados-historico.md` + ponteiro de 1 linha.
-5. A promoção do resumo ao PRD.md é responsabilidade da skill validate
-   (direção única MEMORY → PRD; o PRD nunca alimenta o MEMORY).
+5. A foto do `PRD.md` e a linha do `CHANGELOG.md` são da skill validate,
+   no sync (direção única MEMORY → PRD; o PRD nunca alimenta o MEMORY).

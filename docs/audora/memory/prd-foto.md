@@ -52,6 +52,7 @@ Critério de parada da revisão adversarial (nó próprio); leitura por seção 
 - 2026-10-01 (IA): o `PRD.md` do próprio plugin é convertido no sync desta demanda, na `main` (/8) — é a regra on-touch aplicada a si mesma, e respeita "PRD só muda pela `main`".
 - 2026-10-01 (IA): medição (/9) segue a decisão viva de 2026-10-01 (A/B `claude -p`, sem meta), reduzida ao custo de leitura do PRD.
 - 2026-10-01 (IA): bump `0.13.0` — o hook passa a cobrar um arquivo novo nos projetos que usam o plugin.
+- 2026-10-01 (IA, execute): teto FULL de `tests/test-carga.sh` 53400 → 56900 (FULL medido 55182 + 3%, centenas). Motivo: o passo 4 do `sync.md` ganhou foto + CHANGELOG + conversão (+1034 bytes) e o `templates/changelog-template.md` (1189 bytes) entrou no FULL porque o sync o lê. BASE 47773 segue sob 48000.
 - 2026-10-01 (humano): escopo aprovado ("aprovar") — confirma as 4 decisões da IA (LIGHT no CHANGELOG, conversão do PRD do plugin no sync na `main`, medição reduzida, `0.13.0`) e o efeito colateral do /5 (qualquer escrita de PRD antigo acima do teto avisa).
 
 ## delta
