@@ -63,3 +63,9 @@ aberto) e as ressalvas, 1 linha cada.
 Subagente revisor que não pôde ser despachado ou falhou → 1 linha no
 roteiro: "revisão adversarial não rodou — <motivo>"; o portão segue com o
 humano revisando o diff.
+
+## Ressalva aceita no portão
+
+Humano aceitou ressalvas no portão → registre cada uma em `## decisoes` do
+nó, 1 linha por ressalva: `- AAAA-MM-DD (humano): ressalva aceita — <ressalva>`.
+O sync (`sync.md`, passo 4) as leva às metas futuras do `PRD.md`.

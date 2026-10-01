@@ -40,6 +40,9 @@ senão `memory-validate` bloqueia a próxima escrita.
      nunca acrescente parágrafo de histórico de entrega. Meta futura
      entregue sai das metas futuras — a entrega fica só na linha do
      `CHANGELOG.md`.
+   - **Ressalva aceita no portão** (linhas `(humano): ressalva aceita —` em
+     `## decisoes` do nó) → 1 meta futura "Candidato a nó: ressalvas do `<id>` aceitas no portão.",
+     com 1 sub-item por ressalva.
    - **CHANGELOG**: exatamente uma linha no `CHANGELOG.md` da raiz, em toda
      categoria, no formato de `templates/changelog-template.md` (raiz do
      plugin); sem o arquivo, crie-o pelo template.

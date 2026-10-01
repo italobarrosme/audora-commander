@@ -77,4 +77,14 @@ for s in 'revisão adversarial não rodou' 'o portão segue com o humano revisan
   assert_contains "$q" "$s" "parada-revisao/7 revisor indisponível"
 done
 
+# --- /8 — ressalva aceita no portão vai ao nó e, no sync, às metas do PRD ---
+for s in 'registre cada uma em `## decisoes` do nó' '(humano): ressalva aceita —'; do
+  assert_contains "$r" "$s" "parada-revisao/8 portão"
+done
+S=skills/validate/references/sync.md; sy="$(flat "$S")"
+for s in 'Ressalva aceita no portão' 'Candidato a nó: ressalvas do `<id>` aceitas no portão.' \
+  'MEMORY → PRD' 'o `PRD.md` ainda não foi tocado' 'ordem importa' 'nó primeiro, índice depois'; do
+  assert_contains "$sy" "$s" "parada-revisao/8 sync"
+done
+
 report
