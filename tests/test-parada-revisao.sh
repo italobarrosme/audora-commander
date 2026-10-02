@@ -103,10 +103,10 @@ for s in 'bloqueia só achado provado de 3 classes (alheio, critério, formato r
   assert_contains "$fu" "$s" "parada-revisao docs fundamentos"
 done
 
-# --- /10 — versão 0.14.0 nos dois manifests; nenhum assert positivo de 0.13.0 sobra ---
+# --- /10 — versão 0.15.0 nos dois manifests (leitura-por-secao/12); nenhum assert positivo de 0.13.0 sobra ---
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   mj="$(tr -d '\r' < "$j")"
-  assert_contains "$mj" '"version": "0.14.0"' "parada-revisao/10 $j declara 0.14.0"
+  assert_contains "$mj" '"version": "0.15.0"' "leitura-por-secao/12 $j declara 0.15.0 (substitui parada-revisao/10)"
   assert_not_contains "$mj" '"version": "0.13.0"' "parada-revisao/10 $j sem 0.13.0"
 done
 sobra="$(grep -rlF '"version": "0.13.0"' tests/ | grep -v test-parada-revisao)"

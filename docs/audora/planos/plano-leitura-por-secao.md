@@ -98,6 +98,9 @@ mexer em guarda antiga.
 - 2026-10-02 (execute T3): red 61/6 (o mapa diz "7 casos", mas lista 6
   asserções — são 6); green 67/0; `test-docs` 158/0; reembrulho do bullet
   da porta no README PT (troca no meio da linha); gate `GATE: passou`, exit=0.
+- 2026-10-02 (execute T4): red 71/5 (só /12); green 76/0; `test-carga`
+  base=47678 full=55305 (= ensaio); suíte `run.sh` exit=0, 17 arquivos, 899
+  asserts somados do log; gate `GATE: passou`, exit=0.
 
 ## Decisões tomadas pela IA
 
@@ -304,9 +307,9 @@ mexer em guarda antiga.
 - **ler**: `.claude-plugin/plugin.json:1-8`, `.claude-plugin/marketplace.json:1-14`, `tests/test-docs.sh:5-8`, `tests/test-corte-sem-uso.sh:47-55`, `tests/test-plano-mapa.sh:72-83`, `tests/test-prd-foto.sh:109-115`, `tests/test-parada-revisao.sh:104-115`, `tests/test-carga.sh:1-22`.
 - **done quando**: teste da demanda `exit=0`; `bash tests/run.sh > "$SCRATCH/run.log" 2>&1; echo "exit=$?"` → `exit=0` (background; total de asserts somado do log, aprendizado 84); gate `exit=0`.
 
-- [ ] **red** — teste da demanda `exit=1` só nos casos de /12 (manifests em 0.14.0; 5 asserts positivos de 0.14.0 em `tests/`).
-- [ ] **green** — `exit=0`; suíte toda `exit=0`; gate antes do commit.
-- [ ] **commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-plano-mapa.sh tests/test-prd-foto.sh tests/test-parada-revisao.sh tests/test-carga.sh tests/test-leitura-por-secao.sh && git commit -m "chore(leitura-por-secao/11,12): versão 0.15.0; carga BASE/FULL dentro dos tetos"`
+- [x] **red** — teste da demanda `exit=1` só nos casos de /12 (manifests em 0.14.0; 5 asserts positivos de 0.14.0 em `tests/`).
+- [x] **green** — `exit=0`; suíte toda `exit=0`; gate antes do commit.
+- [x] **commit** — `git add .claude-plugin/plugin.json .claude-plugin/marketplace.json tests/test-docs.sh tests/test-corte-sem-uso.sh tests/test-plano-mapa.sh tests/test-prd-foto.sh tests/test-parada-revisao.sh tests/test-carga.sh tests/test-leitura-por-secao.sh && git commit -m "chore(leitura-por-secao/11,12): versão 0.15.0; carga BASE/FULL dentro dos tetos"`
 
 ## Tarefa 5: medição A/B com claude -p
 
