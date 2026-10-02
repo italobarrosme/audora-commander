@@ -1,12 +1,12 @@
 ---
 id: leitura-por-secao
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/decisoes-vivas.md, docs/audora/planos/arquivo/plano-leitura-por-secao.md, docs/fundamentos.md, skills/audora-commander/SKILL.md, skills/debug/SKILL.md, skills/e2e/SKILL.md, skills/execute/SKILL.md, skills/memory/SKILL.md, skills/plan/SKILL.md, skills/scope/SKILL.md, skills/validate/SKILL.md, templates/fase-subagente-template.md, tests/test-carga.sh, tests/test-corte-sem-uso.sh, tests/test-docs.sh, tests/test-leitura-por-secao.sh, tests/test-parada-revisao.sh, tests/test-plano-mapa.sh, tests/test-prd-foto.sh]
 keywords: [leitura, prd, memory, secao, tokens]
 resumo: Fases leem só o recorte do MEMORY.md de que precisam em vez do arquivo inteiro, sem mudar o formato.
-atualizado-em: 2026-10-01
+atualizado-em: 2026-10-02
 ---
 
 # leitura-por-secao

@@ -12,6 +12,7 @@ Formato: `- AAAA-MM-DD | <versão ou —> | <id> | <1 frase> → docs/audora/arq
 
 - 2026-10-01 | 0.13.0 | prd-foto | PRD.md vira foto com teto de 200 linhas cobrado pelo memory-guard, e o histórico de entregas passa a morar no CHANGELOG.md. → docs/audora/arquivo/2026-10-01-prd-foto.md
 - 2026-10-01 | 0.14.0 | parada-revisao | Revisão adversarial da validate (HIGH) bloqueia só achado provado de 3 classes, para em 1 passagem + reverificação restrita, e manda o resto ao roteiro como ressalva, que aceita vira candidato a nó no PRD. → docs/audora/arquivo/2026-10-01-parada-revisao.md
+- 2026-10-02 | 0.15.0 | leitura-por-secao | Toda fase carrega do `MEMORY.md` só o recorte de que precisa — Propósito e Constituição inteiras, Aprendizados e Índice de nós por busca — em vez do arquivo inteiro; no A/B com `claude -p` o lido caiu para 53,9%. → docs/audora/arquivo/2026-10-02-leitura-por-secao.md
 
 ## Histórico até 2026-10-01
 

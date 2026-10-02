@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-01
+> Última atualização: 2026-10-02
 
 ## O que é e para que serve
 
@@ -24,7 +24,7 @@ Code.
   a localização de código é a busca do símbolo pelo harness, com leitura
   por trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.14.0.
+  Versão 0.15.0.
 
 ## Arquitetura
 
@@ -43,9 +43,18 @@ Code.
   (1 linha `data | fase | aprendizado`, na hora, por qualquer fase) e
   compactar. A skill é um **roteador**: `carregar-contexto`,
   `registrar-delta` e `registrar-aprendizado` ficam inline no `SKILL.md`
-  (150 linhas); `bootstrap`, `registrar-no` e `compactar` vivem em
+  (135 linhas); `bootstrap`, `registrar-no` e `compactar` vivem em
   `skills/memory/references/`, lidas UMA por operação — reference ausente
-  avisa e degrada, sem travar a fase.
+  avisa e degrada, sem travar a fase. O `carregar-contexto` lê o
+  `MEMORY.md` por seção, nunca inteiro, e as fases o chamam antes de
+  qualquer Read:
+  - Propósito e Constituição: inteiras, por `offset`/`limit`.
+  - Aprendizados: por `grep` — linhas da fase + keywords e arquivos do nó
+    (porta: termos do pedido); `[invalidado-em:` nunca entra; nada casou →
+    segue sem aprendizados.
+  - Índice de nós: inteiro na porta, scope e plan; execute, e2e, validate e
+    debug pegam só a linha do nó e as de `depende-de`.
+  - Seção não encontrada → aviso de 1 linha, leitura inteira, a fase segue.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
 - `plan` — fase "Como" just-in-time: plano-arquivo em que cada tarefa é um
   MAPA, sem corpo de teste nem de implementação. A tarefa traz o requisito
