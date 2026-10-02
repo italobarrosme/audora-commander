@@ -21,6 +21,16 @@ sub sai { my ($code, @linhas) = @_; print "$_\n" for @linhas; exit $code; }
 my $sub = shift @ARGV // '';
 sai(1, $USO) unless $sub =~ /^(varrer|contar|aplicar)$/;
 
+# varrer: --orfao <id>=<motivo> (repetível) — julgamento semântico da skill (/3, /4)
+my %ORFAO_ARG;
+if ($sub eq 'varrer') {
+  while (@ARGV) {
+    my $a = shift @ARGV;
+    sai(1, $USO) unless $a eq '--orfao' && @ARGV && $ARGV[0] =~ /^([^=\s]+)=(.+)$/s;
+    $ORFAO_ARG{$1} = $2; shift @ARGV;
+  }
+}
+
 # --- pré-condições comuns: repo git e MEMORY.md na raiz ---
 {
   my $dentro = `git rev-parse --is-inside-work-tree 2>/dev/null`;
@@ -72,6 +82,40 @@ sub texto_nos { join "\n", map { ler($_) } sort { $a cmp $b } glob('docs/audora/
 
 my (%LOTE, @AVISOS, @MANTIDO, @NAO_TOCADO);
 sub item { my ($sec, $alvo, $motivo) = @_; push @{ $LOTE{$sec} }, [$alvo, $motivo]; }
+
+# depende-de dos nós não arquivados: id → [dependentes]
+sub dependentes {
+  my %d;
+  for my $f (sort { $a cmp $b } glob('docs/audora/memory/*.md')) {
+    (my $b = $f) =~ s{.*/|\.md$}{}g;
+    my ($lista) = ler($f) =~ /^depende-de:[ \t]*\[([^\]\r\n]*)\]/m or next;
+    for my $id (map { s/^\s+|\s+$//gr } split /,/, $lista) { push @{ $d{$id} }, $b if length $id; }
+  }
+  return %d;
+}
+
+# Planned órfão: --orfao (semântico, prevalece) ou coluna arquivos-chave com alvo ausente.
+sub classifica_orfaos {
+  my %dep = dependentes();
+  my %planned = map { $_->{id} => 1 } grep { $_->{estado} eq 'planned' } @INDICE;
+  for my $id (sort { $a cmp $b } keys %ORFAO_ARG) {
+    push @AVISOS, "aviso: --orfao $id ignorado — não é planned no índice" unless $planned{$id};
+  }
+  my %visto;
+  for my $e (grep { $_->{estado} eq 'planned' } @INDICE) {
+    my $id = $e->{id};
+    next if $visto{$id}++;
+    my $motivo = $ORFAO_ARG{$id};
+    unless (defined $motivo) {
+      my @aus = grep { $_ ne '' && $_ ne '—' && !/[*<]/ && !-e $_ }
+                map { s/^\s+|\s+$//gr } split /,/, ($e->{cols}[5] // '');
+      $motivo = 'alvo ausente: ' . join(', ', @aus) if @aus;
+    }
+    next unless defined $motivo;
+    if ($dep{$id}) { push @MANTIDO, "- $id | mantido: " . join(', ', @{ $dep{$id} }) . ' depende dele'; next; }
+    item('planned órfão', $id, $motivo);
+  }
+}
 
 # Arquivos .md de uma pasta, recursivo.
 sub mds_em {
@@ -185,6 +229,7 @@ sub links {
 my %CANDIDATO;   # arquivo → 1, para não listar link de arquivo que já sai no lote
 sub classifica_links {
   $CANDIDATO{$_->[0]} = 1 for map { @{ $LOTE{$_} // [] } } @SECOES;
+  $CANDIDATO{"docs/audora/memory/$_->[0].md"} = 1 for @{ $LOTE{'planned órfão'} // [] };
   for my $f ('MEMORY.md', grep { /\.md$/ } arquivos_docs()) {
     next if $CANDIDATO{$f};
     for my $k (links($f)) {
@@ -209,7 +254,7 @@ sub relatorio {
   print "$_\n" for @o;
 }
 
-sub varre { carrega_indice(); classifica_artefatos(); classifica_links(); }
+sub varre { carrega_indice(); classifica_orfaos(); classifica_artefatos(); classifica_links(); }
 
 if ($sub eq 'contar') { varre(); print total(), "\n"; exit 0; }
 if ($sub eq 'varrer') { varre(); relatorio(); exit 0; }

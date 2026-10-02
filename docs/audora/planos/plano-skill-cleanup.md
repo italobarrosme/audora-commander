@@ -163,6 +163,13 @@ Definições (usadas por várias tarefas):
   exporta `CLEANUP_DIR`) que faz `exec perl -x` no próprio arquivo; toda a
   lógica fica em perl (parse de índice, links, git via `open '-|'` em lista,
   sem shell). Evita aspas de perl dentro de bash e preserva CRLF por padrão.
+- 2026-10-02 (execute, T3): candidato a "sem referência" exclui também
+  `docs/audora/memory/` (além de `arquivo/` e `decisoes-vivas.md`); depuração
+  ligada a nó vivo sai do /8 (já é citada por documento vivo).
+- 2026-10-02 (execute, T5): `--orfao` sem `<id>=<motivo>` → uso, exit 1;
+  mantido com vários dependentes lista todos (`mantido: a, b depende dele`);
+  o arquivo `docs/audora/memory/<id>.md` de um planned órfão conta como
+  candidato (link quebrado dentro dele não é listado à parte).
 
 ---
 
@@ -271,9 +278,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `hooks/memory-validate:110-116` (parse do `depende-de`), `MEMORY.md:118-123` (linhas planned reais).
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/3`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/3,4,5): planned órfão por --orfao e por alvo ausente; mantido com dependente vivo"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/3`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/3,4,5): planned órfão por --orfao e por alvo ausente; mantido com dependente vivo"`
 
 ## Tarefa 6: não tocado — fora do git e mudança não commitada
 

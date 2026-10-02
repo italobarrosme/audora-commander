@@ -173,4 +173,46 @@ done
 assert_eq 3 "$(printf '%s\n' "$lq" | grep -c '^- ')" "skill-cleanup/10 exatamente 3 links quebrados"
 assert_eq 'total: 7 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/10 total inclui os links quebrados"
 
+# --- skill-cleanup/3,4,5 planned órfão (--orfao e alvo ausente) e mantido ---
+# mkt5 <dir> — planned p q r r2 s; v (vivo) depende de r2; d (arquivado) depende de s
+mkt5() {
+  local d="$1"; mkproj "$d"
+  printf -- '%s\n' '- p | planned | P | r | k | —' '- q | planned | Q | r | k | src/sumiu.ts, README.md' \
+    '- r | planned | R | r | k | —' '- r2 | planned | R2 | r | k | src/nada.ts' '- s | planned | S | r | k | —' \
+    '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
+  nov "$d" v in-progress 'r2'
+  sed -i 's/^depende-de: \[\]/depende-de: [s]/' "$d/docs/audora/arquivo/2026-01-01-d.md"
+  git -C "$d" add -A; git -C "$d" commit -qm t5
+}
+p="$SP/t5"; mkt5 "$p"
+runc "$p" varrer --orfao 'p=absorvido por d'
+po="$(secao "$out" 'planned órfão')"
+assert_eq 0 "$code" "skill-cleanup/3 varrer --orfao → exit 0"
+assert_line "$po" '- p | absorvido por d' "skill-cleanup/3 planned absorvido cita o nó que o absorveu"
+assert_line "$po" '- q | alvo ausente: src/sumiu.ts' "skill-cleanup/4 planned com alvo ausente cita o alvo"
+assert_not_contains "$po" 'README.md' "skill-cleanup/4 alvo existente não entra no motivo"
+assert_not_contains "$po" '- r |' "skill-cleanup/3 planned sem --orfao e sem alvo ausente fica fora"
+runc "$p" varrer
+po="$(secao "$out" 'planned órfão')"
+assert_not_contains "$po" '- p |' "skill-cleanup/3 sem --orfao o semântico não é listado"
+assert_line "$po" '- q | alvo ausente: src/sumiu.ts' "skill-cleanup/4 mecânico sem --orfao"
+assert_line "$(secao "$out" 'mantido')" '- r2 | mantido: v depende dele' "skill-cleanup/5 órfão mecânico com dependente vivo é mantido"
+runc "$p" varrer --orfao 'r2=absorvido por d'
+assert_line "$(secao "$out" 'mantido')" '- r2 | mantido: v depende dele' "skill-cleanup/5 --orfao com dependente vivo → mantido"
+assert_not_contains "$(secao "$out" 'planned órfão')" 'r2' "skill-cleanup/5 mantido fica fora do lote"
+runc "$p" varrer --orfao 's=absorvido por d'
+assert_line "$(secao "$out" 'planned órfão')" '- s | absorvido por d' "skill-cleanup/5 dependente arquivado não segura o órfão"
+runc "$p" varrer --orfao 'q=absorvido por d'
+po="$(secao "$out" 'planned órfão')"
+assert_line "$po" '- q | absorvido por d' "skill-cleanup/3 motivo do --orfao prevalece sobre o mecânico"
+assert_eq 1 "$(printf '%s\n' "$po" | grep -c '^- q |')" "skill-cleanup/3 id aparece uma vez só"
+runc "$p" varrer --orfao 'd=x'
+assert_eq 'aviso: --orfao d ignorado — não é planned no índice' "$(printf '%s\n' "$out" | head -1)" "skill-cleanup/3 --orfao de nó não planned avisa antes do relatório"
+assert_not_contains "$(secao "$out" 'planned órfão')" '- d |' "skill-cleanup/3 nó não planned fora do lote"
+runc "$p" varrer --orfao p
+assert_eq 1 "$code" "skill-cleanup/3 --orfao sem <id>=<motivo> → uso, exit 1"
+assert_contains "$out" 'uso: cleanup varrer' "skill-cleanup/3 --orfao malformado imprime o uso"
+runc "$p" contar
+assert_eq 1 "$out" "skill-cleanup/4 contar conta só o mecânico (q)"
+
 report
