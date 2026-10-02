@@ -300,9 +300,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `docs/audora/memory/skill-cleanup.md` (/11, decisões "fora do git").
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/11`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/11): candidato fora do git ou sujo fica fora do lote como não tocado"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/11`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/11): candidato fora do git ou sujo fica fora do lote como não tocado"`
 
 ## Tarefa 7: aplicar — apagar arquivo, nota nos links, 1 commit, lote vazio
 

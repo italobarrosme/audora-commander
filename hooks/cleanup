@@ -238,6 +238,66 @@ sub classifica_links {
   }
 }
 
+# --- estado git: rastreados, sujos (índice ou árvore) e quem linka quem ---
+my (%RASTREADO, %SUJO, %REF);
+sub git_z {
+  local $/ = "\0";
+  open my $fh, '-|', 'git', '--no-optional-locks', @_ or die "git @_ falhou\n";
+  my @r = <$fh>; close $fh; chomp @r; return @r;
+}
+sub carrega_git {
+  %RASTREADO = map { $_ => 1 } git_z('ls-files', '-z');
+  my @st = git_z('status', '--porcelain', '-z', '--untracked-files=no');
+  while (@st) {
+    my $e = shift @st; my $xy = substr($e, 0, 2);
+    $SUJO{ substr($e, 3) } = 1;
+    $SUJO{ shift @st } = 1 if $xy =~ /[RC]/ && @st;
+  }
+  # Referentes: só .md rastreado (link em .md não rastreado não é editado nem bloqueia).
+  %REF = ();
+  for my $f (sort { $a cmp $b } grep { /\.md$/ } keys %RASTREADO) {
+    my %ja;
+    for my $k (links($f)) { push @{ $REF{ $k->[2] } }, $f unless $ja{ $k->[2] }++ || $k->[2] eq $f; }
+  }
+}
+
+# Caminhos tocados por item: [arquivos do próprio item], [referentes].
+sub tocados {
+  my ($sec, $alvo) = @_;
+  if ($sec eq 'planned órfão') {
+    my $no = "docs/audora/memory/$alvo.md";
+    return (['MEMORY.md'], []) unless -e $no;
+    return (['MEMORY.md', $no], [ @{ $REF{$no} // [] } ]);
+  }
+  if ($sec eq 'link quebrado') { (my $f = $alvo) =~ s/:\d+$//; return ([$f], []); }
+  return ([$alvo], [ @{ $REF{$alvo} // [] } ]);
+}
+
+# Por que o item fica fora do lote (undef = pode entrar).
+sub impedimento {
+  my ($sec, $alvo) = @_;
+  my ($proprio, $refs) = tocados($sec, $alvo);
+  my $em = $sec eq 'planned órfão';
+  for my $f (@$proprio) {
+    return 'fora do git' unless $RASTREADO{$f};
+    return 'mudança não commitada' . ($em ? " em $f" : '') if $SUJO{$f};
+  }
+  for my $f (@$refs) { return "mudança não commitada em $f" if $SUJO{$f}; }
+  return undef;
+}
+
+# Filtro git final: candidato fora do git ou sujo vira "não tocado" (/11).
+sub filtra_git {
+  for my $s (@SECOES) {
+    my @fica;
+    for my $it (@{ $LOTE{$s} // [] }) {
+      my $imp = impedimento($s, $it->[0]);
+      if (defined $imp) { push @NAO_TOCADO, "- $it->[0] | não tocado: $imp"; } else { push @fica, $it; }
+    }
+    $LOTE{$s} = \@fica;
+  }
+}
+
 sub total { my $n = 0; $n += scalar @{ $LOTE{$_} // [] } for @SECOES; return $n; }
 
 sub relatorio {
@@ -254,7 +314,7 @@ sub relatorio {
   print "$_\n" for @o;
 }
 
-sub varre { carrega_indice(); classifica_orfaos(); classifica_artefatos(); classifica_links(); }
+sub varre { carrega_indice(); classifica_orfaos(); classifica_artefatos(); classifica_links(); carrega_git(); filtra_git(); }
 
 if ($sub eq 'contar') { varre(); print total(), "\n"; exit 0; }
 if ($sub eq 'varrer') { varre(); relatorio(); exit 0; }

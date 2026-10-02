@@ -215,4 +215,38 @@ assert_contains "$out" 'uso: cleanup varrer' "skill-cleanup/3 --orfao malformado
 runc "$p" contar
 assert_eq 1 "$out" "skill-cleanup/4 contar conta só o mecânico (q)"
 
+# --- skill-cleanup/11 não tocado: fora do git e mudança não commitada ---
+p="$SP/t6"; mkt2 "$p"
+printf '\n[p](../planos/arquivo/plano-d.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+git -C "$p" add -A; git -C "$p" commit -qm 'arquivo linka plano-d'
+git -C "$p" rm -q --cached docs/audora/e2e/e2e-d.md; git -C "$p" commit -qm 'e2e-d fora do git'
+printf 'docs/audora/tmp/\n' > "$p/.gitignore"; mkdir -p "$p/docs/audora/tmp"; printf '# x\n' > "$p/docs/audora/tmp/x.md"
+printf '# editado\n' >> "$p/docs/audora/specs/d-escopo.md"
+printf '[q](../e2e/nao-existe.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+LQ="$(grep -n 'nao-existe' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+mkdir -p "$p/docs/audora/notas"; printf '[c](../depuracao/cacada-2026-01-01.md)\n' > "$p/docs/audora/notas/rascunho.md"
+antes="$(snap "$p")"
+runc "$p" varrer
+nt="$(secao "$out" 'não tocado')"
+assert_line "$nt" '- docs/audora/e2e/e2e-d.md | não tocado: fora do git' "skill-cleanup/11 untracked → fora do git"
+assert_not_contains "$(secao "$out" 'relatório e2e')" 'e2e-d.md' "skill-cleanup/11 untracked fora do lote"
+assert_line "$nt" '- docs/audora/tmp/x.md | não tocado: fora do git' "skill-cleanup/11 ignorado → fora do git"
+assert_line "$nt" '- docs/audora/specs/d-escopo.md | não tocado: mudança não commitada' "skill-cleanup/11 candidato sujo"
+assert_line "$nt" '- docs/audora/planos/arquivo/plano-d.md | não tocado: mudança não commitada em docs/audora/arquivo/2026-01-01-d.md' "skill-cleanup/11 referente sujo segura o candidato"
+assert_line "$nt" "- docs/audora/arquivo/2026-01-01-d.md:$LQ | não tocado: mudança não commitada" "skill-cleanup/11 link quebrado em arquivo sujo"
+assert_line "$nt" '- docs/audora/notas/rascunho.md | não tocado: fora do git' "skill-cleanup/11 .md não rastreado é não tocado"
+assert_line "$(secao "$out" 'depuração velha')" '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' "skill-cleanup/11 link em .md não rastreado não bloqueia"
+for s in 'spec de nó entregue' 'plano arquivado' 'relatório e2e' 'sem referência' 'link quebrado'; do
+  assert_empty "$(secao "$out" "$s")" "skill-cleanup/11 nada de não tocado em '$s'"
+done
+assert_eq 'total: 1 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/11 total não conta os não tocados"
+runc "$p" contar
+assert_eq 1 "$out" "skill-cleanup/11 contar não conta os não tocados"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/11 varrer com árvore suja não altera nada"
+p="$SP/t6m"; mkt5 "$p"; printf '\n' >> "$p/MEMORY.md"
+runc "$p" varrer --orfao 'p=absorvido por d'
+assert_line "$(secao "$out" 'não tocado')" '- p | não tocado: mudança não commitada em MEMORY.md' "skill-cleanup/11 planned com MEMORY.md sujo"
+assert_empty "$(secao "$out" 'planned órfão')" "skill-cleanup/11 MEMORY sujo tira todo planned do lote"
+assert_eq 'cleanup: nada a limpar' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/11 lote vazio com só não tocados → nada a limpar"
+
 report
