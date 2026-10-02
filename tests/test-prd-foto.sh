@@ -108,9 +108,9 @@ fu="$(flat docs/fundamentos.md)"
 assert_contains "$fu" 'atualiza a foto do PRD.md e acrescenta 1 linha ao CHANGELOG.md' "prd-foto docs fundamentos P5"
 assert_not_contains "$fu" 'promove o resumo ao PRD.md' "prd-foto docs fundamentos sem o resumo antigo"
 
-# --- /10 — versão 0.15.0 nos dois manifests (leitura-por-secao/12) ---
+# --- /10 — versão 0.16.0 nos dois manifests (skill-cleanup) ---
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
-  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.15.0"' "leitura-por-secao/12 $j declara 0.15.0 (substitui parada-revisao/10)"
+  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.12.0"' "prd-foto/10 $j sem 0.12.0"
 done
 

@@ -24,8 +24,8 @@ com IA sem estrutura: requisito que se perde entre conversas, plano que vira
 código sem ninguém aprovar o escopo antes, e "pronto" que ninguém verificou
 de verdade.
 
-Instalado num projeto, o plugin adiciona 8 skills encadeadas — da
-classificação de risco da demanda até o portão de validação final — que
+Instalado num projeto, o plugin adiciona 9 skills — 8 encadeadas, da
+classificação de risco da demanda até o portão de validação final, mais uma faxina sob demanda — que
 mantêm uma memória viva do produto (`MEMORY.md`), transformam escopo em
 artefato escrito antes do código, e cobram evidência real (testes rodados,
 e2e exercitado) antes de qualquer coisa ser dada como concluída.
@@ -86,7 +86,7 @@ Reinicie a sessão (ou rode `/clear`) — o hook de SessionStart passa a
 injetar o ponteiro do framework. Em seguida, rode o "Checklist de validação
 da instalação" mais abaixo neste README.
 
-## As 8 skills
+## As 9 skills
 
 | Skill | Papel |
 |---|---|
@@ -98,6 +98,7 @@ da instalação" mais abaixo neste README.
 | `e2e` | Levanta o projeto e exercita a demanda de ponta a ponta (opcional, fortemente recomendada) |
 | `validate` | Portão humano final: evidência 1:1 com critérios, sync MEMORY → foto do PRD, uma linha no `CHANGELOG.md` |
 | `debug` | Debug com causa raiz demonstrada (modo sintoma) ou caçada de defeitos por classes (modo caçada) |
+| `cleanup` | Faxina sob demanda das sobras do processo: nós planned órfãos, spec, plano e relatório e2e de nó entregue, depuração velha, arquivo sem referência e link quebrado em `docs/audora/`; remove o lote aprovado num commit só, revertível (script `hooks/cleanup`) |
 
 Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 
@@ -284,6 +285,25 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   melhorias viram nó é decisão sua.
 - **Próxima**: `execute` (fix via TDD), `validate` ou decisão sua.
 
+### `cleanup`
+
+- **Quando dispara**: só quando você pede ("faxina do processo") — ou quando
+  o sync da `validate` sugere, em 1 linha com a contagem de sobras.
+- **O que faz**: julga os nós planned contra os delivered (absorvido, ou
+  cita algo que não existe mais), roda `hooks/cleanup varrer` (relatório
+  só-leitura agrupado por tipo: planned órfão, spec de nó entregue, plano
+  arquivado, relatório e2e, depuração velha, sem referência, link quebrado)
+  e espera sua aprovação explícita do lote — dá para tirar itens. Depois o
+  `hooks/cleanup aplicar` apaga os arquivos, troca todo link para eles por
+  uma nota "removido pela cleanup — recuperável no git", apaga do índice as
+  linhas dos planned órfãos, valida o MEMORY e faz um commit só. O que está
+  fora do git, com mudança não commitada ou com dependente vivo fica fora do
+  lote; qualquer falha desfaz o lote inteiro.
+- **O que deixa no disco**: um único commit `chore(cleanup)`, revertível com
+  `git revert <hash>`.
+- **Portões humanos**: aprovação do lote (aprovar, tirar itens ou reprovar).
+- **Próxima**: nenhuma — volta para você.
+
 ## Fluxo de uso (exemplo: demanda MEDIUM)
 
 1. Você pede: "adiciona filtro por data na listagem de pedidos".
@@ -331,7 +351,7 @@ mais sandbox. Configure o harness — não conte com prosa para segurar o agente
 Rode na sessão interativa após instalar:
 
 - [ ] 1. QUANDO o marketplace for adicionado e o plugin instalado, o Claude
-  Code DEVE listar as 8 skills com prefixo `audora-commander:` (verifique com
+  Code DEVE listar as 9 skills com prefixo `audora-commander:` (verifique com
   a listagem de skills da sessão).
 - [ ] 2. QUANDO uma sessão nova iniciar, o contexto DEVE conter o ponteiro
   "Framework audora-commander ativo" (pergunte ao Claude o que o hook

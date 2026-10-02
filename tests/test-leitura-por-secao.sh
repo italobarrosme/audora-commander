@@ -129,7 +129,7 @@ base="$(printf '%s' "$co" | sed -nE 's/.*base=([0-9]+).*/\1/p')"
 [ -n "$base" ] && [ "$base" -le 47773 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 47773 (guarda de parada-revisao/9)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   mj="$(tr -d '\r' < "$j")"
-  assert_contains "$mj" '"version": "0.15.0"' "leitura-por-secao/12 $j declara 0.15.0"
+  assert_contains "$mj" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"
   assert_not_contains "$mj" '"version": "0.14.0"' "leitura-por-secao/12 $j sem 0.14.0"
 done
 sobra="$(grep -rlF '"version": "0.14.0"' tests/ | grep -v test-leitura-por-secao)"

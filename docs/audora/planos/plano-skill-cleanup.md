@@ -184,6 +184,10 @@ Definições (usadas por várias tarefas):
   (alvo ou caminho tocado não rastreado no `aplicar`); a pré-checagem cobre
   também referente sujo (trabalho em andamento nunca é sobrescrito); falha
   depois dos itens nomeia `MEMORY.md` (apagar linha/validate) ou `commit`.
+- 2026-10-02 (execute, T10 — replanejamento gatilho d): o bump para `0.16.0`
+  quebra 4 arquivos de teste fora do mapa que prendem `"version": "0.15.0"`
+  (`test-leitura-por-secao.sh`, `test-parada-revisao.sh`, `test-plano-mapa.sh`,
+  `test-prd-foto.sh`); entram no mapa da T10, só a linha da versão muda.
 
 ---
 
@@ -397,6 +401,7 @@ Definições (usadas por várias tarefas):
   - `tests/test-skills.sh:2,7,84,98` — loop com `cleanup`, contagem 9 e `cleanup` no loop de skills-ferramenta;
   - `tests/test-corte-sem-uso.sh:37-38,45,47-48,51` — contagem 9; a guarda "sem '9 skills'" vira `assert_contains` de `## The 9 skills`/`## As 9 skills`; versão;
   - `tests/test-docs.sh:7` (versão), `.claude-plugin/plugin.json:4`, `.claude-plugin/marketplace.json:9` (`0.16.0`);
+  - replanejado na execute (gatilho d): `tests/test-leitura-por-secao.sh:132`, `tests/test-parada-revisao.sh:109`, `tests/test-plano-mapa.sh:79`, `tests/test-prd-foto.sh:113` — também prendem `"version": "0.15.0"`; passam a `0.16.0` com o rótulo `skill-cleanup 0.16.0 (substitui leitura-por-secao/12)`;
   - `hooks/session-start:8` (acrescentar `; sobras do processo (nós órfãos, arquivo morto): cleanup`);
   - `README.md:28,89,100,285,334` e `README.pt-BR.md:27,89,100,286,334` — 9 skills, linha da tabela, seção `### cleanup` depois de `### debug` e checklist.
 - **teste**: `tests/test-skill-cleanup.sh` — caso "skill-cleanup/12 skill"; `tests/test-skills.sh`, `tests/test-corte-sem-uso.sh`, `tests/test-docs.sh`, `tests/test-session-start.sh`.
@@ -409,9 +414,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `skills/memory/SKILL.md:1-60,118-135` (molde), `README.md:89-103,265-286,329-346`, `README.pt-BR.md:89-103,266-287,329-346`, `tests/test-corte-sem-uso.sh:37-53`.
 - **done quando**: asserções passam; suíte verde; `bash tests/test-carga.sh` sem mudança na carga (a skill nova não entra no BASE/FULL).
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/12 skill`; `bash tests/test-skills.sh` falha em `corte-sem-uso/9 8 skills` depois de trocar a asserção para 9
-- [ ] **green** — os 5 arquivos de teste verdes; `bash tests/run.sh` (background) verde; gate passou
-- [ ] **commit** — `git add skills/cleanup/SKILL.md tests/test-skill-cleanup.sh tests/test-skills.sh tests/test-corte-sem-uso.sh tests/test-docs.sh .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/session-start README.md README.pt-BR.md && git commit -m "feat(skill-cleanup/1,3,4,12): skill cleanup (relatório, aprovação em lote, aplicar) e registro — 9 skills, 0.16.0"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/12 skill`; `bash tests/test-skills.sh` falha em `corte-sem-uso/9 8 skills` depois de trocar a asserção para 9
+- [x] **green** — os 5 arquivos de teste verdes; `bash tests/run.sh` (background) verde; gate passou
+- [x] **commit** — `git add skills/cleanup/SKILL.md tests/test-skill-cleanup.sh tests/test-skills.sh tests/test-corte-sem-uso.sh tests/test-docs.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh tests/test-plano-mapa.sh tests/test-prd-foto.sh .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/session-start README.md README.pt-BR.md && git commit -m "feat(skill-cleanup/1,3,4,12): skill cleanup (relatório, aprovação em lote, aplicar) e registro — 9 skills, 0.16.0"`
 
 ## Tarefa 11: sugestão no sync da validate
 

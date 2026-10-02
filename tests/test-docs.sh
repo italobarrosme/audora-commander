@@ -4,7 +4,7 @@ source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)' < "$j" 2>/dev/null && ok || ko "$j JSON inválido"
-  assert_contains "$(cat "$j")" '"version": "0.15.0"' "leitura-por-secao/12 $j declara 0.15.0 (substitui parada-revisao/10)"
+  assert_contains "$(cat "$j")" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"
 done
 assert_not_contains "$(tr 'A-Z' 'a-z' < .claude-plugin/plugin.json; tr 'A-Z' 'a-z' < .claude-plugin/marketplace.json)" 'graphify' "remover-graphify/10 manifests sem Graphify"
 en="$(cat README.md)"; pt="$(cat README.pt-BR.md)"

@@ -412,4 +412,17 @@ assert_eq 1 "$code" "skill-cleanup/14 referente sujo → exit 1"
 assert_contains "$out" 'mudança não commitada em docs/audora/arquivo/2026-01-01-d.md' "skill-cleanup/14 referente sujo nomeado"
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 referente sujo → trabalho em andamento intacto"
 
+# --- skill-cleanup/12 skill: relatório, aprovação explícita do lote, aplicar; /1 /2 /3 /4 pela skill ---
+sk="$(tr -d '\r' 2>/dev/null < "$ROOT/skills/cleanup/SKILL.md")"
+assert_file "$ROOT/skills/cleanup/SKILL.md" "skill-cleanup/12 skill cleanup existe"
+for s in 'hooks/cleanup" varrer' 'hooks/cleanup" aplicar' '--orfao <id>=absorvido por <id-delivered>' \
+         '--orfao <id>=alvo ausente: <alvo>' 'aprovação explícita' 'tirar itens' 'nada a limpar' 'git revert <hash>' \
+         'bootstrap da skill memory' "grep -E '^- [^|]+ \\| (planned|delivered) \\|' MEMORY.md"; do
+  assert_contains "$sk" "$s" "skill-cleanup/12 skill cita: $s"
+done
+assert_contains "$(printf '%s\n' "$sk" | grep -F 'reprovou ou tirou todos → não rode')" 'aplicar' "skill-cleanup/12 reprovado ou vazio → não roda aplicar (mesma linha)"
+assert_not_contains "$sk" '## Bloco de fechamento' "skill-cleanup/12 skill-ferramenta sem bloco de fechamento"
+[ "$(printf '%s\n' "$sk" | wc -l)" -le 250 ] && ok || ko "skill-cleanup/12 SKILL.md ≤ 250 linhas"
+assert_contains "$(bash "$ROOT/hooks/session-start")" 'cleanup' "skill-cleanup/1 session-start aponta a cleanup"
+
 report

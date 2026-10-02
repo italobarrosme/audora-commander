@@ -34,21 +34,21 @@ assert_not_contains "$fs" 'motor' "corte-sem-uso/8 template sem motor"
 assert_not_contains "$fs" '{{TAREFA}}' "corte-sem-uso/8 placeholder do fallback do motor fora"
 pa="$(tr -d '\r' < templates/bloco-fechamento-template.md | awk '/^## Parada entre fases/{f=1;next} /^## /{f=0} f')"
 assert_contains "$pa" 'templates/fase-subagente-template.md' "corte-sem-uso/8 segue aponta o subagente"
-# --- /9 8 skills, nenhuma superfície cita a skill worktree ---
-assert_eq "8" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "corte-sem-uso/9 8 skills"
+# --- /9 9 skills (skill-cleanup somou a cleanup), nenhuma superfície cita a skill worktree ---
+assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "skill-cleanup 9 skills (substitui corte-sem-uso/9 8 skills)"
 assert_no_file skills/worktree/SKILL.md "corte-sem-uso/9 skill worktree removida"
 assert_no_file tests/test-worktree.sh "corte-sem-uso/11 teste da worktree removido"
 assert_empty "$(lista_com 'worktree' skills templates hooks .claude-plugin docs/fundamentos.md)" "corte-sem-uso/9 skills, templates, hooks, manifests e fundamentos sem worktree"
 for r in README.md README.pt-BR.md; do
   assert_not_contains "$(tr -d '\r' < "$r")" '| `worktree` |' "corte-sem-uso/9 $r sem a skill worktree na tabela"
   assert_not_contains "$(tr -d '\r' < "$r")" '### `worktree`' "corte-sem-uso/9 $r sem seção worktree"
-  assert_empty "$(grep -nE '(^|[^0-9])9 (chained )?skills' "$r")" "corte-sem-uso/9 $r sem '9 skills'"
+  assert_empty "$(grep -nE '(^|[^0-9])8 (chained )?skills' "$r")" "skill-cleanup $r sem contagem velha '8 skills'"
 done
-assert_contains "$(tr -d '\r' < README.md)" '## The 8 skills' "corte-sem-uso/9 README EN diz 8 skills"
-assert_contains "$(tr -d '\r' < README.pt-BR.md)" '## As 8 skills' "corte-sem-uso/9 README PT diz 8 skills"
-# --- /10 versão: 0.12.0 superada pela 0.15.0 (leitura-por-secao/12); 0.10.0 segue fora ---
+assert_contains "$(tr -d '\r' < README.md)" '## The 9 skills' "skill-cleanup README EN diz 9 skills (substitui corte-sem-uso/9)"
+assert_contains "$(tr -d '\r' < README.pt-BR.md)" '## As 9 skills' "skill-cleanup README PT diz 9 skills (substitui corte-sem-uso/9)"
+# --- /10 versão: 0.12.0 superada pela 0.16.0 (skill-cleanup); 0.10.0 segue fora ---
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
-  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.15.0"' "leitura-por-secao/12 $j declara 0.15.0 (substitui parada-revisao/10)"
+  assert_contains "$(tr -d '\r' < "$j")" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.10.0"' "corte-sem-uso/10 $j sem 0.10.0"
 done
 

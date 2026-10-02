@@ -25,8 +25,8 @@ without structure: requirements lost between conversations, plans that become
 code without anyone approving the scope first, and "done" that nobody
 actually verified.
 
-Installed in a project, the plugin adds 8 chained skills — from risk
-classification of the demand to the final validation gate — that keep a
+Installed in a project, the plugin adds 9 skills — 8 chained ones, from risk
+classification of the demand to the final validation gate, plus an on-demand cleanup — that keep a
 living memory of the product (`MEMORY.md`), turn scope into a written
 artifact before any code, and demand real evidence (tests actually run, e2e
 actually exercised) before anything is considered complete.
@@ -86,7 +86,7 @@ Restart the session (or run `/clear`) — the SessionStart hook starts
 injecting the framework pointer. Then run the "Installation validation
 checklist" further down in this README.
 
-## The 8 skills
+## The 9 skills
 
 | Skill | Role |
 |---|---|
@@ -98,6 +98,7 @@ checklist" further down in this README.
 | `e2e` | Boots the project and exercises the demand end to end (optional, strongly recommended) |
 | `validate` | Final human gate: evidence mapped 1:1 to criteria, MEMORY → PRD snapshot sync, one line in `CHANGELOG.md` |
 | `debug` | Debugging with demonstrated root cause (symptom mode) or defect hunting by classes (hunt mode) |
+| `cleanup` | On-demand cleanup of process leftovers: orphan planned nodes, spec, plan and e2e report of delivered nodes, old hunt reports, unreferenced files and broken links in `docs/audora/`; removes the approved batch in one revertible commit (script `hooks/cleanup`) |
 
 Details per skill: [Skills in detail](#skills-in-detail).
 
@@ -283,6 +284,27 @@ Details per skill: [Skills in detail](#skills-in-detail).
   which improvements become nodes is up to you.
 - **Next**: `execute` (fix via TDD), `validate`, or your decision.
 
+### `cleanup`
+
+- **When it fires**: only when you ask for it ("clean up the process") — or
+  when the `validate` sync suggests it, in one line with the count of
+  leftovers.
+- **What it does**: judges the planned nodes against the delivered ones
+  (absorbed, or citing something that no longer exists), runs
+  `hooks/cleanup varrer` (read-only report grouped by type: orphan planned,
+  delivered node's spec, archived plan, e2e report, old hunt report,
+  unreferenced file, broken link) and waits for your explicit approval of
+  the batch — you can drop items. Then `hooks/cleanup aplicar` deletes the
+  files, replaces every link to them with a "removed by the cleanup —
+  recoverable in git" note, deletes the orphan planned lines from the index,
+  validates the MEMORY and makes a single commit. Anything outside git, with
+  uncommitted changes or with a live dependent stays out of the batch; any
+  failure undoes the whole batch.
+- **What it leaves on disk**: one `chore(cleanup)` commit, revertible with
+  `git revert <hash>`.
+- **Human gates**: approval of the batch (approve, drop items or reject).
+- **Next**: none — back to you.
+
 ## Usage flow (example: a MEDIUM demand)
 
 1. You ask: "add a date filter to the orders list".
@@ -331,7 +353,7 @@ rely on prose to stop the agent.
 Run in the interactive session after installing:
 
 - [ ] 1. WHEN the marketplace is added and the plugin installed, Claude Code
-  MUST list the 8 skills with the `audora-commander:` prefix (check the
+  MUST list the 9 skills with the `audora-commander:` prefix (check the
   session's skill listing).
 - [ ] 2. WHEN a new session starts, the context MUST contain the
   "Framework audora-commander ativo" pointer (ask Claude what the hook
