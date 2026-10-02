@@ -156,6 +156,10 @@ Definições (usadas por várias tarefas):
 - `tests/test-skill-cleanup.sh` cria muitos repos git: no Windows passa de
   120 s junto da suíte → `bash tests/run.sh` via `run_in_background` e ler o
   output-file. O arquivo sozinho roda em foreground.
+- 2026-10-02 (execute): `bash hooks/gate skill-cleanup` rodado ANTES de cada
+  commit (T1–T11 + fix do item duplicado), sempre `GATE: passou`, nunca
+  queda de asserts. Última suíte: 16 arquivos, 0 com falha, 1124 asserts
+  (`test-skill-cleanup.sh` 200).
 
 ## Decisões tomadas pela IA
 
@@ -188,6 +192,13 @@ Definições (usadas por várias tarefas):
   quebra 4 arquivos de teste fora do mapa que prendem `"version": "0.15.0"`
   (`test-leitura-por-secao.sh`, `test-parada-revisao.sh`, `test-plano-mapa.sh`,
   `test-prd-foto.sh`); entram no mapa da T10, só a linha da versão muda.
+- 2026-10-02 (execute, pós-T11): `varrer` só-leitura neste repo (0,7 s,
+  `git status` igual antes/depois) achou item duplicado — o mesmo link
+  quebrado 2x na linha virava 2 itens e o `aplicar` falhava no 2º,
+  desfazendo o lote. Correção por TDD: item único por (tipo, alvo, motivo).
+  A mesma varredura lista como link quebrado os caminhos de fixture citados
+  neste plano; somem quando o plano for arquivado e varrido (passo
+  pós-entrega, fora do nó).
 
 ---
 

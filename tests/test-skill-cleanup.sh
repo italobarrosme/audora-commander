@@ -412,6 +412,19 @@ assert_eq 1 "$code" "skill-cleanup/14 referente sujo → exit 1"
 assert_contains "$out" 'mudança não commitada em docs/audora/arquivo/2026-01-01-d.md' "skill-cleanup/14 referente sujo nomeado"
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 referente sujo → trabalho em andamento intacto"
 
+# --- skill-cleanup/10 mesmo link quebrado 2x na linha → 1 item só; aplicar troca os dois ---
+# (achado na varredura real deste repo: item duplicado fazia o aplicar falhar no 2º e desfazer o lote)
+p="$SP/t10d"; mkproj "$p"
+printf '\nDois: [a](../e2e/x.md) e [b](../e2e/x.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+git -C "$p" commit -qam dup
+LD="$(grep -n '^Dois:' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote10d.txt"
+assert_eq 1 "$(printf '%s\n' "$out" | grep -cF -- "- docs/audora/arquivo/2026-01-01-d.md:$LD | aponta ../e2e/x.md inexistente")" "skill-cleanup/10 link repetido na linha vira 1 item"
+assert_eq 'total: 1 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/10 total sem duplicata"
+runc "$p" aplicar "$SP/lote10d.txt"
+assert_eq 0 "$code" "skill-cleanup/10 aplicar com link repetido → exit 0"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Dois: $(nota docs/audora/e2e/x.md) e $(nota docs/audora/e2e/x.md)" "skill-cleanup/10 as duas ocorrências viram nota"
+
 # --- skill-cleanup/12 skill: relatório, aprovação explícita do lote, aplicar; /1 /2 /3 /4 pela skill ---
 sk="$(tr -d '\r' 2>/dev/null < "$ROOT/skills/cleanup/SKILL.md")"
 assert_file "$ROOT/skills/cleanup/SKILL.md" "skill-cleanup/12 skill cleanup existe"

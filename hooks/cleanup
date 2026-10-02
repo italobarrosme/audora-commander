@@ -81,7 +81,12 @@ sub arquivos_docs {
 sub texto_nos { join "\n", map { ler($_) } sort { $a cmp $b } glob('docs/audora/memory/*.md'); }
 
 my (%LOTE, @AVISOS, @MANTIDO, @NAO_TOCADO);
-sub item { my ($sec, $alvo, $motivo) = @_; push @{ $LOTE{$sec} }, [$alvo, $motivo]; }
+# Item único por (tipo, alvo, motivo): o mesmo link quebrado 2x na linha é 1 item (o aplicar troca os dois).
+my %ITEM_VISTO;
+sub item {
+  my ($sec, $alvo, $motivo) = @_;
+  push @{ $LOTE{$sec} }, [$alvo, $motivo] unless $ITEM_VISTO{"$sec\0$alvo\0$motivo"}++;
+}
 
 # depende-de dos nós não arquivados: id → [dependentes]
 sub dependentes {
