@@ -63,6 +63,7 @@ Ler por seção o `PRD.md`, o `templates/bloco-fechamento-template.md` e os temp
 - 2026-10-02 (IA): filtro vazio não cai para a seção inteira (/5) — cair anularia o corte nos projetos com poucos aprendizados por fase.
 - 2026-10-02 (IA): tetos de carga mantidos (folga BASE hoje: 277 bytes); o plan acomoda o texto novo, e subir teto exige motivo no nó (/11).
 - 2026-10-02 (IA): bump `0.15.0` — muda o comportamento das skills; sem bump o cache do plugin não atualiza.
+- 2026-10-02 (humano): portão final APROVADO ("aprovo"), com merge local na `main` e sync. e2e pulado pelo humano (a medição A/B de /10 cobre). Evidência no portão: gate passou, suíte exit 0, 904 asserts em 15 arquivos; bytes e custo do A/B recontados dos jsonl da medição. Decisão viva aprovada sem corte: skill de fase carrega o `MEMORY.md` pelo carregar-contexto antes de qualquer Read.
 
 ## medicao
 
@@ -91,6 +92,6 @@ Receita: `fixture-leitura.sh <dir>` (scratchpad) gera `fx-a`/`fx-b`; `sessao.sh 
 
 ## e2e
 
-pendente
+e2e: pulado-pelo-humano (2026-10-02) — a medição A/B de /10 rodou as fases reais com `claude -p` e `--plugin-dir`.
 
 ## feedback-reprovacao
