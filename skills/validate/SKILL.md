@@ -34,6 +34,8 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
 
 ## Fluxo
 
+Contexto: carregar-contexto (skill memory).
+
 1. **Oferecer o e2e** (se ainda não rodou): "Recomendo fortemente rodar o e2e
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
    Aceitou → skill e2e, volte aqui com o relatório. Recusou → registrar no nó

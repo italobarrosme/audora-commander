@@ -93,6 +93,8 @@ mexer em guarda antiga.
 - 2026-10-02 (execute T1): red 20/28 (frases e comandos ausentes, sem erro
   de bash); green 48/0; memory 7294 B, `test-carga` base=47756 full=55383 (=
   mapa); `test-gate` 52/0; gate antes do commit `GATE: passou`, exit=0.
+- 2026-10-02 (execute T2): red 50/11 (só a seção nova); green 61/0; validate
+  6134 B, `test-carga` base=47678 full=55305 (= mapa); gate `GATE: passou`, exit=0.
 
 ## Decisões tomadas pela IA
 
@@ -254,9 +256,9 @@ mexer em guarda antiga.
   (≤ 47773); `test-parada-revisao`, `test-contexto-por-fase`, `test-skills`
   verdes; gate `exit=0`.
 
-- [ ] **red** — teste da demanda `exit=1` só nos casos da seção nova (7 fases sem a frase, 3 frases antigas presentes, template sem o recorte); seção da T1 verde.
-- [ ] **green** — `exit=0`; carga 47678; guardas verdes; gate antes do commit.
-- [ ] **commit** — `git add skills/audora-commander/SKILL.md skills/scope/SKILL.md skills/plan/SKILL.md skills/execute/SKILL.md skills/validate/SKILL.md skills/e2e/SKILL.md skills/debug/SKILL.md templates/fase-subagente-template.md tests/test-leitura-por-secao.sh && git commit -m "feat(leitura-por-secao/1,6): as 7 fases e o subagente carregam o MEMORY pelo carregar-contexto"`
+- [x] **red** — teste da demanda `exit=1` só nos casos da seção nova (7 fases sem a frase, 3 frases antigas presentes, template sem o recorte); seção da T1 verde.
+- [x] **green** — `exit=0`; carga 47678; guardas verdes; gate antes do commit.
+- [x] **commit** — `git add skills/audora-commander/SKILL.md skills/scope/SKILL.md skills/plan/SKILL.md skills/execute/SKILL.md skills/validate/SKILL.md skills/e2e/SKILL.md skills/debug/SKILL.md templates/fase-subagente-template.md tests/test-leitura-por-secao.sh && git commit -m "feat(leitura-por-secao/1,6): as 7 fases e o subagente carregam o MEMORY pelo carregar-contexto"`
 
 ## Tarefa 3: READMEs e fundamentos descrevem a leitura por seção
 

@@ -16,6 +16,8 @@ variável e esconde a causa. Este fluxo proíbe mexer no código antes de PROVAR
 o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
 **caçada** (não há sintoma — procurar defeitos sistematicamente).
 
+Contexto: carregar-contexto (skill memory).
+
 ## Modo sintoma
 
 1. **Reproduzir determinístico.** Transformar o relato no menor caso que

@@ -20,6 +20,8 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 
 ## Fluxo
 
+Contexto: carregar-contexto (skill memory).
+
 1. **Infra do teste — ordem de decisão** (docker compose é o default):
    - Projeto TEM docker compose (`docker-compose*.yml` / `compose*.yml`) →
      usar como infra do e2e. Compose de e2e dedicado existente

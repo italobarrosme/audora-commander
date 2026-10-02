@@ -92,4 +92,17 @@ assert_not_contains "$apr_repo" '[invalidado-em:' "leitura-por-secao/4 recorte d
 b_rec="$(printf '%s' "$apr_repo" | wc -c)"; b_sec="$(printf '%s' "$sec_apr" | wc -c)"
 [ "$b_rec" -gt 0 ] && [ "$b_rec" -lt "$b_sec" ] && ok || ko "leitura-por-secao/4 recorte do repo ($b_rec B) não-vazio e menor que a seção ($b_sec B)"
 
+# --- /1 /6 — as 7 fases carregam pelo carregar-contexto ---
+for s in audora-commander scope plan execute e2e validate debug; do
+  assert_contains "$(flat skills/$s/SKILL.md)" 'carregar-contexto (skill memory)' "leitura-por-secao/1 $s carrega pelo carregar-contexto"
+done
+assert_not_contains "$(flat skills/audora-commander/SKILL.md)" 'operação carregar-contexto (Constituição + Aprendizados + índice de nós)' "leitura-por-secao/6 porta sem a carga antiga"
+assert_not_contains "$(flat skills/scope/SKILL.md)" 'carregar constituição + nós relacionados' "leitura-por-secao/6 scope sem a carga antiga"
+assert_not_contains "$(flat skills/plan/SKILL.md)" 'carregar nó da demanda + constituição' "leitura-por-secao/6 plan sem a carga antiga"
+sub="$(flat templates/fase-subagente-template.md)"
+assert_contains "$sub" 'o recorte do MEMORY.md (carregar-contexto)' "leitura-por-secao/1 subagente reancora pelo recorte"
+assert_contains "$sub" 'reancore só pelos artefatos em disco' "leitura-por-secao/1 subagente segue reancorando só pelo disco"
+bv="$(tr -d '\r' 2>/dev/null < skills/validate/SKILL.md | wc -c)"
+[ "$bv" -le 6139 ] && ok || ko "leitura-por-secao/1 validate $bv B > 6139 (guarda de parada-revisao/9)"
+
 report

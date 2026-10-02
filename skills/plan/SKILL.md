@@ -18,7 +18,7 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 
 ## Fluxo
 
-1. **Contexto**: carregar nó da demanda + constituição (skill memory). Ler o
+1. **Contexto**: carregar-contexto (skill memory). Ler o
    artefato de escopo aprovado (nó ou spec dedicada). Retomada (`plan de <id>`)
    com id fora do índice ou nó sem critérios aprovados → recusar nomeando o que falta e voltar ao scope.
 2. **Passada 1 — localizar**: a partir do escopo, achar onde a mudança mora

@@ -17,8 +17,7 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
 
 ## Fluxo
 
-1. **Contexto**: carregar constituição + nós relacionados (skill memory,
-   operação carregar-contexto). Nó da demanda já existe (criado pela porta de
+1. **Contexto**: carregar-contexto (skill memory). Nó da demanda já existe (criado pela porta de
    entrada).
 2. **Perguntas — em lote.** Só sobre comportamento: o que o usuário vê, o que
    o sistema faz, o que acontece no erro. Prefira múltipla escolha quando as

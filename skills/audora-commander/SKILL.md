@@ -20,8 +20,7 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
 
 ## Fluxo
 
-1. **Contexto**: skill `memory`, operação carregar-contexto (Constituição +
-   Aprendizados + índice de nós). MEMORY ausente → oferecer bootstrap antes
+1. **Contexto**: carregar-contexto (skill memory). MEMORY ausente → oferecer bootstrap antes
    de qualquer outra coisa. Nunca seguir sem MEMORY, nunca inventar um.
 2. **Concorrência**: nós `in-progress` no índice ≥ 3 e chegando demanda nova →
    listar os abertos e perguntar: pausar qual, continuar qual, abandonar qual.
