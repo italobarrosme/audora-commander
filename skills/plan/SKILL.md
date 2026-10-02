@@ -18,8 +18,9 @@ só na conversa morre no primeiro /clear — por isso é ARQUIVO.
 
 ## Fluxo
 
-1. **Contexto**: carregar-contexto (skill memory). Ler o
-   artefato de escopo aprovado (nó ou spec dedicada). Retomada (`plan de <id>`)
+1. **Contexto**: carregar-contexto (skill memory) antes de qualquer Read;
+   `MEMORY.md` nunca inteiro. Ler o artefato de escopo aprovado (nó ou spec
+   dedicada). Retomada (`plan de <id>`)
    com id fora do índice ou nó sem critérios aprovados → recusar nomeando o que falta e voltar ao scope.
 2. **Passada 1 — localizar**: a partir do escopo, achar onde a mudança mora
    (símbolos, rotas, nomes de domínio) pela busca do símbolo — só listar.

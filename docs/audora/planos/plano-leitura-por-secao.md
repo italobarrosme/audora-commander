@@ -101,6 +101,15 @@ mexer em guarda antiga.
 - 2026-10-02 (execute T4): red 71/5 (só /12); green 76/0; `test-carga`
   base=47678 full=55305 (= ensaio); suíte `run.sh` exit=0, 17 arquivos, 899
   asserts somados do log; gate `GATE: passou`, exit=0.
+- 2026-10-02 (execute T5): porta+scope na mesma sessão — o scope reusou o
+  recorte (/7) e não leu o `MEMORY.md` nos dois lados; a tabela junta as duas.
+  Plan B (1ª rodada) leu o `MEMORY.md` inteiro (16211 B, = A) no 1º lote
+  paralelo de Reads, junto de PRD, nó e templates, antes de abrir a skill
+  memory. Causa: o ponteiro `carregar-contexto (skill memory)` não fixa a
+  ORDEM; a porta B, com o mesmo ponteiro, fez certo. Correção (red 76/1 →
+  green 77/0): plan diz "antes de qualquer Read; `MEMORY.md` nunca inteiro";
+  BASE 47678 → 47731 (≤ 47773). Re-rodado B: 8301 B, sem Read inteiro.
+  1ª rodada em `runs/descartados/`. Gate `GATE: passou`, exit=0.
 
 ## Decisões tomadas pela IA
 
@@ -324,3 +333,35 @@ mexer em guarda antiga.
   - Extração: `$SCRATCH/bytes-memory.pl <jsonl>` (perl `JSON::PP`): soma os bytes do `tool_result` de cada `tool_use` que lê o `MEMORY.md` da raiz — Read com `file_path` terminando em `/MEMORY.md` fora de `docs/audora/memory/`, Grep com `path` nesse arquivo, Bash cujo `command` cita `MEMORY.md` fora de `docs/audora/memory/`; a fase é a da última Skill de fase invocada antes da chamada (porta e scope se separam na mesma sessão). Custo: `total_cost_usd` de cada evento `result`, somado por turno.
 - **arquivos**: Modificar `docs/audora/memory/leitura-por-secao.md` (`## medicao` nova, entre `## decisoes` e `## delta`: tabela fase × bytes A / B / B÷A × custo A / B, e a receita em 3-5 linhas). Nenhum arquivo do plugin muda.
 - **done quando**: `## medicao` tem as 6 fases (porta, scope, plan, execute, e2e, validate) com bytes e custo dos dois lados e B < A em todas; gate `exit=0`; commit `docs(leitura-por-secao/10): medição A/B …`. Fase com B ≥ A NÃO é registrada como aceita: é defeito da skill → debug (por que leu inteiro), corrigir o texto, re-rodar o lado B daquela fase e anotar.
+
+### Subtarefas de T5 (expandidas na execute, 2026-10-02)
+
+Demanda da fixture: CLI bash `notas.sh` (`add`/`list`/`del`/`ajuda`, funções
+`cmd_<nome>` em `lib/notas.sh`); pedido à porta: comando novo que exporta as
+notas em CSV no stdout. `MEMORY.md` 15612 B: 67 aprendizados de todas as
+fases (5 invalidados, 6 citam csv/export), 28 nós (26 entregues com arquivo
+em `docs/audora/arquivo/`, 2 planned), `gate: recusado`,
+`ferramenta-e2e: bash direto`.
+
+- [x] **5.1 fixture** — `$SCRATCH/fixture-leitura.sh <dir>` (Write) gera
+  `fx-a` e `fx-b`. Done: `tests/run.sh` `PASS=9 FAIL=0`; `diff -r` sem `.git`
+  vazio; `memory-validate` exit 0; só `main`.
+- [x] **5.2 plugin A e extrator** — `git archive e3c7242` em
+  `$SCRATCH/plugin-0.14.0` (`"version": "0.14.0"`); `$SCRATCH/bytes-memory.pl`
+  conferido num jsonl sintético (Read/Grep/Bash, UTF-8, exclusão de
+  `docs/audora/memory/`, fase pela Skill, custo somado).
+- [ ] **5.3 porta + scope A e B** — `$SCRATCH/sessao.sh <a|b> <rótulo>
+  "<prompt>" [resume]`, em paralelo. Turno 1: o pedido de
+  `$SCRATCH/pedido.txt`; turnos seguintes por `--resume`, texto fixo de
+  `$SCRATCH/respostas.txt` e depois `aprovado`, iguais nos dois lados, até
+  os critérios aprovados. Done: nó da demanda com critérios na fixture;
+  commit na fixture.
+- [ ] **5.4 plan A e B** — sessão nova `plan de <id>`; aprovação por
+  `--resume` com `aprovado`. Done: plano-arquivo commitado na fixture.
+- [ ] **5.5 execute A e B** — sessão nova `execute de <id>`; parou antes do
+  fim → `--resume` com `continue` (anotar). Done: `tests/run.sh` exit 0.
+- [ ] **5.6 e2e e validate A e B** — sessão nova `e2e de <id>`; depois
+  sessão nova `validate de <id>` até o portão, sem aprovar.
+- [ ] **5.7 extração e registro** — `bytes-memory.pl` por lado e fase;
+  `## medicao` no nó (tabela + receita); notas de sessão; gate `exit=0`;
+  commit `docs(leitura-por-secao/10): medição A/B …`.

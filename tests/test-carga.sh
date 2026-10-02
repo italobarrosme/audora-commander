@@ -3,7 +3,7 @@
 # framework põe no contexto por demanda não volta a inchar em silêncio.
 # BASE = o que toda demanda MEDIUM carrega até o portão final (1 leitura de cada);
 # FULL = BASE + o que só a aprovação lê (compactar, sync, filtro de decisões vivas, template do CHANGELOG).
-# Medição (blobs LF): antes BASE 56237 / FULL 58036; depois BASE 53274 / FULL 58483; corte-sem-uso: BASE 51800 → 46575 / FULL 57040 → 51815; plano-mapa: BASE 46575 → 47719 / FULL 51815 → 52959; prd-foto: BASE 47719 → 47773 / FULL 52959 → 55182; parada-revisao: BASE 47773 → 47723 / FULL 55182 → 55350; leitura-por-secao: BASE 47723 → 47678 / FULL 55350 → 55305.
+# Medição (blobs LF): antes BASE 56237 / FULL 58036; depois BASE 53274 / FULL 58483; corte-sem-uso: BASE 51800 → 46575 / FULL 57040 → 51815; plano-mapa: BASE 46575 → 47719 / FULL 51815 → 52959; prd-foto: BASE 47719 → 47773 / FULL 52959 → 55182; parada-revisao: BASE 47773 → 47723 / FULL 55182 → 55350; leitura-por-secao: BASE 47723 → 47731 / FULL 55350 → 55358 (47678 / 55305 antes da frase da plan pedida pelo A/B).
 # Tetos = depois + 3%, arredondado para cima em centenas. Subir teto só com motivo no nó.
 # Bytes contados SEM \r: com core.autocrlf=true o checkout grava CRLF e infla a conta.
 source "$(dirname "$0")/lib.sh"
