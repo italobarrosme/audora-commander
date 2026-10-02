@@ -490,6 +490,10 @@ done
 assert_contains "$(printf '%s\n' "$sk" | grep -F 'reprovou ou tirou todos → não rode')" 'aplicar' "skill-cleanup/12 reprovado ou vazio → não roda aplicar (mesma linha)"
 assert_not_contains "$sk" '## Bloco de fechamento' "skill-cleanup/12 skill-ferramenta sem bloco de fechamento"
 [ "$(printf '%s\n' "$sk" | wc -l)" -le 250 ] && ok || ko "skill-cleanup/12 SKILL.md ≤ 250 linhas"
+assert_contains "$sk" 'O script só acha o caminho da coluna arquivos-chave que existiu no histórico e sumiu do disco' "cleanup-alvo-ausente/10 skill: script só acha o que existiu e sumiu"
+assert_contains "$(printf '%s\n' "$sk" | grep -F 'confira no histórico que o alvo existiu')" '--orfao <id>=alvo ausente: <alvo>' "cleanup-alvo-ausente/10 skill: --orfao alvo ausente só depois de conferir o histórico"
+assert_not_contains "$sk" 'Caminho inexistente na coluna arquivos-chave o script já acha sozinho' "cleanup-alvo-ausente/10 skill: frase antiga removida"
+assert_not_contains "$sk" 'alvo ausente conferido no repo' "cleanup-alvo-ausente/10 skill: red flag confere no histórico"
 assert_contains "$(bash "$ROOT/hooks/session-start")" 'cleanup' "skill-cleanup/1 session-start aponta a cleanup"
 
 # --- skill-cleanup/16 sync da validate sugere a cleanup (1 linha, com a contagem), sem rodar ---

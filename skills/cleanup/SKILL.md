@@ -21,7 +21,7 @@ carregar). O julgamento semântico fica aqui. Rode tudo na raiz do projeto.
 
 | tipo | o que é |
 |---|---|
-| planned órfão | nó planned já entregue/absorvido por um delivered, ou que cita alvo que não existe mais |
+| planned órfão | nó planned já entregue/absorvido por um delivered, ou que cita alvo que existiu e não existe mais |
 | spec de nó entregue | `docs/audora/specs/<id>-escopo.md` de nó delivered |
 | plano arquivado | `docs/audora/planos/arquivo/plano-<id>.md` de nó delivered |
 | relatório e2e | `docs/audora/e2e/e2e-<id>.md` de nó delivered |
@@ -41,9 +41,9 @@ vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
    `grep -E '^- [^|]+ \| (planned|delivered) \|' MEMORY.md`
    Compare cada planned (título, resumo, keywords) com os delivered:
    - objetivo já entregue ou absorvido por um delivered → `--orfao <id>=absorvido por <id-delivered>`;
-   - cita skill, arquivo ou feature que não existe mais → confira no repo (Glob/Grep, nunca de memória) e use `--orfao <id>=alvo ausente: <alvo>`.
+   - cita skill, arquivo ou feature que existiu e sumiu → confira no histórico que o alvo existiu (`git log -1 --full-history --oneline HEAD -- <alvo>` não vazio; nunca de memória) e só então use `--orfao <id>=alvo ausente: <alvo>`. Alvo que nunca existiu é feature futura, não órfão.
    Na dúvida, NÃO marque: planned legítimo apagado é requisito perdido.
-   Caminho inexistente na coluna arquivos-chave o script já acha sozinho.
+   O script só acha o caminho da coluna arquivos-chave que existiu no histórico e sumiu do disco; caminho que nunca existiu ele não lista.
 3. **Varrer** (só lê, não altera nada):
    `bash "<raiz do plugin>/hooks/cleanup" varrer --orfao <id>=<motivo> --orfao <id>=<motivo>`
    (um `--orfao` por planned julgado; sem nenhum, rode só `varrer`).
@@ -84,7 +84,7 @@ indisponível: avise o humano, não faça a limpeza à mão.
 |---|---|
 | "O lote é óbvio, aplico direto" | Sem aprovação explícita do lote não roda `aplicar`. Nunca. |
 | "Apago à mão, é mais rápido" | À mão não troca link, não valida o MEMORY, não desfaz na falha. Script. |
-| "Esse planned parece velho, marco órfão" | Velho não é órfão. Só absorvido por delivered ou alvo ausente conferido no repo. |
+| "Esse planned parece velho, marco órfão" | Velho não é órfão. Só absorvido por delivered ou alvo ausente conferido no histórico. |
 | "O arquivo está sujo, mas incluo assim mesmo" | Mudança não commitada é trabalho em andamento. Fica fora do lote. |
 | "Falhou no meio, termino o resto à mão" | O script já desfez o lote. Mostre a falha ao humano e pare. |
 | "Leio o MEMORY.md inteiro pra julgar" | Só as linhas planned e delivered do índice, por grep. |
