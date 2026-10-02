@@ -61,4 +61,49 @@ runc "$p" contar
 assert_eq 0 "$code" "skill-cleanup/15 contar → exit 0"
 assert_eq 0 "$out" "skill-cleanup/15 contar → 0"
 
+# --- fixture T2: nó vivo v + artefatos de d (delivered) e de v (vivo) ---
+# assert_line <texto> <linha exata> <msg>
+assert_line()    { printf '%s\n' "$1" | grep -qxF -- "$2" && ok || ko "$3 — sem a linha '$2'"; }
+assert_no_line() { printf '%s\n' "$1" | grep -qxF -- "$2" && ko "$3 — tem a linha '$2'" || ok; }
+# secao <texto> <título> — itens sob '## <título>' até a próxima seção
+secao() { printf '%s\n' "$1" | awk -v t="## $2" '$0==t {on=1; next} /^## |^total:|^cleanup:/ {on=0} on'; }
+# nov <dir> <id> <estado> <deps> [corpo] — arquivo de nó em docs/audora/memory (sem commit)
+nov() {
+  mkdir -p "$1/docs/audora/memory"
+  printf -- '---\nid: %s\nestado: %s\norigem: humano\ndepende-de: [%s]\narquivos: []\nkeywords: []\nresumo: r\natualizado-em: 2026-01-01\n---\n# %s\n\n%s\n' "$2" "$3" "$4" "$2" "${5:-}" > "$1/docs/audora/memory/$2.md"
+}
+mkt2() {
+  local d="$1" f; mkproj "$d"
+  printf -- '- v | in-progress | V | r | k | —\n' >> "$d/MEMORY.md"
+  nov "$d" v in-progress '' 'Caçada ligada: docs/audora/depuracao/cacada-2026-02-02.md'
+  for f in specs/d-escopo.md specs/v-escopo.md planos/arquivo/plano-d.md planos/plano-v.md \
+           e2e/e2e-d.md e2e/e2e-v.md depuracao/cacada-2026-01-01.md depuracao/cacada-2026-02-02.md; do
+    mkdir -p "$(dirname "$d/docs/audora/$f")"; printf '# %s\n' "$f" > "$d/docs/audora/$f"
+  done
+  git -C "$d" add -A; git -C "$d" commit -qm t2
+}
+
+# --- skill-cleanup/7 artefatos de nó entregue e depuração velha ---
+p="$SP/t2"; mkt2 "$p"
+antes="$(snap "$p")"
+runc "$p" varrer
+assert_eq 0 "$code" "skill-cleanup/7 varrer → exit 0"
+assert_eq '## spec de nó entregue;## plano arquivado;## relatório e2e;## depuração velha;' \
+  "$(printf '%s\n' "$out" | grep '^## ' | tr '\n' ';')" "skill-cleanup/1 seções agrupadas por tipo, na ordem"
+assert_line "$out" '- docs/audora/specs/d-escopo.md | nó d delivered' "skill-cleanup/7 spec de nó entregue"
+assert_line "$out" '- docs/audora/planos/arquivo/plano-d.md | nó d delivered' "skill-cleanup/7 plano arquivado"
+assert_line "$out" '- docs/audora/e2e/e2e-d.md | nó d delivered' "skill-cleanup/7 relatório e2e"
+assert_line "$out" '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' "skill-cleanup/7 depuração velha"
+assert_line "$(secao "$out" 'spec de nó entregue')" '- docs/audora/specs/d-escopo.md | nó d delivered' "skill-cleanup/7 spec sob a seção certa"
+assert_line "$(secao "$out" 'depuração velha')" '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' "skill-cleanup/7 depuração sob a seção certa"
+for n in specs/v-escopo.md plano-v.md e2e-v.md cacada-2026-02-02.md; do
+  assert_not_contains "$out" "$n" "skill-cleanup/7 artefato de nó vivo/ligado fora: $n"
+done
+assert_eq 'cleanup: relatório — nada foi alterado' "$(printf '%s\n' "$out" | head -1)" "skill-cleanup/1 1ª linha do relatório"
+assert_eq 'total: 4 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/1 última linha = total"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/1 varrer não altera nenhum arquivo nem o git"
+runc "$p" contar
+assert_eq 4 "$out" "skill-cleanup/7 contar → 4"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/1 contar não altera nada"
+
 report

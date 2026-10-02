@@ -205,9 +205,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `hooks/memory-validate:47-55` (parse do índice), `skills/e2e/SKILL.md:66`, `skills/debug/SKILL.md:82`.
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/7`
-- [ ] **green** — arquivo e suíte verdes; `bash hooks/gate skill-cleanup` passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/1,7): varrer lista artefatos de nó entregue e depuração velha, sem alterar nada"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/7`
+- [x] **green** — arquivo e suíte verdes; `bash hooks/gate skill-cleanup` passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/1,7): varrer lista artefatos de nó entregue e depuração velha, sem alterar nada"`
 
 ## Tarefa 3: sem referência
 
