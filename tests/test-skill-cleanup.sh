@@ -425,4 +425,14 @@ assert_not_contains "$sk" '## Bloco de fechamento' "skill-cleanup/12 skill-ferra
 [ "$(printf '%s\n' "$sk" | wc -l)" -le 250 ] && ok || ko "skill-cleanup/12 SKILL.md ≤ 250 linhas"
 assert_contains "$(bash "$ROOT/hooks/session-start")" 'cleanup' "skill-cleanup/1 session-start aponta a cleanup"
 
+# --- skill-cleanup/16 sync da validate sugere a cleanup (1 linha, com a contagem), sem rodar ---
+sy="$(tr -d '\r' 2>/dev/null < "$ROOT/skills/validate/references/sync.md" | tr '\n' ' ' | tr -s ' ')"
+for s in 'hooks/cleanup" contar' 'Sobras do processo: N — rode a skill cleanup quando quiser.' 'N = 0 → nada' \
+         'depois do commit do sync'; do
+  assert_contains "$sy" "$s" "skill-cleanup/16 sync: $s"
+done
+assert_contains "$(printf '%s' "$sy" | grep -o 'Nunca rode[^.]*')" 'aplicar' "skill-cleanup/16 sync nunca roda o aplicar"
+assert_not_contains "$sy" 'hooks/cleanup" aplicar' "skill-cleanup/16 sync não chama o aplicar"
+assert_not_contains "$(tr -d '\r' < "$ROOT/skills/validate/SKILL.md")" 'hooks/cleanup' "skill-cleanup/16 validate/SKILL.md intocado (guarda de carga)"
+
 report

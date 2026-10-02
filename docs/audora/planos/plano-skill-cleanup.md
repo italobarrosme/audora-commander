@@ -433,6 +433,6 @@ Definições (usadas por várias tarefas):
 - **ler**: `skills/validate/references/sync.md:50-56`, `tests/test-carga.sh:1-22`.
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/16`
-- [ ] **green** — arquivo, `test-carga.sh` e suíte verdes; gate passou
-- [ ] **commit** — `git add skills/validate/references/sync.md tests/test-skill-cleanup.sh tests/test-carga.sh && git commit -m "feat(skill-cleanup/16): sync da validate sugere a cleanup com a contagem, sem rodar"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/16`
+- [x] **green** — arquivo, `test-carga.sh` e suíte verdes; gate passou
+- [x] **commit** — `git add skills/validate/references/sync.md tests/test-skill-cleanup.sh tests/test-carga.sh && git commit -m "feat(skill-cleanup/16): sync da validate sugere a cleanup com a contagem, sem rodar"`
