@@ -99,8 +99,16 @@ sub dependentes {
   return %d;
 }
 
+# Repositório com ao menos 1 commit (sem HEAD, nada existiu); calcula uma vez por execução.
+my $TEM_HEAD;
+sub tem_head {
+  unless (defined $TEM_HEAD) { `git rev-parse -q --verify HEAD 2>/dev/null`; $TEM_HEAD = $? == 0 ? 1 : ''; }
+  return $TEM_HEAD;
+}
+
 # Caminho já versionado em commit alcançável do HEAD (pasta: algum arquivo sob ela).
 sub existiu {
+  return '' unless tem_head();
   return scalar git_z('--literal-pathspecs', 'log', '-1', '--full-history', '--format=%H', 'HEAD', '--', $_[0]) ? 1 : '';
 }
 

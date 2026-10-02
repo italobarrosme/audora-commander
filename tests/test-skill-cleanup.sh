@@ -259,6 +259,16 @@ runc "$p" contar
 assert_eq 0 "$code" "cleanup-alvo-ausente/8 contar → exit 0"
 assert_eq 4 "$out" "cleanup-alvo-ausente/8 contar = total do varrer"
 
+# --- cleanup-alvo-ausente/9 repositório sem commit ---
+p="$SP/semcommit"; rm -rf "$p"; mkdir -p "$p"; git -C "$p" init -q; git -C "$p" config core.excludesFile "$p/.nao-existe"
+printf 'memory-schema: 1\n\n## Propósito [carga: sempre]\n\nx\n\n## Constituição [carga: sempre]\n\n- **stack**: x\n\n## Aprendizados [carga: sempre]\n\n## Índice de nós [carga: sempre]\n\n- x | planned | X | r | k | src/x.ts\n' > "$p/MEMORY.md"
+runc "$p" varrer
+assert_eq 0 "$code" "cleanup-alvo-ausente/9 sem commit varrer → exit 0"
+assert_eq 'cleanup: nada a limpar' "$out" "cleanup-alvo-ausente/9 sem commit: caminho ausente = nunca existiu, sem erro"
+runc "$p" contar
+assert_eq 0 "$code" "cleanup-alvo-ausente/9 sem commit contar → exit 0"
+assert_eq 0 "$out" "cleanup-alvo-ausente/9 sem commit contar → 0"
+
 # --- skill-cleanup/11 não tocado: fora do git e mudança não commitada ---
 p="$SP/t6"; mkt2 "$p"
 printf '\n[p](../planos/arquivo/plano-d.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
