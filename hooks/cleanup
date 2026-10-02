@@ -99,6 +99,11 @@ sub dependentes {
   return %d;
 }
 
+# Caminho já versionado em commit alcançável do HEAD (pasta: algum arquivo sob ela).
+sub existiu {
+  return scalar git_z('--literal-pathspecs', 'log', '-1', '--full-history', '--format=%H', 'HEAD', '--', $_[0]) ? 1 : '';
+}
+
 # Planned órfão: --orfao (semântico, prevalece) ou coluna arquivos-chave com alvo ausente.
 sub classifica_orfaos {
   my %dep = dependentes();
@@ -112,7 +117,7 @@ sub classifica_orfaos {
     next if $visto{$id}++;
     my $motivo = $ORFAO_ARG{$id};
     unless (defined $motivo) {
-      my @aus = grep { $_ ne '' && $_ ne '—' && !/[*<]/ && !-e $_ }
+      my @aus = grep { $_ ne '' && $_ ne '—' && !/[*<]/ && !-e $_ && existiu($_) }
                 map { s/^\s+|\s+$//gr } split /,/, ($e->{cols}[5] // '');
       $motivo = 'alvo ausente: ' . join(', ', @aus) if @aus;
     }

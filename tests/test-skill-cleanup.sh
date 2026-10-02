@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # skill-cleanup/1..16 — hooks/cleanup (varrer/contar/aplicar), skill cleanup e sugestão no sync da validate.
+# cleanup-alvo-ausente/1..10 — alvo ausente só se o caminho existiu no histórico do HEAD.
 source "$(dirname "$0")/lib.sh"
 C="$ROOT/hooks/cleanup"
 
@@ -182,6 +183,7 @@ mkt5() {
     '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
   nov "$d" v in-progress 'r2'
   sed -i 's/^depende-de: \[\]/depende-de: [s]/' "$d/docs/audora/arquivo/2026-01-01-d.md"
+  addc "$d" src/sumiu.ts x; addc "$d" src/nada.ts x; git -C "$d" rm -q src/sumiu.ts src/nada.ts
   git -C "$d" add -A; git -C "$d" commit -qm t5
 }
 p="$SP/t5"; mkt5 "$p"
@@ -214,6 +216,48 @@ assert_eq 1 "$code" "skill-cleanup/3 --orfao sem <id>=<motivo> → uso, exit 1"
 assert_contains "$out" 'uso: cleanup varrer' "skill-cleanup/3 --orfao malformado imprime o uso"
 runc "$p" contar
 assert_eq 1 "$out" "skill-cleanup/4 contar conta só o mecânico (q)"
+
+# --- cleanup-alvo-ausente/1..8 alvo ausente só se existiu no HEAD ---
+# mkalvo <dir> — caminhos que existiram e sumiram (direto, sob pasta, em branch mergeada),
+# só em branch não alcançável, nunca criados e presentes; v (vivo) depende do nunca-existiu
+mkalvo() {
+  local d="$1"; mkproj "$d"
+  addc "$d" src/velho.ts x; addc "$d" lib/antigo/x.ts x
+  git -C "$d" rm -q src/velho.ts lib/antigo/x.ts; git -C "$d" commit -qm sumiram
+  git -C "$d" checkout -q -b outro; addc "$d" src/ramo.ts x; git -C "$d" checkout -q -
+  git -C "$d" checkout -q -b feat; addc "$d" src/feat.ts x
+  git -C "$d" rm -q src/feat.ts; git -C "$d" commit -qm 'feat sumiu'; git -C "$d" checkout -q -
+  git -C "$d" merge -q --no-ff feat -m merge
+  printf -- '%s\n' '- nunca | planned | N | r | k | src/futuro.ts' '- sumiu | planned | S | r | k | src/velho.ts' \
+    '- misto | planned | M | r | k | src/velho.ts, src/futuro.ts, README.md, lib/antigo/' \
+    '- pasta | planned | P | r | k | lib/antigo/' '- pastanova | planned | PN | r | k | lib/nova/' \
+    '- ramo | planned | R | r | k | src/ramo.ts' '- fundido | planned | F | r | k | src/feat.ts' \
+    '- presente | planned | PR | r | k | README.md' '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
+  nov "$d" v in-progress 'nunca'
+  git -C "$d" add -A; git -C "$d" commit -qm alvo
+}
+p="$SP/alvo"; mkalvo "$p"
+runc "$p" varrer
+assert_eq 0 "$code" "cleanup-alvo-ausente/1 varrer → exit 0"
+assert_eq "$(printf '%s\n' 'cleanup: relatório — nada foi alterado' '## planned órfão' \
+  '- fundido | alvo ausente: src/feat.ts' '- misto | alvo ausente: src/velho.ts, lib/antigo/' \
+  '- pasta | alvo ausente: lib/antigo/' '- sumiu | alvo ausente: src/velho.ts' 'total: 4 item(ns) no lote')" \
+  "$out" "cleanup-alvo-ausente/1 relatório só com o que existiu e sumiu"
+assert_not_contains "$out" 'nunca' "cleanup-alvo-ausente/1 nunca-existiu fora do relatório, nem em mantido"
+po="$(secao "$out" 'planned órfão')"
+assert_line "$po" '- sumiu | alvo ausente: src/velho.ts' "cleanup-alvo-ausente/2 existiu e sumiu → órfão"
+assert_line "$po" '- fundido | alvo ausente: src/feat.ts' "cleanup-alvo-ausente/2 existiu em branch mergeada (alcançável)"
+assert_line "$po" '- misto | alvo ausente: src/velho.ts, lib/antigo/' "cleanup-alvo-ausente/3 motivo só com os que existiram e sumiram"
+assert_not_contains "$out" '- ramo |' "cleanup-alvo-ausente/4 só em branch não alcançável → fora"
+assert_line "$po" '- pasta | alvo ausente: lib/antigo/' "cleanup-alvo-ausente/5 diretório com arquivo versionado sob ele"
+assert_not_contains "$out" 'pastanova' "cleanup-alvo-ausente/5 diretório nunca versionado → fora"
+assert_not_contains "$out" 'presente' "cleanup-alvo-ausente/6 caminho existente no disco → fora"
+runc "$p" varrer --orfao 'pastanova=alvo ausente: lib/nova/'
+assert_line "$(secao "$out" 'planned órfão')" '- pastanova | alvo ausente: lib/nova/' "cleanup-alvo-ausente/7 --orfao lista mesmo caminho que nunca existiu"
+assert_eq 'total: 5 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "cleanup-alvo-ausente/7 total com o --orfao"
+runc "$p" contar
+assert_eq 0 "$code" "cleanup-alvo-ausente/8 contar → exit 0"
+assert_eq 4 "$out" "cleanup-alvo-ausente/8 contar = total do varrer"
 
 # --- skill-cleanup/11 não tocado: fora do git e mudança não commitada ---
 p="$SP/t6"; mkt2 "$p"
