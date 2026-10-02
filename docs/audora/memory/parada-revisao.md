@@ -52,6 +52,7 @@ Revisão adversarial em MEDIUM/LIGHT (segue só em HIGH); o modo caçada da skil
 - 2026-10-01 (IA): subagente indisponível (/7) não trava o portão: aviso de 1 linha e o humano revisa o diff.
 - 2026-10-01 (IA): /9 — a revisão só existe em HIGH, então o caminho MEDIUM não deve pagar o texto novo (folga BASE hoje: 227 bytes).
 - 2026-10-01 (IA): bump `0.14.0` — muda o comportamento da validate; sem bump o cache do plugin não atualiza.
+- 2026-10-01 (humano): portão final APROVADO ("aprovar"), com merge local na `main` e sync. e2e rodado (5 cenários `claude -p`, todos passaram; 3 sessões descartadas). Evidência no portão: suíte exit 0, 823 asserts, gate passou. Nenhuma decisão viva nova: todas impostas por `revisao-adversarial.md`, `sync.md`, `test-parada-revisao.sh` ou `test-carga.sh`, ou só desta demanda.
 
 ## delta
 
