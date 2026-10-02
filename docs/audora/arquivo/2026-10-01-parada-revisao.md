@@ -1,9 +1,9 @@
 ---
 id: parada-revisao
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/e2e/e2e-parada-revisao.md, docs/audora/planos/arquivo/plano-parada-revisao.md, docs/fundamentos.md, skills/validate/SKILL.md, skills/validate/references/revisao-adversarial.md, skills/validate/references/sync.md, tests/test-carga.sh, tests/test-corte-sem-uso.sh, tests/test-docs.sh, tests/test-parada-revisao.sh, tests/test-plano-mapa.sh, tests/test-prd-foto.sh]
 keywords: [revisao, adversarial, parada, validate, high, portao]
 resumo: Revisão adversarial da validate ganha critério de parada — só bloqueia o que apaga coisa alheia, viola critério ou falha em formato real; borda teórica vira ressalva, não nova passagem.
 atualizado-em: 2026-10-01

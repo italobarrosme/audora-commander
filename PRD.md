@@ -24,7 +24,7 @@ Code.
   a localização de código é a busca do símbolo pelo harness, com leitura
   por trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.13.0.
+  Versão 0.14.0.
 
 ## Arquitetura
 
@@ -75,8 +75,13 @@ Code.
   histórico de entregas mora no `CHANGELOG.md` (formato em
   `templates/changelog-template.md`), e PRD com histórico é convertido
   on-touch, no próximo sync. Roteador: fluxo até o portão inline; sync,
-  filtro de decisões vivas e Fechamento LIGHT em `skills/validate/references/`;
-  reference ausente mantém o portão e não roda o sync.
+  filtro de decisões vivas, revisão adversarial e Fechamento LIGHT em
+  `skills/validate/references/`; reference ausente mantém o portão e não
+  roda o sync. A revisão adversarial (só HIGH, `revisao-adversarial.md`)
+  bloqueia só achado provado de 3 classes (alheio, critério, formato real);
+  o resto vira ressalva de 1 linha. Para em 1 passagem completa mais a
+  reverificação dos bloqueantes corrigidos. Ressalva aceita no portão vai
+  ao nó e, no sync, às metas futuras como candidato a nó.
 - `debug` — debug com causa raiz demonstrada (modo sintoma, que localiza
   código como a `execute`) ou caçada de defeitos por classes com
   verificação de cada achado (modo caçada).
@@ -130,9 +135,7 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
      o `gate-asserts:` nem teste apagado.
 
    A antiga meta das bordas da limpeza do Graphify caiu com o script.
-5. Candidato a nó: critério de parada da revisão adversarial (combinado no
-   `corte-sem-uso`, separado do `prd-foto` no scope).
-6. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
+5. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
    - /4 (subagente de exploração conferido) e /8 (3ª leitura fora do mapa)
      só têm guarda de texto. Nenhuma sessão real chegou a esses gatilhos.
    - O plan ainda pode ler um arquivo grande inteiro. O critério exige só o

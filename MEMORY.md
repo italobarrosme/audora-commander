@@ -109,7 +109,7 @@ time pequeno em projetos web/mobile/api.
 - corte-sem-uso | delivered | Corte do sem uso → docs/audora/arquivo/2026-09-30-corte-sem-uso.md
 - plano-mapa | delivered | Plano-mapa + localização → docs/audora/arquivo/2026-10-01-plano-mapa.md
 - prd-foto | delivered | PRD-foto → docs/audora/arquivo/2026-10-01-prd-foto.md
-- parada-revisao | in-progress | Parada da revisão | Revisão adversarial da validate ganha critério de parada — só bloqueia o que apaga coisa alheia, viola critério ou falha em formato real; borda teórica vira ressalva, não nova passagem | revisao, adversarial, parada, validate, high, portao | skills/validate/
+- parada-revisao | delivered | Parada da revisão → docs/audora/arquivo/2026-10-01-parada-revisao.md
 - leitura-por-secao | planned | Leitura por seção | Skills leem só a seção necessária de PRD.md, MEMORY.md e arquivos-base em vez do arquivo inteiro, sem mudar o formato | leitura, prd, memory, secao, tokens | skills/
 - skill-cleanup | planned | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
