@@ -110,6 +110,14 @@ mexer em guarda antiga.
   green 77/0): plan diz "antes de qualquer Read; `MEMORY.md` nunca inteiro";
   BASE 47678 → 47731 (≤ 47773). Re-rodado B: 8301 B, sem Read inteiro.
   1ª rodada em `runs/descartados/`. Gate `GATE: passou`, exit=0.
+- 2026-10-02 (execute T5): execute B (1ª rodada) repetiu o defeito: Read do
+  `MEMORY.md` inteiro (16211 B) no 1º lote com plano, nó e PRD. Mesma
+  correção no passo Reancorar (red 77/1 → green 78/0), com "Repetir esta
+  releitura… após qualquer compactação de contexto" encurtado para caber;
+  BASE 47731 → 47751. Re-rodado B: 7720 B (+1223 B de um debug na mesma
+  sessão), sem Read inteiro, suíte da fixture 39/0. Execute A fez
+  `cat -n MEMORY.md` num Bash junto com nó e fontes (24922 B no total) — o
+  registro separa só a parte do `MEMORY.md`. Gate `GATE: passou`, exit=0.
 
 ## Decisões tomadas pela IA
 

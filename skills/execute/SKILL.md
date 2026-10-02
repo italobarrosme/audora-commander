@@ -16,10 +16,12 @@ referência", não adapte — apague. Violar a letra da regra é violar a regra.
 
 ## Fluxo
 
-1. **Reancorar**: reler o plano (`docs/audora/planos/plano-<id>.md`) e o nó;
-   carregar-contexto (skill memory). MEDIUM/HIGH sem plano-arquivo → recusar nomeando o que falta e
-   voltar à skill plan. LIGHT/HOTFIX: sem plano; os critérios do nó guiam direto. Repetir esta releitura no
-   início de CADA sessão e após qualquer compactação de contexto.
+1. **Reancorar**: carregar-contexto (skill memory) antes de qualquer Read;
+   `MEMORY.md` nunca inteiro. Reler o plano
+   (`docs/audora/planos/plano-<id>.md`) e o nó. MEDIUM/HIGH
+   sem plano-arquivo → recusar nomeando o que falta e voltar à skill plan.
+   LIGHT/HOTFIX: sem plano; os critérios do nó guiam direto. Repetir no
+   início de CADA sessão e após compactação.
 2. **Ordem mecânica**: próxima tarefa = a que tem todas as `depende-de`
    concluídas. Tarefa marcada `expandir: sim` → quebrar em subtarefas AGORA
    (chegou a vez dela), pelo formato do template.
