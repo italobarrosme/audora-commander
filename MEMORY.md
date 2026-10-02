@@ -85,6 +85,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-01 | e2e | Fixture clonada (`git clone`) de outra fixture herda a branch de feature que estava na HEAD dela, com o trabalho pronto — a execute acha os commits e só reverifica (rodada do E1 descartada). Depois do clone, apagar toda branch que não seja `main` (`git for-each-ref refs/heads/`).
 - 2026-10-01 | execute | Tarefa que cresce arquivo da carga (BASE/FULL de `tests/test-carga.sh`) pode estourar o teto NA HORA — ajuste de teto planejado numa tarefa de versão no fim deixa a tarefa do meio vermelha. O plan põe o ajuste na tarefa que muda o arquivo (medir antes: `bash tests/test-carga.sh`).
 - 2026-09-30 | validate | `hooks/gate` compara contra HEAD: com a árvore commitada a queda de asserts (e teste apagado) some e o gate final passa — a prova do `gate-asserts:` é o gate rodado ANTES do commit de cada tarefa, registrado nas notas de sessão.
+- 2026-10-01 | e2e | e2e da revisão adversarial: defeito de critério plantado na fixture é pego pelo gate 1:1 da própria validate e a revisão nunca roda (3 sessões descartadas) — plantar só defeito FORA da demanda (fora-de-escopo do nó) e, para a reverificação, achado novo no diff da correção.
 
 ## Índice de nós [carga: sempre]
 

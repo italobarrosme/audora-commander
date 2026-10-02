@@ -57,6 +57,6 @@ Revisão adversarial em MEDIUM/LIGHT (segue só em HIGH); o modo caçada da skil
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-parada-revisao.md
 
 ## feedback-reprovacao
