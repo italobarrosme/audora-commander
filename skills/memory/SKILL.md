@@ -11,10 +11,6 @@ LEI DE FERRO: REQUISITO NÃO ESCRITO NO MEMORY É REQUISITO QUE NÃO EXISTE
 
 **Anuncie ao começar:** "Usando memory para [operação]."
 
-O MEMORY é a memória externa durável do produto: propósito, constituição,
-aprendizados, requisitos, estado e decisões. O código guarda o "como"; o
-MEMORY guarda o "o quê / por quê / estado / o que aprendemos".
-
 **Schema** (`memory-schema: 1`, linha 1): `MEMORY.md` na raiz é o ÍNDICE
 MESTRE (Propósito + Constituição + Aprendizados + 1 linha rica por nó); o
 corpo de cada nó vive em `docs/audora/memory/<id>.md`. Schemas canônicos em
@@ -47,15 +43,16 @@ operação — nunca a pasta inteira.**
 
 Uma **reference ausente** ou ilegível não interrompe nada: avise em 1 linha
 qual arquivo faltou e siga a operação pelo que este roteador garante — Lei de
-Ferro, schema e regra de leitura seletiva —, **sem travar a fase**. Reference
-é atalho para o corpo da operação, não portão. Instalação sem `references/` é instalação quebrada:
-avise o humano para reinstalar o plugin.
+Ferro, schema e regra de leitura seletiva —, **sem travar a fase**.
+Instalação sem `references/` é instalação quebrada: avise o humano para
+reinstalar o plugin.
 
 ## Regra de leitura seletiva (vale para TODAS as operações)
 
 Nunca leia a pasta `docs/audora/memory/` inteira, nunca leia corpo de nó não
 relacionado. Carregue somente:
-1. `MEMORY.md` (índice mestre — é pequeno por construção).
+1. O recorte do `MEMORY.md` da fase (carregar-contexto), nunca o arquivo
+   inteiro.
 2. Os arquivos dos nós que a demanda toca — escolhidos pela LINHA RICA do
    índice (título, resumo, keywords, arquivos-chave) e por `depende-de`
    (1 salto).
@@ -63,27 +60,30 @@ relacionado. Carregue somente:
 Consulta estrutural NUNCA carrega corpos — grep resolve:
 - nós in-progress: `grep -l '^estado: in-progress' docs/audora/memory/*.md`
 - quem depende de X: `grep -l 'depende-de:.*X' docs/audora/memory/*.md`
-- nó que governa um arquivo: `grep -l 'src/auth' docs/audora/memory/*.md`
-- aprendizado por termo: `grep -i '<termo>' MEMORY.md`
 - decisão durável de área: `grep -i '<termo>' docs/audora/decisoes-vivas.md`
 
-**Já carregado nesta sessão** (skill memory invocada, `MEMORY.md` lido, sem
-`/clear` nem compactação depois) → reusar do contexto: não reinvocar a skill
-nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
+**Já carregado nesta sessão** (recorte do `MEMORY.md` lido, sem `/clear`
+nem compactação depois) → reusar do contexto: não reinvocar a skill nem
+reler. Depois de `/clear` ou compactação, recarregar.
 
 `docs/audora/arquivo/` (nós entregues) só é lido se o humano pedir histórico.
 
 ## Operações inline
 
-### 1. carregar-contexto (início de demanda)
+### 1. carregar-contexto (toda fase: `MEMORY.md` por seção, nunca inteiro)
 
-1. Ler `MEMORY.md`. Ausente → oferecer **bootstrap** (operação 2). Não
-   travar, não seguir sem MEMORY, não inventar um.
-2. Identificar no índice os nós relacionados (linha rica + depende-de);
-   Read SÓ de `docs/audora/memory/<id>.md` desses nós.
-3. Devolver: Constituição + Aprendizados + nós
-   relevantes para a fase que chamou.
-4. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
+1. `grep -n '^## ' MEMORY.md` → linha de cada seção. Sem `MEMORY.md` →
+   **bootstrap** (operação 2), nunca inventar um. Faltou `## Propósito`, `## Constituição`, `## Aprendizados` ou `## Índice de nós` → avisar em 1 linha qual seção faltou, ler o arquivo inteiro e seguir a fase.
+2. Propósito e Constituição: inteiras, Read por `offset`/`limit`.
+3. Aprendizados só por busca; `[invalidado-em:` nunca entra; nada casou →
+   seguir sem aprendizados, sem ler a seção:
+   - porta de entrada, termos do pedido: `grep -iE '^- [0-9-]{10} \| .*(<termo>|<termo>)' MEMORY.md | grep -vF '[invalidado-em:'`
+   - demais fases, a fase + keywords e arquivos-chave do nó (debug sem nó: termos do sintoma): `grep -iE '^- [0-9-]{10} \| (<fase> \||.*(<termo>|<termo>))' MEMORY.md | grep -vF '[invalidado-em:'`
+4. Índice de nós: inteiro na porta de entrada, scope e plan; execute, e2e,
+   validate e debug pegam só a linha do nó e as de `depende-de`:
+   `grep -E '^- (<id>|<dep>) \|' MEMORY.md`.
+5. Read SÓ de `docs/audora/memory/<id>.md` dos nós relacionados.
+6. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
    gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
    só se o humano pedir.
 
@@ -115,20 +115,13 @@ nem reler o arquivo. Depois de `/clear` ou compactação, recarregar.
    duplicar. Contradiz um antigo → anexar ao antigo
    `[invalidado-em: data] [substituido-por: <linha nova>]`, nunca apagar.
 
-## Conflito MEMORY vs código
-
-Detecção acontece no escopo da demanda: a skill plan lê os arquivos
-afetados e algo contradiz
-um nó → sinaliza. Registre a divergência no nó, apresente ao humano, ele
-decide. Nunca escolha em silêncio.
-
 ## Red flags — pare e corrija
 
 | Racionalização | Realidade |
 |---|---|
 | "Eu lembro do requisito, registro depois" | Depois = nunca. Sessão morre, memória morre. Registre agora. |
 | "Carrego a pasta memory/ inteira pra garantir" | Contexto é o gargalo. Índice decide; grep consulta; Read só o tocado. |
-| "Leio todas as references de uma vez pra ter contexto" | Contexto é o gargalo — de novo. Uma reference por operação usada. |
+| "Leio o MEMORY.md inteiro" | Recorte da fase; o resto, grep. |
 | "Edito o nó agora, índice depois" | Índice desatualizado quebra a carga de todo mundo. Mesma edição. |
 | "Aprendizado eu guardo no sync final" | Sync final é depois do /clear. Aprendizado é NA HORA, 1 linha. |
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |

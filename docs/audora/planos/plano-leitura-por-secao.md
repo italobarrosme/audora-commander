@@ -90,6 +90,9 @@ mexer em guarda antiga.
   fase X`) — +62 B no validate estouravam o 6139; a fase é sabida por quem
   chama. Descartado: manter "Conflito MEMORY vs código" e a red flag de
   references — sem esses cortes BASE fica em 47836.
+- 2026-10-02 (execute T1): red 20/28 (frases e comandos ausentes, sem erro
+  de bash); green 48/0; memory 7294 B, `test-carga` base=47756 full=55383 (=
+  mapa); `test-gate` 52/0; gate antes do commit `GATE: passou`, exit=0.
 
 ## Decisões tomadas pela IA
 
@@ -217,9 +220,9 @@ mexer em guarda antiga.
   `test-skills`, `test-corte-sem-uso`, `test-gate`, `test-parada-revisao` e
   `test-dogfood` verdes; gate `exit=0`.
 
-- [ ] **red** — `bash tests/test-leitura-por-secao.sh; echo "exit=$?"` → `exit=1`, FAILs de "não contém" nas frases novas e saídas vazias nos casos comportamentais (comandos ausentes no HEAD); nenhum erro de sintaxe do bash no stderr.
-- [ ] **green** — mesmo comando `exit=0`; carga e guardas do done verdes; gate antes do commit.
-- [ ] **commit** — `git add skills/memory/SKILL.md tests/test-leitura-por-secao.sh && git commit -m "feat(leitura-por-secao/1-9): carregar-contexto lê o MEMORY.md por seção — seções fixas, aprendizados por busca, índice por fase"`
+- [x] **red** — `bash tests/test-leitura-por-secao.sh; echo "exit=$?"` → `exit=1`, FAILs de "não contém" nas frases novas e saídas vazias nos casos comportamentais (comandos ausentes no HEAD); nenhum erro de sintaxe do bash no stderr.
+- [x] **green** — mesmo comando `exit=0`; carga e guardas do done verdes; gate antes do commit.
+- [x] **commit** — `git add skills/memory/SKILL.md tests/test-leitura-por-secao.sh && git commit -m "feat(leitura-por-secao/1-9): carregar-contexto lê o MEMORY.md por seção — seções fixas, aprendizados por busca, índice por fase"`
 
 ## Tarefa 2: as fases carregam pelo carregar-contexto
 
