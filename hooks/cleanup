@@ -419,6 +419,40 @@ sub commita {
   return $h;
 }
 
+# Pré-checagem, antes de tocar qualquer arquivo (undef = item pode ser aplicado).
+sub pre_checa {
+  my ($it) = @_; my ($s, $a) = ($it->{sec}, $it->{alvo});
+  if ($s eq 'planned órfão') {
+    return 'alvo não existe mais' unless grep { $_->{id} eq $a && $_->{estado} eq 'planned' } @INDICE;
+  } else {
+    my $link = $s eq 'link quebrado';
+    my $f = $link ? ($a =~ s/:\d+$//r) : $a;
+    return 'fora de docs/audora/' unless $f =~ m{^docs/audora/} || ($link && $f eq 'MEMORY.md');
+    return 'arquivo/ e decisões vivas nunca são removidos' if !$link && protegido($f);
+    return 'alvo não existe mais' unless -e $f;
+  }
+  my ($proprio, $refs) = tocados($s, $a);
+  for my $f (@$proprio, @$refs) {
+    return "fora do git: $f" unless $RASTREADO{$f};
+    return "mudança não commitada em $f" if $SUJO{$f};
+  }
+  return undef;
+}
+
+# Desfaz: índice e árvore dos caminhos tocados voltam ao HEAD (todos eram rastreados e limpos).
+sub desfaz {
+  return unless @TOCADO;
+  system('git', 'reset', '-q', '--', @TOCADO);
+  my %head = map { $_ => 1 } git_z('ls-tree', '-r', '-z', '--name-only', 'HEAD', '--', @TOCADO);
+  my @h = grep { $head{$_} } @TOCADO;
+  system('git', 'checkout', '-q', 'HEAD', '--', @h) if @h;
+}
+sub falha {
+  my ($onde, $motivo) = @_; chomp $motivo;
+  desfaz();
+  sai(1, "cleanup: falhou em: $onde — $motivo", 'cleanup: lote desfeito, nada commitado');
+}
+
 sub aplicar {
   my ($arq) = @_;
   sai(1, $USO) if !defined $arq || $arq eq '';
@@ -426,10 +460,17 @@ sub aplicar {
   my @it = le_lote($arq);
   sai(0, 'cleanup: lote vazio — nada aplicado') unless @it;
   carrega_indice(); carrega_git();
-  aplica_item($_) for @it;
-  apaga_linhas_indice(@IDS_APAGAR) if @IDS_APAGAR;
-  valida_memory() if grep { $_ eq 'MEMORY.md' || m{^docs/audora/memory/} } @TOCADO;
-  my $h = commita(@it);
+  for my $i (@it) { my $m = pre_checa($i); falha($i->{linha}, $m) if defined $m; }
+  my $onde = '';
+  my $h = eval {
+    for my $i (@it) { $onde = $i->{linha}; aplica_item($i); }
+    $onde = 'MEMORY.md';
+    apaga_linhas_indice(@IDS_APAGAR) if @IDS_APAGAR;
+    valida_memory() if grep { $_ eq 'MEMORY.md' || m{^docs/audora/memory/} } @TOCADO;
+    $onde = 'commit';
+    commita(@it);
+  };
+  falha($onde, $@ || 'erro desconhecido') unless defined $h;
   sai(0, "cleanup: commit $h — " . scalar(@it) . ' item(ns) removido(s)');
 }
 

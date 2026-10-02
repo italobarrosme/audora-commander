@@ -180,6 +180,10 @@ Definições (usadas por várias tarefas):
   `MEMORY.md`); link quebrado só é trocado se o alvo ainda não existe;
   `MEMORY inválido:` traz o 1º item (`- …`) do stderr do validate, não a
   linha-cabeçalho genérica.
+- 2026-10-02 (execute, T9): motivo extra da pré-checagem `fora do git: <arq>`
+  (alvo ou caminho tocado não rastreado no `aplicar`); a pré-checagem cobre
+  também referente sujo (trabalho em andamento nunca é sobrescrito); falha
+  depois dos itens nomeia `MEMORY.md` (apagar linha/validate) ou `commit`.
 
 ---
 
@@ -379,9 +383,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `hooks/gate:56-70` (acumular falhas/saída).
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/14`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/14): falha no meio do lote desfaz tudo e nomeia o item"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/14`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/14): falha no meio do lote desfaz tudo e nomeia o item"`
 
 ## Tarefa 10: skill `cleanup` e registro da skill nova
 

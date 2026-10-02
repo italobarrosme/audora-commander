@@ -345,4 +345,71 @@ assert_empty "$(git -C "$p" status --porcelain)" "skill-cleanup/13 tudo commitad
 runc "$p" varrer
 assert_eq 'cleanup: nada a limpar' "$out" "skill-cleanup/13 idempotente: varrer logo após → nada a limpar"
 
+# --- skill-cleanup/14 falha no meio desfaz o lote e nomeia o item ---
+# lote_de <arq> <linha>... — lote mínimo com cabeçalho
+lote_de() { local a="$1"; shift; printf '%s\n' 'cleanup: relatório — nada foi alterado' "$@" > "$a"; }
+# (a) link reescrito depois do varrer: a spec já apagada volta
+p="$SP/t9a"; mkt2 "$p"; corpo_d "$p"; git -C "$p" add -A; git -C "$p" commit -qm t9a
+L1="$(grep -n '^L1 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+lote_de "$SP/lote9a.txt" '## spec de nó entregue' '- docs/audora/specs/d-escopo.md | nó d delivered' \
+  '## link quebrado' "- docs/audora/arquivo/2026-01-01-d.md:$L1 | aponta ../e2e/nao-existe.md inexistente"
+sed -i "${L1}s/.*/L1 reescrita sem link/" "$p/docs/audora/arquivo/2026-01-01-d.md"; git -C "$p" commit -qam 'reescreve L1'
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote9a.txt"
+assert_eq 1 "$code" "skill-cleanup/14 link sumiu da linha → exit 1"
+assert_contains "$out" "cleanup: falhou em: - docs/audora/arquivo/2026-01-01-d.md:$L1" "skill-cleanup/14 nomeia o item que falhou"
+assert_contains "$out" 'link não encontrado na linha' "skill-cleanup/14 motivo link não encontrado"
+assert_contains "$out" 'cleanup: lote desfeito, nada commitado' "skill-cleanup/14 avisa que desfez"
+assert_file "$p/docs/audora/specs/d-escopo.md" "skill-cleanup/14 spec já apagada volta"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 (a) estado igual ao de antes do lote"
+# (b) commit recusado pelo hook pre-commit
+p="$SP/t9b"; mkt2 "$p"; corpo_d "$p"
+printf '\n[rel](../e2e/e2e-d.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"; git -C "$p" add -A; git -C "$p" commit -qm t9b
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote9b.txt"
+printf '#!/bin/sh\necho hook recusou >&2\nexit 1\n' > "$p/.git/hooks/pre-commit"; chmod +x "$p/.git/hooks/pre-commit"
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote9b.txt"
+assert_eq 1 "$code" "skill-cleanup/14 pre-commit recusa → exit 1"
+assert_contains "$out" 'cleanup: falhou em: commit — commit recusado' "skill-cleanup/14 commit recusado"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 (b) estado igual: arquivos e links voltam"
+# (c) MEMORY inválido depois de apagar o planned: a linha volta
+p="$SP/t9c"; mkt5 "$p"; nov "$p" z planned ''; git -C "$p" add -A; git -C "$p" commit -qm 'z sem linha no índice'
+runc "$p" varrer --orfao 'p=absorvido por d'; printf '%s\n' "$out" > "$SP/lote9c.txt"
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote9c.txt"
+assert_eq 1 "$code" "skill-cleanup/14 MEMORY inválido → exit 1"
+assert_contains "$out" 'MEMORY inválido: arquivo docs/audora/memory/z.md sem linha no índice mestre' "skill-cleanup/14 motivo cita o erro do memory-validate"
+assert_contains "$(cat "$p/MEMORY.md")" '- p | planned |' "skill-cleanup/14 linha do planned volta"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 (c) estado igual"
+# (d)(e)(f) pré-checagem: item proibido ou sumido depois de um item válido → nada aplicado
+p="$SP/t9d"; mkt2 "$p"
+for caso in 'src/app.ts|fora de docs/audora/' 'docs/audora/arquivo/2026-01-01-d.md|arquivo/ e decisões vivas nunca são removidos' \
+            'docs/audora/decisoes-vivas.md|arquivo/ e decisões vivas nunca são removidos'; do
+  alvo="${caso%%|*}"; mot="${caso#*|}"
+  lote_de "$SP/lote9d.txt" '## depuração velha' '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' \
+    '## sem referência' "- $alvo | x"
+  antes="$(snap "$p")"
+  runc "$p" aplicar "$SP/lote9d.txt"
+  assert_eq 1 "$code" "skill-cleanup/14 $alvo → exit 1"
+  assert_contains "$out" "cleanup: falhou em: - $alvo | x — $mot" "skill-cleanup/14 $alvo → $mot"
+  assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 $alvo → nada aplicado (item válido antes também não)"
+done
+git -C "$p" rm -q docs/audora/e2e/e2e-d.md; git -C "$p" commit -qm 'e2e-d some depois do varrer'
+lote_de "$SP/lote9f.txt" '## depuração velha' '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' \
+  '## relatório e2e' '- docs/audora/e2e/e2e-d.md | nó d delivered'
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote9f.txt"
+assert_eq 1 "$code" "skill-cleanup/14 alvo sumido → exit 1"
+assert_contains "$out" 'e2e-d.md | nó d delivered — alvo não existe mais' "skill-cleanup/14 alvo não existe mais"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 alvo sumido → estado igual"
+# (g) referente sujo depois do varrer → recusado na pré-checagem
+lote_de "$SP/lote9g.txt" '## depuração velha' '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado'
+printf '\n[c](../depuracao/cacada-2026-01-01.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"; git -C "$p" commit -qam 'linka cacada'
+printf 'sujo\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote9g.txt"
+assert_eq 1 "$code" "skill-cleanup/14 referente sujo → exit 1"
+assert_contains "$out" 'mudança não commitada em docs/audora/arquivo/2026-01-01-d.md' "skill-cleanup/14 referente sujo nomeado"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 referente sujo → trabalho em andamento intacto"
+
 report
