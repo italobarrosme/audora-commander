@@ -157,6 +157,13 @@ Definições (usadas por várias tarefas):
   120 s junto da suíte → `bash tests/run.sh` via `run_in_background` e ler o
   output-file. O arquivo sozinho roda em foreground.
 
+## Decisões tomadas pela IA
+
+- 2026-10-02 (execute, T1): `hooks/cleanup` é um shim bash (normaliza `$0`,
+  exporta `CLEANUP_DIR`) que faz `exec perl -x` no próprio arquivo; toda a
+  lógica fica em perl (parse de índice, links, git via `open '-|'` em lista,
+  sem shell). Evita aspas de perl dentro de bash e preserva CRLF por padrão.
+
 ---
 
 ## Tarefa 1: esqueleto do script, sem MEMORY e nada a limpar
@@ -177,9 +184,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `hooks/gate:1-20`, `tests/test-gate.sh:22-35`, `tests/test-memory-validate.sh:4-8`.
 - **done quando**: as 6 asserções passam e `bash tests/run.sh` fica verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/2` (script ausente)
-- [ ] **green** — `bash tests/test-skill-cleanup.sh` passa; `bash tests/run.sh` (background) verde; `bash hooks/gate skill-cleanup` → `GATE: passou`
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/2,15): hooks/cleanup recusa sem MEMORY e diz nada a limpar"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/2` (script ausente)
+- [x] **green** — `bash tests/test-skill-cleanup.sh` passa; `bash tests/run.sh` (background) verde; `bash hooks/gate skill-cleanup` → `GATE: passou`
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/2,15): hooks/cleanup recusa sem MEMORY e diz nada a limpar"`
 
 ## Tarefa 2: artefatos de nó entregue, depuração velha e relatório só-leitura
 

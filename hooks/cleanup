@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Script auxiliar da skill cleanup (chamado via Bash pela skill; NÃO é hook do harness).
+# Uso: cleanup varrer [--orfao <id>=<motivo>]... | contar | aplicar <lote>
+# Sempre na raiz do projeto (cwd). varrer/contar só leem; aplicar aplica o lote
+# aprovado num commit só e desfaz tudo se algo falhar.
+# Contrato completo: docs do nó skill-cleanup / skills/cleanup/SKILL.md.
+set -uo pipefail
+here="${0//\\//}"
+CLEANUP_DIR="$(cd "$(dirname "$here")" && pwd)" || exit 1
+export CLEANUP_DIR
+exec perl -x "$CLEANUP_DIR/$(basename "$here")" "$@"
+
+#!perl
+use strict;
+use warnings;
+
+my $USO = 'uso: cleanup varrer [--orfao <id>=<motivo>]... | contar | aplicar <lote>';
+
+sub sai { my ($code, @linhas) = @_; print "$_\n" for @linhas; exit $code; }
+
+my $sub = shift @ARGV // '';
+sai(1, $USO) unless $sub =~ /^(varrer|contar|aplicar)$/;
+
+# --- pré-condições comuns: repo git e MEMORY.md na raiz ---
+{
+  my $dentro = `git rev-parse --is-inside-work-tree 2>/dev/null`;
+  sai(1, 'cleanup: não é repositório git — nada foi alterado') unless ($dentro // '') =~ /true/;
+}
+sai(1, 'cleanup: sem MEMORY.md — rode o bootstrap da skill memory; nada foi alterado') unless -f 'MEMORY.md';
+
+if ($sub eq 'contar') { print "0\n"; exit 0; }
+if ($sub eq 'varrer') { print "cleanup: nada a limpar\n"; exit 0; }
+sai(1, $USO);
