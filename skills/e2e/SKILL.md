@@ -20,7 +20,8 @@ nó: `e2e: pulado-pelo-humano`. Nada de pular em silêncio.
 
 ## Fluxo
 
-Contexto: carregar-contexto (skill memory).
+Contexto: carregar-contexto (skill memory) antes de qualquer Read;
+`MEMORY.md` nunca inteiro.
 
 1. **Infra do teste — ordem de decisão** (docker compose é o default):
    - Projeto TEM docker compose (`docker-compose*.yml` / `compose*.yml`) →

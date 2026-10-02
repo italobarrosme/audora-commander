@@ -118,6 +118,16 @@ mexer em guarda antiga.
   sessão), sem Read inteiro, suíte da fixture 39/0. Execute A fez
   `cat -n MEMORY.md` num Bash junto com nó e fontes (24922 B no total) — o
   registro separa só a parte do `MEMORY.md`. Gate `GATE: passou`, exit=0.
+- 2026-10-02 (execute T5): e2e B (1ª rodada) repetiu: Read inteiro (16432 B).
+  Validate e debug têm a frase-ponteiro idêntica à do e2e → a mesma correção
+  nos três antes de rodar a validate (poupa uma rodada; red 78/3 → green
+  81/0). Validate 6134 → 6124 B (≤ 6139) com dois cortes sem guarda: "Este é
+  o ponto onde ele decide" e a repetição "o fluxo da demanda encerra aqui"
+  na PRÓXIMA SKILL. BASE 47751 → 47741. Re-rodado e2e B: 12081 B, sem Read
+  inteiro (alguns Bash do B somam saída de outros comandos — conta
+  conservadora contra B). Porta e scope ficam sem a frase: a porta B leu por
+  recorte, e o scope desta medição reusou o recorte da porta. Gate `GATE:
+  passou`, exit=0.
 
 ## Decisões tomadas pela IA
 

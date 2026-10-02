@@ -99,8 +99,9 @@ done
 assert_not_contains "$(flat skills/audora-commander/SKILL.md)" 'operação carregar-contexto (Constituição + Aprendizados + índice de nós)' "leitura-por-secao/6 porta sem a carga antiga"
 assert_not_contains "$(flat skills/scope/SKILL.md)" 'carregar constituição + nós relacionados' "leitura-por-secao/6 scope sem a carga antiga"
 assert_not_contains "$(flat skills/plan/SKILL.md)" 'carregar nó da demanda + constituição' "leitura-por-secao/6 plan sem a carga antiga"
-# A/B (T5): plan e execute B leram o MEMORY.md inteiro no 1º lote de Reads, antes da skill memory.
-for s in plan execute; do
+# A/B (T5): plan, execute e e2e B leram o MEMORY.md inteiro no 1º lote de Reads, antes da
+# skill memory; validate e debug têm a mesma frase-ponteiro do e2e.
+for s in plan execute e2e validate debug; do
   assert_contains "$(flat skills/$s/SKILL.md)" 'carregar-contexto (skill memory) antes de qualquer Read; `MEMORY.md` nunca inteiro.' "leitura-por-secao/1 $s carrega o recorte antes do 1º Read"
 done
 sub="$(flat templates/fase-subagente-template.md)"

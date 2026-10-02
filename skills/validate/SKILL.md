@@ -11,7 +11,7 @@ LEI DE FERRO: NENHUMA AFIRMAÇÃO DE SUCESSO SEM EVIDÊNCIA FRESCA DE EXECUÇÃO
 
 **Anuncie ao começar:** "Usando validate para fechar [demanda]."
 
-A IA executa; o humano decide. Este é o ponto onde ele decide. "Pronto",
+A IA executa; o humano decide — aqui. "Pronto",
 "passou", "funciona" — nenhuma dessas palavras sai da sua boca sem comando
 executado NESTA sessão com saída lida. Confiança não é evidência.
 
@@ -34,7 +34,8 @@ a validate mantém o portão humano e NÃO roda o sync de memória de cabeça �
 
 ## Fluxo
 
-Contexto: carregar-contexto (skill memory).
+Contexto: carregar-contexto (skill memory) antes de qualquer Read;
+`MEMORY.md` nunca inteiro.
 
 1. **Oferecer o e2e** (se ainda não rodou): "Recomendo fortemente rodar o e2e
    da demanda — levanto o projeto e exercito os critérios de verdade. Rodar?"
@@ -111,5 +112,4 @@ tirada de `git diff --name-only` real. Formato no mesmo template.
 
 ## PRÓXIMA SKILL
 
-Nenhuma — o fluxo da demanda encerra aqui. Nova demanda → skill
-audora-commander classifica do zero.
+Nenhuma. Nova demanda → skill audora-commander classifica do zero.

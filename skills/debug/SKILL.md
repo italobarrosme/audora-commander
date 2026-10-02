@@ -16,7 +16,8 @@ variável e esconde a causa. Este fluxo proíbe mexer no código antes de PROVAR
 o que está errado. Dois modos: **sintoma** (há um defeito conhecido) e
 **caçada** (não há sintoma — procurar defeitos sistematicamente).
 
-Contexto: carregar-contexto (skill memory).
+Contexto: carregar-contexto (skill memory) antes de qualquer Read;
+`MEMORY.md` nunca inteiro.
 
 ## Modo sintoma
 
