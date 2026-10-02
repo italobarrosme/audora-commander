@@ -31,6 +31,7 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-09-30 | corte-sem-uso | Apagar arquivo de teste exige autorização do humano no portão do scope, com o nome do arquivo no nó e a autorização citada no commit.
 - 2026-10-01 | plano-mapa | Mudança que altera o custo de contexto das fases é medida por A/B numa fixture `claude -p` (mesma demanda, plugin antes × depois: artefato, tokens e verde) e reportada sem meta numérica.
 - 2026-10-02 | leitura-por-secao | Toda skill de fase, inclusive as futuras, carrega o `MEMORY.md` pelo carregar-contexto da skill memory com "antes de qualquer Read; `MEMORY.md` nunca inteiro" — a regra do recorte mora só no memory, a fase só aponta.
+- 2026-10-02 | skill-cleanup | Exceção à regra "índice nunca gerado por script" (grafo-v2): o `hooks/cleanup` só APAGA a linha planned que o humano aprovou no lote e roda o `memory-validate` antes do commit — gerar ou editar linha do índice por script segue proibido.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro

@@ -1,9 +1,9 @@
 ---
 id: skill-cleanup
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-skill-cleanup.md, docs/audora/planos/arquivo/plano-skill-cleanup.md, hooks/cleanup, hooks/session-start, skills/cleanup/SKILL.md, skills/validate/references/sync.md, tests/test-carga.sh, tests/test-corte-sem-uso.sh, tests/test-docs.sh, tests/test-leitura-por-secao.sh, tests/test-parada-revisao.sh, tests/test-plano-mapa.sh, tests/test-prd-foto.sh, tests/test-skill-cleanup.sh, tests/test-skills.sh]
 keywords: [limpeza, faxina, arquivo, skill]
 resumo: Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto
 atualizado-em: 2026-10-02
@@ -84,11 +84,22 @@ e, com aprovação, remove tudo num commit só, revertível por `git revert`.
   por script"): o script só APAGA linha aprovada e valida antes do commit;
   sem bash, a cleanup fica indisponível. Descartado: script só varre e o
   LLM aplica.
+- 2026-10-02 (humano): portão final APROVADO ("aprovo"). e2e: 14 critérios
+  passaram, /4 passou com defeito, /16 provado no sync. Decisão viva
+  aprovada: exceção da cleanup à regra "índice nunca gerado por script".
+- 2026-10-02 (humano): ressalva aceita — /4 mecânico (`hooks/cleanup`,
+  `classifica_orfaos`) marca como "alvo ausente" planned cujo arquivo-chave
+  ainda não foi criado (`-e` cru); a suíte não pega porque a fixture usa
+  caminho que nunca existiu. Hoje só o julgamento da IA segura (3/3 no e2e).
+- 2026-10-02 (humano): ressalva aceita — /10 a nota "recuperável no git"
+  vai também para link que já nasceu quebrado (alvo nunca versionado).
 
 ## delta
 
 ## e2e
 
-pendente
+2026-10-02: [relatório](../e2e/e2e-skill-cleanup.md) — 14 passou, /4 passou
+com defeito (falso positivo: planned com arquivo-chave ainda não criado vira
+órfão), /16 não-automatizável (prova no sync).
 
 ## feedback-reprovacao

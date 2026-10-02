@@ -89,6 +89,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-02 | execute | Em `claude -p --resume`, o `total_cost_usd` do evento `result` ACUMULA a sessão (o `usage` é só do turno) — custo da sessão = o do último turno; somar por turno infla (a medição do `plano-mapa` somou).
 - 2026-10-02 | execute | Ponteiro de skill de fase sem ORDEM ("carregar-contexto (skill memory)") não segura o modelo: ele lê `MEMORY.md` inteiro no 1º lote paralelo de Reads, junto de plano/nó/PRD, antes de abrir a skill memory — regra de leitura que importa vai na própria fase, com "antes de qualquer Read".
 - 2026-10-02 | execute | O grep do Git Bash tira o `\r` da entrada: `grep -c $'\r$' f` conta TODA linha (falso verde de CRLF preservado) e `grep -v` num pipe devolve LF — contar CR com `tr -cd '\r' < f | wc -c` e filtrar com `perl -ne`.
+- 2026-10-02 | validate | Critério "X que não existe MAIS" exige fixture com os dois casos — caminho commitado e depois removido E caminho que nunca existiu: com só `src/sumiu.ts` nunca criado, o `-e` cru do `hooks/cleanup` passou na suíte e o e2e achou planned de feature futura virando órfão.
+- 2026-10-02 | e2e | Falha REAL no meio de um lote no Windows: abrir o arquivo com `[System.IO.File]::Open(p,'Open','Read','None')` num PowerShell em background durante o `claude -p` — `git rm` dá "Invalid argument" e exercita o desfazer sem mexer no script.
 
 ## Índice de nós [carga: sempre]
 
@@ -114,7 +116,7 @@ time pequeno em projetos web/mobile/api.
 - prd-foto | delivered | PRD-foto → docs/audora/arquivo/2026-10-01-prd-foto.md
 - parada-revisao | delivered | Parada da revisão → docs/audora/arquivo/2026-10-01-parada-revisao.md
 - leitura-por-secao | delivered | Leitura por seção → docs/audora/arquivo/2026-10-02-leitura-por-secao.md
-- skill-cleanup | in-progress | Skill de limpeza | Skill nova que acha e remove nós planned órfãos, specs de nós entregues e arquivo morto, em qualquer projeto | limpeza, faxina, arquivo, skill | skills/, docs/audora/
+- skill-cleanup | delivered | Skill de limpeza → docs/audora/arquivo/2026-10-02-skill-cleanup.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
