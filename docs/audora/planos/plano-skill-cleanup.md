@@ -224,9 +224,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `docs/audora/memory/skill-cleanup.md` (/8 e fora-de-escopo).
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/8`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/8): varrer lista arquivo de docs/audora sem referência viva"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/8`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/8): varrer lista arquivo de docs/audora sem referência viva"`
 
 ## Tarefa 4: detecção de link quebrado
 

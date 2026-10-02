@@ -73,21 +73,49 @@ sub texto_nos { join "\n", map { ler($_) } sort { $a cmp $b } glob('docs/audora/
 my (%LOTE, @AVISOS, @MANTIDO, @NAO_TOCADO);
 sub item { my ($sec, $alvo, $motivo) = @_; push @{ $LOTE{$sec} }, [$alvo, $motivo]; }
 
-# Artefatos ligados a nó por nome; depuração velha.
+# Arquivos .md de uma pasta, recursivo.
+sub mds_em {
+  my ($d) = @_; my @a;
+  return @a unless -d $d;
+  File::Find::find({ no_chdir => 1, wanted => sub { push @a, $File::Find::name if -f $_ && /\.md$/ } }, $d);
+  return sort { $a cmp $b } @a;
+}
+
+# Documentos vivos (/8): índice, nós não arquivados, decisões vivas, PRD, READMEs, skills.
+sub texto_vivo {
+  my @f = ('MEMORY.md', 'docs/audora/decisoes-vivas.md', 'PRD.md', glob('README*.md'),
+           glob('docs/audora/memory/*.md'), mds_em('skills'), mds_em('.claude/skills'));
+  return join "\n", map { ler($_) } @f;
+}
+
+# Ligação por nome a um nó: (tipo, id) ou ().
+sub ligacao {
+  my ($f) = @_;
+  return ('spec de nó entregue', $1) if $f =~ m{^docs/audora/specs/(.+)-escopo\.md$};
+  return ('plano arquivado', $1)     if $f =~ m{^docs/audora/planos/arquivo/plano-(.+)\.md$};
+  return ('', $1)                    if $f =~ m{^docs/audora/planos/plano-(.+)\.md$};
+  return ('relatório e2e', $1)       if $f =~ m{^docs/audora/e2e/e2e-(.+)\.md$};
+  return ();
+}
+
+# Fora de candidato: nós (vivos e arquivados) e decisões vivas nunca são removidos.
+sub protegido { $_[0] =~ m{^docs/audora/(memory|arquivo)/} || $_[0] eq 'docs/audora/decisoes-vivas.md' }
+
+# Artefatos de nó entregue, depuração velha e sem referência.
 sub classifica_artefatos {
-  my $nos = texto_nos();
+  my $nos = texto_nos(); my $vivo = texto_vivo();
   for my $f (arquivos_docs()) {
-    if ($f =~ m{^docs/audora/specs/(.+)-escopo\.md$} && ($ESTADO{$1} // '') eq 'delivered') {
-      item('spec de nó entregue', $f, "nó $1 delivered");
-    } elsif ($f =~ m{^docs/audora/planos/arquivo/plano-(.+)\.md$} && ($ESTADO{$1} // '') eq 'delivered') {
-      item('plano arquivado', $f, "nó $1 delivered");
-    } elsif ($f =~ m{^docs/audora/e2e/e2e-(.+)\.md$} && ($ESTADO{$1} // '') eq 'delivered') {
-      item('relatório e2e', $f, "nó $1 delivered");
-    } elsif ($f =~ m{^docs/audora/depuracao/([^/]+)$}) {
-      my $b = $1;
-      item('depuração velha', $f, 'sem nó vivo ligado')
-        unless index($TXT_INDICE, $b) >= 0 || index($nos, $b) >= 0;
+    next if protegido($f);
+    my ($tipo, $id) = ligacao($f);
+    my $e = defined $id ? ($ESTADO{$id} // '') : '';
+    if ($tipo && $e eq 'delivered') { item($tipo, $f, "nó $id delivered"); next; }
+    next if $VIVO{$e};
+    (my $b = $f) =~ s{.*/}{};
+    if ($f =~ m{^docs/audora/depuracao/}) {
+      next if index($TXT_INDICE, $b) >= 0 || index($nos, $b) >= 0;
+      item('depuração velha', $f, 'sem nó vivo ligado'); next;
     }
+    item('sem referência', $f, 'nenhum documento vivo o cita') if index($vivo, $b) < 0;
   }
 }
 

@@ -106,4 +106,28 @@ runc "$p" contar
 assert_eq 4 "$out" "skill-cleanup/7 contar → 4"
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/1 contar não altera nada"
 
+# --- skill-cleanup/8 sem referência (só documento vivo conta; arquivo/ não conta) ---
+p="$SP/t3"; mkt2 "$p"
+for n in solta citada viva so-arquivo da-skill da-claude do-prd do-no do-ptbr; do
+  mkdir -p "$p/docs/audora/notas"; printf '# %s\n' "$n" > "$p/docs/audora/notas/$n.md"
+done
+mkdir -p "$p/docs/specs" "$p/skills/x" "$p/.claude/skills/y"; printf '# fora\n' > "$p/docs/specs/fora.md"
+printf '# proj\n\nVer docs/audora/notas/citada.md.\n' > "$p/README.md"
+printf '# Decisões vivas\n\n- ver viva.md\n' > "$p/docs/audora/decisoes-vivas.md"
+printf '\nCitado: docs/audora/notas/so-arquivo.md\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+printf '# x\n\nda-skill.md\n' > "$p/skills/x/SKILL.md"
+printf '# y\n\nda-claude.md\n' > "$p/.claude/skills/y/SKILL.md"
+printf '# PRD\n\ndo-prd.md\n' > "$p/PRD.md"
+printf '# pt\n\ndo-ptbr.md\n' > "$p/README.pt-BR.md"
+printf '\nNota: do-no.md\n' >> "$p/docs/audora/memory/v.md"
+git -C "$p" add -A; git -C "$p" commit -qm t3
+runc "$p" varrer
+sr="$(secao "$out" 'sem referência')"
+assert_line "$sr" '- docs/audora/notas/solta.md | nenhum documento vivo o cita' "skill-cleanup/8 arquivo sem citação listado"
+assert_line "$sr" '- docs/audora/notas/so-arquivo.md | nenhum documento vivo o cita' "skill-cleanup/8 citado só em nó arquivado conta como sem referência"
+for n in citada.md viva.md da-skill.md da-claude.md do-prd.md do-no.md do-ptbr.md docs/specs/fora.md '2026-01-01-d.md |' 'decisoes-vivas.md |' 'v.md |' plano-v.md; do
+  assert_not_contains "$out" "$n" "skill-cleanup/8 não lista $n"
+done
+assert_eq 'total: 6 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/8 total soma os sem referência"
+
 report
