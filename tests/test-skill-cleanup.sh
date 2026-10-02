@@ -130,4 +130,47 @@ for n in citada.md viva.md da-skill.md da-claude.md do-prd.md do-no.md do-ptbr.m
 done
 assert_eq 'total: 6 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/8 total soma os sem referência"
 
+# --- skill-cleanup/10 detecta link quebrado (fora de frontmatter, fence e nota) ---
+# corpo_d <dir> — nó arquivado d com as formas reais de link (frontmatter, corpo, fence, nota)
+corpo_d() {
+  cat > "$1/docs/audora/arquivo/2026-01-01-d.md" <<'EOF'
+---
+id: d
+estado: delivered
+origem: humano
+depende-de: []
+arquivos: [docs/audora/planos/plano-d.md]
+keywords: []
+resumo: r
+atualizado-em: 2026-01-01
+---
+# d
+
+L1 [r](../e2e/nao-existe.md) quebrado
+L2 Ver `docs/audora/specs/sumiu.md` aqui.
+```
+docs/audora/x/sumiu-fence.md
+```
+[ok](../decisoes-vivas.md) e [w](https://x.y/z.md) e [a](../decisoes-vivas.md#topo) e [b](#topo) e [c](<x.md>)
+`docs/audora/e2e/velho.md` removido em 2026-01-01 pela cleanup — recuperável no git
+EOF
+}
+p="$SP/t4"; mkt2 "$p"; corpo_d "$p"
+printf -- '- z | delivered | Z → docs/audora/arquivo/sumiu.md\n' >> "$p/MEMORY.md"
+printf '# d-escopo\n\n[q](../nada/quebrado.md)\n' > "$p/docs/audora/specs/d-escopo.md"
+git -C "$p" add -A; git -C "$p" commit -qm t4
+L1="$(grep -n '^L1 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+L2="$(grep -n '^L2 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+LZ="$(grep -n '^- z |' "$p/MEMORY.md" | cut -d: -f1)"
+runc "$p" varrer
+lq="$(secao "$out" 'link quebrado')"
+assert_line "$lq" "- docs/audora/arquivo/2026-01-01-d.md:$L1 | aponta ../e2e/nao-existe.md inexistente" "skill-cleanup/10 link markdown relativo quebrado"
+assert_line "$lq" "- docs/audora/arquivo/2026-01-01-d.md:$L2 | aponta docs/audora/specs/sumiu.md inexistente" "skill-cleanup/10 token docs/audora com crases quebrado"
+assert_line "$lq" "- MEMORY.md:$LZ | aponta docs/audora/arquivo/sumiu.md inexistente" "skill-cleanup/10 link quebrado no índice"
+for n in plano-d.md sumiu-fence.md 'decisoes-vivas.md inexistente' 'z.md' '#topo' 'x.md inexistente' velho.md quebrado.md; do
+  assert_not_contains "$lq" "$n" "skill-cleanup/10 não é link quebrado: $n"
+done
+assert_eq 3 "$(printf '%s\n' "$lq" | grep -c '^- ')" "skill-cleanup/10 exatamente 3 links quebrados"
+assert_eq 'total: 7 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/10 total inclui os links quebrados"
+
 report

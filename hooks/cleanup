@@ -119,6 +119,80 @@ sub classifica_artefatos {
   }
 }
 
+# --- links: "[texto](alvo)" local e token docs/audora/…\.md fora de "](…)" ---
+sub normaliza {
+  my @p;
+  for (split m{/+}, $_[0]) {
+    next if $_ eq '.' || $_ eq '';
+    if ($_ eq '..') { (@p && $p[-1] ne '..') ? pop @p : push @p, '..'; } else { push @p, $_; }
+  }
+  return join '/', @p;
+}
+sub pasta_de { (my $d = $_[0]) =~ s{/?[^/]*$}{}; return $d; }
+
+# Token docs/audora/…\.md num trecho sem link markdown; a nota da cleanup não é link.
+sub tokens {
+  my ($s, $cb) = @_;
+  $s =~ s{(`?)(?<![A-Za-z0-9._/-])(docs/audora/[A-Za-z0-9._/-]+\.md)(?![A-Za-z0-9._/-])(?!` removido em)(`?)}{
+    my ($a, $t, $z) = ($1, $2, $3);
+    my $r = $cb->($t, normaliza($t));
+    !defined $r ? "$a$t$z" : ($a && $z) ? $r : "$a$r$z";
+  }ge;
+  return $s;
+}
+# Link markdown local: sem esquema, sem '#' no início, sem '<', '*', '{'; âncora descartada.
+sub md {
+  my ($txt, $alvo, $dir, $cb) = @_;
+  return $txt if $alvo eq '' || $alvo =~ /^[A-Za-z][A-Za-z0-9+.-]*:/ || $alvo =~ /^#/ || $alvo =~ /[<*{]/;
+  (my $c = $alvo) =~ s/#.*//;
+  my $r = $cb->($alvo, normaliza($dir eq '' ? $c : "$dir/$c"));
+  return defined $r ? $r : $txt;
+}
+# percorre <linha> <pasta do arquivo> <cb> → linha (cb devolve substituto ou undef)
+sub percorre {
+  my ($s, $dir, $cb) = @_;
+  my $o = '';
+  while ($s =~ /\[[^\]]*\]\(([^()\s]*)(?:\s+"[^"]*")?\)/) {
+    my ($pre, $txt, $alvo, $pos) = ($`, $&, $1, $');
+    $o .= tokens($pre, $cb) . md($txt, $alvo, $dir, $cb);
+    $s = $pos;
+  }
+  return $o . tokens($s, $cb);
+}
+# linhas_de_link <arquivo> → índices (0-based) das linhas fora de frontmatter e fence
+sub linhas_de_link {
+  my ($l) = @_; my @i; my ($fm, $fence) = (0, 0);
+  for my $k (0 .. $#$l) {
+    (my $s = $l->[$k]) =~ s/\r$//;
+    if ($k == 0 && $s eq '---') { $fm = 1; next; }
+    if ($fm) { $fm = 0 if $s eq '---'; next; }
+    if ($s =~ /^\s*```/) { $fence = !$fence; next; }
+    push @i, $k unless $fence;
+  }
+  return @i;
+}
+# links <arquivo> → lista de [linha 1-based, alvo como escrito, caminho resolvido da raiz]
+sub links {
+  my ($f) = @_; my @r;
+  my @l = split /\n/, ler($f), -1; my $dir = pasta_de($f);
+  for my $k (linhas_de_link(\@l)) {
+    (my $s = $l[$k]) =~ s/\r$//;
+    percorre($s, $dir, sub { push @r, [$k + 1, $_[0], $_[1]]; undef });
+  }
+  return @r;
+}
+
+my %CANDIDATO;   # arquivo → 1, para não listar link de arquivo que já sai no lote
+sub classifica_links {
+  $CANDIDATO{$_->[0]} = 1 for map { @{ $LOTE{$_} // [] } } @SECOES;
+  for my $f ('MEMORY.md', grep { /\.md$/ } arquivos_docs()) {
+    next if $CANDIDATO{$f};
+    for my $k (links($f)) {
+      item('link quebrado', "$f:$k->[0]", "aponta $k->[1] inexistente") unless -e $k->[2];
+    }
+  }
+}
+
 sub total { my $n = 0; $n += scalar @{ $LOTE{$_} // [] } for @SECOES; return $n; }
 
 sub relatorio {
@@ -135,7 +209,7 @@ sub relatorio {
   print "$_\n" for @o;
 }
 
-sub varre { carrega_indice(); classifica_artefatos(); }
+sub varre { carrega_indice(); classifica_artefatos(); classifica_links(); }
 
 if ($sub eq 'contar') { varre(); print total(), "\n"; exit 0; }
 if ($sub eq 'varrer') { varre(); relatorio(); exit 0; }

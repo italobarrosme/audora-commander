@@ -248,9 +248,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `docs/audora/arquivo/2026-10-01-plano-mapa.md:1-12,84-88` (formas reais de link).
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/10`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/10): varrer detecta link quebrado fora de frontmatter, fence e nota"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/10`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/10): varrer detecta link quebrado fora de frontmatter, fence e nota"`
 
 ## Tarefa 5: planned órfão e mantido
 
