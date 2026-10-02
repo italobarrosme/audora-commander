@@ -170,6 +170,16 @@ Definições (usadas por várias tarefas):
   mantido com vários dependentes lista todos (`mantido: a, b depende dele`);
   o arquivo `docs/audora/memory/<id>.md` de um planned órfão conta como
   candidato (link quebrado dentro dele não é listado à parte).
+- 2026-10-02 (execute, T6): `git status`/`ls-files` com `--no-optional-locks`
+  (varrer não escreve nem o `.git/index`); referentes = links em `.md`
+  rastreado, mapa calculado uma vez por execução.
+- 2026-10-02 (execute, T7): `aplicar` sem `<lote>` → uso, exit 1; mensagem do
+  commit vai por `git commit -F <tmp>` (multilinha sem passar por quoting).
+- 2026-10-02 (execute, T8): as linhas planned do índice são apagadas DEPOIS
+  das trocas de link (apagar antes deslocaria a linha de um link quebrado no
+  `MEMORY.md`); link quebrado só é trocado se o alvo ainda não existe;
+  `MEMORY inválido:` traz o 1º item (`- …`) do stderr do validate, não a
+  linha-cabeçalho genérica.
 
 ---
 
@@ -347,9 +357,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `hooks/memory-validate:12-23,47-48`, `docs/audora/memory/skill-cleanup.md` (`## decisoes`, linha do plan).
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/6`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/6,10,13): aplicar apaga planned órfão do índice, troca link quebrado e valida o MEMORY"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/6`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/6,10,13): aplicar apaga planned órfão do índice, troca link quebrado e valida o MEMORY"`
 
 ## Tarefa 9: falha no meio desfaz o lote
 

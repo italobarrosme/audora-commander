@@ -310,4 +310,39 @@ assert_file "$p/docs/audora/e2e/e2e-d.md" "skill-cleanup/12 item tirado pelo hum
 assert_contains "$(cat "$p/MEMORY.md")" '- v | in-progress |' "skill-cleanup/12 mantido fica no índice"
 assert_eq 'docs/audora/depuracao/cacada-2026-01-01.md' "$(git -C "$p" show --name-only --format= HEAD)" "skill-cleanup/12 commit só com o item aprovado"
 
+# --- skill-cleanup/6,10,13 aplicar: planned órfão sai do índice, link quebrado vira nota, MEMORY válido ---
+# mkt8 <dir> — planned p (sem arquivo) e s (com arquivo, linkado por v); links quebrados L1/L2; MEMORY em CRLF
+mkt8() {
+  local d="$1"; mkproj "$d"; corpo_d "$d"
+  printf -- '%s\n' '- p | planned | P | r | k | —' '- s | planned | S | r | k | —' '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
+  nov "$d" s planned ''; nov "$d" v in-progress '' 'Depende do desenho de [s](s.md).'
+  perl -pi -e 's/\n/\r\n/' "$d/MEMORY.md"
+  git -C "$d" add -A; git -C "$d" commit -qm t8
+}
+p="$SP/t8"; mkt8 "$p"
+L1="$(grep -n '^L1 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+runc "$p" varrer --orfao 'p=absorvido por d' --orfao 's=absorvido por d'; printf '%s\n' "$out" > "$SP/lote8.txt"
+assert_eq 'total: 4 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/6 lote com 2 planned e 2 links"
+# perl (não grep) para filtrar: grep do Git Bash perde o \r
+git -C "$p" show HEAD:MEMORY.md | perl -ne 'print unless /^- [ps] \|/' > "$SP/mem8-esperado"
+runc "$p" aplicar "$SP/lote8.txt"
+assert_eq 0 "$code" "skill-cleanup/6 aplicar → exit 0"
+assert_eq 0 "$(grep -c '^- p |' "$p/MEMORY.md")" "skill-cleanup/6 linha do planned p apagada"
+assert_eq 0 "$(grep -c '^- s |' "$p/MEMORY.md")" "skill-cleanup/6 linha do planned s apagada"
+cmp -s "$SP/mem8-esperado" "$p/MEMORY.md" && ok || ko "skill-cleanup/6 demais linhas do índice intactas (diff só remove as 2 linhas)"
+assert_eq "$(wc -l < "$p/MEMORY.md")" "$(tr -cd '\r' < "$p/MEMORY.md" | wc -c)" "skill-cleanup/13 CRLF do MEMORY preservado (conta \\r com tr: o grep do Git Bash não vê \\r)"
+assert_no_file "$p/docs/audora/memory/s.md" "skill-cleanup/6 arquivo do nó planned apagado"
+assert_contains "$(cat "$p/docs/audora/memory/v.md")" "Depende do desenho de $(nota docs/audora/memory/s.md)." "skill-cleanup/9 link para o nó apagado vira nota"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "L1 $(nota docs/audora/e2e/nao-existe.md) quebrado" "skill-cleanup/10 link markdown quebrado trocado pela nota (caminho da raiz)"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "L2 Ver $(nota docs/audora/specs/sumiu.md) aqui." "skill-cleanup/10 token quebrado trocado pela nota"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'docs/audora/x/sumiu-fence.md' "skill-cleanup/10 fence intocado"
+run_hook memory-validate "$p/MEMORY.md"
+assert_eq 0 "$code" "skill-cleanup/13 MEMORY válido depois de apagar planned"
+corpo="$(git -C "$p" show -s --format=%b HEAD)"
+assert_line "$corpo" 'planned órfão: p, s' "skill-cleanup/13 corpo lista planned órfão"
+assert_contains "$corpo" "link quebrado: docs/audora/arquivo/2026-01-01-d.md:$L1" "skill-cleanup/13 corpo lista link quebrado com a linha"
+assert_empty "$(git -C "$p" status --porcelain)" "skill-cleanup/13 tudo commitado"
+runc "$p" varrer
+assert_eq 'cleanup: nada a limpar' "$out" "skill-cleanup/13 idempotente: varrer logo após → nada a limpar"
+
 report

@@ -88,6 +88,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-01 | e2e | e2e da revisão adversarial: defeito de critério plantado na fixture é pego pelo gate 1:1 da própria validate e a revisão nunca roda (3 sessões descartadas) — plantar só defeito FORA da demanda (fora-de-escopo do nó) e, para a reverificação, achado novo no diff da correção.
 - 2026-10-02 | execute | Em `claude -p --resume`, o `total_cost_usd` do evento `result` ACUMULA a sessão (o `usage` é só do turno) — custo da sessão = o do último turno; somar por turno infla (a medição do `plano-mapa` somou).
 - 2026-10-02 | execute | Ponteiro de skill de fase sem ORDEM ("carregar-contexto (skill memory)") não segura o modelo: ele lê `MEMORY.md` inteiro no 1º lote paralelo de Reads, junto de plano/nó/PRD, antes de abrir a skill memory — regra de leitura que importa vai na própria fase, com "antes de qualquer Read".
+- 2026-10-02 | execute | O grep do Git Bash tira o `\r` da entrada: `grep -c $'\r$' f` conta TODA linha (falso verde de CRLF preservado) e `grep -v` num pipe devolve LF — contar CR com `tr -cd '\r' < f | wc -c` e filtrar com `perl -ne`.
 
 ## Índice de nós [carga: sempre]
 

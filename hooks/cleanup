@@ -360,9 +360,49 @@ sub apaga_arquivo {
   toca($alvo); git_ok('rm', '-q', '--', $alvo);
 }
 
+my @IDS_APAGAR;   # linhas do índice apagadas no fim (não desloca a linha de link quebrado no MEMORY.md)
 sub aplica_item {
   my ($it) = @_;
-  apaga_arquivo($it->{alvo});
+  if ($it->{sec} eq 'planned órfão') {
+    my $no = "docs/audora/memory/$it->{alvo}.md";
+    toca('MEMORY.md'); push @IDS_APAGAR, $it->{alvo};
+    apaga_arquivo($no) if -e $no;
+  } elsif ($it->{sec} eq 'link quebrado') {
+    my ($f, $ln) = $it->{alvo} =~ /^(.*):(\d+)$/;
+    my ($raw) = $it->{motivo} =~ /^aponta (.+) inexistente$/;
+    die "link não encontrado na linha\n" unless defined $f && defined $raw;
+    toca($f);
+    troca_links($f, sub { $_[0] eq $raw && !-e $_[1] }, $ln) or die "link não encontrado na linha\n";
+  } else {
+    apaga_arquivo($it->{alvo});
+  }
+}
+
+# Exceção registrada à decisão viva grafo-v2: o script só APAGA a linha planned aprovada.
+sub apaga_linhas_indice {
+  my %ap = map { $_ => 1 } @_; my ($dentro, @o) = (0);
+  for my $l (split /(?<=\n)/, ler('MEMORY.md')) {
+    (my $s = $l) =~ s/\r?\n$//;
+    $dentro = ($s =~ /^## Índice de nós/) ? 1 : 0 if $s =~ /^## /;
+    next if $dentro && $s =~ /^- *([^ |]+) *\| *planned *\|/ && $ap{$1};
+    push @o, $l;
+  }
+  open my $fh, '>:raw', 'MEMORY.md' or die "não consegui escrever MEMORY.md\n";
+  print $fh @o; close $fh or die "não consegui escrever MEMORY.md\n";
+}
+
+# Roda hooks/memory-validate (mesmo contrato do harness: JSON no stdin, exit 2 + stderr).
+sub valida_memory {
+  require Cwd;
+  my $mem = Cwd::getcwd() . '/MEMORY.md'; $mem =~ s/([\\"])/\\$1/g;
+  my $in = File::Temp->new(); print $in qq({"tool_name":"Edit","tool_input":{"file_path":"$mem"}}); close $in;
+  my $err = File::Temp->new(); close $err;
+  my $rc = system('bash', '-c', 'bash "$1" < "$2" > /dev/null 2> "$3"', 'cleanup',
+                  "$ENV{CLEANUP_DIR}/memory-validate", $in->filename, $err->filename);
+  return if $rc == 0;
+  my @e = map { s/\r$//r } split /\n/, ler($err->filename);
+  my ($l) = grep { /^- / } @e; $l //= $e[0] // "memory-validate saiu $rc";
+  die 'MEMORY inválido: ' . ($l =~ s/^- //r) . "\n";
 }
 
 sub commita {
@@ -387,6 +427,8 @@ sub aplicar {
   sai(0, 'cleanup: lote vazio — nada aplicado') unless @it;
   carrega_indice(); carrega_git();
   aplica_item($_) for @it;
+  apaga_linhas_indice(@IDS_APAGAR) if @IDS_APAGAR;
+  valida_memory() if grep { $_ eq 'MEMORY.md' || m{^docs/audora/memory/} } @TOCADO;
   my $h = commita(@it);
   sai(0, "cleanup: commit $h — " . scalar(@it) . ' item(ns) removido(s)');
 }
