@@ -316,6 +316,82 @@ sub relatorio {
 
 sub varre { carrega_indice(); classifica_orfaos(); classifica_artefatos(); classifica_links(); carrega_git(); filtra_git(); }
 
+# --- aplicar <lote>: o relatório aprovado (aparado pelo humano) vira 1 commit ---
+use POSIX ();
+use File::Temp ();
+my $DATA = POSIX::strftime('%Y-%m-%d', localtime);
+sub nota { "`$_[0]` removido em $DATA pela cleanup — recuperável no git" }
+
+# Itens das 7 seções acionáveis; cabeçalho, total:, aviso:, mantido e não tocado são ignorados.
+sub le_lote {
+  my ($arq) = @_; my (@it, $sec); my %acion = map { $_ => 1 } @SECOES;
+  for (split /\n/, ler($arq)) {
+    s/\r$//;
+    if (/^## (.+?)\s*$/) { $sec = $1; next; }
+    next unless defined $sec && $acion{$sec} && /^- (.+?) \| (.*)$/;
+    push @it, { sec => $sec, alvo => $1, motivo => $2, linha => $_ };
+  }
+  return @it;
+}
+
+# troca_links <arquivo> <cb(alvo como escrito, caminho)> → nº de trocas; preserva CRLF.
+sub troca_links {
+  my ($f, $quer, $so_linha) = @_;
+  my @l = split /(?<=\n)/, ler($f);
+  my @sem = map { s/\r?\n$//r } @l; my $dir = pasta_de($f); my $n = 0;
+  for my $k (linhas_de_link(\@sem)) {
+    next if defined $so_linha && $k + 1 != $so_linha;
+    my $fim = $l[$k] =~ /(\r?\n)$/ ? $1 : '';
+    $l[$k] = percorre($sem[$k], $dir, sub { $quer->(@_) ? do { $n++; nota($_[1]) } : undef }) . $fim;
+  }
+  if ($n) { open my $fh, '>:raw', $f or die "não consegui escrever $f\n"; print $fh @l; close $fh or die "não consegui escrever $f\n"; }
+  return $n;
+}
+
+sub git_ok { system('git', @_) == 0 or die "git $_[0] falhou\n"; }
+
+my (@TOCADO, %TOCADO);
+sub toca { for (@_) { push @TOCADO, $_ unless $TOCADO{$_}++; } }
+
+# Arquivo do lote: troca os links que apontam para ele e o remove.
+sub apaga_arquivo {
+  my ($alvo) = @_;
+  for my $r (@{ $REF{$alvo} // [] }) { toca($r); troca_links($r, sub { $_[1] eq $alvo }); }
+  toca($alvo); git_ok('rm', '-q', '--', $alvo);
+}
+
+sub aplica_item {
+  my ($it) = @_;
+  apaga_arquivo($it->{alvo});
+}
+
+sub commita {
+  my (@it) = @_;
+  my $msg = 'chore(cleanup): remove ' . scalar(@it) . " sobra(s) do processo\n\n";
+  for my $s (@SECOES) {
+    my @a = map { $_->{alvo} } grep { $_->{sec} eq $s } @it or next;
+    $msg .= "$s: " . join(', ', @a) . "\n";
+  }
+  my $tmp = File::Temp->new(); print $tmp $msg; close $tmp;
+  system('git', 'commit', '-q', '-F', $tmp->filename, '--', @TOCADO) == 0 or die "commit recusado\n";
+  my ($h) = git_z('rev-parse', '--short=7', 'HEAD');
+  $h =~ s/\s+$//;
+  return $h;
+}
+
+sub aplicar {
+  my ($arq) = @_;
+  sai(1, $USO) if !defined $arq || $arq eq '';
+  sai(1, "cleanup: lote $arq não encontrado") unless -f $arq;
+  my @it = le_lote($arq);
+  sai(0, 'cleanup: lote vazio — nada aplicado') unless @it;
+  carrega_indice(); carrega_git();
+  aplica_item($_) for @it;
+  my $h = commita(@it);
+  sai(0, "cleanup: commit $h — " . scalar(@it) . ' item(ns) removido(s)');
+}
+
+if ($sub eq 'aplicar') { aplicar(shift @ARGV); }
 if ($sub eq 'contar') { varre(); print total(), "\n"; exit 0; }
 if ($sub eq 'varrer') { varre(); relatorio(); exit 0; }
 sai(1, $USO);

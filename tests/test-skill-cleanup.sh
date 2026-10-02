@@ -249,4 +249,65 @@ assert_line "$(secao "$out" 'não tocado')" '- p | não tocado: mudança não co
 assert_empty "$(secao "$out" 'planned órfão')" "skill-cleanup/11 MEMORY sujo tira todo planned do lote"
 assert_eq 'cleanup: nada a limpar' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/11 lote vazio com só não tocados → nada a limpar"
 
+# --- skill-cleanup/9,13 aplicar: apaga, troca link pela nota, 1 commit só com o lote ---
+HOJE="$(date +%F)"
+nota() { printf '`%s` removido em %s pela cleanup — recuperável no git' "$1" "$HOJE"; }
+p="$SP/t7"; mkt2 "$p"
+sed -i 's|^arquivos: \[\]|arquivos: [docs/audora/e2e/e2e-d.md]|' "$p/docs/audora/arquivo/2026-01-01-d.md"
+printf '\nRelatório: [rel](../e2e/e2e-d.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+git -C "$p" add -A; git -C "$p" commit -qm t7
+printf 'o\n' > "$p/outro.txt"; git -C "$p" add outro.txt
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote7.txt"
+n0="$(git -C "$p" rev-list --count HEAD)"
+runc "$p" aplicar "$SP/lote7.txt"
+assert_eq 0 "$code" "skill-cleanup/13 aplicar → exit 0"
+assert_contains "$out" 'cleanup: commit ' "skill-cleanup/13 imprime o commit"
+assert_contains "$out" '— 4 item(ns) removido(s)' "skill-cleanup/13 imprime a contagem"
+assert_eq $((n0 + 1)) "$(git -C "$p" rev-list --count HEAD)" "skill-cleanup/13 exatamente 1 commit novo"
+for f in specs/d-escopo.md planos/arquivo/plano-d.md e2e/e2e-d.md depuracao/cacada-2026-01-01.md; do
+  assert_no_file "$p/docs/audora/$f" "skill-cleanup/9 apagado: $f"
+done
+assert_eq "docs/audora/arquivo/2026-01-01-d.md
+docs/audora/depuracao/cacada-2026-01-01.md
+docs/audora/e2e/e2e-d.md
+docs/audora/planos/arquivo/plano-d.md
+docs/audora/specs/d-escopo.md" "$(git -C "$p" show --name-only --format= HEAD | LC_ALL=C sort)" "skill-cleanup/13 commit só com os caminhos do lote"
+assert_eq 'chore(cleanup): remove 4 sobra(s) do processo' "$(git -C "$p" show -s --format=%s HEAD)" "skill-cleanup/13 título do commit"
+corpo="$(git -C "$p" show -s --format=%b HEAD)"
+assert_line "$corpo" 'spec de nó entregue: docs/audora/specs/d-escopo.md' "skill-cleanup/13 corpo lista spec por tipo"
+assert_line "$corpo" 'depuração velha: docs/audora/depuracao/cacada-2026-01-01.md' "skill-cleanup/13 corpo lista depuração por tipo"
+assert_line "$corpo" 'relatório e2e: docs/audora/e2e/e2e-d.md' "skill-cleanup/13 corpo lista e2e por tipo"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Relatório: $(nota docs/audora/e2e/e2e-d.md)" "skill-cleanup/9 link trocado pela nota"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'arquivos: [docs/audora/e2e/e2e-d.md]' "skill-cleanup/9 frontmatter arquivos: inalterado"
+assert_eq 'outro.txt' "$(git -C "$p" diff --cached --name-only)" "skill-cleanup/13 o que já estava staged segue staged"
+assert_not_contains "$(git -C "$p" show --name-only --format= HEAD)" 'outro.txt' "skill-cleanup/13 staged alheio fora do commit"
+assert_empty "$(git -C "$p" status --porcelain | grep -v '^A  outro.txt$')" "skill-cleanup/13 árvore limpa depois do commit"
+run_hook memory-validate "$p/MEMORY.md"
+assert_eq 0 "$code" "skill-cleanup/13 MEMORY válido depois do aplicar"
+# skill-cleanup/12 lote sem item acionável (humano tirou todos) → nada aplicado
+p="$SP/t7v"; mkt2 "$p"
+printf '%s\n' 'cleanup: relatório — nada foi alterado' '## spec de nó entregue' '## mantido' '- v | mantido: x depende dele' 'total: 0 item(ns) no lote' > "$SP/lote7v.txt"
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote7v.txt"
+assert_eq 0 "$code" "skill-cleanup/12 lote vazio → exit 0"
+assert_eq 'cleanup: lote vazio — nada aplicado' "$out" "skill-cleanup/12 lote vazio nada aplicado"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/12 lote vazio não altera nem commita"
+runc "$p" aplicar /nao/existe
+assert_eq 1 "$code" "skill-cleanup/12 lote inexistente → exit 1"
+assert_contains "$out" 'cleanup: lote /nao/existe não encontrado' "skill-cleanup/12 lote inexistente nomeado"
+runc "$p" aplicar
+assert_eq 1 "$code" "skill-cleanup/12 aplicar sem lote → uso"
+assert_eq "$antes" "$(snap "$p")" "skill-cleanup/12 lote inexistente não altera nada"
+# skill-cleanup/12 humano tira itens: só o que ficou no lote sai; mantido e não tocado intocados
+printf '%s\n' 'cleanup: relatório — nada foi alterado' '## depuração velha' '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' \
+  '## mantido' '- v | mantido: x depende dele' '## não tocado' '- docs/audora/specs/d-escopo.md | não tocado: mudança não commitada' \
+  'total: 1 item(ns) no lote' > "$SP/lote7m.txt"
+runc "$p" aplicar "$SP/lote7m.txt"
+assert_eq 0 "$code" "skill-cleanup/12 lote aparado → exit 0"
+assert_no_file "$p/docs/audora/depuracao/cacada-2026-01-01.md" "skill-cleanup/12 item aprovado saiu"
+assert_file "$p/docs/audora/specs/d-escopo.md" "skill-cleanup/12 não tocado fica"
+assert_file "$p/docs/audora/e2e/e2e-d.md" "skill-cleanup/12 item tirado pelo humano fica"
+assert_contains "$(cat "$p/MEMORY.md")" '- v | in-progress |' "skill-cleanup/12 mantido fica no índice"
+assert_eq 'docs/audora/depuracao/cacada-2026-01-01.md' "$(git -C "$p" show --name-only --format= HEAD)" "skill-cleanup/12 commit só com o item aprovado"
+
 report

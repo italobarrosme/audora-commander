@@ -325,9 +325,9 @@ Definições (usadas por várias tarefas):
 - **ler**: `tests/lib.sh:16-20` (`run_hook`), `hooks/memory-validate:12-23`.
 - **done quando**: asserções passam; suíte verde.
 
-- [ ] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/9`
-- [ ] **green** — arquivo e suíte verdes; gate passou
-- [ ] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/9,12,13): aplicar apaga, troca link pela nota e faz 1 commit só com o lote"`
+- [x] **red** — `bash tests/test-skill-cleanup.sh` falha com `FAIL: skill-cleanup/9`
+- [x] **green** — arquivo e suíte verdes; gate passou
+- [x] **commit** — `git add hooks/cleanup tests/test-skill-cleanup.sh && git commit -m "feat(skill-cleanup/9,12,13): aplicar apaga, troca link pela nota e faz 1 commit só com o lote"`
 
 ## Tarefa 8: aplicar — planned órfão, link quebrado e MEMORY validado
 
