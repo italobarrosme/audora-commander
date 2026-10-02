@@ -95,6 +95,9 @@ mexer em guarda antiga.
   mapa); `test-gate` 52/0; gate antes do commit `GATE: passou`, exit=0.
 - 2026-10-02 (execute T2): red 50/11 (só a seção nova); green 61/0; validate
   6134 B, `test-carga` base=47678 full=55305 (= mapa); gate `GATE: passou`, exit=0.
+- 2026-10-02 (execute T3): red 61/6 (o mapa diz "7 casos", mas lista 6
+  asserções — são 6); green 67/0; `test-docs` 158/0; reembrulho do bullet
+  da porta no README PT (troca no meio da linha); gate `GATE: passou`, exit=0.
 
 ## Decisões tomadas pela IA
 
@@ -278,9 +281,9 @@ mexer em guarda antiga.
 - **ler**: `README.md:105-140`, `README.pt-BR.md:105-140`, `docs/fundamentos.md:30-45`.
 - **done quando**: teste da demanda `exit=0`; `test-docs` verde; gate `exit=0`.
 
-- [ ] **red** — teste da demanda `exit=1` só nos 7 casos de docs.
-- [ ] **green** — `exit=0`; `test-docs` verde; gate antes do commit.
-- [ ] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-leitura-por-secao.sh && git commit -m "docs(leitura-por-secao/1): READMEs EN/PT e fundamentos descrevem a leitura do MEMORY por seção"`
+- [x] **red** — teste da demanda `exit=1` só nos 7 casos de docs.
+- [x] **green** — `exit=0`; `test-docs` verde; gate antes do commit.
+- [x] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-leitura-por-secao.sh && git commit -m "docs(leitura-por-secao/1): READMEs EN/PT e fundamentos descrevem a leitura do MEMORY por seção"`
 
 ## Tarefa 4: versão 0.15.0 e carga dentro dos tetos
 

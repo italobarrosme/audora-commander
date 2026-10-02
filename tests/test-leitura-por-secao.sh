@@ -105,4 +105,13 @@ assert_contains "$sub" 'reancore só pelos artefatos em disco' "leitura-por-seca
 bv="$(tr -d '\r' 2>/dev/null < skills/validate/SKILL.md | wc -c)"
 [ "$bv" -le 6139 ] && ok || ko "leitura-por-secao/1 validate $bv B > 6139 (guarda de parada-revisao/9)"
 
+# --- /1 docs ---
+en="$(flat README.md)"; pt="$(flat README.pt-BR.md)"; fu="$(flat docs/fundamentos.md)"
+assert_contains "$en" '`MEMORY.md` by section' "leitura-por-secao/1 docs README EN: leitura por seção"
+assert_contains "$en" 'the Learnings that match the request' "leitura-por-secao/1 docs README EN: porta filtra Aprendizados"
+assert_contains "$pt" '`MEMORY.md` por seção' "leitura-por-secao/1 docs README PT: leitura por seção"
+assert_contains "$pt" 'os Aprendizados que casam o pedido' "leitura-por-secao/1 docs README PT: porta filtra Aprendizados"
+assert_contains "$fu" 'o `MEMORY.md` entra por seção em toda fase' "leitura-por-secao/1 docs fundamentos: carga por seção"
+assert_not_contains "$fu" 'o `MEMORY.md` inteiro' "leitura-por-secao/1 docs fundamentos sem MEMORY.md inteiro"
+
 report

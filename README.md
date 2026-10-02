@@ -108,7 +108,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
 - **When it fires**: at the start of any software demand (create, change,
   fix, refactor) — the SessionStart hook points here.
 - **What it does**: loads the context (skill `memory`: Constitution,
-  Learnings and node index; no `MEMORY.md` → offers a bootstrap first);
+  the Learnings that match the request and the node index; no `MEMORY.md` →
+  offers a bootstrap first);
   with 3 or more nodes `in-progress`, asks what to pause before taking a new
   one; classifies the demand with four binary risk questions — persisted
   data or migration? public API/contract? auth, security or payment?
@@ -134,7 +135,10 @@ Details per skill: [Skills in detail](#skills-in-detail).
   `registrar-delta`, `registrar-aprendizado`, `compactar`.
   Router: hot operations inline, the rest in
   `skills/memory/references/`, read one per operation. Selective reading
-  (index + only the nodes the demand touches; grep for structural queries);
+  (`MEMORY.md` by section: Purpose and Constitution whole, Learnings by grep
+  on the phase and the node's terms, invalidated ones never, the node index
+  whole only at the entry, scope and plan; only the nodes the demand touches;
+  grep for structural queries);
   whatever is already loaded in the session is not read again. The bootstrap
   offers to generate the mechanical gate — once; a refusal sticks. Hooks
   `memory-guard` (line ceilings, including a root `PRD.md` over 200 lines)

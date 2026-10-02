@@ -33,11 +33,13 @@ Regras:
    `depende-de`, `arquivos`, `keywords`, `resumo`, `atualizado-em`). A skill
    memory valida o schema antes de escrever; os hooks `memory-guard` e
    `memory-validate` rejeitam escrita que o quebra.
-2. **Carga seletiva** (inspirado em Kiro steering): o `MEMORY.md` inteiro
-   (`[carga: sempre]` — enxuto, cabe em qualquer contexto) entra em toda
-   demanda; corpo de nó e decisões vivas (`[carga: auto]`) entram só quando a
-   demanda toca a área, escolhidos pela linha do índice ou por grep; nós em
-   `docs/audora/arquivo/` só se o humano pedir histórico.
+2. **Carga seletiva** (inspirado em Kiro steering): o `MEMORY.md` entra
+   por seção em toda fase — Propósito e Constituição inteiras, Aprendizados
+   por busca (fase e termos do nó, sem invalidados), Índice inteiro só na
+   porta, no scope e no plan e só a linha do nó nas outras; corpo de nó e
+   decisões vivas (`[carga: auto]`) entram só quando a demanda toca a área,
+   escolhidos pela linha do índice ou por grep; nós em `docs/audora/arquivo/`
+   só se o humano pedir histórico.
    Nunca carregar a pasta de nós inteira; consulta estrutural é grep.
 3. **Constituição** (inspirado em Spec Kit): seção curta e estável no topo do
    `MEMORY.md` com princípios inegociáveis do projeto (stack, restrições,

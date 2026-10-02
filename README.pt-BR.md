@@ -108,15 +108,16 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **Quando dispara**: no início de qualquer demanda de software (criar,
   alterar, corrigir, refatorar) — o hook de SessionStart aponta para cá.
 - **O que faz**: carrega o contexto (skill `memory`: Constituição,
-  Aprendizados e índice de nós; sem `MEMORY.md` → oferece bootstrap antes de
-  tudo); com 3 ou mais nós `in-progress`, pergunta o que pausar antes de
-  aceitar outro; classifica a demanda por quatro perguntas binárias de risco
-  — dado persistido ou migração? API pública/contrato? auth, segurança ou
-  pagamento? efeito irreversível fora do repo? Qualquer sim → HIGH; vários
-  arquivos ou lógica nova → MEDIUM; o resto → LIGHT. HOTFIX só quando você
-  declara. Anuncia a categoria (você pode corrigir), registra o nó e roteia.
-  Catraca de mão única: sobe a categoria sozinha no meio do caminho, desce só
-  com a sua aprovação. Demanda gigante é quebrada em menores.
+  os Aprendizados que casam o pedido e o índice de nós; sem `MEMORY.md` →
+  oferece bootstrap antes de tudo); com 3 ou mais nós `in-progress`,
+  pergunta o que pausar antes de aceitar outro; classifica a demanda por
+  quatro perguntas binárias de risco — dado persistido ou migração? API
+  pública/contrato? auth, segurança ou pagamento? efeito irreversível fora
+  do repo? Qualquer sim → HIGH; vários arquivos ou lógica nova → MEDIUM; o
+  resto → LIGHT. HOTFIX só quando você declara. Anuncia a categoria (você
+  pode corrigir), registra o nó e roteia. Catraca de mão única: sobe a
+  categoria sozinha no meio do caminho, desce só com a sua aprovação.
+  Demanda gigante é quebrada em menores.
 - **O que deixa no disco**: o nó `docs/audora/memory/<id>.md`
   (`in-progress`) e a linha dele no `MEMORY.md`; nó LIGHT/HOTFIX já nasce
   com critérios EARS numerados.
@@ -134,7 +135,10 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   `registrar-delta`, `registrar-aprendizado`, `compactar`.
   Roteador: operações quentes inline, o resto em
   `skills/memory/references/`, lidas uma por operação. Leitura seletiva
-  (índice + só os nós que a demanda toca; grep para consulta estrutural); o
+  (`MEMORY.md` por seção: Propósito e Constituição inteiras, Aprendizados por
+  grep na fase e nos termos do nó, nunca os invalidados, índice de nós inteiro
+  só na porta, no scope e no plan; só os nós que a demanda toca; grep para
+  consulta estrutural); o
   que já foi carregado na sessão não é relido. O bootstrap oferece gerar
   o gate mecânico — uma vez; recusa fica registrada. Os hooks
   `memory-guard` (tetos de linhas, inclusive o da raiz: `PRD.md` acima de
