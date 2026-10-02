@@ -148,6 +148,16 @@ mexer em guarda antiga.
 6. Medição: A = `git archive e3c7242` (main, 0.14.0); fixture e scripts no
    scratchpad, sem versionar; a sessão principal roda e faz polling dos
    `claude -p` (aprendizado 83).
+7. (execute, T5) Frase "carregar-contexto (skill memory) antes de qualquer
+   Read; `MEMORY.md` nunca inteiro." em plan, execute, e2e, validate e debug —
+   o ponteiro sozinho deixou o B ler inteiro em 3 fases. Porta e scope ficam
+   sem ela (porta B leu por recorte; scope não medido sozinho; BASE sem folga
+   para os dois). Cortes para caber: "Repetir esta releitura… após qualquer
+   compactação de contexto" (execute) e duas frases repetidas da validate.
+8. (execute, T5) Validate e debug levaram a correção sem rodada própria com o
+   texto antigo: a frase-ponteiro era idêntica à do e2e, que falhou.
+9. (execute, T5) Custo por sessão = `total_cost_usd` do último turno
+   (acumula no `--resume`); scope registrado junto da porta (mesma sessão).
 
 ## Comandos comuns
 
@@ -368,18 +378,18 @@ em `docs/audora/arquivo/`, 2 planned), `gate: recusado`,
   `$SCRATCH/plugin-0.14.0` (`"version": "0.14.0"`); `$SCRATCH/bytes-memory.pl`
   conferido num jsonl sintético (Read/Grep/Bash, UTF-8, exclusão de
   `docs/audora/memory/`, fase pela Skill, custo somado).
-- [ ] **5.3 porta + scope A e B** — `$SCRATCH/sessao.sh <a|b> <rótulo>
+- [x] **5.3 porta + scope A e B** — `$SCRATCH/sessao.sh <a|b> <rótulo>
   "<prompt>" [resume]`, em paralelo. Turno 1: o pedido de
   `$SCRATCH/pedido.txt`; turnos seguintes por `--resume`, texto fixo de
   `$SCRATCH/respostas.txt` e depois `aprovado`, iguais nos dois lados, até
   os critérios aprovados. Done: nó da demanda com critérios na fixture;
   commit na fixture.
-- [ ] **5.4 plan A e B** — sessão nova `plan de <id>`; aprovação por
+- [x] **5.4 plan A e B** — sessão nova `plan de <id>`; aprovação por
   `--resume` com `aprovado`. Done: plano-arquivo commitado na fixture.
-- [ ] **5.5 execute A e B** — sessão nova `execute de <id>`; parou antes do
+- [x] **5.5 execute A e B** — sessão nova `execute de <id>`; parou antes do
   fim → `--resume` com `continue` (anotar). Done: `tests/run.sh` exit 0.
-- [ ] **5.6 e2e e validate A e B** — sessão nova `e2e de <id>`; depois
+- [x] **5.6 e2e e validate A e B** — sessão nova `e2e de <id>`; depois
   sessão nova `validate de <id>` até o portão, sem aprovar.
-- [ ] **5.7 extração e registro** — `bytes-memory.pl` por lado e fase;
+- [x] **5.7 extração e registro** — `bytes-memory.pl` por lado e fase;
   `## medicao` no nó (tabela + receita); notas de sessão; gate `exit=0`;
   commit `docs(leitura-por-secao/10): medição A/B …`.

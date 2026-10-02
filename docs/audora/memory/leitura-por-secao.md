@@ -64,6 +64,29 @@ Ler por seção o `PRD.md`, o `templates/bloco-fechamento-template.md` e os temp
 - 2026-10-02 (IA): tetos de carga mantidos (folga BASE hoje: 277 bytes); o plan acomoda o texto novo, e subir teto exige motivo no nó (/11).
 - 2026-10-02 (IA): bump `0.15.0` — muda o comportamento das skills; sem bump o cache do plugin não atualiza.
 
+## medicao
+
+A/B de 2026-10-02 (/10), n=1: a mesma demanda MEDIUM (comando que exporta as notas em CSV) numa fixture bash com `MEMORY.md` de 15612 B (67 aprendizados, 28 nós). A = plugin 0.14.0 (`git archive e3c7242`); B = esta branch. Bytes = `tool_result` das leituras do `MEMORY.md` da raiz (Read, Grep, Bash). Custo = `total_cost_usd` da sessão; ele acumula entre turnos retomados, então vale o do último turno.
+
+| fase | bytes A | bytes B | B÷A | US$ A | US$ B |
+|---|---|---|---|---|---|
+| porta + scope (1 sessão) | 16020 | 8081 | 50,4% | 0,87 | 1,11 |
+| plan | 16702 | 8301 | 49,7% | 1,96 | 1,45 |
+| execute | 17503 | 8943 | 51,1% | 1,43 | 1,69 |
+| e2e | 17559 | 12081 | 68,8% | 2,24 | 1,73 |
+| validate | 17877 | 8739 | 48,9% | 0,71 | 0,86 |
+| total | 85661 | 46145 | 53,9% | 7,21 | 6,85 |
+
+Leitura:
+
+- O A leu o `MEMORY.md` inteiro em toda fase: Read sem offset, ou `cat -n` no execute (17423 B dos 24922 daquele Bash).
+- O B leu por recorte: seções, Propósito e Constituição por offset, grep de aprendizados e do índice.
+- O scope rodou na sessão da porta, reusou o recorte (/7) e não leu nada nos dois lados; por isso entra junto da porta.
+- Na 1ª rodada, plan, execute e e2e do B ainda leram inteiro: o 1º lote paralelo de Reads vinha antes da skill memory. A frase "antes de qualquer Read; `MEMORY.md` nunca inteiro" corrigiu os três (validate e debug têm a mesma frase-ponteiro e levaram a correção junto). A tabela mostra só as re-rodadas; as rodadas descartadas do B custaram US$ 4,67.
+- O custo das sessões não acompanha os bytes: ~8 KB por fase são ~2 mil tokens, e as sessões divergiram (critérios 10 × 12, turnos de plan 3 × 1).
+
+Receita: `fixture-leitura.sh <dir>` (scratchpad) gera `fx-a`/`fx-b`; `sessao.sh <a|b> <rótulo>` roda `claude.exe -p` com `--plugin-dir` e o plugin instalado desligado. As respostas são fixas (`respostas.txt`, depois `aprovado`). `bytes-memory.pl` soma os bytes por fase, que é a última Skill de fase invocada, ou `FASE0` em turno retomado.
+
 ## delta
 
 ## e2e
