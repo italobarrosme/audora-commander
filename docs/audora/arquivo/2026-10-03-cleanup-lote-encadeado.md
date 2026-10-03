@@ -1,9 +1,9 @@
 ---
 id: cleanup-lote-encadeado
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [skill-cleanup]
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, hooks/cleanup, tests/test-skill-cleanup.sh, docs/audora/arquivo/*, docs/audora/specs/*, docs/audora/planos/arquivo/*, docs/audora/e2e/*, docs/audora/depuracao/*]
 keywords: [cleanup, lote, link, git-rm, hotfix]
 resumo: O aplicar da cleanup não falha quando um item do lote cita outro item do mesmo lote
 atualizado-em: 2026-10-03
@@ -14,9 +14,10 @@ atualizado-em: 2026-10-03
 ## objetivo
 
 HOTFIX: o `aplicar` do `hooks/cleanup` aplica o lote mesmo quando um arquivo
-apagado no lote cita outro arquivo apagado no mesmo lote. Hoje a troca de
-link modifica o arquivo citador, o `git rm` dele recusa e o lote inteiro é
-desfeito (achado ao rodar a cleanup neste repo em 2026-10-03).
+apagado no lote cita outro arquivo apagado no mesmo lote. Antes, a troca de
+link modificava o arquivo citador, o `git rm` dele recusava e o lote inteiro
+era desfeito (achado ao rodar a cleanup neste repo em 2026-10-03). Agora o
+arquivo que sai no lote não recebe troca de link.
 
 ## criterios-aceite
 
@@ -34,10 +35,14 @@ desfeito (achado ao rodar a cleanup neste repo em 2026-10-03).
 
 ## decisoes
 
+- 2026-10-03 (IA): /3 mantido como guarda, embora o `varrer` nunca o gere (já pula link de arquivo que sai no lote) — só lote montado à mão traz o caso.
+- 2026-10-03 (IA): o commit da cleanup real (`5474530`, 62 itens: 57 arquivos removidos + 5 links trocados pela nota) entrou na mesma branch, como evidência do /4; `arquivos:` lista os removidos por pasta.
+- 2026-10-03 (humano): portão aprovado; o /4 conta como e2e.
+
 ## delta
 
 ## e2e
 
-pendente
+pulado-pelo-humano (o /4 — cleanup real neste repo — fez as vezes do e2e)
 
 ## feedback-reprovacao

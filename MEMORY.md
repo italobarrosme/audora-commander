@@ -93,6 +93,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-02 | e2e | Falha REAL no meio de um lote no Windows: abrir o arquivo com `[System.IO.File]::Open(p,'Open','Read','None')` num PowerShell em background durante o `claude -p` — `git rm` dá "Invalid argument" e exercita o desfazer sem mexer no script.
 - 2026-10-02 | execute | Fixture do `hooks/cleanup` que copia o corpo do `MEMORY.md` do `mkproj` sem criar `docs/audora/arquivo/2026-01-01-d.md` herda link quebrado (a linha `d → …` do índice) e o relatório ganha `## não tocado`/`## link quebrado` — assert de `$out` exato falha por motivo alheio; tirar a linha `d` ou criar o arquivo.
 - 2026-10-02 | e2e | `git log -- <caminho>` trata `[` `]` `?` como glob: `app/[slug]/page.tsx` casa `app/s/page.tsx` e "acha" histórico de arquivo que nunca existiu — consulta de existência por caminho usa `--literal-pathspecs` (ou `:(literal)`); a suíte não pegava, o mutante sem a flag passou verde.
+- 2026-10-03 | validate | Ferramenta que age em LOTE precisa de fixture com item que cita outro item do mesmo lote, nas duas ordens: a suíte da cleanup só tinha itens independentes e o 1º uso real (plano cita a spec) desfez o lote no `git rm` — rodar a ferramenta no próprio repo (dogfood) antes do merge acha o que a fixture sintética não tem.
 
 ## Índice de nós [carga: sempre]
 
@@ -120,7 +121,7 @@ time pequeno em projetos web/mobile/api.
 - leitura-por-secao | delivered | Leitura por seção → docs/audora/arquivo/2026-10-02-leitura-por-secao.md
 - skill-cleanup | delivered | Skill de limpeza → docs/audora/arquivo/2026-10-02-skill-cleanup.md
 - cleanup-alvo-ausente | delivered | Alvo ausente só se existiu → docs/audora/arquivo/2026-10-03-cleanup-alvo-ausente.md
-- cleanup-lote-encadeado | in-progress | Lote encadeado da cleanup | O aplicar da cleanup não falha quando um item do lote cita outro item do mesmo lote | cleanup, lote, link, git-rm, hotfix | hooks/cleanup, tests/test-skill-cleanup.sh
+- cleanup-lote-encadeado | delivered | Lote encadeado da cleanup → docs/audora/arquivo/2026-10-03-cleanup-lote-encadeado.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md

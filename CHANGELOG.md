@@ -15,6 +15,7 @@ Formato: `- AAAA-MM-DD | <versão ou —> | <id> | <1 frase> → docs/audora/arq
 - 2026-10-02 | 0.15.0 | leitura-por-secao | Toda fase carrega do `MEMORY.md` só o recorte de que precisa — Propósito e Constituição inteiras, Aprendizados e Índice de nós por busca — em vez do arquivo inteiro; no A/B com `claude -p` o lido caiu para 53,9%. → docs/audora/arquivo/2026-10-02-leitura-por-secao.md
 - 2026-10-02 | 0.16.0 | skill-cleanup | Skill-ferramenta cleanup varre as sobras do processo (planned órfão, artefatos de nó entregue, depuração velha, arquivo sem referência, link quebrado) e, com aprovação do lote, aplica num commit só via `hooks/cleanup`, desfazendo tudo na falha; o sync da validate sugere rodá-la. → docs/audora/arquivo/2026-10-02-skill-cleanup.md
 - 2026-10-03 | 0.16.0 | cleanup-alvo-ausente | O `hooks/cleanup` só marca planned órfão por "alvo ausente" quando o caminho existiu em commit alcançável do HEAD e sumiu do disco (pathspec literal, repo sem commit sem erro); arquivo ainda não criado deixa de virar órfão, e a skill confere o histórico antes do `--orfao`. → docs/audora/arquivo/2026-10-03-cleanup-alvo-ausente.md
+- 2026-10-03 | 0.16.0 | cleanup-lote-encadeado | HOTFIX: o `aplicar` da cleanup não troca link em arquivo que sai no mesmo lote, então item que cita outro item do lote (plano que cita a spec) não desfaz mais o lote no `git rm`; a 1ª cleanup real deste repo removeu 62 sobras num commit. → docs/audora/arquivo/2026-10-03-cleanup-lote-encadeado.md
 
 ## Histórico até 2026-10-01
 

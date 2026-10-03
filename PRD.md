@@ -104,7 +104,9 @@ Code.
   commit só. O mecânico mora em `hooks/cleanup` (`varrer`/`contar` só
   leem; `aplicar` apaga, troca link pela nota "removido … recuperável no
   git", apaga a linha do planned aprovado, roda o `memory-validate` e
-  desfaz tudo se algo falhar). Fora do git ou sujo fica fora do lote. Pela
+  desfaz tudo se algo falhar). Arquivo que sai no lote não recebe troca de
+  link, então item que cita outro item do lote não trava o `git rm`.
+  Fora do git ou sujo fica fora do lote. Pela
   coluna arquivos-chave, o script só marca "alvo ausente" o caminho que
   existiu em commit alcançável do HEAD e sumiu do disco (`git
   --literal-pathspecs log --full-history HEAD`). Caminho que nunca existiu
@@ -176,6 +178,7 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 6. Candidato a nó: ressalvas do `skill-cleanup` aceitas no portão.
    - A nota "recuperável no git" vai também para link que já nasceu
      quebrado, cujo alvo nunca foi versionado.
-   - Rodar a cleanup neste repo (96 sobras na contagem de 2026-10-02) exige
-     mexer na guarda de `tests/test-dogfood.sh:10`, que prende os planned
-     do índice.
+7. Candidato a nó: falso positivo de link quebrado na cleanup — caminho
+   citado entre crases em prosa (ex.: aprendizado do `MEMORY.md` que cita
+   `docs/audora/arquivo/2026-01-01-d.md` de fixture) entra como link; o
+   `aplicar` trocaria a citação pela nota e estragaria o texto.
