@@ -2,6 +2,7 @@
 # skill-cleanup/1..16 — hooks/cleanup (varrer/contar/aplicar), skill cleanup e sugestão no sync da validate.
 # cleanup-alvo-ausente/1..10 — alvo ausente só se o caminho existiu no histórico do HEAD.
 # cleanup-lote-encadeado/1..3 — aplicar não falha quando um item do lote cita outro item do lote.
+# cleanup-link-preciso/1..13 — link para caminho nunca versionado vira aviso fora do lote; nota própria do link quebrado; Aprendizados fora.
 source "$(dirname "$0")/lib.sh"
 C="$ROOT/hooks/cleanup"
 
@@ -20,6 +21,12 @@ mkproj() {
 }
 # addc <dir> <caminho> <conteúdo> — escreve, git add e commit
 addc() { mkdir -p "$(dirname "$1/$2")"; printf '%s\n' "$3" > "$1/$2"; git -C "$1" add -- "$2"; git -C "$1" commit -qm "add $2"; }
+# sumiu <dir> <caminho>... — cada caminho é versionado e depois removido (alvo de link quebrado de verdade)
+sumiu() {
+  local d="$1" f; shift
+  for f in "$@"; do mkdir -p "$(dirname "$d/$f")"; printf 'existiu\n' > "$d/$f"; git -C "$d" add -- "$f"; done
+  git -C "$d" commit -qm "existiu: $*"; git -C "$d" rm -q -- "$@"; git -C "$d" commit -qm "sumiu: $*"
+}
 # runc <dir> <args…> — roda o script na raiz do projeto; define out (stdout+stderr) e code
 runc() { local d="$1"; shift; out="$(cd "$d" && bash "$C" "$@" 2>&1)"; code=$?; }
 # snap <dir> — HEAD + status + md5 da árvore (fora do .git): "estado igual"
@@ -135,6 +142,7 @@ assert_eq 'total: 6 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill
 # --- skill-cleanup/10 detecta link quebrado (fora de frontmatter, fence e nota) ---
 # corpo_d <dir> — nó arquivado d com as formas reais de link (frontmatter, corpo, fence, nota)
 corpo_d() {
+  sumiu "$1" docs/audora/e2e/nao-existe.md docs/audora/specs/sumiu.md
   cat > "$1/docs/audora/arquivo/2026-01-01-d.md" <<'EOF'
 ---
 id: d
@@ -150,6 +158,8 @@ atualizado-em: 2026-01-01
 
 L1 [r](../e2e/nao-existe.md) quebrado
 L2 Ver `docs/audora/specs/sumiu.md` aqui.
+L3 [n](../e2e/nunca.md) e `docs/audora/specs/nunca-token.md`
+L4 [fora](../../../../fora.md)
 ```
 docs/audora/x/sumiu-fence.md
 ```
@@ -157,7 +167,7 @@ docs/audora/x/sumiu-fence.md
 `docs/audora/e2e/velho.md` removido em 2026-01-01 pela cleanup — recuperável no git
 EOF
 }
-p="$SP/t4"; mkt2 "$p"; corpo_d "$p"
+p="$SP/t4"; mkt2 "$p"; corpo_d "$p"; sumiu "$p" docs/audora/arquivo/sumiu.md
 printf -- '- z | delivered | Z → docs/audora/arquivo/sumiu.md\n' >> "$p/MEMORY.md"
 printf '# d-escopo\n\n[q](../nada/quebrado.md)\n' > "$p/docs/audora/specs/d-escopo.md"
 git -C "$p" add -A; git -C "$p" commit -qm t4
@@ -174,6 +184,32 @@ for n in plano-d.md sumiu-fence.md 'decisoes-vivas.md inexistente' 'z.md' '#topo
 done
 assert_eq 3 "$(printf '%s\n' "$lq" | grep -c '^- ')" "skill-cleanup/10 exatamente 3 links quebrados"
 assert_eq 'total: 7 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/10 total inclui os links quebrados"
+# cleanup-link-preciso/1,2,3 — alvo nunca versionado vai para '## nunca existiu', fora do lote e do total
+L3="$(grep -n '^L3 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+L4="$(grep -n '^L4 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+ne="$(secao "$out" 'nunca existiu')"
+assert_line "$ne" "- docs/audora/arquivo/2026-01-01-d.md:$L3 | aponta ../e2e/nunca.md nunca versionado" "cleanup-link-preciso/1 link markdown nunca versionado"
+assert_line "$ne" "- docs/audora/arquivo/2026-01-01-d.md:$L3 | aponta docs/audora/specs/nunca-token.md nunca versionado" "cleanup-link-preciso/1 token nunca versionado"
+assert_line "$ne" "- docs/audora/arquivo/2026-01-01-d.md:$L4 | aponta ../../../../fora.md nunca versionado" "cleanup-link-preciso/1 caminho acima da raiz = nunca existiu"
+assert_eq 3 "$(printf '%s\n' "$ne" | grep -c '^- ')" "cleanup-link-preciso/1 exatamente 3 em nunca existiu"
+assert_not_contains "$lq" 'nunca' "cleanup-link-preciso/2 link quebrado só com alvo que existiu"
+assert_not_contains "$lq" 'fora.md' "cleanup-link-preciso/2 caminho acima da raiz fora do link quebrado"
+assert_eq '## spec de nó entregue;## plano arquivado;## relatório e2e;## depuração velha;## link quebrado;## nunca existiu;' \
+  "$(printf '%s\n' "$out" | grep '^## ' | tr '\n' ';')" "cleanup-link-preciso/1 nunca existiu depois das seções do lote"
+assert_not_contains "$out" 'fatal' "cleanup-link-preciso/1 caminho acima da raiz não chama o git"
+runc "$p" contar
+assert_eq 7 "$out" "cleanup-link-preciso/3 contar = total do varrer, sem nunca existiu"
+# cleanup-link-preciso/4 lote vazio com só nunca existiu → avisos e 'nada a limpar'
+p="$SP/t4n"; mkproj "$p"
+printf '\n[n](../e2e/nunca.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"; git -C "$p" commit -qam nunca
+LN="$(grep -n 'nunca' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+runc "$p" varrer
+assert_eq 0 "$code" "cleanup-link-preciso/4 varrer → exit 0"
+assert_eq "## nunca existiu
+- docs/audora/arquivo/2026-01-01-d.md:$LN | aponta ../e2e/nunca.md nunca versionado
+cleanup: nada a limpar" "$out" "cleanup-link-preciso/4 só avisos e nada a limpar"
+runc "$p" contar
+assert_eq 0 "$out" "cleanup-link-preciso/4 contar → 0"
 
 # --- skill-cleanup/3,4,5 planned órfão (--orfao e alvo ausente) e mantido ---
 # mkt5 <dir> — planned p q r r2 s; v (vivo) depende de r2; d (arquivado) depende de s
@@ -271,9 +307,20 @@ assert_eq 'cleanup: nada a limpar' "$out" "cleanup-alvo-ausente/9 sem commit: ca
 runc "$p" contar
 assert_eq 0 "$code" "cleanup-alvo-ausente/9 sem commit contar → exit 0"
 assert_eq 0 "$out" "cleanup-alvo-ausente/9 sem commit contar → 0"
+# cleanup-link-preciso/11 sem commit: todo link para caminho inexistente vai para nunca existiu, sem erro
+printf -- '- z | delivered | Z → docs/audora/arquivo/sumiu.md\n' >> "$p/MEMORY.md"
+LZ="$(grep -n '^- z |' "$p/MEMORY.md" | cut -d: -f1)"
+runc "$p" varrer
+assert_eq 0 "$code" "cleanup-link-preciso/11 sem commit varrer → exit 0"
+assert_eq "## nunca existiu
+- MEMORY.md:$LZ | aponta docs/audora/arquivo/sumiu.md nunca versionado
+cleanup: nada a limpar" "$out" "cleanup-link-preciso/11 sem commit: link vira nunca existiu"
+runc "$p" contar
+assert_eq 0 "$code" "cleanup-link-preciso/11 sem commit contar → exit 0"
+assert_eq 0 "$out" "cleanup-link-preciso/11 sem commit contar → 0"
 
 # --- skill-cleanup/11 não tocado: fora do git e mudança não commitada ---
-p="$SP/t6"; mkt2 "$p"
+p="$SP/t6"; mkt2 "$p"; sumiu "$p" docs/audora/e2e/nao-existe.md
 printf '\n[p](../planos/arquivo/plano-d.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
 git -C "$p" add -A; git -C "$p" commit -qm 'arquivo linka plano-d'
 git -C "$p" rm -q --cached docs/audora/e2e/e2e-d.md; git -C "$p" commit -qm 'e2e-d fora do git'
@@ -281,9 +328,11 @@ printf 'docs/audora/tmp/\n' > "$p/.gitignore"; mkdir -p "$p/docs/audora/tmp"; pr
 printf '# editado\n' >> "$p/docs/audora/specs/d-escopo.md"
 printf '[q](../e2e/nao-existe.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
 LQ="$(grep -n 'nao-existe' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+printf '[n](../e2e/nunca.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+LN="$(grep -n 'nunca' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
 mkdir -p "$p/docs/audora/notas"; printf '[c](../depuracao/cacada-2026-01-01.md)\n' > "$p/docs/audora/notas/rascunho.md"
 antes="$(snap "$p")"
-runc "$p" varrer
+runc "$p" varrer; out_v="$out"
 nt="$(secao "$out" 'não tocado')"
 assert_line "$nt" '- docs/audora/e2e/e2e-d.md | não tocado: fora do git' "skill-cleanup/11 untracked → fora do git"
 assert_not_contains "$(secao "$out" 'relatório e2e')" 'e2e-d.md' "skill-cleanup/11 untracked fora do lote"
@@ -299,6 +348,8 @@ done
 assert_eq 'total: 1 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/11 total não conta os não tocados"
 runc "$p" contar
 assert_eq 1 "$out" "skill-cleanup/11 contar não conta os não tocados"
+assert_line "$(secao "$out_v" 'nunca existiu')" "- docs/audora/arquivo/2026-01-01-d.md:$LN | aponta ../e2e/nunca.md nunca versionado" "cleanup-link-preciso/4 nunca existiu ao lado de não tocado (arquivo sujo não segura o aviso)"
+assert_eq 1 "$out" "cleanup-link-preciso/3 contar ignora nunca existiu com não tocado"
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/11 varrer com árvore suja não altera nada"
 p="$SP/t6m"; mkt5 "$p"; printf '\n' >> "$p/MEMORY.md"
 runc "$p" varrer --orfao 'p=absorvido por d'
@@ -400,7 +451,8 @@ assert_line "$corpo" 'planned órfão: p, s' "skill-cleanup/13 corpo lista plann
 assert_contains "$corpo" "link quebrado: docs/audora/arquivo/2026-01-01-d.md:$L1" "skill-cleanup/13 corpo lista link quebrado com a linha"
 assert_empty "$(git -C "$p" status --porcelain)" "skill-cleanup/13 tudo commitado"
 runc "$p" varrer
-assert_eq 'cleanup: nada a limpar' "$out" "skill-cleanup/13 idempotente: varrer logo após → nada a limpar"
+assert_eq 'cleanup: nada a limpar' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/13 idempotente: varrer logo após → nada a limpar"
+assert_empty "$(secao "$out" 'link quebrado')" "skill-cleanup/13 idempotente: nenhum link quebrado depois do aplicar"
 
 # --- skill-cleanup/14 falha no meio desfaz o lote e nomeia o item ---
 # lote_de <arq> <linha>... — lote mínimo com cabeçalho
@@ -471,7 +523,7 @@ assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 referente sujo → trabalho 
 
 # --- skill-cleanup/10 mesmo link quebrado 2x na linha → 1 item só; aplicar troca os dois ---
 # (achado na varredura real deste repo: item duplicado fazia o aplicar falhar no 2º e desfazer o lote)
-p="$SP/t10d"; mkproj "$p"
+p="$SP/t10d"; mkproj "$p"; sumiu "$p" docs/audora/e2e/x.md
 printf '\nDois: [a](../e2e/x.md) e [b](../e2e/x.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
 git -C "$p" commit -qam dup
 LD="$(grep -n '^Dois:' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
@@ -486,7 +538,7 @@ assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Dois: $(nota docs
 # (achado na cleanup real deste repo: a troca de link sujava o plano que cita a spec e o git rm dele desfazia o lote)
 # mkt11 <dir> — spec e plano de d (o plano cita a spec), nó d arquivado cita a spec, e2e de d com link quebrado
 mkt11() {
-  local d="$1"; mkproj "$d"
+  local d="$1"; mkproj "$d"; sumiu "$d" docs/audora/specs/sumiu.md
   mkdir -p "$d/docs/audora/specs" "$d/docs/audora/planos/arquivo" "$d/docs/audora/e2e"
   printf '# spec d\n' > "$d/docs/audora/specs/d-escopo.md"
   printf '# plano d\n\nEscopo: `docs/audora/specs/d-escopo.md` (d/1..2)\n\n- [spec](../../specs/d-escopo.md) — critérios\n' > "$d/docs/audora/planos/arquivo/plano-d.md"

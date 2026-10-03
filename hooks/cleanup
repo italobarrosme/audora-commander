@@ -80,12 +80,17 @@ sub arquivos_docs {
 # Texto dos nós não arquivados (docs/audora/memory/*.md).
 sub texto_nos { join "\n", map { ler($_) } sort { $a cmp $b } glob('docs/audora/memory/*.md'); }
 
-my (%LOTE, @AVISOS, @MANTIDO, @NAO_TOCADO);
+my (%LOTE, @AVISOS, @MANTIDO, @NAO_TOCADO, @NUNCA);
 # Item único por (tipo, alvo, motivo): o mesmo link quebrado 2x na linha é 1 item (o aplicar troca os dois).
 my %ITEM_VISTO;
 sub item {
   my ($sec, $alvo, $motivo) = @_;
   push @{ $LOTE{$sec} }, [$alvo, $motivo] unless $ITEM_VISTO{"$sec\0$alvo\0$motivo"}++;
+}
+# Link para caminho nunca versionado: aviso fora do lote (nunca trocado).
+sub nunca {
+  my ($alvo, $raw) = @_;
+  push @NUNCA, "- $alvo | aponta $raw nunca versionado" unless $ITEM_VISTO{"nunca\0$alvo\0$raw"}++;
 }
 
 # depende-de dos nós não arquivados: id → [dependentes]
@@ -108,6 +113,7 @@ sub tem_head {
 
 # Caminho já versionado em commit alcançável do HEAD (pasta: algum arquivo sob ela).
 sub existiu {
+  return '' if $_[0] =~ m{^\.\.(/|$)};   # acima da raiz: fora do repo, nunca versionado aqui
   return '' unless tem_head();
   return scalar git_z('--literal-pathspecs', 'log', '-1', '--full-history', '--format=%H', 'HEAD', '--', $_[0]) ? 1 : '';
 }
@@ -251,7 +257,9 @@ sub classifica_links {
   for my $f ('MEMORY.md', grep { /\.md$/ } arquivos_docs()) {
     next if $CANDIDATO{$f};
     for my $k (links($f)) {
-      item('link quebrado', "$f:$k->[0]", "aponta $k->[1] inexistente") unless -e $k->[2];
+      next if -e $k->[2];
+      if (existiu($k->[2])) { item('link quebrado', "$f:$k->[0]", "aponta $k->[1] inexistente"); }
+      else { nunca("$f:$k->[0]", $k->[1]); }
     }
   }
 }
@@ -328,6 +336,7 @@ sub relatorio {
   }
   push @o, '## mantido', sort @MANTIDO if @MANTIDO;
   push @o, '## não tocado', sort @NAO_TOCADO if @NAO_TOCADO;
+  push @o, '## nunca existiu', sort @NUNCA if @NUNCA;
   push @o, $n ? "total: $n item(ns) no lote" : 'cleanup: nada a limpar';
   print "$_\n" for @o;
 }
