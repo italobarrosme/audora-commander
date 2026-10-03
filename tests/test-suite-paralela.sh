@@ -20,6 +20,12 @@ ambiente() {
 }
 runs()   { (ambiente "$@" && bash tests/run.sh >"$SP/o" 2>"$SP/e"); code=$?; o="$(cat "$SP/o")"; e="$(cat "$SP/e")"; }
 mescla() { (ambiente "$@" && bash tests/run.sh >"$SP/m" 2>&1); code=$?; m="$(cat "$SP/m")"; }
+stubnproc() { printf '#!/usr/bin/env bash\necho %s\n' "$2" > "$1/bin/nproc"; chmod +x "$1/bin/nproc"; }
+maxconc()   { cat "$1"/mark/n.* 2>/dev/null | sort -n | tail -n 1; }
+# fake de concorrência: marca que está rodando, espera, conta quantos rodam juntos
+CONC='mkdir -p "$MARK"; touch "$MARK/r.$$"; sleep 2
+ls "$MARK" | grep -c "^r\." > "$MARK/n.$$"; rm -f "$MARK/r.$$"'
+conc() { local k; mksuite "$1"; for k in $(seq "$2"); do fake "$1" "c$k" "$CONC"; done; }
 primeiras() { printf '%s\n' "$1" | head -n "$2" | tr '\n' ' '; }
 ultima()    { printf '%s\n' "$1" | tail -n 1; }
 
@@ -72,5 +78,48 @@ runs "$d"
 assert_eq 1 "$code" "suite-paralela/11 suíte vazia → exit 1"
 assert_eq 'run.sh: nenhum arquivo de teste' "$e" "suite-paralela/11 mensagem no stderr"
 assert_empty "$o" "suite-paralela/11 stdout vazio"
+
+# --- suite-paralela/1 — sem SUITE_JOBS, limite = núcleos ---
+conc "$d" 4; stubnproc "$d" 2
+runs "$d"
+assert_eq 0 "$code" "suite-paralela/1 nproc 2 → exit 0"
+assert_eq 2 "$(maxconc "$d")" "suite-paralela/1 nproc 2 → no máximo 2 juntos"
+conc "$d" 4; stubnproc "$d" 8
+runs "$d"
+assert_eq 4 "$(maxconc "$d")" "suite-paralela/1 nproc 8 → os 4 juntos"
+
+# --- suite-paralela/2 — SUITE_JOBS=N limita; N=1 é série ---
+conc "$d" 4; stubnproc "$d" 8
+runs "$d" SUITE_JOBS=2
+assert_eq 2 "$(maxconc "$d")" "suite-paralela/2 SUITE_JOBS=2 → no máximo 2 juntos"
+conc "$d" 2; stubnproc "$d" 8
+runs "$d" SUITE_JOBS=1
+assert_eq 1 "$(maxconc "$d")" "suite-paralela/2 SUITE_JOBS=1 → um de cada vez"
+
+# --- suite-paralela/3 — SUITE_JOBS inválido → aviso e default ---
+conc "$d" 4; stubnproc "$d" 2
+runs "$d" SUITE_JOBS=abc
+assert_contains "$e" "run.sh: SUITE_JOBS inválido ('abc') — usando 2" "suite-paralela/3 avisa abc"
+assert_eq 2 "$(maxconc "$d")" "suite-paralela/3 abc → limite default"
+assert_eq 0 "$code" "suite-paralela/3 abc → exit 0"
+mksuite "$d"; fake "$d" t 'true'; stubnproc "$d" 2
+for v in '0' '-1' ''; do
+  runs "$d" "SUITE_JOBS=$v"
+  assert_contains "$e" "run.sh: SUITE_JOBS inválido ('$v') — usando 2" "suite-paralela/3 avisa '$v'"
+  assert_eq 0 "$code" "suite-paralela/3 '$v' → exit 0"
+done
+
+# --- suite-paralela/6 — bloco sai na hora, sem esperar os seguintes ---
+mksuite "$d"; stubnproc "$d" 8
+fake "$d" a 'echo a'
+fake "$d" b 'sleep 6; echo b'
+: > "$SP/f.o"
+(ambiente "$d" && bash tests/run.sh >"$SP/f.o" 2>"$SP/f.e") & pid=$!
+for k in $(seq 40); do grep -qx a "$SP/f.o" && break; sleep 0.1; done
+fo="$(cat "$SP/f.o")"
+wait "$pid"; code=$?
+assert_contains "$fo" 'a' "suite-paralela/6 bloco de a sai antes de b acabar"
+assert_not_contains "$fo" 'run.sh:' "suite-paralela/6 resumo ainda não saiu"
+assert_eq 0 "$code" "suite-paralela/6 exit 0"
 
 report

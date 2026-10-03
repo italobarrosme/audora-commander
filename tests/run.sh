@@ -10,7 +10,17 @@ arqs=(tests/test-*.sh)
 shopt -u nullglob
 [ "${#arqs[@]}" -gt 0 ] || { echo "run.sh: nenhum arquivo de teste" >&2; exit 1; }
 
-jobs=1
+nucleos() { nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1; }
+# int_env <nome> <default> <ere> — ausente → default; casa a ERE → o valor;
+# qualquer outro (inclui vazio) → aviso no stderr e default
+int_env() {
+  local nome="$1" def="$2" ere="$3"
+  if [ -z "${!nome+x}" ]; then echo "$def"; return; fi
+  if [[ "${!nome}" =~ $ere ]]; then echo "${!nome}"; return; fi
+  echo "run.sh: $nome inválido ('${!nome}') — usando $def" >&2
+  echo "$def"
+}
+jobs="$(int_env SUITE_JOBS "$(nucleos)" '^[1-9][0-9]*$')"
 W="$(mktemp -d)"
 trap 'rm -rf "$W"' EXIT
 

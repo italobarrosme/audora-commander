@@ -32,6 +32,7 @@
 - Decisões tomadas pela IA (a validate apresenta): nomes `SUITE_JOBS`/`SUITE_TIMEOUT`; `timeout -k 5` (KILL 5 s depois do TERM); default de jobs `nproc` → `getconf _NPROCESSORS_ONLN` → 1; sem `timeout` no PATH → aviso `run.sh: timeout ausente — rodando sem limite` e roda sem limite; mensagens exatas de aviso abaixo. Pendente para o humano: a regra global pede env nova no `.env`, mas este repo não tem `.env` e as duas variáveis são botões do runner com default — o plano documenta nos README e NÃO cria `.env` sem o sim dele.
 
 - 2026-10-03 (execute T1): red com 7 FAIL pelo motivo certo (/7 saiu O1 E1 O2 E2; /8 /9 /10 sem `(<s> s)`; /11 rodou o glob literal); green `test-suite-paralela.sh` PASS=18 FAIL=0; `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `run.sh: 0 arquivo(s) de teste com falha (172 s)` (ainda jobs=1). Decisão da IA: helpers do teste sem `env` (nesta máquina `~/.local/bin/env` é script do uv) — `unset SUITE_*` + `export` num subshell, para a env do runner externo não vazar na suíte falsa.
+- 2026-10-03 (execute T2): red com 8 FAIL pelo motivo certo (/1 /2 /3 maxconc 1, sem aviso de SUITE_JOBS); /2 N=1 e /6 passaram de guarda; green PASS=35 FAIL=0; `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `run.sh: 0 arquivo(s) de teste com falha (83 s)` — abaixo dos 213 s da base.
 
 ### Contrato fixo do `run.sh` (todas as tarefas)
 
@@ -137,9 +138,9 @@ ls "$MARK" | grep -c '^r\.' > "$MARK/n.$$"; rm -f "$MARK/r.$$"
 - **ler**: `tests/run.sh` (versão da T1)
 - **done quando**: os 4 casos verdes; suíte real sai 0 e a linha `(<s> s)` dela já fica abaixo dos 213 s da base (registrar).
 
-- [ ] **red** — `bash tests/test-suite-paralela.sh` falha em /1 (T1 tem `jobs=1`: maxconc 1, esperado 2 e 4), /2 com SUITE_JOBS=2 (maxconc 1) e /3 (sem aviso); /2 com N=1 e /6 já passam (guarda)
-- [ ] **green** — `bash tests/test-suite-paralela.sh` → `FAIL=0`; `bash tests/run.sh > "$SP/r.log" 2>&1; echo $?` → `0`; `bash hooks/gate suite-paralela` → `GATE: passou` (registrar)
-- [ ] **commit** — `git add tests/run.sh tests/test-suite-paralela.sh && git commit -m "feat(suite-paralela/1-3,6): limite SUITE_JOBS (default núcleos) e saída em fluxo"`
+- [x] **red** — `bash tests/test-suite-paralela.sh` falha em /1 (T1 tem `jobs=1`: maxconc 1, esperado 2 e 4), /2 com SUITE_JOBS=2 (maxconc 1) e /3 (sem aviso); /2 com N=1 e /6 já passam (guarda)
+- [x] **green** — `bash tests/test-suite-paralela.sh` → `FAIL=0`; `bash tests/run.sh > "$SP/r.log" 2>&1; echo $?` → `0`; `bash hooks/gate suite-paralela` → `GATE: passou` (registrar)
+- [x] **commit** — `git add tests/run.sh tests/test-suite-paralela.sh && git commit -m "feat(suite-paralela/1-3,6): limite SUITE_JOBS (default núcleos) e saída em fluxo"`
 
 ## Tarefa 3: timeout por arquivo
 
