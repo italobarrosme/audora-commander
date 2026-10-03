@@ -227,15 +227,17 @@ sub percorre {
   }
   return $o . tokens($s, $cb);
 }
-# linhas_de_link <arquivo> → índices (0-based) das linhas fora de frontmatter e fence
+# linhas_de_link <linhas> <arquivo> → índices (0-based) das linhas fora de frontmatter e fence;
+# no MEMORY.md, também fora da seção Aprendizados (aprendizado cita caminho como exemplo histórico).
 sub linhas_de_link {
-  my ($l) = @_; my @i; my ($fm, $fence) = (0, 0);
+  my ($l, $f) = @_; my @i; my ($fm, $fence, $apr) = (0, 0, 0);
   for my $k (0 .. $#$l) {
     (my $s = $l->[$k]) =~ s/\r$//;
     if ($k == 0 && $s eq '---') { $fm = 1; next; }
     if ($fm) { $fm = 0 if $s eq '---'; next; }
     if ($s =~ /^\s*```/) { $fence = !$fence; next; }
-    push @i, $k unless $fence;
+    $apr = ($f eq 'MEMORY.md' && $s =~ /^## Aprendizados(\s|$)/) ? 1 : 0 if !$fence && $s =~ /^## /;
+    push @i, $k unless $fence || $apr;
   }
   return @i;
 }
@@ -243,7 +245,7 @@ sub linhas_de_link {
 sub links {
   my ($f) = @_; my @r;
   my @l = split /\n/, ler($f), -1; my $dir = pasta_de($f);
-  for my $k (linhas_de_link(\@l)) {
+  for my $k (linhas_de_link(\@l, $f)) {
     (my $s = $l[$k]) =~ s/\r$//;
     percorre($s, $dir, sub { push @r, [$k + 1, $_[0], $_[1]]; undef });
   }
@@ -367,7 +369,7 @@ sub troca_links {
   my ($f, $quer, $nota, $so_linha) = @_;
   my @l = split /(?<=\n)/, ler($f);
   my @sem = map { s/\r?\n$//r } @l; my $dir = pasta_de($f); my $n = 0;
-  for my $k (linhas_de_link(\@sem)) {
+  for my $k (linhas_de_link(\@sem, $f)) {
     next if defined $so_linha && $k + 1 != $so_linha;
     my $fim = $l[$k] =~ /(\r?\n)$/ ? $1 : '';
     $l[$k] = percorre($sem[$k], $dir, sub { $quer->(@_) ? do { $n++; $nota->($_[1]) } : undef }) . $fim;

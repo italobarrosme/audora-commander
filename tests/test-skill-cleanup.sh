@@ -547,6 +547,34 @@ assert_contains "$out" "cleanup: falhou em: - docs/audora/arquivo/2026-01-01-d.m
 assert_contains "$out" 'cleanup: lote desfeito, nada commitado' "cleanup-link-preciso/6 nada commitado"
 assert_eq "$antes" "$(snap "$p")" "cleanup-link-preciso/6 estado igual (item válido antes também não sai)"
 
+# --- cleanup-link-preciso/9,10 seção Aprendizados do MEMORY fora da varredura e da troca ---
+# (achado na varredura real deste repo: aprendizado que cita caminho de fixture saía como link quebrado)
+p="$SP/t13"; mkproj "$p"; sumiu "$p" docs/audora/specs/velha.md
+APR='- 2026-01-01 | execute | fixture cita `docs/audora/arquivo/2026-01-01-x.md` e [v](docs/audora/specs/velha.md)'
+APR="$APR" perl -0pi -e 's/(## Aprendizados \[carga: sempre\]\n\n)/$1$ENV{APR}\n/' "$p/MEMORY.md"
+git -C "$p" commit -qam aprendizado
+assert_line "$(cat "$p/MEMORY.md")" "$APR" "cleanup-link-preciso/9 fixture: linha de Aprendizados no lugar"
+runc "$p" varrer
+assert_eq 'cleanup: nada a limpar' "$out" "cleanup-link-preciso/9 Aprendizados fora do relatório (versionado e nunca versionado)"
+runc "$p" contar
+assert_eq 0 "$out" "cleanup-link-preciso/9 contar → 0"
+addc "$p" docs/audora/specs/d-escopo.md '# spec d'
+APR="$APR e \`docs/audora/specs/d-escopo.md\`"
+APR="$APR" perl -pi -e 's/^- 2026-01-01 \| execute \|.*$/$ENV{APR}/' "$p/MEMORY.md"
+printf '\nSpec: docs/audora/specs/d-escopo.md\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
+git -C "$p" commit -qam 'Aprendizados e d citam a spec'
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote13.txt"
+assert_eq '- docs/audora/specs/d-escopo.md | nó d delivered' "$(secao "$out" 'spec de nó entregue')" "cleanup-link-preciso/10 spec no lote"
+assert_not_contains "$out" 'MEMORY.md:' "cleanup-link-preciso/10 nada de Aprendizados no relatório"
+runc "$p" aplicar "$SP/lote13.txt"
+assert_eq 0 "$code" "cleanup-link-preciso/10 aplicar → exit 0"
+assert_line "$(cat "$p/MEMORY.md")" "$APR" "cleanup-link-preciso/10 linha de Aprendizados intacta"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Spec: $(nota docs/audora/specs/d-escopo.md)" "cleanup-link-preciso/10 demais citadores ganham a nota"
+assert_eq "docs/audora/arquivo/2026-01-01-d.md
+docs/audora/specs/d-escopo.md" "$(git -C "$p" show --name-only --format= HEAD | LC_ALL=C sort)" "cleanup-link-preciso/10 MEMORY.md fora do commit"
+run_hook memory-validate "$p/MEMORY.md"
+assert_eq 0 "$code" "cleanup-link-preciso/10 MEMORY válido"
+
 # --- skill-cleanup/10 mesmo link quebrado 2x na linha → 1 item só; aplicar troca os dois ---
 # (achado na varredura real deste repo: item duplicado fazia o aplicar falhar no 2º e desfazer o lote)
 p="$SP/t10d"; mkproj "$p"; sumiu "$p" docs/audora/e2e/x.md
