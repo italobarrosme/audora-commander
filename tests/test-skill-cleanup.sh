@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # skill-cleanup/1..16 — hooks/cleanup (varrer/contar/aplicar), skill cleanup e sugestão no sync da validate.
 # cleanup-alvo-ausente/1..10 — alvo ausente só se o caminho existiu no histórico do HEAD.
+# cleanup-lote-encadeado/1..3 — aplicar não falha quando um item do lote cita outro item do lote.
 source "$(dirname "$0")/lib.sh"
 C="$ROOT/hooks/cleanup"
 
@@ -480,6 +481,58 @@ assert_eq 'total: 1 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill
 runc "$p" aplicar "$SP/lote10d.txt"
 assert_eq 0 "$code" "skill-cleanup/10 aplicar com link repetido → exit 0"
 assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Dois: $(nota docs/audora/e2e/x.md) e $(nota docs/audora/e2e/x.md)" "skill-cleanup/10 as duas ocorrências viram nota"
+
+# --- cleanup-lote-encadeado/1..3 item do lote que cita outro item do mesmo lote ---
+# (achado na cleanup real deste repo: a troca de link sujava o plano que cita a spec e o git rm dele desfazia o lote)
+# mkt11 <dir> — spec e plano de d (o plano cita a spec), nó d arquivado cita a spec, e2e de d com link quebrado
+mkt11() {
+  local d="$1"; mkproj "$d"
+  mkdir -p "$d/docs/audora/specs" "$d/docs/audora/planos/arquivo" "$d/docs/audora/e2e"
+  printf '# spec d\n' > "$d/docs/audora/specs/d-escopo.md"
+  printf '# plano d\n\nEscopo: `docs/audora/specs/d-escopo.md` (d/1..2)\n\n- [spec](../../specs/d-escopo.md) — critérios\n' > "$d/docs/audora/planos/arquivo/plano-d.md"
+  printf '\nSpec: docs/audora/specs/d-escopo.md\n' >> "$d/docs/audora/arquivo/2026-01-01-d.md"
+  printf '# e2e d\n\nVer [sumiu](../specs/sumiu.md).\n' > "$d/docs/audora/e2e/e2e-d.md"
+  git -C "$d" add -A; git -C "$d" commit -qm t11
+}
+ESP11="docs/audora/arquivo/2026-01-01-d.md
+docs/audora/e2e/e2e-d.md
+docs/audora/planos/arquivo/plano-d.md
+docs/audora/specs/d-escopo.md"
+# confere11 <dir> <ordem> <n> — lote de n itens aplicado: os 3 arquivos saíram, d arquivado com nota, 1 commit só, árvore limpa
+confere11() {
+  local d="$1" o="$2" n="$3" f
+  assert_eq 0 "$code" "cleanup-lote-encadeado/1,3 ($o) aplicar → exit 0"
+  assert_contains "$out" "— $n item(ns) removido(s)" "cleanup-lote-encadeado/1,3 ($o) os $n itens aplicados"
+  for f in specs/d-escopo.md planos/arquivo/plano-d.md e2e/e2e-d.md; do
+    assert_no_file "$d/docs/audora/$f" "cleanup-lote-encadeado/1,3 ($o) apagado: $f"
+  done
+  assert_eq $((n0 + 1)) "$(git -C "$d" rev-list --count HEAD)" "cleanup-lote-encadeado/1 ($o) exatamente 1 commit novo"
+  assert_eq "$ESP11" "$(git -C "$d" show --name-only --format= HEAD | LC_ALL=C sort)" "cleanup-lote-encadeado/1 ($o) commit só com o lote e o citador de fora"
+  assert_line "$(cat "$d/docs/audora/arquivo/2026-01-01-d.md")" "Spec: $(nota docs/audora/specs/d-escopo.md)" "cleanup-lote-encadeado/2 ($o) citador fora do lote ganha a nota"
+  assert_empty "$(git -C "$d" status --porcelain)" "cleanup-lote-encadeado/1 ($o) árvore limpa"
+}
+p="$SP/t11"; mkt11 "$p"
+LQ="$(grep -n 'sumiu' "$p/docs/audora/e2e/e2e-d.md" | cut -d: -f1)"
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote11.txt"
+for l in '- docs/audora/specs/d-escopo.md | nó d delivered' '- docs/audora/planos/arquivo/plano-d.md | nó d delivered' \
+         '- docs/audora/e2e/e2e-d.md | nó d delivered'; do
+  assert_line "$out" "$l" "cleanup-lote-encadeado/1,3 varrer lista: $l"
+done
+assert_not_contains "$out" "e2e-d.md:$LQ" "cleanup-lote-encadeado/3 varrer não lista link de arquivo que sai no lote (só lote montado à mão traz)"
+n0="$(git -C "$p" rev-list --count HEAD)"
+runc "$p" aplicar "$SP/lote11.txt"
+confere11 "$p" 'ordem do varrer' 3
+runc "$p" varrer
+assert_eq 'cleanup: nada a limpar' "$out" "cleanup-lote-encadeado/1 idempotente: varrer logo após → nada a limpar"
+# ordem invertida, lote montado à mão: link quebrado antes do arquivo que o contém, citador antes do citado
+p="$SP/t11r"; mkt11 "$p"
+lote_de "$SP/lote11r.txt" '## link quebrado' "- docs/audora/e2e/e2e-d.md:$LQ | aponta ../specs/sumiu.md inexistente" \
+  '## relatório e2e' '- docs/audora/e2e/e2e-d.md | nó d delivered' \
+  '## plano arquivado' '- docs/audora/planos/arquivo/plano-d.md | nó d delivered' \
+  '## spec de nó entregue' '- docs/audora/specs/d-escopo.md | nó d delivered'
+n0="$(git -C "$p" rev-list --count HEAD)"
+runc "$p" aplicar "$SP/lote11r.txt"
+confere11 "$p" 'ordem invertida' 4
 
 # --- skill-cleanup/12 skill: relatório, aprovação explícita do lote, aplicar; /1 /2 /3 /4 pela skill ---
 sk="$(tr -d '\r' 2>/dev/null < "$ROOT/skills/cleanup/SKILL.md")"

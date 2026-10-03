@@ -369,12 +369,13 @@ sub troca_links {
 sub git_ok { system('git', @_) == 0 or die "git $_[0] falhou\n"; }
 
 my (@TOCADO, %TOCADO);
+my %SAI;   # arquivo apagado pelo lote: não recebe troca de link (o git rm dele recusaria arquivo modificado)
 sub toca { for (@_) { push @TOCADO, $_ unless $TOCADO{$_}++; } }
 
 # Arquivo do lote: troca os links que apontam para ele e o remove.
 sub apaga_arquivo {
   my ($alvo) = @_;
-  for my $r (@{ $REF{$alvo} // [] }) { toca($r); troca_links($r, sub { $_[1] eq $alvo }); }
+  for my $r (grep { !$SAI{$_} } @{ $REF{$alvo} // [] }) { toca($r); troca_links($r, sub { $_[1] eq $alvo }); }
   toca($alvo); git_ok('rm', '-q', '--', $alvo);
 }
 
@@ -389,6 +390,7 @@ sub aplica_item {
     my ($f, $ln) = $it->{alvo} =~ /^(.*):(\d+)$/;
     my ($raw) = $it->{motivo} =~ /^aponta (.+) inexistente$/;
     die "link não encontrado na linha\n" unless defined $f && defined $raw;
+    return if $SAI{$f};   # o arquivo sai no mesmo lote: nada a trocar
     toca($f);
     troca_links($f, sub { $_[0] eq $raw && !-e $_[1] }, $ln) or die "link não encontrado na linha\n";
   } else {
@@ -479,6 +481,9 @@ sub aplicar {
   sai(0, 'cleanup: lote vazio — nada aplicado') unless @it;
   carrega_indice(); carrega_git();
   for my $i (@it) { my $m = pre_checa($i); falha($i->{linha}, $m) if defined $m; }
+  for my $i (grep { $_->{sec} ne 'link quebrado' } @it) {
+    $SAI{ $i->{sec} eq 'planned órfão' ? "docs/audora/memory/$i->{alvo}.md" : $i->{alvo} } = 1;
+  }
   my $onde = '';
   my $h = eval {
     for my $i (@it) { $onde = $i->{linha}; aplica_item($i); }

@@ -120,6 +120,7 @@ time pequeno em projetos web/mobile/api.
 - leitura-por-secao | delivered | Leitura por seção → docs/audora/arquivo/2026-10-02-leitura-por-secao.md
 - skill-cleanup | delivered | Skill de limpeza → docs/audora/arquivo/2026-10-02-skill-cleanup.md
 - cleanup-alvo-ausente | delivered | Alvo ausente só se existiu → docs/audora/arquivo/2026-10-03-cleanup-alvo-ausente.md
+- cleanup-lote-encadeado | in-progress | Lote encadeado da cleanup | O aplicar da cleanup não falha quando um item do lote cita outro item do mesmo lote | cleanup, lote, link, git-rm, hotfix | hooks/cleanup, tests/test-skill-cleanup.sh
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
