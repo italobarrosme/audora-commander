@@ -21,20 +21,32 @@ int_env() {
   echo "$def"
 }
 jobs="$(int_env SUITE_JOBS "$(nucleos)" '^[1-9][0-9]*$')"
+tmo="$(int_env SUITE_TIMEOUT 300 '^(0|[1-9][0-9]*)$')"
+# GNU timeout (duração 0 = sem limite; -k: KILL 5 s depois do TERM). O timeout.exe
+# do Windows não aceita --version e sai ≠ 0 — conta como ausente.
+lim=(timeout -k 5 "$tmo")
+if ! timeout --version >/dev/null 2>&1; then
+  echo "run.sh: timeout ausente — rodando sem limite" >&2; lim=(); tmo=0
+fi
 W="$(mktemp -d)"
 trap 'rm -rf "$W"' EXIT
 
-# dispara <i> — roda o arquivo i em background; o exit chega em $W/<i>.rc (mv atômico)
+# dispara <i> — roda o arquivo i em background; o exit chega em $W/<i>.rc (mv atômico).
+# O stderr do subshell (ex.: "Killed" do timeout) não vaza fora do bloco.
 dispara() {
   local i="$1"
-  ( bash "${arqs[$i]}" </dev/null >"$W/$i.out" 2>"$W/$i.err"
-    echo "$?" >"$W/$i.tmp" && mv "$W/$i.tmp" "$W/$i.rc" ) &
+  ( "${lim[@]}" bash "${arqs[$i]}" </dev/null >"$W/$i.out" 2>"$W/$i.err"
+    echo "$?" >"$W/$i.tmp" && mv "$W/$i.tmp" "$W/$i.rc" ) 2>/dev/null &
 }
 # despeja <i> — imprime o bloco do arquivo i e conta a falha
+# (timeout sai 124 pelo TERM ou 137 quando precisou do KILL)
 despeja() {
   local i="$1" rc
   read -r rc <"$W/$i.rc"
   cat "$W/$i.err" >&2
+  if [ "$tmo" -gt 0 ] && { [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; }; then
+    echo "run.sh: TIMEOUT ${arqs[$i]} ($tmo s)" >&2
+  fi
   cat "$W/$i.out"
   [ "$rc" -eq 0 ] || falhas=$((falhas+1))
 }

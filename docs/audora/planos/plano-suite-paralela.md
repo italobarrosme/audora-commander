@@ -33,6 +33,8 @@
 
 - 2026-10-03 (execute T1): red com 7 FAIL pelo motivo certo (/7 saiu O1 E1 O2 E2; /8 /9 /10 sem `(<s> s)`; /11 rodou o glob literal); green `test-suite-paralela.sh` PASS=18 FAIL=0; `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `run.sh: 0 arquivo(s) de teste com falha (172 s)` (ainda jobs=1). Decisão da IA: helpers do teste sem `env` (nesta máquina `~/.local/bin/env` é script do uv) — `unset SUITE_*` + `export` num subshell, para a env do runner externo não vazar na suíte falsa.
 - 2026-10-03 (execute T2): red com 8 FAIL pelo motivo certo (/1 /2 /3 maxconc 1, sem aviso de SUITE_JOBS); /2 N=1 e /6 passaram de guarda; green PASS=35 FAIL=0; `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `run.sh: 0 arquivo(s) de teste com falha (83 s)` — abaixo dos 213 s da base.
+- 2026-10-03 (execute T3): red com 8 FAIL pelo motivo certo (/12 /13 levou 30 s, sem linha TIMEOUT, exit 0, neto vivo; /15 sem aviso); green PASS=56 FAIL=0 (`ps` sem `sleep` sobrando). Casos a mais, cada um visto vermelho antes (ramo tirado e recolocado): arquivo que ignora TERM sai 137 pelo KILL e ganha a mesma linha de TIMEOUT; o "Killed" do bash do subshell não vaza (mutante sem `2>/dev/null` reprova); sem GNU `timeout` (stub que sai 1, como o `timeout.exe` do Windows) → aviso e roda sem limite. `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `(230 s)`. Lentidão investigada: `SUITE_TIMEOUT=0` deu 246 s (não é o `timeout`); máquina carregada (processo `FC26` no topo de CPU) — `test-skill-cleanup.sh` sozinho 194 s (73 s no scope). /17 é relativa e medida na T5, na mesma sessão.
+- Decisões tomadas pela IA (T3): rc 124 **ou 137** com tmo>0 = TIMEOUT (137 = precisou do KILL do `-k 5`); stderr do subshell de disparo → `/dev/null` (o do teste continua no `.err`); presença do GNU `timeout` por `timeout --version` (o do Windows sai ≠ 0); neto do fake lento em laço limitado (`seq 150`) para o red não deixar processo eterno.
 
 ### Contrato fixo do `run.sh` (todas as tarefas)
 
@@ -172,9 +174,9 @@ ls "$MARK" | grep -c '^r\.' > "$MARK/n.$$"; rm -f "$MARK/r.$$"
 - **ler**: `tests/run.sh` (versão da T2)
 - **done quando**: os 4 casos verdes; nenhum `sleep`/`bash` do fake lento vivo depois do caso (conferir também com `ps` na primeira rodada, registrar nas notas); suíte real sai 0.
 
-- [ ] **red** — `bash tests/test-suite-paralela.sh` falha em /12 (sem timeout o caso leva 30 s, sem linha TIMEOUT e com code 0) e /15 (sem aviso)
-- [ ] **green** — `bash tests/test-suite-paralela.sh` → `FAIL=0`; `bash tests/run.sh > "$SP/r.log" 2>&1; echo $?` → `0`; `bash hooks/gate suite-paralela` → `GATE: passou` (registrar)
-- [ ] **commit** — `git add tests/run.sh tests/test-suite-paralela.sh && git commit -m "feat(suite-paralela/12-15): timeout por arquivo (SUITE_TIMEOUT, default 300 s, 0 desliga)"`
+- [x] **red** — `bash tests/test-suite-paralela.sh` falha em /12 (sem timeout o caso leva 30 s, sem linha TIMEOUT e com code 0) e /15 (sem aviso)
+- [x] **green** — `bash tests/test-suite-paralela.sh` → `FAIL=0`; `bash tests/run.sh > "$SP/r.log" 2>&1; echo $?` → `0`; `bash hooks/gate suite-paralela` → `GATE: passou` (registrar)
+- [x] **commit** — `git add tests/run.sh tests/test-suite-paralela.sh && git commit -m "feat(suite-paralela/12-15): timeout por arquivo (SUITE_TIMEOUT, default 300 s, 0 desliga)"`
 
 ## Tarefa 4: contrato do gate e documentação das variáveis
 

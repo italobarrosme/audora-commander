@@ -122,4 +122,54 @@ assert_contains "$fo" 'a' "suite-paralela/6 bloco de a sai antes de b acabar"
 assert_not_contains "$fo" 'run.sh:' "suite-paralela/6 resumo ainda não saiu"
 assert_eq 0 "$code" "suite-paralela/6 exit 0"
 
+# --- suite-paralela/12+13 — SUITE_TIMEOUT=T mata a árvore do arquivo ---
+# neto em laço limitado (~30 s): sem timeout, o red não deixa processo eterno
+mksuite "$d"; mkdir -p "$d/mark"
+fake "$d" ok 'true'
+fake "$d" lento 'echo antes; (for k in $(seq 150); do touch "$MARK/tick"; sleep 0.2; done) & sleep 30'
+s0=$SECONDS
+mescla "$d" SUITE_TIMEOUT=2
+dur=$((SECONDS - s0))
+[ "$dur" -lt 15 ] && ok || ko "suite-paralela/13 SUITE_TIMEOUT=2 encerra cedo — levou $dur s"
+assert_eq 1 "$code" "suite-paralela/12 timeout conta como falha → exit 1"
+par="$(printf '%s\n' "$m" | grep -A1 -xF 'run.sh: TIMEOUT tests/test-lento.sh (2 s)' | tr '\n' '|')"
+assert_eq 'run.sh: TIMEOUT tests/test-lento.sh (2 s)|antes|' "$par" "suite-paralela/12 linha de TIMEOUT no bloco, antes do stdout"
+assert_contains "$(ultima "$m")" 'run.sh: 1 arquivo(s) de teste com falha (' "suite-paralela/12 resumo conta o timeout"
+rm -f "$d/mark/tick"; sleep 1
+assert_no_file "$d/mark/tick" "suite-paralela/12 nenhum processo do arquivo sobrou"
+
+# --- suite-paralela/12 — arquivo que ignora TERM: KILL depois (exit 137), mesma linha ---
+mksuite "$d"
+fake "$d" teimoso 'trap "" TERM; sleep 30'
+s0=$SECONDS
+mescla "$d" SUITE_TIMEOUT=1
+dur=$((SECONDS - s0))
+[ "$dur" -lt 15 ] && ok || ko "suite-paralela/12 TERM ignorado ainda encerra (KILL) — levou $dur s"
+assert_eq 1 "$code" "suite-paralela/12 TERM ignorado → exit 1"
+assert_contains "$m" 'run.sh: TIMEOUT tests/test-teimoso.sh (1 s)' "suite-paralela/12 TERM ignorado ganha linha de TIMEOUT"
+assert_not_contains "$m" 'Killed' "suite-paralela/12 aviso do shell não vaza fora do bloco"
+
+# --- suite-paralela/12 — sem GNU timeout (ex.: timeout.exe do Windows na frente) ---
+mksuite "$d"; fake "$d" t 'echo t'
+printf '#!/usr/bin/env bash\nexit 1\n' > "$d/bin/timeout"; chmod +x "$d/bin/timeout"
+runs "$d"
+assert_contains "$e" 'run.sh: timeout ausente — rodando sem limite' "suite-paralela/12 avisa timeout ausente"
+assert_eq 0 "$code" "suite-paralela/12 timeout ausente → roda sem limite, exit 0"
+assert_eq 't ' "$(primeiras "$o" 1)" "suite-paralela/12 timeout ausente → o arquivo rodou"
+
+# --- suite-paralela/14 — SUITE_TIMEOUT=0 roda sem limite ---
+mksuite "$d"; fake "$d" t 'sleep 3'
+runs "$d" SUITE_TIMEOUT=0
+assert_eq 0 "$code" "suite-paralela/14 SUITE_TIMEOUT=0 → exit 0"
+assert_not_contains "$e" 'inválido' "suite-paralela/14 0 não é inválido"
+assert_not_contains "$e" 'TIMEOUT' "suite-paralela/14 sem timeout"
+
+# --- suite-paralela/15 — SUITE_TIMEOUT inválido → aviso e 300 ---
+mksuite "$d"; fake "$d" t 'true'
+for v in 'x' '-5' ''; do
+  runs "$d" "SUITE_TIMEOUT=$v"
+  assert_contains "$e" "run.sh: SUITE_TIMEOUT inválido ('$v') — usando 300" "suite-paralela/15 avisa '$v'"
+  assert_eq 0 "$code" "suite-paralela/15 '$v' → exit 0"
+done
+
 report
