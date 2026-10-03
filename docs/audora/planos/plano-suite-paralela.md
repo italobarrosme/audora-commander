@@ -36,6 +36,7 @@
 - 2026-10-03 (execute T3): red com 8 FAIL pelo motivo certo (/12 /13 levou 30 s, sem linha TIMEOUT, exit 0, neto vivo; /15 sem aviso); green PASS=56 FAIL=0 (`ps` sem `sleep` sobrando). Casos a mais, cada um visto vermelho antes (ramo tirado e recolocado): arquivo que ignora TERM sai 137 pelo KILL e ganha a mesma linha de TIMEOUT; o "Killed" do bash do subshell não vaza (mutante sem `2>/dev/null` reprova); sem GNU `timeout` (stub que sai 1, como o `timeout.exe` do Windows) → aviso e roda sem limite. `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `(230 s)`. Lentidão investigada: `SUITE_TIMEOUT=0` deu 246 s (não é o `timeout`); máquina carregada (processo `FC26` no topo de CPU) — `test-skill-cleanup.sh` sozinho 194 s (73 s no scope). /17 é relativa e medida na T5, na mesma sessão.
 - Decisões tomadas pela IA (T3): rc 124 **ou 137** com tmo>0 = TIMEOUT (137 = precisou do KILL do `-k 5`); stderr do subshell de disparo → `/dev/null` (o do teste continua no `.err`); presença do GNU `timeout` por `timeout --version` (o do Windows sai ≠ 0); neto do fake lento em laço limitado (`seq 150`) para o red não deixar processo eterno.
 - 2026-10-03 (execute T4): docs com 4 FAIL antes da frase; /16 sem red (contrato preservado) — mordida provada: fake `b` do caso vermelho trocado por `true` → 3 FAIL (exit, `GATE: reprovado`, `suite falhou: bash tests/run.sh`), desfeito. Green PASS=65 FAIL=0; `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `(164 s)`; `git diff hooks/gate` vazio. Fixture do gate limpa `GATE_SUITE_CMD` e `SUITE_*` no subshell.
+- 2026-10-03 (execute T5, medição na mesma sessão, máquina ainda carregada): mais lento sozinho L = 194 s (`test-skill-cleanup.sh`; o 2º é `test-suite-paralela.sh`, 80 s). Paralelo p1 = 236 s, p2 = 228 s (exit 0 nas duas); série `SUITE_JOBS=1` = 377 s (exit 0). /4: `diff` das linhas `PASS=` série × p1 e série × p2 vazios, exits iguais (0), stderr vazio nas três. /17: 1,5 × 194 = 291 s ≥ 236 e 228 → passa (razão 1,22× e 1,18×). Série 377 s × paralelo ~232 s: ganho limitado pelo `test-skill-cleanup.sh`, que é o caminho crítico.
 
 ### Contrato fixo do `run.sh` (todas as tarefas)
 
@@ -230,6 +231,6 @@ série:                  SUITE_JOBS=1 bash tests/run.sh > "$SP/s.out" 2> "$SP/s.
 - **ler**: nenhum trecho novo
 - **done quando**: /4 e /17 com os números registrados nas notas de sessão (L, P1, P2, tempo da série).
 
-- [ ] **red** — n/a (medição); o "antes" é o baseline do scope: 213 s em série, mais lento 73 s
-- [ ] **green** — os comandos acima com o resultado esperado, registrados nas notas
-- [ ] **commit** — `git add docs/audora/planos/plano-suite-paralela.md && git commit -m "docs(suite-paralela/4,17): medição — mesmo veredito em paralelo e tempo ≤ 1,5× o mais lento"`
+- [x] **red** — n/a (medição); o "antes" é o baseline do scope: 213 s em série, mais lento 73 s
+- [x] **green** — os comandos acima com o resultado esperado, registrados nas notas
+- [x] **commit** — `git add docs/audora/planos/plano-suite-paralela.md && git commit -m "docs(suite-paralela/4,17): medição — mesmo veredito em paralelo e tempo ≤ 1,5× o mais lento"`
