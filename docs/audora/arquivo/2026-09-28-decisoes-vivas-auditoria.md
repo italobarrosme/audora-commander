@@ -29,7 +29,7 @@ as 3 de `skill-worktree` (6 asserts em `tests/test-worktree.sh`), a de
 `docs-bilingues` sobre placeholders (`tests/test-docs.sh` força md5 idêntico
 dos blocos EN/PT), e a metade viva da de `skill-depurar` ("dois modos" não tem
 teste nenhum). Relatórios completos em
-`docs/audora/memory/decisoes-vivas-poda-historico.md`.
+`docs/audora/memory/decisoes-vivas-poda-historico.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 ## criterios-aceite
 

@@ -25,7 +25,7 @@ medido).
 ## criterios-aceite
 
 12 critérios EARS (`corte-sem-uso/1`–`/12`) na spec dedicada:
-[../specs/corte-sem-uso-escopo.md](../specs/corte-sem-uso-escopo.md).
+`docs/audora/specs/corte-sem-uso-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 ## fora-de-escopo
 
@@ -58,6 +58,6 @@ templates/loop-prompt-template.md.
 
 ## e2e
 
-passou (2026-09-30) — 12/12 critérios; relatório [../e2e/e2e-corte-sem-uso.md](../e2e/e2e-corte-sem-uso.md). Plugin via `--plugin-dir` (cache global intocado, escolha do humano).
+passou (2026-09-30) — 12/12 critérios; relatório `docs/audora/e2e/e2e-corte-sem-uso.md` removido em 2026-10-03 pela cleanup — recuperável no git. Plugin via `--plugin-dir` (cache global intocado, escolha do humano).
 
 ## feedback-reprovacao

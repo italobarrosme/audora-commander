@@ -21,7 +21,7 @@ data, reescrever a linha do indice, e arquivar o plano. Os cinco rodam DEPOIS
 da aprovacao humana, nao exigem decisao nenhuma, e sao feitos a mao pelo
 modelo — caros em token e erraveis.
 
-Escopo em spec dedicada (HIGH): `docs/audora/specs/sync-mecanizado-escopo.md`.
+Escopo em spec dedicada (HIGH): `docs/audora/specs/sync-mecanizado-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 ## criterios-aceite
 

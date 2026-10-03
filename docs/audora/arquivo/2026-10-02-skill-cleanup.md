@@ -98,7 +98,7 @@ e, com aprovação, remove tudo num commit só, revertível por `git revert`.
 
 ## e2e
 
-2026-10-02: [relatório](../e2e/e2e-skill-cleanup.md) — 14 passou, /4 passou
+2026-10-02: `docs/audora/e2e/e2e-skill-cleanup.md` removido em 2026-10-03 pela cleanup — recuperável no git — 14 passou, /4 passou
 com defeito (falso positivo: planned com arquivo-chave ainda não criado vira
 órfão), /16 não-automatizável (prova no sync).
 

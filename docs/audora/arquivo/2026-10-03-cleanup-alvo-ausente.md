@@ -67,7 +67,7 @@ sumiu conta como alvo ausente.
 
 ## e2e
 
-2026-10-02: [relatório](../e2e/e2e-cleanup-alvo-ausente.md) — 10 passou;
+2026-10-02: `docs/audora/e2e/e2e-cleanup-alvo-ausente.md` removido em 2026-10-03 pela cleanup — recuperável no git — 10 passou;
 achado: a frase da skill (`git log … -- <alvo>`) sem `--literal-pathspecs`
 casa `[slug]` por glob (a IA conferiu literal por conta própria) — fechado
 na Tarefa 4 (2026-10-03).

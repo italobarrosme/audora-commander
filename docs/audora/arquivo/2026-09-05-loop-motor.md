@@ -24,7 +24,7 @@ marcador aberto. D3 do roadmap
 
 ## criterios-aceite
 
-<!-- Na spec (HIGH): docs/audora/specs/loop-motor-escopo.md — loop-motor/1..15. -->
+<!-- Na spec (HIGH): `docs/audora/specs/loop-motor-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git — loop-motor/1..15. -->
 
 ## fora-de-escopo
 

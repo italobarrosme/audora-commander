@@ -22,7 +22,7 @@ proporcional.
 ## criterios-aceite
 
 13 critérios EARS (`remover-graphify/1`–`/13`) na spec dedicada:
-[../specs/remover-graphify-escopo.md](../specs/remover-graphify-escopo.md).
+`docs/audora/specs/remover-graphify-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 ## fora-de-escopo
 

@@ -69,7 +69,7 @@ Antes de apagar `hooks/graphify-limpeza`, os restos do Graphify foram limpos
 uma vez, com autorização do humano, nos projetos locais: 15 com
 `memory-schema: 1`, 13 com resto. Nenhum commit foi feito neles, e o
 SellInfoTurbo incluiu `.claude/CLAUDE.md` e `.claude/skills/graphify/`. O
-relatório está em `docs/audora/e2e/limpeza-graphify-projetos.md`. Depois o
+relatório está em `docs/audora/e2e/limpeza-graphify-projetos.md` removido em 2026-10-03 pela cleanup — recuperável no git. Depois o
 script saiu junto com a oferta da carga de contexto e `path_sem_uv`/`guarda_sem_uv`.
 
 Os 4 testes apagados (`test-graphify-limpeza`, `test-loop`,
@@ -272,7 +272,7 @@ separado do resto em toda categoria. Suíte 415 → 467 asserts, com fixture de
 repo git real exercitando as três fraudes red-green; e2e com sessão
 `claude -p` real provou a oferta no carregar-contexto e o controle negativo
 (Graphify recusado não reofertado) — relatório em
-`docs/audora/e2e/e2e-gate-mecanico.md`.
+`docs/audora/e2e/e2e-gate-mecanico.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 Mecanização do sync da validate: **tentada e abandonada** em 2026-09-04 (nó
 `sync-mecanizado`, HIGH). O que ficou é conhecimento documentado, não código.
@@ -401,7 +401,7 @@ humano obrigatório na remoção; as checagens de "pode apagar?" cobrem sujo,
 não integrado, ignorado copiado no preparo e junction apontando para fora —
 as duas últimas vieram de verificação empírica (`git worktree remove` apaga o
 alvo através de junction e não é bloqueado por arquivo ignorado). Suíte em 295
-asserts; e2e em `docs/audora/e2e/e2e-skill-worktree.md`. (Skill removida na
+asserts; e2e em `docs/audora/e2e/e2e-skill-worktree.md` removido em 2026-10-03 pela cleanup — recuperável no git. (Skill removida na
 0.11.0, `corte-sem-uso`: 2 invocações medidas.)
 
 v0.1.0 implementada (2026-08-14) — oito skills (sete originais + a skill de debug
@@ -411,7 +411,7 @@ estruturais e de JSON verdes.
 
 Nó `skill-depurar` entregue em 2026-08-15: a skill de debug (hoje `debug`) foi testada com
 uma caçada de defeitos real no próprio repositório
-(`docs/audora/depuracao/cacada-2026-08-15.md`), que confirmou e corrigiu 6
+(`docs/audora/depuracao/cacada-2026-08-15.md` removido em 2026-10-03 pela cleanup — recuperável no git), que confirmou e corrigiu 6
 divergências de documentação viva (contagem de skills desatualizada em
 PRD/memória/spec, referências e placeholders inconsistentes entre skills e
 templates), descartou 1 falso-positivo por verificação e aplicou 1 melhoria.

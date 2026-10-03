@@ -77,7 +77,7 @@ manual — não é carregado automaticamente em contexto.
     (instrução direta = portão de escopo aprovado).
   - 2026-08-14 (IA): nome `depurar`, dois modos (sintoma/caçada), posição de
     skill-ferramenta (como grafo), não fase do roteamento.
-- **e2e**: caçada real em `docs/audora/depuracao/cacada-2026-08-15.md` — 6
+- **e2e**: caçada real em `docs/audora/depuracao/cacada-2026-08-15.md` removido em 2026-10-03 pela cleanup — recuperável no git — 6
   achados confirmados e corrigidos, 1 falso-positivo descartado por
   verificação, 1 melhoria aplicada.
 - **entregue-em**: 2026-08-15

@@ -21,7 +21,7 @@ explica). D2 do roadmap `docs/specs/2026-09-02-loop-engineering-roadmap.md`.
 
 ## criterios-aceite
 
-<!-- Na spec (HIGH): docs/audora/specs/autopilot-escopo.md — autopilot/1..14. -->
+<!-- Na spec (HIGH): `docs/audora/specs/autopilot-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git — autopilot/1..14. -->
 
 ## fora-de-escopo
 

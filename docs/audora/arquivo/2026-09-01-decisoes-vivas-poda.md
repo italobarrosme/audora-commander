@@ -19,11 +19,11 @@ migracao removida na 0.4.0). O furo e a regra de entrada: o arquivo exige
 "decisao que segue valendo", mas nao exige "decisao que NAO da pra impor por
 teste". Prosa duplicada deriva do que ela descreve.
 
-Escopo em spec dedicada (categoria HIGH): `docs/audora/specs/decisoes-vivas-poda-escopo.md`.
+Escopo em spec dedicada (categoria HIGH): `docs/audora/specs/decisoes-vivas-poda-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 ## criterios-aceite
 
-<!-- Em docs/audora/specs/decisoes-vivas-poda-escopo.md (HIGH). -->
+<!-- Em `docs/audora/specs/decisoes-vivas-poda-escopo.md` removido em 2026-10-03 pela cleanup — recuperável no git (HIGH). -->
 
 ## fora-de-escopo
 

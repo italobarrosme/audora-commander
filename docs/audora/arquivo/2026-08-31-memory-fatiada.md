@@ -79,7 +79,7 @@ references que cada fase de fato lê:
 
 **Corte 29%** — economia de 19.814 bytes (~4.953 tokens) por demanda MEDIUM.
 A estimativa da fase de escopo era ~6k tokens; o medido é 4,95k. Comando em
-`docs/audora/planos/plano-memory-fatiada.md`, Tarefa 4, passo 2.
+`docs/audora/planos/plano-memory-fatiada.md` removido em 2026-10-03 pela cleanup — recuperável no git, Tarefa 4, passo 2.
 Tabela por sessão em `memory-fatiada-historico.md`.
 
 ## delta
