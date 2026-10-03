@@ -201,7 +201,7 @@ sub pasta_de { (my $d = $_[0]) =~ s{/?[^/]*$}{}; return $d; }
 # Token docs/audora/…\.md num trecho sem link markdown; a nota da cleanup não é link.
 sub tokens {
   my ($s, $cb) = @_;
-  $s =~ s{(`?)(?<![A-Za-z0-9._/-])(docs/audora/[A-Za-z0-9._/-]+\.md)(?![A-Za-z0-9._/-])(?!` removido em)(`?)}{
+  $s =~ s{(`?)(?<![A-Za-z0-9._/-])(docs/audora/[A-Za-z0-9._/-]+\.md)(?![A-Za-z0-9._/-])(?!` (?:removido|já não existia) em)(`?)}{
     my ($a, $t, $z) = ($1, $2, $3);
     my $r = $cb->($t, normaliza($t));
     !defined $r ? "$a$t$z" : ($a && $z) ? $r : "$a$r$z";
@@ -348,6 +348,7 @@ use POSIX ();
 use File::Temp ();
 my $DATA = POSIX::strftime('%Y-%m-%d', localtime);
 sub nota { "`$_[0]` removido em $DATA pela cleanup — recuperável no git" }
+sub nota_quebrado { "`$_[0]` já não existia em $DATA (link limpo pela cleanup) — recuperável no git" }
 
 # Itens das 7 seções acionáveis; cabeçalho, total:, aviso:, mantido e não tocado são ignorados.
 sub le_lote {
@@ -361,15 +362,15 @@ sub le_lote {
   return @it;
 }
 
-# troca_links <arquivo> <cb(alvo como escrito, caminho)> → nº de trocas; preserva CRLF.
+# troca_links <arquivo> <cb(alvo como escrito, caminho)> <nota(caminho)> [linha] → nº de trocas; preserva CRLF.
 sub troca_links {
-  my ($f, $quer, $so_linha) = @_;
+  my ($f, $quer, $nota, $so_linha) = @_;
   my @l = split /(?<=\n)/, ler($f);
   my @sem = map { s/\r?\n$//r } @l; my $dir = pasta_de($f); my $n = 0;
   for my $k (linhas_de_link(\@sem)) {
     next if defined $so_linha && $k + 1 != $so_linha;
     my $fim = $l[$k] =~ /(\r?\n)$/ ? $1 : '';
-    $l[$k] = percorre($sem[$k], $dir, sub { $quer->(@_) ? do { $n++; nota($_[1]) } : undef }) . $fim;
+    $l[$k] = percorre($sem[$k], $dir, sub { $quer->(@_) ? do { $n++; $nota->($_[1]) } : undef }) . $fim;
   }
   if ($n) { open my $fh, '>:raw', $f or die "não consegui escrever $f\n"; print $fh @l; close $fh or die "não consegui escrever $f\n"; }
   return $n;
@@ -384,7 +385,7 @@ sub toca { for (@_) { push @TOCADO, $_ unless $TOCADO{$_}++; } }
 # Arquivo do lote: troca os links que apontam para ele e o remove.
 sub apaga_arquivo {
   my ($alvo) = @_;
-  for my $r (grep { !$SAI{$_} } @{ $REF{$alvo} // [] }) { toca($r); troca_links($r, sub { $_[1] eq $alvo }); }
+  for my $r (grep { !$SAI{$_} } @{ $REF{$alvo} // [] }) { toca($r); troca_links($r, sub { $_[1] eq $alvo }, \&nota); }
   toca($alvo); git_ok('rm', '-q', '--', $alvo);
 }
 
@@ -401,7 +402,7 @@ sub aplica_item {
     die "link não encontrado na linha\n" unless defined $f && defined $raw;
     return if $SAI{$f};   # o arquivo sai no mesmo lote: nada a trocar
     toca($f);
-    troca_links($f, sub { $_[0] eq $raw && !-e $_[1] }, $ln) or die "link não encontrado na linha\n";
+    troca_links($f, sub { $_[0] eq $raw && !-e $_[1] }, \&nota_quebrado, $ln) or die "link não encontrado na linha\n";
   } else {
     apaga_arquivo($it->{alvo});
   }
@@ -459,6 +460,13 @@ sub pre_checa {
     return 'fora de docs/audora/' unless $f =~ m{^docs/audora/} || ($link && $f eq 'MEMORY.md');
     return 'arquivo/ e decisões vivas nunca são removidos' if !$link && protegido($f);
     return 'alvo não existe mais' unless -e $f;
+    if ($link) {   # link quebrado só se o alvo existiu (lote montado à mão pode trazer nunca versionado)
+      my ($ln) = $a =~ /:(\d+)$/;
+      my ($raw) = $it->{motivo} =~ /^aponta (.+) inexistente$/;
+      for my $k (grep { defined $ln && defined $raw && $_->[0] == $ln && $_->[1] eq $raw } links($f)) {
+        return "link para caminho nunca versionado: $k->[2]" unless -e $k->[2] || existiu($k->[2]);
+      }
+    }
   }
   my ($proprio, $refs) = tocados($s, $a);
   for my $f (@$proprio, @$refs) {

@@ -360,6 +360,7 @@ assert_eq 'cleanup: nada a limpar' "$(printf '%s\n' "$out" | tail -1)" "skill-cl
 # --- skill-cleanup/9,13 aplicar: apaga, troca link pela nota, 1 commit só com o lote ---
 HOJE="$(date +%F)"
 nota() { printf '`%s` removido em %s pela cleanup — recuperável no git' "$1" "$HOJE"; }
+notaq() { printf '`%s` já não existia em %s (link limpo pela cleanup) — recuperável no git' "$1" "$HOJE"; }
 p="$SP/t7"; mkt2 "$p"
 sed -i 's|^arquivos: \[\]|arquivos: [docs/audora/e2e/e2e-d.md]|' "$p/docs/audora/arquivo/2026-01-01-d.md"
 printf '\nRelatório: [rel](../e2e/e2e-d.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"
@@ -386,6 +387,7 @@ assert_line "$corpo" 'spec de nó entregue: docs/audora/specs/d-escopo.md' "skil
 assert_line "$corpo" 'depuração velha: docs/audora/depuracao/cacada-2026-01-01.md' "skill-cleanup/13 corpo lista depuração por tipo"
 assert_line "$corpo" 'relatório e2e: docs/audora/e2e/e2e-d.md' "skill-cleanup/13 corpo lista e2e por tipo"
 assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Relatório: $(nota docs/audora/e2e/e2e-d.md)" "skill-cleanup/9 link trocado pela nota"
+assert_not_contains "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'já não existia' "cleanup-link-preciso/8 arquivo apagado pelo lote mantém a nota 'removido'"
 assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'arquivos: [docs/audora/e2e/e2e-d.md]' "skill-cleanup/9 frontmatter arquivos: inalterado"
 assert_eq 'outro.txt' "$(git -C "$p" diff --cached --name-only)" "skill-cleanup/13 o que já estava staged segue staged"
 assert_not_contains "$(git -C "$p" show --name-only --format= HEAD)" 'outro.txt' "skill-cleanup/13 staged alheio fora do commit"
@@ -425,12 +427,14 @@ mkt8() {
   printf -- '%s\n' '- p | planned | P | r | k | —' '- s | planned | S | r | k | —' '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
   nov "$d" s planned ''; nov "$d" v in-progress '' 'Depende do desenho de [s](s.md).'
   perl -pi -e 's/\n/\r\n/' "$d/MEMORY.md"
+  printf '\n- ver [n](nunca-dv.md)\n' >> "$d/docs/audora/decisoes-vivas.md"
   git -C "$d" add -A; git -C "$d" commit -qm t8
 }
 p="$SP/t8"; mkt8 "$p"
 L1="$(grep -n '^L1 ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
 runc "$p" varrer --orfao 'p=absorvido por d' --orfao 's=absorvido por d'; printf '%s\n' "$out" > "$SP/lote8.txt"
 assert_eq 'total: 4 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/6 lote com 2 planned e 2 links"
+assert_line "$out" '## nunca existiu' "cleanup-link-preciso/5 lote aprovado traz a seção nunca existiu"
 # perl (não grep) para filtrar: grep do Git Bash perde o \r
 git -C "$p" show HEAD:MEMORY.md | perl -ne 'print unless /^- [ps] \|/' > "$SP/mem8-esperado"
 runc "$p" aplicar "$SP/lote8.txt"
@@ -441,9 +445,14 @@ cmp -s "$SP/mem8-esperado" "$p/MEMORY.md" && ok || ko "skill-cleanup/6 demais li
 assert_eq "$(wc -l < "$p/MEMORY.md")" "$(tr -cd '\r' < "$p/MEMORY.md" | wc -c)" "skill-cleanup/13 CRLF do MEMORY preservado (conta \\r com tr: o grep do Git Bash não vê \\r)"
 assert_no_file "$p/docs/audora/memory/s.md" "skill-cleanup/6 arquivo do nó planned apagado"
 assert_contains "$(cat "$p/docs/audora/memory/v.md")" "Depende do desenho de $(nota docs/audora/memory/s.md)." "skill-cleanup/9 link para o nó apagado vira nota"
-assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "L1 $(nota docs/audora/e2e/nao-existe.md) quebrado" "skill-cleanup/10 link markdown quebrado trocado pela nota (caminho da raiz)"
-assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "L2 Ver $(nota docs/audora/specs/sumiu.md) aqui." "skill-cleanup/10 token quebrado trocado pela nota"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "L1 $(notaq docs/audora/e2e/nao-existe.md) quebrado" "cleanup-link-preciso/7 link markdown quebrado trocado pela nota 'já não existia' (caminho da raiz)"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "L2 Ver $(notaq docs/audora/specs/sumiu.md) aqui." "cleanup-link-preciso/7 token quebrado trocado pela nota 'já não existia'"
 assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'docs/audora/x/sumiu-fence.md' "skill-cleanup/10 fence intocado"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'L3 [n](../e2e/nunca.md) e `docs/audora/specs/nunca-token.md`' "cleanup-link-preciso/5 nunca existiu não é trocado (L3)"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" 'L4 [fora](../../../../fora.md)' "cleanup-link-preciso/5 nunca existiu não é trocado (L4)"
+assert_eq "$(git -C "$p" show HEAD~1:docs/audora/decisoes-vivas.md)" "$(cat "$p/docs/audora/decisoes-vivas.md")" "cleanup-link-preciso/5 arquivo só com nunca existiu intacto"
+assert_not_contains "$(git -C "$p" show --name-only --format= HEAD)" 'decisoes-vivas.md' "cleanup-link-preciso/5 arquivo só com nunca existiu fora do commit"
+assert_not_contains "$(git -C "$p" show -s --format=%b HEAD)" 'nunca' "cleanup-link-preciso/5 corpo do commit sem nunca existiu"
 run_hook memory-validate "$p/MEMORY.md"
 assert_eq 0 "$code" "skill-cleanup/13 MEMORY válido depois de apagar planned"
 corpo="$(git -C "$p" show -s --format=%b HEAD)"
@@ -453,6 +462,10 @@ assert_empty "$(git -C "$p" status --porcelain)" "skill-cleanup/13 tudo commitad
 runc "$p" varrer
 assert_eq 'cleanup: nada a limpar' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/13 idempotente: varrer logo após → nada a limpar"
 assert_empty "$(secao "$out" 'link quebrado')" "skill-cleanup/13 idempotente: nenhum link quebrado depois do aplicar"
+assert_not_contains "$out" 'nao-existe.md' "cleanup-link-preciso/7 a nota 'já não existia' não vira link (markdown)"
+assert_not_contains "$out" 'specs/sumiu.md' "cleanup-link-preciso/7 a nota 'já não existia' não vira link (token)"
+assert_eq 4 "$(secao "$out" 'nunca existiu' | grep -c '^- ')" "cleanup-link-preciso/5 nunca existiu segue com os 4 avisos (L3 x2, L4, decisões vivas)"
+assert_line "$(secao "$out" 'nunca existiu')" "- docs/audora/decisoes-vivas.md:3 | aponta nunca-dv.md nunca versionado" "cleanup-link-preciso/5 aviso das decisões vivas"
 
 # --- skill-cleanup/14 falha no meio desfaz o lote e nomeia o item ---
 # lote_de <arq> <linha>... — lote mínimo com cabeçalho
@@ -521,6 +534,19 @@ assert_eq 1 "$code" "skill-cleanup/14 referente sujo → exit 1"
 assert_contains "$out" 'mudança não commitada em docs/audora/arquivo/2026-01-01-d.md' "skill-cleanup/14 referente sujo nomeado"
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 referente sujo → trabalho em andamento intacto"
 
+# --- cleanup-link-preciso/6 lote montado à mão com link quebrado de alvo nunca versionado → recusado ---
+p="$SP/t12"; mkt2 "$p"
+printf '\nN [n](../e2e/nunca.md)\n' >> "$p/docs/audora/arquivo/2026-01-01-d.md"; git -C "$p" commit -qam nunca
+LN="$(grep -n '^N ' "$p/docs/audora/arquivo/2026-01-01-d.md" | cut -d: -f1)"
+lote_de "$SP/lote12.txt" '## depuração velha' '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' \
+  '## link quebrado' "- docs/audora/arquivo/2026-01-01-d.md:$LN | aponta ../e2e/nunca.md inexistente"
+antes="$(snap "$p")"
+runc "$p" aplicar "$SP/lote12.txt"
+assert_eq 1 "$code" "cleanup-link-preciso/6 alvo nunca versionado → exit 1"
+assert_contains "$out" "cleanup: falhou em: - docs/audora/arquivo/2026-01-01-d.md:$LN | aponta ../e2e/nunca.md inexistente — link para caminho nunca versionado: docs/audora/e2e/nunca.md" "cleanup-link-preciso/6 recusa nomeando o item"
+assert_contains "$out" 'cleanup: lote desfeito, nada commitado' "cleanup-link-preciso/6 nada commitado"
+assert_eq "$antes" "$(snap "$p")" "cleanup-link-preciso/6 estado igual (item válido antes também não sai)"
+
 # --- skill-cleanup/10 mesmo link quebrado 2x na linha → 1 item só; aplicar troca os dois ---
 # (achado na varredura real deste repo: item duplicado fazia o aplicar falhar no 2º e desfazer o lote)
 p="$SP/t10d"; mkproj "$p"; sumiu "$p" docs/audora/e2e/x.md
@@ -532,7 +558,7 @@ assert_eq 1 "$(printf '%s\n' "$out" | grep -cF -- "- docs/audora/arquivo/2026-01
 assert_eq 'total: 1 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/10 total sem duplicata"
 runc "$p" aplicar "$SP/lote10d.txt"
 assert_eq 0 "$code" "skill-cleanup/10 aplicar com link repetido → exit 0"
-assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Dois: $(nota docs/audora/e2e/x.md) e $(nota docs/audora/e2e/x.md)" "skill-cleanup/10 as duas ocorrências viram nota"
+assert_line "$(cat "$p/docs/audora/arquivo/2026-01-01-d.md")" "Dois: $(notaq docs/audora/e2e/x.md) e $(notaq docs/audora/e2e/x.md)" "skill-cleanup/10 as duas ocorrências viram nota"
 
 # --- cleanup-lote-encadeado/1..3 item do lote que cita outro item do mesmo lote ---
 # (achado na cleanup real deste repo: a troca de link sujava o plano que cita a spec e o git rm dele desfazia o lote)
