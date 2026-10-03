@@ -102,11 +102,17 @@ Code.
   `docs/audora/` sem referência viva, link quebrado), apresenta relatório e,
   com aprovação explícita do lote (com retirada de itens), aplica num
   commit só. O mecânico mora em `hooks/cleanup` (`varrer`/`contar` só
-  leem; `aplicar` apaga, troca link pela nota "removido … recuperável no
-  git", apaga a linha do planned aprovado, roda o `memory-validate` e
-  desfaz tudo se algo falhar). Arquivo que sai no lote não recebe troca de
-  link, então item que cita outro item do lote não trava o `git rm`.
-  Fora do git ou sujo fica fora do lote. Pela
+  leem; `aplicar` apaga, troca link para arquivo apagado pela nota
+  "removido … recuperável no git" e link quebrado pela nota "já não
+  existia … (link limpo pela cleanup)", apaga a linha do planned aprovado,
+  roda o `memory-validate` e desfaz tudo se algo falhar). Arquivo que sai
+  no lote não recebe troca de link, então item que cita outro item do lote
+  não trava o `git rm`. Link quebrado é só o que aponta caminho que existiu
+  em commit alcançável do HEAD; caminho nunca versionado vira aviso
+  `## nunca existiu`, fora do lote e nunca trocado (o `aplicar` recusa lote
+  à mão que o traga como link quebrado). A seção Aprendizados do
+  `MEMORY.md` não é varrida nem reescrita (segue contando como referência
+  viva). Fora do git ou sujo fica fora do lote. Pela
   coluna arquivos-chave, o script só marca "alvo ausente" o caminho que
   existiu em commit alcançável do HEAD e sumiu do disco (`git
   --literal-pathspecs log --full-history HEAD`). Caminho que nunca existiu
@@ -171,14 +177,7 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
      header por trecho.
    - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
      novo numa demanda maior.
-   - A seção Aprendizados do `MEMORY.md` está com 47 linhas, acima do
+   - A seção Aprendizados do `MEMORY.md` está com 51 linhas, acima do
      gatilho de ~40. Compactar exige mexer na guarda de
      `tests/test-dogfood.sh:18`, que prende os aprendizados invalidados do
      Graphify no índice.
-6. Candidato a nó: ressalvas do `skill-cleanup` aceitas no portão.
-   - A nota "recuperável no git" vai também para link que já nasceu
-     quebrado, cujo alvo nunca foi versionado.
-7. Candidato a nó: falso positivo de link quebrado na cleanup — caminho
-   citado entre crases em prosa (ex.: aprendizado do `MEMORY.md` que cita
-   `docs/audora/arquivo/2026-01-01-d.md` de fixture) entra como link; o
-   `aplicar` trocaria a citação pela nota e estragaria o texto.
