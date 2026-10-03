@@ -31,6 +31,8 @@
 - Caminhos de fixture (testes falsos) aparecem só em bloco de código: a cleanup varre `docs/audora/` (aprendizado 2026-10-03).
 - Decisões tomadas pela IA (a validate apresenta): nomes `SUITE_JOBS`/`SUITE_TIMEOUT`; `timeout -k 5` (KILL 5 s depois do TERM); default de jobs `nproc` → `getconf _NPROCESSORS_ONLN` → 1; sem `timeout` no PATH → aviso `run.sh: timeout ausente — rodando sem limite` e roda sem limite; mensagens exatas de aviso abaixo. Pendente para o humano: a regra global pede env nova no `.env`, mas este repo não tem `.env` e as duas variáveis são botões do runner com default — o plano documenta nos README e NÃO cria `.env` sem o sim dele.
 
+- 2026-10-03 (execute T1): red com 7 FAIL pelo motivo certo (/7 saiu O1 E1 O2 E2; /8 /9 /10 sem `(<s> s)`; /11 rodou o glob literal); green `test-suite-paralela.sh` PASS=18 FAIL=0; `bash hooks/gate suite-paralela` → `GATE: passou`, exit 0, `run.sh: 0 arquivo(s) de teste com falha (172 s)` (ainda jobs=1). Decisão da IA: helpers do teste sem `env` (nesta máquina `~/.local/bin/env` é script do uv) — `unset SUITE_*` + `export` num subshell, para a env do runner externo não vazar na suíte falsa.
+
 ### Contrato fixo do `run.sh` (todas as tarefas)
 
 ```
@@ -101,9 +103,9 @@ ls "$MARK" | grep -c '^r\.' > "$MARK/n.$$"; rm -f "$MARK/r.$$"
 - **ler**: `tests/run.sh:1-10`, `tests/lib.sh:1-21`
 - **done quando**: os 6 casos verdes; `bash tests/run.sh` (a suíte real, já pelo runner novo) sai 0.
 
-- [ ] **red** — `bash tests/test-suite-paralela.sh` falha em /7 (hoje o stderr sai na hora: `$m` = O1 E1 O2 E2), /8 (sem `(<s> s)`) e /11 (hoje roda o glob literal e não imprime a mensagem); /5 /9 /10 já passam no serial (guarda de regressão).
-- [ ] **green** — `bash tests/test-suite-paralela.sh` → `FAIL=0`; `bash tests/run.sh > "$SP/r.log" 2>&1; echo $?` → `0` (rodar em background); `bash hooks/gate suite-paralela` → `GATE: passou` (registrar nas notas)
-- [ ] **commit** — `git add tests/run.sh tests/test-suite-paralela.sh && git commit -m "feat(suite-paralela/5,7-11): run.sh em blocos ordenados, tempo no resumo e suíte vazia"`
+- [x] **red** — `bash tests/test-suite-paralela.sh` falha em /7 (hoje o stderr sai na hora: `$m` = O1 E1 O2 E2), /8 (sem `(<s> s)`) e /11 (hoje roda o glob literal e não imprime a mensagem); /5 /9 /10 já passam no serial (guarda de regressão).
+- [x] **green** — `bash tests/test-suite-paralela.sh` → `FAIL=0`; `bash tests/run.sh > "$SP/r.log" 2>&1; echo $?` → `0` (rodar em background); `bash hooks/gate suite-paralela` → `GATE: passou` (registrar nas notas)
+- [x] **commit** — `git add tests/run.sh tests/test-suite-paralela.sh && git commit -m "feat(suite-paralela/5,7-11): run.sh em blocos ordenados, tempo no resumo e suíte vazia"`
 
 ## Tarefa 2: limite de paralelismo e saída em fluxo
 

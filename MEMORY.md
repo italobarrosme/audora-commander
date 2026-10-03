@@ -95,6 +95,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-02 | e2e | `git log -- <caminho>` trata `[` `]` `?` como glob: `app/[slug]/page.tsx` casa `app/s/page.tsx` e "acha" histórico de arquivo que nunca existiu — consulta de existência por caminho usa `--literal-pathspecs` (ou `:(literal)`); a suíte não pegava, o mutante sem a flag passou verde.
 - 2026-10-03 | validate | Ferramenta que age em LOTE precisa de fixture com item que cita outro item do mesmo lote, nas duas ordens: a suíte da cleanup só tinha itens independentes e o 1º uso real (plano cita a spec) desfez o lote no `git rm` — rodar a ferramenta no próprio repo (dogfood) antes do merge acha o que a fixture sintética não tem.
 - 2026-10-03 | plan | Plano e relatório e2e moram em `docs/audora/` e a cleanup os varre: caminho de fixture que não existe no repo só dentro de bloco de código (fence é ignorado) — fora dele vira aviso `## nunca existiu` (ou link quebrado, se o caminho já existiu aqui) e polui o dogfood.
+- 2026-10-03 | execute | Nesta máquina `env` no PATH é `~/.local/bin/env` (script do instalador do uv): `env VAR=x cmd` não roda `cmd` e sai 0 calado (falso verde) — em teste, setar variável com `unset`/`export` num subshell, nunca `env`; shebang `#!/usr/bin/env` (caminho absoluto) não é afetado.
 
 ## Índice de nós [carga: sempre]
 
