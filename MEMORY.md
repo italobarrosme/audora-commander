@@ -91,6 +91,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-02 | execute | O grep do Git Bash tira o `\r` da entrada: `grep -c $'\r$' f` conta TODA linha (falso verde de CRLF preservado) e `grep -v` num pipe devolve LF — contar CR com `tr -cd '\r' < f | wc -c` e filtrar com `perl -ne`.
 - 2026-10-02 | validate | Critério "X que não existe MAIS" exige fixture com os dois casos — caminho commitado e depois removido E caminho que nunca existiu: com só `src/sumiu.ts` nunca criado, o `-e` cru do `hooks/cleanup` passou na suíte e o e2e achou planned de feature futura virando órfão.
 - 2026-10-02 | e2e | Falha REAL no meio de um lote no Windows: abrir o arquivo com `[System.IO.File]::Open(p,'Open','Read','None')` num PowerShell em background durante o `claude -p` — `git rm` dá "Invalid argument" e exercita o desfazer sem mexer no script.
+- 2026-10-02 | execute | Fixture do `hooks/cleanup` que copia o corpo do `MEMORY.md` do `mkproj` sem criar `docs/audora/arquivo/2026-01-01-d.md` herda link quebrado (a linha `d → …` do índice) e o relatório ganha `## não tocado`/`## link quebrado` — assert de `$out` exato falha por motivo alheio; tirar a linha `d` ou criar o arquivo.
+- 2026-10-02 | e2e | `git log -- <caminho>` trata `[` `]` `?` como glob: `app/[slug]/page.tsx` casa `app/s/page.tsx` e "acha" histórico de arquivo que nunca existiu — consulta de existência por caminho usa `--literal-pathspecs` (ou `:(literal)`); a suíte não pegava, o mutante sem a flag passou verde.
 
 ## Índice de nós [carga: sempre]
 
@@ -117,6 +119,7 @@ time pequeno em projetos web/mobile/api.
 - parada-revisao | delivered | Parada da revisão → docs/audora/arquivo/2026-10-01-parada-revisao.md
 - leitura-por-secao | delivered | Leitura por seção → docs/audora/arquivo/2026-10-02-leitura-por-secao.md
 - skill-cleanup | delivered | Skill de limpeza → docs/audora/arquivo/2026-10-02-skill-cleanup.md
+- cleanup-alvo-ausente | delivered | Alvo ausente só se existiu → docs/audora/arquivo/2026-10-03-cleanup-alvo-ausente.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md

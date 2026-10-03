@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-02
+> Última atualização: 2026-10-03
 
 ## O que é e para que serve
 
@@ -104,8 +104,13 @@ Code.
   commit só. O mecânico mora em `hooks/cleanup` (`varrer`/`contar` só
   leem; `aplicar` apaga, troca link pela nota "removido … recuperável no
   git", apaga a linha do planned aprovado, roda o `memory-validate` e
-  desfaz tudo se algo falhar). Fora do git ou sujo fica fora do lote. O
-  julgamento semântico de planned órfão é da skill (`--orfao`). O sync da
+  desfaz tudo se algo falhar). Fora do git ou sujo fica fora do lote. Pela
+  coluna arquivos-chave, o script só marca "alvo ausente" o caminho que
+  existiu em commit alcançável do HEAD e sumiu do disco (`git
+  --literal-pathspecs log --full-history HEAD`). Caminho que nunca existiu
+  é feature futura e fica fora do relatório; repo sem commit não tem alvo
+  ausente. O julgamento semântico de planned órfão é da skill (`--orfao`),
+  que confere o histórico antes de marcar alvo ausente. O sync da
   validate só sugere em 1 linha, com a contagem.
 
 Graphify: o plugin não oferece, instala, consulta, limpa nem cita o índice de
@@ -169,11 +174,6 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
      `tests/test-dogfood.sh:18`, que prende os aprendizados invalidados do
      Graphify no índice.
 6. Candidato a nó: ressalvas do `skill-cleanup` aceitas no portão.
-   - O /4 mecânico do `hooks/cleanup` (`-e` cru na coluna arquivos-chave)
-     marca como órfão o planned cujo arquivo ainda não foi criado. Marcar
-     só caminho que já existiu (`git log --all -- <caminho>` não vazio) e
-     testar com fixture de arquivo futuro. Hoje só o julgamento da IA
-     segura.
    - A nota "recuperável no git" vai também para link que já nasceu
      quebrado, cujo alvo nunca foi versionado.
    - Rodar a cleanup neste repo (96 sobras na contagem de 2026-10-02) exige
