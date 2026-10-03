@@ -371,4 +371,7 @@ Run in the interactive session after installing:
 
 This repository uses its own framework (dogfooding): see `MEMORY.md`,
 `docs/audora/planos/` and the spec in `docs/specs/`. Regression suite:
-`bash tests/run.sh` (pure bash, fixtures in `mktemp -d`).
+`bash tests/run.sh` (pure bash, fixtures in `mktemp -d`). Test files run in
+parallel, output in blocks in glob order: `SUITE_JOBS` caps how many run at
+once (default = logical cores; `1` = serial) and `SUITE_TIMEOUT` is the
+per-file limit in seconds (default 300; `0` = no limit).

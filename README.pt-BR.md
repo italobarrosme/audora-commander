@@ -368,4 +368,8 @@ Rode na sessão interativa após instalar:
 
 Este repositório usa o próprio framework (dogfooding): veja `MEMORY.md`,
 `docs/audora/planos/` e a spec em `docs/specs/`. Suíte de regressão:
-`bash tests/run.sh` (bash puro, fixtures em `mktemp -d`).
+`bash tests/run.sh` (bash puro, fixtures em `mktemp -d`). Os arquivos de teste
+rodam em paralelo, com a saída em blocos na ordem do glob: `SUITE_JOBS` limita
+quantos rodam juntos (default = núcleos lógicos; `1` = em série) e
+`SUITE_TIMEOUT` é o limite por arquivo em segundos (default 300; `0` = sem
+limite).

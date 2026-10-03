@@ -172,4 +172,35 @@ for v in 'x' '-5' ''; do
   assert_eq 0 "$code" "suite-paralela/15 '$v' → exit 0"
 done
 
+# --- suite-paralela/16 — hooks/gate com o default `bash tests/run.sh` ---
+gproj="$SP/gproj"
+mkgate() {  # mkgate <corpo de test-b.sh>
+  mksuite "$gproj"; rm -rf "$gproj/bin"
+  fake "$gproj" a 'true'
+  fake "$gproj" b "$1"
+  git -C "$gproj" init -q
+  git -C "$gproj" config user.email gate@test; git -C "$gproj" config user.name gate
+  git -C "$gproj" config core.autocrlf false
+  git -C "$gproj" config core.excludesFile "$SP/sem-ignore"
+  git -C "$gproj" add -A; git -C "$gproj" commit -qm base
+}
+rungate() {
+  out="$(cd "$gproj" && unset GATE_SUITE_CMD SUITE_JOBS SUITE_TIMEOUT &&
+         GATE_ROOT="$gproj" bash "$ROOT/hooks/gate" 2>&1)"; code=$?
+}
+mkgate 'echo b'; rungate
+assert_eq 0 "$code" "suite-paralela/16 suíte verde → gate exit 0"
+assert_contains "$out" 'GATE: passou' "suite-paralela/16 suíte verde → GATE: passou"
+mkgate 'exit 1'; rungate
+assert_eq 1 "$code" "suite-paralela/16 arquivo vermelho → gate exit 1"
+assert_contains "$out" 'GATE: reprovado' "suite-paralela/16 arquivo vermelho → GATE: reprovado"
+assert_contains "$out" 'suite falhou: bash tests/run.sh' "suite-paralela/16 reprova pelo motivo da suíte"
+
+# --- docs citam as variáveis do run.sh ---
+for f in README.md README.pt-BR.md; do
+  r="$(cat "$f")"
+  assert_contains "$r" 'SUITE_JOBS' "docs $f cita SUITE_JOBS"
+  assert_contains "$r" 'SUITE_TIMEOUT' "docs $f cita SUITE_TIMEOUT"
+done
+
 report

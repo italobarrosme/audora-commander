@@ -32,8 +32,8 @@ time pequeno em projetos web/mobile/api.
   fluxo numerado, tabela de red flags e seção "PRÓXIMA SKILL"; skill de FASE
   tem também `## Bloco de fechamento` apontando
   `templates/bloco-fechamento-template.md` (skill-ferramenta não tem).
-- **como-rodar**: `bash tests/run.sh` (suíte do plugin; exit 1 se algo
-  falha). Validação de instalação = `claude plugin uninstall
+- **como-rodar**: `bash tests/run.sh` (suíte do plugin, em paralelo; exit 1
+  se algo falha; `SUITE_JOBS=1` = em série). Validação de instalação = `claude plugin uninstall
   audora-commander@audora-commander-dev && ./install.sh` seguido do
   checklist do README.md em sessão interativa.
 - **ferramenta-e2e**: `claude -p` (projeto não-web, sem docker) — sessão
