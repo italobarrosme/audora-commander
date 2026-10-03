@@ -27,12 +27,13 @@ carregar). O julgamento semântico fica aqui. Rode tudo na raiz do projeto.
 | relatório e2e | `docs/audora/e2e/e2e-<id>.md` de nó delivered |
 | depuração velha | `docs/audora/depuracao/*` sem nó vivo ligado (não citada no índice nem em nó de `docs/audora/memory/`) |
 | sem referência | arquivo de `docs/audora/` que nenhum documento vivo cita (índice, nós vivos, decisões vivas, skills, PRD, READMEs) |
-| link quebrado | link em `MEMORY.md` ou `docs/audora/` para arquivo inexistente (fora de frontmatter e de bloco de código) |
+| link quebrado | link em `MEMORY.md` (fora da seção Aprendizados) ou `docs/audora/` para arquivo que existiu no histórico e não existe mais (fora de frontmatter e de bloco de código) |
 
 Nunca entram: nós (`docs/audora/memory/`, `docs/audora/arquivo/`), decisões
 vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
 - `## mantido` — planned órfão com dependente vivo;
-- `## não tocado` — fora do git ou com mudança não commitada.
+- `## não tocado` — fora do git ou com mudança não commitada;
+- `## nunca existiu` — link para caminho que nunca foi versionado (erro de digitação, exemplo ou fixture): aviso fora do lote, que o humano corrige à mão se quiser; o `aplicar` ignora a seção.
 
 ## Fluxo
 
@@ -49,8 +50,8 @@ vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
    (um `--orfao` por planned julgado; sem nenhum, rode só `varrer`).
    Linha `aviso: --orfao <id> ignorado` = o id não é planned no índice:
    reveja o julgamento.
-4. **Apresentar.** Saída `cleanup: nada a limpar` → diga "nada a limpar" ao humano e pare: nada muda, nada é commitado. Senão, mostre o relatório inteiro como saiu, agrupado por tipo,
-   e explique `## mantido` e `## não tocado` (ficam fora do lote).
+4. **Apresentar.** Saída terminando em `cleanup: nada a limpar` → mostre os avisos que vierem antes (`## nunca existiu` e cia.), diga "nada a limpar" ao humano e pare: nada muda, nada é commitado. Senão, mostre o relatório inteiro como saiu, agrupado por tipo,
+   e explique `## mantido`, `## não tocado` e `## nunca existiu` (ficam fora do lote).
 5. **Aprovação.** Espere aprovação explícita do lote. O humano pode tirar itens: apague as linhas dele e mantenha o resto do relatório igual.
    Grave o lote aprovado num arquivo do scratchpad (ex.: `<scratchpad>/lote-cleanup.txt`).
    Humano reprovou ou tirou todos → não rode `aplicar`; nada muda, nada é commitado.
@@ -58,9 +59,11 @@ vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
 6. **Aplicar** o lote aprovado:
    `bash "<raiz do plugin>/hooks/cleanup" aplicar <lote>`
    O script relê o lote, confere de novo cada item (alvo existe, está no
-   git, limpo, dentro de `docs/audora/`), apaga arquivos, troca cada link
-   para eles pela nota
+   git, limpo, dentro de `docs/audora/`; link quebrado de alvo nunca
+   versionado é recusado), apaga arquivos, troca cada link para eles pela nota
    `` `<caminho>` removido em AAAA-MM-DD pela cleanup — recuperável no git``,
+   troca cada link quebrado pela nota
+   `` `<caminho>` já não existia em AAAA-MM-DD (link limpo pela cleanup) — recuperável no git``,
    apaga a linha do planned órfão do índice (e o arquivo do nó, se houver),
    roda o `memory-validate` e faz 1 commit só com os caminhos do lote. O que
    já estava staged fica fora do commit.

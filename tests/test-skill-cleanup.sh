@@ -656,6 +656,12 @@ assert_contains "$(printf '%s\n' "$sk" | grep -F 'confira no histórico que o al
 assert_contains "$(printf '%s\n' "$sk" | grep -F 'confira no histórico que o alvo existiu')" 'git --literal-pathspecs log -1 --full-history' "cleanup-alvo-ausente/10 skill: conferência com pathspec literal"
 assert_not_contains "$sk" 'Caminho inexistente na coluna arquivos-chave o script já acha sozinho' "cleanup-alvo-ausente/10 skill: frase antiga removida"
 assert_not_contains "$sk" 'alvo ausente conferido no repo' "cleanup-alvo-ausente/10 skill: red flag confere no histórico"
+for s in '## nunca existiu' 'erro de digitação, exemplo ou fixture' 'corrige à mão' \
+         'já não existia em AAAA-MM-DD (link limpo pela cleanup) — recuperável no git' \
+         'removido em AAAA-MM-DD pela cleanup — recuperável no git' 'fora da seção Aprendizados'; do
+  assert_contains "$sk" "$s" "cleanup-link-preciso/12 skill cita: $s"
+done
+assert_contains "$(printf '%s\n' "$sk" | grep -F '`## nunca existiu` —')" 'fora do lote' "cleanup-link-preciso/12 skill: nunca existiu é aviso fora do lote"
 assert_contains "$(bash "$ROOT/hooks/session-start")" 'cleanup' "skill-cleanup/1 session-start aponta a cleanup"
 
 # --- skill-cleanup/16 sync da validate sugere a cleanup (1 linha, com a contagem), sem rodar ---
