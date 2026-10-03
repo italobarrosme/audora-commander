@@ -222,8 +222,8 @@ assert_eq 1 "$out" "skill-cleanup/4 contar conta só o mecânico (q)"
 # só em branch não alcançável, nunca criados e presentes; v (vivo) depende do nunca-existiu
 mkalvo() {
   local d="$1"; mkproj "$d"
-  addc "$d" src/velho.ts x; addc "$d" lib/antigo/x.ts x
-  git -C "$d" rm -q src/velho.ts lib/antigo/x.ts; git -C "$d" commit -qm sumiram
+  addc "$d" src/velho.ts x; addc "$d" lib/antigo/x.ts x; addc "$d" app/s/page.tsx x
+  git -C "$d" rm -q src/velho.ts lib/antigo/x.ts app/s/page.tsx; git -C "$d" commit -qm sumiram
   git -C "$d" checkout -q -b outro; addc "$d" src/ramo.ts x; git -C "$d" checkout -q -
   git -C "$d" checkout -q -b feat; addc "$d" src/feat.ts x
   git -C "$d" rm -q src/feat.ts; git -C "$d" commit -qm 'feat sumiu'; git -C "$d" checkout -q -
@@ -232,7 +232,8 @@ mkalvo() {
     '- misto | planned | M | r | k | src/velho.ts, src/futuro.ts, README.md, lib/antigo/' \
     '- pasta | planned | P | r | k | lib/antigo/' '- pastanova | planned | PN | r | k | lib/nova/' \
     '- ramo | planned | R | r | k | src/ramo.ts' '- fundido | planned | F | r | k | src/feat.ts' \
-    '- presente | planned | PR | r | k | README.md' '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
+    '- presente | planned | PR | r | k | README.md' '- slug | planned | SL | r | k | app/[slug]/page.tsx' \
+    '- v | in-progress | V | r | k | —' >> "$d/MEMORY.md"
   nov "$d" v in-progress 'nunca'
   git -C "$d" add -A; git -C "$d" commit -qm alvo
 }
@@ -244,6 +245,7 @@ assert_eq "$(printf '%s\n' 'cleanup: relatório — nada foi alterado' '## plann
   '- pasta | alvo ausente: lib/antigo/' '- sumiu | alvo ausente: src/velho.ts' 'total: 4 item(ns) no lote')" \
   "$out" "cleanup-alvo-ausente/1 relatório só com o que existiu e sumiu"
 assert_not_contains "$out" 'nunca' "cleanup-alvo-ausente/1 nunca-existiu fora do relatório, nem em mantido"
+assert_not_contains "$out" '- slug |' "cleanup-alvo-ausente/1 [slug] literal: glob não casa caminho que existiu"
 po="$(secao "$out" 'planned órfão')"
 assert_line "$po" '- sumiu | alvo ausente: src/velho.ts' "cleanup-alvo-ausente/2 existiu e sumiu → órfão"
 assert_line "$po" '- fundido | alvo ausente: src/feat.ts' "cleanup-alvo-ausente/2 existiu em branch mergeada (alcançável)"
@@ -492,6 +494,7 @@ assert_not_contains "$sk" '## Bloco de fechamento' "skill-cleanup/12 skill-ferra
 [ "$(printf '%s\n' "$sk" | wc -l)" -le 250 ] && ok || ko "skill-cleanup/12 SKILL.md ≤ 250 linhas"
 assert_contains "$sk" 'O script só acha o caminho da coluna arquivos-chave que existiu no histórico e sumiu do disco' "cleanup-alvo-ausente/10 skill: script só acha o que existiu e sumiu"
 assert_contains "$(printf '%s\n' "$sk" | grep -F 'confira no histórico que o alvo existiu')" '--orfao <id>=alvo ausente: <alvo>' "cleanup-alvo-ausente/10 skill: --orfao alvo ausente só depois de conferir o histórico"
+assert_contains "$(printf '%s\n' "$sk" | grep -F 'confira no histórico que o alvo existiu')" 'git --literal-pathspecs log -1 --full-history' "cleanup-alvo-ausente/10 skill: conferência com pathspec literal"
 assert_not_contains "$sk" 'Caminho inexistente na coluna arquivos-chave o script já acha sozinho' "cleanup-alvo-ausente/10 skill: frase antiga removida"
 assert_not_contains "$sk" 'alvo ausente conferido no repo' "cleanup-alvo-ausente/10 skill: red flag confere no histórico"
 assert_contains "$(bash "$ROOT/hooks/session-start")" 'cleanup' "skill-cleanup/1 session-start aponta a cleanup"

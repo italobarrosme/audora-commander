@@ -41,7 +41,7 @@ vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
    `grep -E '^- [^|]+ \| (planned|delivered) \|' MEMORY.md`
    Compare cada planned (título, resumo, keywords) com os delivered:
    - objetivo já entregue ou absorvido por um delivered → `--orfao <id>=absorvido por <id-delivered>`;
-   - cita skill, arquivo ou feature que existiu e sumiu → confira no histórico que o alvo existiu (`git log -1 --full-history --oneline HEAD -- <alvo>` não vazio; nunca de memória) e só então use `--orfao <id>=alvo ausente: <alvo>`. Alvo que nunca existiu é feature futura, não órfão.
+   - cita skill, arquivo ou feature que existiu e sumiu → confira no histórico que o alvo existiu (`git --literal-pathspecs log -1 --full-history --oneline HEAD -- <alvo>` não vazio; nunca de memória) e só então use `--orfao <id>=alvo ausente: <alvo>`. Alvo que nunca existiu é feature futura, não órfão.
    Na dúvida, NÃO marque: planned legítimo apagado é requisito perdido.
    O script só acha o caminho da coluna arquivos-chave que existiu no histórico e sumiu do disco; caminho que nunca existiu ele não lista.
 3. **Varrer** (só lê, não altera nada):
