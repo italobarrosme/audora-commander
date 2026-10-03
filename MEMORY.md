@@ -124,6 +124,7 @@ time pequeno em projetos web/mobile/api.
 - cleanup-alvo-ausente | delivered | Alvo ausente só se existiu → docs/audora/arquivo/2026-10-03-cleanup-alvo-ausente.md
 - cleanup-lote-encadeado | delivered | Lote encadeado da cleanup → docs/audora/arquivo/2026-10-03-cleanup-lote-encadeado.md
 - cleanup-link-preciso | delivered | Link preciso da cleanup → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
+- suite-paralela | in-progress | Suíte em paralelo | A suíte tests/run.sh roda os arquivos de teste em paralelo, sem subagente, mantendo a saída na ordem de sempre e o mesmo código de saída | testes, suite, paralelo, run.sh, gate, velocidade, timeout | tests/run.sh, hooks/gate
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
