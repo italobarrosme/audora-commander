@@ -1,12 +1,12 @@
 ---
 id: suite-paralela
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, tests/run.sh, tests/test-suite-paralela.sh, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-suite-paralela.md, docs/audora/planos/arquivo/plano-suite-paralela.md]
 keywords: [testes, suite, paralelo, run.sh, gate, velocidade, timeout]
 resumo: A suíte tests/run.sh roda os arquivos de teste em paralelo, sem subagente, mantendo a saída na ordem de sempre e o mesmo código de saída
-atualizado-em: 2026-10-03
+atualizado-em: 2026-10-05
 ---
 
 # suite-paralela
@@ -31,7 +31,7 @@ Paralelismo
 Saída
 - suite-paralela/5 — QUANDO a suíte termina O SISTEMA DEVE ter impresso o bloco de cada arquivo na ordem do glob `tests/test-*.sh` (a de hoje), sem linha de um arquivo intercalada no bloco de outro.
 - suite-paralela/6 — QUANDO um arquivo termina e todos os anteriores na ordem já foram impressos O SISTEMA DEVE imprimir o bloco dele na hora, sem esperar os arquivos seguintes.
-- suite-paralela/7 — QUANDO um arquivo escreve no stderr (ex.: linhas `FAIL:`) O SISTEMA DEVE emitir essas linhas no stderr do `run.sh`, dentro do bloco do arquivo, na mesma ordem relativa às linhas de stdout em que o arquivo as escreveu; com `2>/dev/null`, só elas somem.
+- suite-paralela/7 — QUANDO um arquivo escreve no stderr (ex.: linhas `FAIL:`) O SISTEMA DEVE emitir essas linhas no stderr do `run.sh`, dentro do bloco do arquivo, ANTES das linhas de stdout dele, cada canal na ordem em que o arquivo o escreveu; com `2>/dev/null`, só elas somem.
 - suite-paralela/8 — QUANDO a suíte termina O SISTEMA DEVE imprimir como última linha do stdout `run.sh: <n> arquivo(s) de teste com falha (<s> s)`, com `<n>` = nº de arquivos com falha e `<s>` = segundos inteiros de relógio desde o início do `run.sh`.
 
 Código de saída
@@ -72,13 +72,12 @@ Contrato e meta
 - 2026-10-03 (humano, scope): suíte sem nenhum `test-*.sh` → mensagem e exit 1. Descartado: exit 0 (suíte vazia seria falso verde no gate).
 - Nomes das variáveis de ambiente: decisão de implementação (execute decide e lista para revisão; a doc cita os nomes).
 - 2026-10-03 (humano, plan → reabertura de scope): /7 passa a pôr o stderr ANTES do stdout no bloco do arquivo. Motivo: stdout e stderr do arquivo chegam por canos separados e nenhum guarda a ordem entre eles; a ordem relativa exata exigiria cooperação dos testes (fora de escopo). Descartados: stderr depois do stdout (já recusado no scope), ordem aproximada (critério sem teste determinístico) e tudo no stdout (quebra quem redireciona um canal só).
+- 2026-10-04 (humano, validate): `SUITE_JOBS` e `SUITE_TIMEOUT` ficam documentadas só nos README (EN/PT) e no bullet `como-rodar`; sem `.env` nem `.env.example` (são opções do runner, com default). Descartado: criar `.env` + `.env.example` só por causa delas.
 
 ## delta
 
-- MODIFICADO (2026-10-03): suite-paralela/7 — "…na mesma ordem relativa às linhas de stdout em que o arquivo as escreveu…" → "QUANDO um arquivo escreve no stderr (ex.: linhas `FAIL:`) O SISTEMA DEVE emitir essas linhas no stderr do `run.sh`, dentro do bloco do arquivo, ANTES das linhas de stdout dele, cada canal na ordem em que o arquivo o escreveu; com `2>/dev/null`, só elas somem." Aprovado pelo humano na fase plan. Efeito visível: só no `test-carga.sh`, o FAIL passa a sair antes da linha `carga MEDIUM`.
-
 ## e2e
 
-pendente
+passou (2026-10-04) — 17/17 critérios: `docs/audora/e2e/e2e-suite-paralela.md` (CLI na worktree com arquivos plantados, repo real com amostragem de concorrência e sessão `claude -p` rodando o gate)
 
 ## feedback-reprovacao

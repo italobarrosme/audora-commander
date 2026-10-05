@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-03
+> Última atualização: 2026-10-05
 
 ## O que é e para que serve
 
@@ -20,7 +20,10 @@ Code.
   via `perl -x`; sem jq — awk/sed/grep/perl do
   Git for Windows).
 - Suíte de regressão do plugin em bash: `tests/run.sh` + `tests/test-*.sh`
-  (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`).
+  (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`). O
+  `run.sh` roda os arquivos em paralelo (`SUITE_JOBS`, default = núcleos;
+  `1` = série) com timeout por arquivo (`SUITE_TIMEOUT`, default 300 s; `0`
+  desliga) e imprime em blocos na ordem do glob, com o tempo no resumo.
 - Sem dependência externa de índice de código: o Graphify saiu na 0.10.0;
   a localização de código é a busca do símbolo pelo harness, com leitura
   por trecho.

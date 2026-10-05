@@ -96,6 +96,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-03 | validate | Ferramenta que age em LOTE precisa de fixture com item que cita outro item do mesmo lote, nas duas ordens: a suíte da cleanup só tinha itens independentes e o 1º uso real (plano cita a spec) desfez o lote no `git rm` — rodar a ferramenta no próprio repo (dogfood) antes do merge acha o que a fixture sintética não tem.
 - 2026-10-03 | plan | Plano e relatório e2e moram em `docs/audora/` e a cleanup os varre: caminho de fixture que não existe no repo só dentro de bloco de código (fence é ignorado) — fora dele vira aviso `## nunca existiu` (ou link quebrado, se o caminho já existiu aqui) e polui o dogfood.
 - 2026-10-03 | execute | Nesta máquina `env` no PATH é `~/.local/bin/env` (script do instalador do uv): `env VAR=x cmd` não roda `cmd` e sai 0 calado (falso verde) — em teste, setar variável com `unset`/`export` num subshell, nunca `env`; shebang `#!/usr/bin/env` (caminho absoluto) não é afetado.
+- 2026-10-04 | e2e | TaskStop num script bash em background mata só o invólucro: o script e os filhos (`run.sh`, teste travado) seguem vivos. Matar pelo `/proc/*/cmdline` com padrão ANCORADO no começo (`"bash tests/run.sh"*`): padrão solto (`*test-zz*`) casa a linha de comando do próprio shell e o `kill -9` derruba ele.
 
 ## Índice de nós [carga: sempre]
 
@@ -125,7 +126,7 @@ time pequeno em projetos web/mobile/api.
 - cleanup-alvo-ausente | delivered | Alvo ausente só se existiu → docs/audora/arquivo/2026-10-03-cleanup-alvo-ausente.md
 - cleanup-lote-encadeado | delivered | Lote encadeado da cleanup → docs/audora/arquivo/2026-10-03-cleanup-lote-encadeado.md
 - cleanup-link-preciso | delivered | Link preciso da cleanup → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
-- suite-paralela | in-progress | Suíte em paralelo | A suíte tests/run.sh roda os arquivos de teste em paralelo, sem subagente, mantendo a saída na ordem de sempre e o mesmo código de saída | testes, suite, paralelo, run.sh, gate, velocidade, timeout | tests/run.sh, hooks/gate
+- suite-paralela | delivered | Suíte em paralelo → docs/audora/arquivo/2026-10-05-suite-paralela.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
