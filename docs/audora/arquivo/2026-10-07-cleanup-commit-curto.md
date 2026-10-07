@@ -1,9 +1,9 @@
 ---
 id: cleanup-commit-curto
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [skill-cleanup]
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, hooks/cleanup, tests/test-skill-cleanup.sh]
 keywords: [cleanup, commit, commitlint, mensagem, corpo]
 resumo: O commit do lote da cleanup tem linhas de até 100 caracteres e passa no commitlint config-conventional, qualquer que seja o tamanho do lote
 atualizado-em: 2026-10-07
@@ -40,16 +40,21 @@ Outras regras do commitlint (tipo, escopo, caixa do subject); mudança no relat�
 - 2026-10-07 (agente): classificada LIGHT — 4 perguntas de risco "não"; ajuste localizado em
   `commita` de `hooks/cleanup` + teste. Origem: cleanup do pepity recusada pelo commitlint
   (`body's lines must not be longer than 100 characters`), humano escolheu corrigir o script.
+- 2026-10-07 (agente, execute): /2 deixou de ser "só a contagem por tipo" e virou a lista por tipo
+  quebrada em linhas de até 100 bytes — `skill-cleanup/13` (entregue) exige a mensagem listando o
+  que saiu por tipo; /4 (item maior que a linha vira contagem) entrou junto. Largura medida em
+  bytes (o script não usa `utf8`): conservador frente ao commitlint, que conta caracteres.
+- 2026-10-07 (humano): portão aprovado — 4/4 critérios (suíte `PASS=309`, gate passou, dogfood no
+  pepity: commit `15be9a8` de 189 itens aceito pelo commitlint real); PRD não muda (a foto não
+  descreve o formato da mensagem).
 
 ## delta
 
-- MODIFICADO (2026-10-07): /2 "uma linha por tipo com a contagem" → lista por tipo quebrada em
-  linhas de continuação de até 100 caracteres. Motivo: `skill-cleanup/13` (entregue) exige a
-  mensagem listando o que saiu por tipo; só contagem violaria. ADICIONADO /4 (item mais longo que
-  a linha).
-
 ## e2e
 
-pendente
+2026-10-07: dogfood no pepity — o lote de 189 itens que antes era recusado pelo commitlint
+(`body-max-line-length`) virou o commit `15be9a8` com o hook `commit-msg` real
+(commitlint `config-conventional`) passando; 178 linhas de mensagem, maior com 100 bytes, todos os
+tipos listados com continuação recuada. /1 /2 /3 passaram; /4 sem caso real (só na suíte).
 
 ## feedback-reprovacao
