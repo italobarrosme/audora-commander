@@ -437,12 +437,32 @@ sub valida_memory {
   die 'MEMORY inválido: ' . ($l =~ s/^- //r) . "\n";
 }
 
+# Lista de um tipo no corpo do commit: "<tipo>: a, b, c" quebrada em linhas de até
+# $LARGURA bytes (body-max-line-length do commitlint), continuação recuada com 2 espaços;
+# item que não cabe sozinho numa linha sai da lista e vira contagem (cleanup-commit-curto).
+my $LARGURA = 100;
+sub lista_tipo {
+  my ($s, @a) = @_;
+  my @cabe = grep { length($_) + 3 <= $LARGURA } @a;
+  my $longos = @a - @cabe;
+  my ($l, @linhas) = ("$s:");
+  for my $i (0 .. $#cabe) {
+    my $t = $cabe[$i] . ($i < $#cabe ? ',' : '');
+    if (length("$l $t") <= $LARGURA) { $l .= " $t"; next; }
+    push @linhas, $l;
+    $l = "  $t";
+  }
+  push @linhas, $l;
+  push @linhas, "  (+$longos caminho(s) longo(s) — ver git show --stat)" if $longos;
+  return join("\n", @linhas) . "\n";
+}
+
 sub commita {
   my (@it) = @_;
   my $msg = 'chore(cleanup): remove ' . scalar(@it) . " sobra(s) do processo\n\n";
   for my $s (@SECOES) {
     my @a = map { $_->{alvo} } grep { $_->{sec} eq $s } @it or next;
-    $msg .= "$s: " . join(', ', @a) . "\n";
+    $msg .= lista_tipo($s, @a);
   }
   my $tmp = File::Temp->new(); print $tmp $msg; close $tmp;
   system('git', 'commit', '-q', '-F', $tmp->filename, '--', @TOCADO) == 0 or die "commit recusado\n";

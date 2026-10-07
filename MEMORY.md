@@ -127,6 +127,7 @@ time pequeno em projetos web/mobile/api.
 - cleanup-lote-encadeado | delivered | Lote encadeado da cleanup → docs/audora/arquivo/2026-10-03-cleanup-lote-encadeado.md
 - cleanup-link-preciso | delivered | Link preciso da cleanup → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
 - suite-paralela | delivered | Suíte em paralelo → docs/audora/arquivo/2026-10-05-suite-paralela.md
+- cleanup-commit-curto | in-progress | Commit curto da cleanup | O commit do lote da cleanup tem linhas de até 100 caracteres e passa no commitlint config-conventional, qualquer que seja o tamanho do lote | cleanup, commit, commitlint, mensagem, corpo | hooks/cleanup, tests/test-skill-cleanup.sh
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md

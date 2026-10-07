@@ -3,6 +3,7 @@
 # cleanup-alvo-ausente/1..10 — alvo ausente só se o caminho existiu no histórico do HEAD.
 # cleanup-lote-encadeado/1..3 — aplicar não falha quando um item do lote cita outro item do lote.
 # cleanup-link-preciso/1..13 — link para caminho nunca versionado vira aviso fora do lote; nota própria do link quebrado; Aprendizados fora.
+# cleanup-commit-curto/1..4 — corpo do commit com linhas de até 100 caracteres (commit-msg tipo commitlint).
 source "$(dirname "$0")/lib.sh"
 C="$ROOT/hooks/cleanup"
 
@@ -466,6 +467,38 @@ assert_not_contains "$out" 'nao-existe.md' "cleanup-link-preciso/7 a nota 'já n
 assert_not_contains "$out" 'specs/sumiu.md' "cleanup-link-preciso/7 a nota 'já não existia' não vira link (token)"
 assert_eq 4 "$(secao "$out" 'nunca existiu' | grep -c '^- ')" "cleanup-link-preciso/5 nunca existiu segue com os 4 avisos (L3 x2, L4, decisões vivas)"
 assert_line "$(secao "$out" 'nunca existiu')" "- docs/audora/decisoes-vivas.md:3 | aponta nunca-dv.md nunca versionado" "cleanup-link-preciso/5 aviso das decisões vivas"
+
+# --- cleanup-commit-curto/1..4 lote grande: corpo quebrado em linhas de até 100 caracteres ---
+p="$SP/t10"; mkt2 "$p"; mkdir -p "$p/docs/audora/notas"
+for i in $(seq -w 1 40); do printf '# n\n' > "$p/docs/audora/notas/nota-sem-referencia-numero-$i.md"; done
+LONGO="docs/audora/notas/$(printf 'x%.0s' $(seq 1 90)).md"
+printf '# longo\n' > "$p/$LONGO"
+git -C "$p" add -A; git -C "$p" commit -qm t10
+# hook commit-msg como o body-max-line-length do commitlint: qualquer linha > 100 recusa
+cat > "$p/.git/hooks/commit-msg" <<'HOOK'
+#!/bin/sh
+if LC_ALL=C awk 'length($0) > 100 { bad = 1 } END { exit bad }' "$1"; then exit 0; fi
+echo "linha > 100" >&2; exit 1
+HOOK
+chmod +x "$p/.git/hooks/commit-msg"
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote10.txt"
+assert_eq 'total: 45 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "cleanup-commit-curto lote grande montado (41 notas + 4 de d)"
+runc "$p" aplicar "$SP/lote10.txt"
+assert_eq 0 "$code" "cleanup-commit-curto/3 hook commit-msg com limite de 100 aceita → exit 0"
+assert_contains "$out" '— 45 item(ns) removido(s)' "cleanup-commit-curto/3 commit do lote grande"
+msg="$(git -C "$p" show -s --format=%B HEAD)"
+assert_empty "$(printf '%s\n' "$msg" | LC_ALL=C awk 'length($0) > 100')" "cleanup-commit-curto/1 nenhuma linha da mensagem passa de 100"
+corpo="$(git -C "$p" show -s --format=%b HEAD)"
+assert_eq 1 "$(printf '%s\n' "$corpo" | grep -c '^sem referência: docs/audora/notas/nota-sem-referencia-numero-01.md')" "cleanup-commit-curto/2 tipo abre a lista na 1ª linha"
+assert_empty "$(printf '%s\n' "$corpo" | grep -vE '^([^ :][^:]*: |  )' | grep .)" "cleanup-commit-curto/2 continuação recuada com 2 espaços"
+faltam=0; for i in $(seq -w 1 40); do
+  printf '%s\n' "$corpo" | grep -qF "docs/audora/notas/nota-sem-referencia-numero-$i.md" || faltam=$((faltam + 1))
+done
+assert_eq 0 "$faltam" "cleanup-commit-curto/2 nenhum item perdido na quebra"
+assert_not_contains "$corpo" "$LONGO" "cleanup-commit-curto/4 item maior que a linha fora da lista"
+assert_line "$corpo" '  (+1 caminho(s) longo(s) — ver git show --stat)' "cleanup-commit-curto/4 linha com a contagem dos longos"
+assert_contains "$(git -C "$p" show --name-only --format= HEAD)" "$LONGO" "cleanup-commit-curto/4 item longo segue no commit"
+assert_no_file "$p/$LONGO" "cleanup-commit-curto/4 item longo apagado"
 
 # --- skill-cleanup/14 falha no meio desfaz o lote e nomeia o item ---
 # lote_de <arq> <linha>... — lote mínimo com cabeçalho
