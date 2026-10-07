@@ -78,6 +78,6 @@ Contrato e meta
 
 ## e2e
 
-passou (2026-10-04) — 17/17 critérios: `docs/audora/e2e/e2e-suite-paralela.md` (CLI na worktree com arquivos plantados, repo real com amostragem de concorrência e sessão `claude -p` rodando o gate)
+passou (2026-10-04) — 17/17 critérios: `docs/audora/e2e/e2e-suite-paralela.md` removido em 2026-10-07 pela cleanup — recuperável no git (CLI na worktree com arquivos plantados, repo real com amostragem de concorrência e sessão `claude -p` rodando o gate)
 
 ## feedback-reprovacao

@@ -57,6 +57,6 @@ limpou o link (metas 6 e 7 do `PRD.md`).
 
 ## e2e
 
-passou — 13/13 critérios (`claude -p` em fixture real + CLI direta + dogfood neste repo), relatório em `docs/audora/e2e/e2e-cleanup-link-preciso.md`
+passou — 13/13 critérios (`claude -p` em fixture real + CLI direta + dogfood neste repo), relatório em `docs/audora/e2e/e2e-cleanup-link-preciso.md` removido em 2026-10-07 pela cleanup — recuperável no git
 
 ## feedback-reprovacao
