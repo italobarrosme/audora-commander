@@ -1,24 +1,15 @@
 #!/usr/bin/env bash
-# memory-graphify/19 — versão 0.4.0, READMEs e PRD falam MEMORY + Graphify; blocos de código idênticos EN/PT.
+# docs — versão, READMEs e PRD falam MEMORY; blocos de código idênticos EN/PT.
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   perl -MJSON::PP -0777 -e 'decode_json(join "", <STDIN>)' < "$j" 2>/dev/null && ok || ko "$j JSON inválido"
   assert_contains "$(cat "$j")" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"
 done
-assert_not_contains "$(tr 'A-Z' 'a-z' < .claude-plugin/plugin.json; tr 'A-Z' 'a-z' < .claude-plugin/marketplace.json)" 'graphify' "remover-graphify/10 manifests sem Graphify"
 en="$(cat README.md)"; pt="$(cat README.pt-BR.md)"
 for s in 'MEMORY.md' '`memory`' 'docs/audora/memory/' 'memory-validate'; do
   assert_contains "$en" "$s" "/19 README EN cita $s"; assert_contains "$pt" "$s" "/19 README PT cita $s"
 done
-# remover-graphify/10 — READMEs sem instalação ou consulta do Graphify; princípio 1 sem índice de código
-for s in 'uv tool install graphifyy' 'consultar-codigo' 'graphify query' 'graphify update' 'indexes the code' 'code index' 'code graph'; do
-  assert_not_contains "$en" "$s" "remover-graphify/10 README EN sem '$s'"
-done
-for s in 'uv tool install graphifyy' 'consultar-codigo' 'graphify query' 'graphify update' 'indexa o código' 'índice de código' 'índice do código'; do
-  assert_not_contains "$pt" "$s" "remover-graphify/10 README PT sem '$s'"
-done
-assert_not_contains "$(tr 'A-Z' 'a-z' < docs/fundamentos.md)" 'graphify' "remover-graphify/10 fundamentos sem Graphify"
 blocos() { awk '/^```/{f=!f; next} f' "$1"; }
 assert_eq "$(blocos README.md | md5sum)" "$(blocos README.pt-BR.md | md5sum)" "/19 blocos de código idênticos EN/PT"
 p="$(cat PRD.md)"

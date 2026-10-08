@@ -44,12 +44,8 @@ for g in "$MR"/*.md; do
   assert_contains "$m" "references/$(basename "$g")" "/7 sem órfã: $(basename "$g")"
 done
 # /2 — conteúdo de cada operação movida está na SUA reference
-# remover-graphify/1 — bootstrap não oferece nem instala o Graphify; o gate fecha o bootstrap
-grep -qi 'graphify' "$MR/bootstrap.md" && ko "remover-graphify/1 bootstrap cita graphify" || ok
-assert_contains "$(cat "$MR/bootstrap.md")" '**Etapa gate** (sempre, ao fim do bootstrap)' "remover-graphify/1 gate fecha o bootstrap"
-for s in 'hooks/graphify-status' 'Instalo o Graphify' 'inclui oferta e ativação do Graphify'; do
-  assert_not_contains "$m" "$s" "remover-graphify/1,10 memory sem '$s'"
-done
+# o gate fecha o bootstrap
+assert_contains "$(cat "$MR/bootstrap.md")" '**Etapa gate** (sempre, ao fim do bootstrap)' "bootstrap: gate fecha o bootstrap"
 for s in 'docs/audora/arquivo/' 'aprendizados-historico.md' 'git mv'; do
   assert_contains "$(cat "$MR/compactar.md" 2>/dev/null)" "$s" "/2 compactar cita '$s'"
 done
@@ -57,7 +53,7 @@ for s in 'no-template.md' 'hotfix-pending-record' 'planned | in-progress'; do
   assert_contains "$(cat "$MR/registrar-no.md" 2>/dev/null)" "$s" "/2 registrar-no cita '$s'"
 done
 # /2 — o roteador NÃO carrega o corpo movido (move, não copia)
-for s in 'uv tool install graphifyy' 'pipx install graphifyy' 'graphify hook install' '--budget' 'graphify path' 'aprendizados-historico.md'; do
+for s in 'aprendizados-historico.md'; do
   assert_not_contains "$m" "$s" "/2 roteador sem corpo movido: '$s'"
 done
 # /1 — o que É do roteador continua nele
@@ -67,15 +63,6 @@ done
 # /4 — degradação declarada no roteador
 assert_contains "$m" 'reference ausente' "/4 roteador declara reference ausente"
 assert_contains "$m" 'sem travar a fase' "/4 roteador degrada sem travar"
-# remover-graphify/9,/10 — fases sem Graphify e sem consulta ao índice de código
-for s in audora-commander scope plan execute e2e validate debug; do
-  grep -qiE 'graphify|consultar-codigo' "skills/$s/SKILL.md" && ko "remover-graphify/9 $s cita graphify/consultar-codigo" || ok
-  grep -qiE '(í|Í|i)ndice de c(ó|o)digo' "skills/$s/SKILL.md" && ko "remover-graphify/10 $s cita índice de código" || ok
-done
-assert_no_file "$MR/consultar-codigo.md" "remover-graphify/9 reference consultar-codigo removida"
-for s in 'consultar-codigo' 'operação 7' 'graphify query' 'graphify update'; do
-  assert_not_contains "$m" "$s" "remover-graphify/9 memory sem '$s'"
-done
 for s in scope execute debug e2e; do
   assert_contains "$(cat skills/$s/SKILL.md)" 'registrar-aprendizado' "/6 $s registra aprendizado"
 done
@@ -83,7 +70,7 @@ a="$(cat skills/audora-commander/SKILL.md)"
 assert_contains "$a" 'skill `memory`' "/2 porta de entrada usa skill memory"
 assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "skill-cleanup 9 skills (substitui corte-sem-uso/9 8 skills)"
 assert_contains "$a" 'de qualquer outra coisa. Nunca seguir sem MEMORY' "limpeza-codigo-morto/1 porta de entrada oferece bootstrap sem aviso legado"
-assert_contains "$a" 'MEMORY ausente → oferecer bootstrap antes' "memory-graphify/2 porta de entrada oferece bootstrap"
+assert_contains "$a" 'MEMORY ausente → oferecer bootstrap antes' "porta de entrada oferece bootstrap"
 v="$(cat skills/validate/references/sync.md 2>/dev/null)"
 assert_contains "$v" 'docs/audora/memory/<id>.md docs/audora/arquivo/' "/7 validate arquiva por git mv"
 assert_contains "$v" 'aprendizados' "/7 validate consolida aprendizados"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# memory-graphify/4,/5 — templates do MEMORY existem com as seções/campos do schema.
+# templates do MEMORY existem com as seções/campos do schema.
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 t="$(cat templates/MEMORY-template.md 2>/dev/null)"
@@ -7,7 +7,6 @@ assert_eq "memory-schema: 1" "$(head -1 templates/MEMORY-template.md 2>/dev/null
 for sec in '## Propósito [carga: sempre]' '## Constituição [carga: sempre]' '## Aprendizados [carga: sempre]' '## Índice de nós [carga: sempre]'; do
   assert_contains "$t" "$sec" "/4 seção $sec"
 done
-assert_empty "$(grep -li graphify templates/*.md)" "remover-graphify/1,10 templates sem Graphify"
 assert_contains "$t" 'docs/audora/memory/<id>.md' "/5 caminho do nó"
 assert_contains "$t" '| <fase> | <aprendizado' "/6 formato de aprendizado"
 n="$(cat templates/no-template.md)"

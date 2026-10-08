@@ -46,7 +46,6 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-25 | validate | `claude plugin update` só refaz o cache com bump de versão — sem bump: uninstall + `./install.sh`; hooks que rodam na sessão são os do cache, não os do repo.
 - 2026-08-25 | execute | Fixtures de hook em `mktemp -d` (path POSIX) e JSON com backslash escapado — path `C:\...` sem escape faz o hook sair 0 em silêncio (falso verde).
 - 2026-08-26 | execute | Heredoc grande (>~90 linhas, aspas mistas) no Bash tool do Claude Code falha no parse ("unexpected EOF") — gravar o script no scratchpad via Write e executar por caminho.
-- 2026-08-26 | execute | `graphify hook install` grava `_PINNED=''` quando o caminho do Python tem espaço (allowlist do Graphify; usuário "Italo Barros") e o post-commit falha em silêncio ("could not locate a Python") — pinar à mão em `.git/hooks/post-commit` e `post-checkout`, e sempre rodar o hook uma vez (`GIT_DIR=.git bash .git/hooks/post-commit`) para conferir. [invalidado-em: 2026-09-29] [substituido-por: remover-graphify — Graphify removido do plugin]
 - 2026-08-27 | plan | Claude Code 2.1.247 tem worktree nativo (`-w/--worktree`, ferramentas `EnterWorktree`/`ExitWorktree`, worktree sob `.claude/worktrees/`, `.worktreeinclude` para arquivos ignorados) — skill do framework orquestra o nativo, nunca reimplementa plumbing de git (a Constituição já restringe executável a `hooks/` e `tests/`). [invalidado-em: 2026-09-30] [substituido-por: corte-sem-uso — skill worktree removida]
 - 2026-08-27 | execute | Adicionar skill nova toca 8 pontos além de `skills/<nome>/SKILL.md`: `tests/test-no-grafo.sh` (contagem cravada), `tests/test-skills.sh` (loop), `tests/test-docs.sh` (versão), READMEs EN+PT (tabela e checklist), `PRD.md`, os 2 manifests e `hooks/session-start` — mais o delta de contagem no nó `plugin-v0.1.0`. [invalidado-em: 2026-09-27] [substituido-por: linha 2026-09-27 de skill nova — test-no-grafo.sh removido]
 - 2026-09-27 | execute | Adicionar skill nova toca 8 pontos além de `skills/<nome>/SKILL.md`: `tests/test-skills.sh` (loop e contagem cravada), `tests/test-docs.sh` (versão), READMEs EN+PT (tabela e checklist), `PRD.md`, os 2 manifests e `hooks/session-start`.
@@ -58,7 +57,6 @@ time pequeno em projetos web/mobile/api.
 - 2026-08-31 | e2e | Capturar `claude -p` com `| tail -N` corta a evidência e leva a veredito parcial — redirecionar para arquivo e ler inteiro.
 - 2026-08-31 | execute | Teste negativo que suja arquivo ainda NÃO commitado: `git checkout <arquivo>` restaura do ÍNDICE e apaga o trabalho em andamento. Commitar o green ANTES de provar que o guarda morde, ou copiar para o scratchpad e restaurar de lá.
 - 2026-08-31 | validate | Total de asserts da suíte precisa ser SOMADO da saída real (`grep PASS= | awk`) — `run.sh` só imprime por arquivo, e citar o total de cabeça inflou o número em 30 no commit e no PRD. Comparar bases com `git archive` também subconta 3: `test-dogfood.sh` depende do repo git.
-- 2026-08-31 | validate | O post-commit do Graphify dispara UMA reconstrução em background por commit; demanda com muitos commits empilha processos Python e a suíte parece TRAVAR (>5 min contra ~30s normais). Antes de debugar teste que "pendurou", rodar os arquivos isolados: se cada um passa, a causa é contenção, não o teste. [invalidado-em: 2026-09-29] [substituido-por: remover-graphify — Graphify removido do plugin]
 - 2026-09-01 | validate | `grep -c` sai **1** quando o count é 0, então encadear com `&&` quebra o comando exatamente quando a verificação de ausência PASSA — o resto não roda e você lê log velho achando que a suíte reprovou. Em bloco de evidência, separar com `;` ou nova linha, nunca `&&`.
 - 2026-09-05 | execute | O guarda anti-GRAFO pega SUBSTRING case-insensitive: "parágrafo" reprova a suíte. Prosa nova em superfície do plugin evita a sequência g-r-a-f-o (usar "resumo", "diagnóstico curto"). [invalidado-em: 2026-09-27] [substituido-por: limpeza-codigo-morto — guarda removido]
 - 2026-09-05 | execute | Arquivo de teste com muitos spawns de processo (fixtures git + scripts) passa de 120s no Windows e o Bash tool joga para background — rodar via run_in_background e ler o output-file, nunca encadear duas execuções no mesmo comando.
@@ -66,7 +64,6 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-04 | execute | `awk -v var="$ERE"` mastiga backslash (gawk trata `\.` como `.` e avisa no stderr) — regex dinâmica entra via `VAR="$ERE" awk 'BEGIN{ere=ENVIRON["VAR"]}'`, nunca por `-v`.
 - 2026-09-02 | execute | `git add -A` varre arquivo untracked de OUTRA sessão para dentro do commit (aconteceu com `docs/specs/2026-09-02-loop-engineering-roadmap.md`). Em repo compartilhado entre sessões, listar os caminhos no `git add` ou conferir `git status --short` antes — e encadear `git commit` depois de `tests/run.sh` sem ler o exit fez o commit sair VERMELHO.
 - 2026-09-27 | execute | O anti-fraude do gate reprova arquivo de teste apagado SEM válvula (`gate-asserts:` cobre só queda de asserts) — remoção de teste aprovada no escopo ainda exige autorização explícita do humano no commit.
-- 2026-09-27 | execute | Nesta máquina `claude` e `graphify` não estão no PATH do Bash tool — usar `~/.local/bin/claude.exe` (ou `PATH="$HOME/.local/bin:$PATH"` antes do `./install.sh`); consultar-codigo degrada para grep. [invalidado-em: 2026-09-29] [substituido-por: linha 2026-09-29 do claude.exe]
 - 2026-09-29 | plan | Nesta máquina `claude` não está no PATH do Bash tool — usar `~/.local/bin/claude.exe` (ou `PATH="$HOME/.local/bin:$PATH"` antes do `./install.sh`).
 - 2026-09-27 | validate | Remover seção inteira de doc pode levar junto a ÚNICA menção a comportamento vivo (os hooks só eram citados na tabela Renamed) — antes de apagar seção, `grep` os termos que os testes de doc exigem.
 - 2026-09-28 | e2e | Com marketplace local apontando para a pasta do repo, a "raiz do plugin" que o Skill tool imprime é o PRÓPRIO repo (sessão `claude -p` leu templates por `workspace/audora-commander/...`) — reinstalar de branch não mergeada instala a branch; conferir `git branch --show-current` antes do `./install.sh`.
@@ -75,7 +72,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-09-28 | e2e | e2e de HOOK com `claude -p`: fixture própria por cenário, `--permission-mode acceptEdits --output-format stream-json --verbose`, prompt abrindo com "Isto é um TESTE DE HOOK. Não siga nenhum framework…" e pedindo a mensagem de hook LITERAL sem consertar — o SessionStart não desvia o modelo, e a prova sai do `.jsonl` (`grep memory-validate`) e do disco intocado.
 - 2026-09-29 | execute | Fixture de repo git em teste herda o ignore GLOBAL da máquina (`~/.config/git/ignore` aqui ignora `**/.claude/settings.local.json`) — `git add -A` deixa o arquivo fora do índice sem aviso. Fixture fixa `git config core.excludesFile <inexistente>` local.
 
-- 2026-09-29 | validate | Script com efeito FORA do repo (`uv/pipx uninstall`) testado ou revisado por subagente precisa de `uv`/`pipx` FALSOS no PATH, e o prompt do revisor tem de dizer isso — a revisão adversarial rodou `graphify-limpeza --remover` com o `uv` real e desinstalou o `graphifyy` da máquina sem autorização.
+- 2026-09-29 | validate | Script com efeito FORA do repo (`uv/pipx uninstall`) testado ou revisado por subagente precisa de `uv`/`pipx` FALSOS no PATH, e o prompt do revisor tem de dizer isso — a revisão adversarial rodou um script de limpeza com o `uv` real e desinstalou um pacote da máquina sem autorização.
 - 2026-09-29 | execute | Reescrever arquivo filtrando com awk/grep do Git Bash perde o `\r` (CRLF vira LF) — filtro que precisa preservar CRLF e newline final usa `perl -ne`.
 - 2026-09-29 | execute | `JSON::PP` (perl, sem jq) reescreve JSON sem ordem de chaves e normaliza números (`1.50`→`1.5`, inteiro grande vira string) — preservar número exige marcador string antes do decode.
 - 2026-09-30 | execute | Suíte teve 1 falha intermitente sem causa demonstrada: `docs-permissoes/1 README EN cita acceptEdits` (mesmo `$en` passou nos termos antes e depois, sem erro no stderr); não reproduziu em 3 suítes, 30 `test-docs` e 700 pipes. SIGPIPE refutado (pipe de 64 KB > README). Se repetir: rodar de novo o arquivo e capturar `PIPESTATUS` do assert antes de corrigir.
@@ -109,7 +106,6 @@ time pequeno em projetos web/mobile/api.
 - otimizacao-tokens | delivered | Otimização de tokens → docs/audora/arquivo/2026-09-28-otimizacao-tokens.md
 - readme-skills | delivered | README por skill → docs/audora/arquivo/2026-09-28-readme-skills.md
 - plugin-v0.1.0 | delivered | Plugin v0.1.0 → docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md
-- memory-graphify | delivered | Memory + Graphify → docs/audora/arquivo/2026-09-27-memory-graphify.md
 - resumo-de-fase | delivered | Resumo de fase → docs/audora/arquivo/2026-08-31-resumo-de-fase.md
 - memory-fatiada | delivered | Memory fatiada → docs/audora/arquivo/2026-08-31-memory-fatiada.md
 - skill-worktree | delivered | Skill worktree → docs/audora/arquivo/2026-08-27-skill-worktree.md
@@ -117,7 +113,6 @@ time pequeno em projetos web/mobile/api.
 - grafo-v2 | delivered | GRAFO v2 → docs/audora/arquivo/2026-08-25-grafo-v2.md
 - validate-estado-no | delivered | Estado validado no nó → docs/audora/arquivo/2026-09-28-validate-estado-no.md
 - contexto-por-fase | delivered | Contexto zerado por fase → docs/audora/arquivo/2026-09-29-contexto-por-fase.md
-- remover-graphify | delivered | Remover Graphify → docs/audora/arquivo/2026-09-29-remover-graphify.md
 - corte-sem-uso | delivered | Corte do sem uso → docs/audora/arquivo/2026-09-30-corte-sem-uso.md
 - plano-mapa | delivered | Plano-mapa + localização → docs/audora/arquivo/2026-10-01-plano-mapa.md
 - prd-foto | delivered | PRD-foto → docs/audora/arquivo/2026-10-01-prd-foto.md
@@ -129,13 +124,14 @@ time pequeno em projetos web/mobile/api.
 - cleanup-link-preciso | delivered | Link preciso da cleanup → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
 - suite-paralela | delivered | Suíte em paralelo → docs/audora/arquivo/2026-10-05-suite-paralela.md
 - cleanup-commit-curto | delivered | Commit curto da cleanup → docs/audora/arquivo/2026-10-07-cleanup-commit-curto.md
+- faxina-restos | in-progress | Faxina do sem uso | Apagar do repo o que não é usado — estudo parado em docs/specs e toda menção à antiga ferramenta externa de índice de código | faxina, limpeza, historico, sem-uso | docs/specs/, tests/, PRD.md, CHANGELOG.md, docs/audora/arquivo/, MEMORY.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md
 - light-enxuto | delivered | LIGHT enxuto → docs/audora/arquivo/2026-09-01-light-enxuto.md
 - decisoes-vivas-poda | delivered | Poda das decisões vivas → docs/audora/arquivo/2026-09-01-decisoes-vivas-poda.md
 - decisoes-vivas-auditoria | discarded | Auditoria das decisões vivas → docs/audora/arquivo/2026-09-28-decisoes-vivas-auditoria.md (descartado pelo humano em 2026-09-28, antes do scope)
-- skill-memory | discarded | Skill MEMORY | Absorvido por memory-graphify em 2026-08-26 (memory = memória do produto + aprendizados) | memoria, aprendizado, skill | —
+- skill-memory | discarded | Skill MEMORY | Absorvido pela skill memory em 2026-08-26 (memory = memória do produto + aprendizados) | memoria, aprendizado, skill | —
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
 - marketplace-publico | planned | Marketplace público | Publicação em marketplace público | marketplace, publicacao | —

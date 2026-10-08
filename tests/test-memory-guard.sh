@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# memory-graphify/8 — tetos de linhas: MEMORY.md > 300 e nó > 100 → exit 2; -historico e sem schema → 0.
+# tetos de linhas: MEMORY.md > 300 e nó > 100 → exit 2; -historico e sem schema → 0.
 source "$(dirname "$0")/lib.sh"
 d="$SP/p"; mkdir -p "$d/docs/audora/memory"
 { echo 'memory-schema: 1'; yes 'l' | head -310; } > "$d/MEMORY.md"

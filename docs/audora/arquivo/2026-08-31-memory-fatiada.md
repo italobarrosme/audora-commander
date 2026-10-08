@@ -2,7 +2,7 @@
 id: memory-fatiada
 estado: delivered
 origem: humano
-depende-de: [memory-graphify]
+depende-de: []
 arquivos: [.claude-plugin/marketplace.json, .claude-plugin/plugin.json, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-memory-fatiada.md, docs/audora/planos/plano-memory-fatiada.md, skills/memory/SKILL.md, skills/memory/references/, tests/test-docs.sh, tests/test-no-grafo.sh, tests/test-skills.sh]
 keywords: [memory, tokens, references, overhead, performance]
 resumo: Skill memory vira roteador fino + references carregáveis por operação — medido: -40% por carga da skill, -29% do custo por demanda MEDIUM.
@@ -27,7 +27,7 @@ das 7 operações.
   registrar-aprendizado) O SISTEMA DEVE executá-la sem abrir nenhum arquivo de
   reference
 - **memory-fatiada/2** — QUANDO uma fase invocar a skill memory para uma
-  operação movida (bootstrap, registrar-no, compactar, consultar-codigo) O
+  operação movida (bootstrap, registrar-no, compactar) O
   SISTEMA DEVE ler o arquivo de reference daquela operação, e nenhum outro
   além dos que o próprio protocolo da operação encadear explicitamente
 - **memory-fatiada/3** — QUANDO a skill memory for carregada O SISTEMA DEVE

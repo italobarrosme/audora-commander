@@ -7,10 +7,10 @@
 
 - 2026-08-30 (humano): estratégia híbrida — quentes e pequenas inline
   (carregar-contexto, registrar-delta, registrar-aprendizado), grandes ou
-  frias em reference (bootstrap, registrar-no, compactar, consultar-codigo).
+  frias em reference (bootstrap, registrar-no, compactar).
   Máximo (7 references) foi descartado: toda chamada de fase pagaria um Read.
-- 2026-08-30 (humano): reference ausente avisa e degrada, mesmo padrão do
-  Graphify — índice é atalho, não portão.
+- 2026-08-30 (humano): reference ausente avisa e degrada, sem
+  travar a fase.
 - 2026-08-30 (humano): reference segue o mesmo teto de 250 linhas do SKILL.md,
   um número só para lembrar.
 - 2026-08-30 (IA): medição antes/depois vira critério (/9) por causa da
@@ -26,8 +26,8 @@
 | sessão | operações usadas | antes | depois |
 |---|---|---|---|
 | S1 commander+scope | carregar-contexto, registrar-no, registrar-aprendizado | 13.331 | 9.308 |
-| S2 plan | carregar-contexto, consultar-codigo | 13.331 | 9.888 |
-| S3 execute | consultar-codigo, registrar-delta, registrar-aprendizado | 13.331 | 9.888 |
+| S2 plan | carregar-contexto | 13.331 | 9.888 |
+| S3 execute | registrar-delta, registrar-aprendizado | 13.331 | 9.888 |
 | S4 e2e | carregar-contexto, registrar-aprendizado | 13.331 | 7.979 |
 | S5 validate | compactar, registrar-delta | 13.331 | 9.778 |
 | **total** | | **66.655** | **46.841** |

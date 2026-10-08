@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# memory-graphify/8 — memory-validate acusa cada classe de inconsistência (exit 2) e cala fora do MEMORY (exit 0).
+# memory-validate acusa cada classe de inconsistência (exit 2) e cala fora do MEMORY (exit 0).
 source "$(dirname "$0")/lib.sh"
 mk() { # mk <nome> <linha1> <índice...>
   d="$SP/$1"; mkdir -p "$d/docs/audora/memory"

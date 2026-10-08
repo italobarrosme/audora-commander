@@ -80,7 +80,7 @@ dispara é a execute ou o humano — motor é D3).
   base (exige parâmetro, reprova volta inocente por pecado antigo) e os dois
   (mais lógica sem necessidade no v1).
 - 2026-09-04 (humano, scope): oferta no bootstrap E no início de demanda em
-  projeto sem `gate:`, uma vez; recusado fica recusado (padrão Graphify).
+  projeto sem `gate:`, uma vez; recusado fica recusado.
   Descartados: só bootstrap e só a pedido (adoção lenta).
 - 2026-09-04 (IA, scope): formato exato do marcador de justificativa de
   asserts é schema — vive no `gate-template.md` (Constituição: schema só em

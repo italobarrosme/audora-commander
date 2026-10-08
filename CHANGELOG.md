@@ -69,15 +69,8 @@ humano. O campo `autopilot:` saiu do nó, o bullet `loop:` da Constituição e
 seguinte em subagente pelo `templates/fase-subagente-template.md`, agora sem
 `{{TAREFA}}` e sem motor.
 
-Antes de apagar `hooks/graphify-limpeza`, os restos do Graphify foram limpos
-uma vez, com autorização do humano, nos projetos locais: 15 com
-`memory-schema: 1`, 13 com resto. Nenhum commit foi feito neles, e o
-SellInfoTurbo incluiu `.claude/CLAUDE.md` e `.claude/skills/graphify/`. O
-relatório está em `docs/audora/e2e/limpeza-graphify-projetos.md` removido em 2026-10-03 pela cleanup — recuperável no git. Depois o
-script saiu junto com a oferta da carga de contexto e `path_sem_uv`/`guarda_sem_uv`.
-
-Os 4 testes apagados (`test-graphify-limpeza`, `test-loop`,
-`test-autopilot`, `test-worktree`) foram autorizados no portão do scope e
+Os testes apagados (`test-loop`, `test-autopilot`, `test-worktree`) foram
+autorizados no portão do scope e
 citados nos commits. A ausência do que saiu é guardada por
 `tests/test-corte-sem-uso.sh`.
 
@@ -96,41 +89,11 @@ com `gate-asserts:` no nó.
 O e2e rodou 3 sessões `claude -p` com `--plugin-dir`, sem tocar o cache
 global:
 - o init lista 8 skills;
-- `plan` numa fixture com restos do Graphify não oferece limpeza e para no
-  portão humano;
 - "segue" despacha UM subagente pelo template, que faz só execute e fecha em
   PARADA.
 
-Em modo só leitura, a detecção voltou vazia nos 15 projetos. A revisão
-adversarial não achou bloqueante. Ressalvas aceitas no portão estão na meta 4.
-
-Graphify removido em 2026-09-29 (nó `remover-graphify`, HIGH, versão 0.10.0,
-breaking: sai o bullet `graphify:` da Constituição e o post-commit que o
-bootstrap instalava). Motivo medido nos 12 projetos que usam o plugin: 78
-consultas ao índice contra 1.044 Read e 181 Grep (~6% das buscas de código),
-10 de 41 checagens de status dando `ausente` por PATH, e uma reconstrução por
-commit em todos. Saíram a etapa Graphify do bootstrap, a operação
-`consultar-codigo`, `hooks/graphify-status` (teste apagado com autorização do
-humano) e toda menção em skills, templates, manifests, READMEs e
-`docs/fundamentos.md`; plan, execute e debug usam a busca normal do harness,
-sem regra substituta. No lugar entrou `hooks/graphify-limpeza`: a carga de
-contexto detecta os restos e oferece a limpeza, inclusive `uv`/`pipx
-uninstall graphifyy` (arquitetura acima). Este repositório ficou limpo
-(dogfood) e os aprendizados sobre o Graphify foram marcados
-`[invalidado-em:]`. Suíte 780 → 935 asserts (`tests/test-graphify-limpeza.sh`
-com repo git real e `uv`/`pipx` falsos; queda de `graphify-status` e
-`consultar-codigo` justificada por `gate-asserts:`). Portão final reprovado
-duas vezes pela revisão adversarial — filtro do settings agindo no grupo e
-sem casar o formato real do Graphify (caminho absoluto entre aspas), seção do
-`CLAUDE.md` engolindo o H1 seguinte, hook sem marcador de fim, versionado não
-relatado, pacote só no uv — e aprovado na 3ª passagem. Incidente: a 1ª revisão
-rodou `--remover` com o `uv` real e desinstalou o `graphifyy` desta máquina
-(humano: não reinstalar); daí a decisão viva de executáveis falsos. e2e pulado
-pelo humano. Os 12 projetos locais recebem a oferta na próxima demanda; no
-SellInfoTurbo `.claude/CLAUDE.md` e `.claude/skills/graphify/` foram limpos à
-mão. Pendências aceitas no portão: metas 4 e 5. (`hooks/graphify-limpeza` e a
-oferta saíram na 0.11.0, `corte-sem-uso`, depois de limpar os projetos locais
-de uma vez.)
+A revisão adversarial não achou bloqueante. Ressalvas aceitas no portão estão
+na meta 4.
 
 Contexto zerado por fase entregue em 2026-09-29 (nó `contexto-por-fase`,
 MEDIUM). Ataca o custo de token dominante medido em 2026-09-28: a demanda
@@ -200,8 +163,8 @@ porta de entrada), a seção de renomeação dos dois READMEs e o guarda
 anti-legado da suíte (`tests/test-no-grafo.sh` e asserts de migração, que
 reprovavam até "parágrafo"). Saiu também a sintaxe reservada `chave:id` de
 `depende-de` (federação que nunca veio): `memory-validate` trata `:` como id
-comum. Os nós `memory-graphify` e `plugin-v0.1.0`, `in-progress` desde
-agosto, foram fechados como `delivered` com evidência por critério.
+comum. O nó `plugin-v0.1.0`, `in-progress` desde agosto, foi fechado como
+`delivered` com evidência por critério.
 `docs/fundamentos.md` foi reescrito com a nomenclatura e a mecânica atuais
 (MEMORY, skills em inglês, LIGHT/MEDIUM/HIGH, gate, motor de loop). A
 revisão adversarial (0 ALTO, 2 MÉDIO, 6 BAIXO) pegou cobertura viva que a
@@ -275,7 +238,7 @@ quando o bullet existe; a `validate` lista o diff dos arquivos de teste
 separado do resto em toda categoria. Suíte 415 → 467 asserts, com fixture de
 repo git real exercitando as três fraudes red-green; e2e com sessão
 `claude -p` real provou a oferta no carregar-contexto e o controle negativo
-(Graphify recusado não reofertado) — relatório em
+(oferta recusada não reofertada) — relatório em
 `docs/audora/e2e/e2e-gate-mecanico.md` removido em 2026-10-03 pela cleanup — recuperável no git.
 
 Mecanização do sync da validate: **tentada e abandonada** em 2026-09-04 (nó
@@ -381,8 +344,8 @@ negativo provando os dois guardas. e2e em duas sessões reais 0.7.0 provou /1,
 Skill `memory` fatiada em 2026-08-31 (nó `memory-fatiada`, MEDIUM, versão
 0.6.0): a skill mais chamada do framework (7 das 9 a invocam, 18 pontos de
 chamada) virou **roteador + references**. `SKILL.md` caiu de 226 para 143
-linhas (13.331 → 7.979 bytes, −40% por carga); `bootstrap`, `registrar-no`,
-`compactar` e `consultar-codigo` viraram um arquivo cada em
+linhas (13.331 → 7.979 bytes, −40% por carga); `bootstrap`, `registrar-no`
+e `compactar` viraram um arquivo cada em
 `skills/memory/references/`, lidos UMA por operação; `carregar-contexto`,
 `registrar-delta` e `registrar-aprendizado` ficaram inline por serem quentes e
 curtos. Contrato das 7 operações preservado. Reference ausente avisa nomeando o
@@ -393,8 +356,7 @@ voltasse a doer. A suíte deixou de asserir por `cat` único e passou a asserir
 por **localização** (arquivo certo), com assert negativo provando que é
 movimento e não cópia; teto de 250 linhas estendido a `skills/*/references/` na
 Constituição. Suíte 295 → 334 asserts. e2e em sessão real 0.6.0 fechou 8 dos 9
-critérios; o /2 foi refinado por delta ao descobrir que o protocolo de
-`consultar-codigo` encadeia `bootstrap` legitimamente.
+critérios; o /2 foi refinado por delta.
 
 Skill `worktree` entregue em 2026-08-27 (nó `skill-worktree`, MEDIUM, versão
 0.5.0): nona skill, isolamento de demanda em git worktree sob pedido

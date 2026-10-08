@@ -25,8 +25,8 @@ critérios `limpeza-codigo-morto/1..9`.
 
 ## fora-de-escopo
 
-Ver spec: arquivos históricos, tokens e README (nós próprios), instalar
-Graphify, comunicar breaking, versionar roadmap.
+Ver spec: arquivos históricos, tokens e README (nós próprios), comunicar
+breaking, versionar roadmap.
 
 ## decisoes
 

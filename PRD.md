@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-05
+> Última atualização: 2026-10-08
 
 ## O que é e para que serve
 
@@ -24,9 +24,8 @@ Code.
   `run.sh` roda os arquivos em paralelo (`SUITE_JOBS`, default = núcleos;
   `1` = série) com timeout por arquivo (`SUITE_TIMEOUT`, default 300 s; `0`
   desliga) e imprime em blocos na ordem do glob, com o tempo no resumo.
-- Sem dependência externa de índice de código: o Graphify saiu na 0.10.0;
-  a localização de código é a busca do símbolo pelo harness, com leitura
-  por trecho.
+- Localização de código pela busca do símbolo do harness, com leitura por
+  trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
   Versão 0.16.0.
 
@@ -124,9 +123,6 @@ Code.
   que confere o histórico antes de marcar alvo ausente. O sync da
   validate só sugere em 1 linha, com a contagem.
 
-Graphify: o plugin não oferece, instala, consulta, limpa nem cita o índice de
-código.
-
 Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
 a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
 `<fase> de <id>`; a fase nova se reancora só pelos artefatos em disco.
@@ -167,12 +163,8 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
    - As guardas de ausência de `tests/test-corte-sem-uso.sh` deixam passar
      variações de texto: "loop engine", "nove skills", `|  \`worktree\`  |`
      com espaço extra e o bullet `**loop:**`.
-   - A guarda do Graphify no próprio repo não cobre `.claude/skills/graphify`,
-     `CLAUDE.md` nem settings.
    - `hooks/gate` compara contra HEAD. Por isso, depois do commit, não prova
      o `gate-asserts:` nem teste apagado.
-
-   A antiga meta das bordas da limpeza do Graphify caiu com o script.
 5. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
    - /4 (subagente de exploração conferido) e /8 (3ª leitura fora do mapa)
      só têm guarda de texto. Nenhuma sessão real chegou a esses gatilhos.
@@ -181,6 +173,4 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
    - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
      novo numa demanda maior.
    - A seção Aprendizados do `MEMORY.md` está com 51 linhas, acima do
-     gatilho de ~40. Compactar exige mexer na guarda de
-     `tests/test-dogfood.sh:18`, que prende os aprendizados invalidados do
-     Graphify no índice.
+     gatilho de ~40.
