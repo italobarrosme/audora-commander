@@ -8,7 +8,7 @@ for sec in '## Propósito [carga: sempre]' '## Constituição [carga: sempre]' '
   assert_contains "$t" "$sec" "/4 seção $sec"
 done
 assert_contains "$t" 'docs/audora/memory/<id>.md' "/5 caminho do nó"
-assert_contains "$t" '| <fase> | <aprendizado' "/6 formato de aprendizado"
+assert_contains "$(cat templates/aprendizados-template.md 2>/dev/null)" '| <fase> | <aprendizado' "/6 formato de aprendizado"
 n="$(cat templates/no-template.md)"
 for campo in '^id:' '^estado:' '^origem:' '^depende-de:' '^arquivos:' '^keywords:' '^resumo:' '^atualizado-em:'; do
   printf '%s\n' "$n" | grep -qE "$campo" && ok || ko "/5 frontmatter $campo"

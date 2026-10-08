@@ -109,9 +109,10 @@ reler. Depois de `/clear` ou compactação, recarregar.
    que vale para TODA demanda futura. O que NÃO é: decisão de uma demanda
    (vai em `## decisoes` do nó) ou requisito (vira critério do nó).
 2. Registrar NA HORA em que foi descoberto, por qualquer fase — não esperar
-   o sync final. 1 linha na seção `## Aprendizados` do `MEMORY.md`:
-   `- AAAA-MM-DD | <fase> | <aprendizado em 1 frase>` (grep-ável).
-3. Antes de escrever: `grep -i '<termo>' MEMORY.md`. Já existe → não
+   o sync final. 1 linha no fim de `docs/audora/aprendizados.md` (sem o
+   arquivo, crie-o por `templates/aprendizados-template.md`), nunca no
+   `MEMORY.md`: `- AAAA-MM-DD | <fase> | <aprendizado em 1 frase>` (grep-ável).
+3. Antes de escrever: `grep -si '<termo>' docs/audora/aprendizados.md MEMORY.md`. Já existe → não
    duplicar. Contradiz um antigo → anexar ao antigo
    `[invalidado-em: data] [substituido-por: <linha nova>]`, nunca apagar.
 

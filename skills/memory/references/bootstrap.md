@@ -6,7 +6,9 @@
 
 1. Projeto novo: copiar `MEMORY-template.md` → `MEMORY.md`, preencher
    Propósito e Constituição perguntando o que faltar (`como-rodar` incluso);
-   Aprendizados vazio; zero nós; criar `docs/audora/memory/` vazia.
+   seção Aprendizados só com a linha de ponteiro do template, sem criar
+   `docs/audora/aprendizados.md` (nasce no 1º aprendizado); zero nós; criar
+   `docs/audora/memory/` vazia.
 2. Projeto existente: engenharia reversa MÍNIMA — ler README/PRD/estrutura
    (não a codebase inteira); Propósito, Constituição verificável, e nós das
    funcionalidades visíveis com `origem: inferido` (linha no índice basta —

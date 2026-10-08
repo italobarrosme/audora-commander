@@ -126,7 +126,7 @@ assert_contains "$tc" 'TETO_FULL=63000' "leitura-por-secao/11 teto FULL vigente"
 co="$(bash tests/test-carga.sh 2>&1)"; cc_code=$?
 assert_eq 0 "$cc_code" "leitura-por-secao/11 test-carga dentro dos tetos"
 base="$(printf '%s' "$co" | sed -nE 's/.*base=([0-9]+).*/\1/p')"
-[ -n "$base" ] && [ "$base" -le 53442 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 53442 (guarda de parada-revisao/9)"
+[ -n "$base" ] && [ "$base" -le 53557 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 53557 (guarda de parada-revisao/9)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   mj="$(tr -d '\r' < "$j")"
   assert_contains "$mj" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"

@@ -27,13 +27,7 @@ cumpre, ou documenta exceção no nó.
 
 ## Aprendizados [carga: sempre]
 
-O que o projeto ensinou e vale para toda demanda futura: armadilhas,
-preferências do humano, como-rodar descoberto, padrões que não estão no
-código. Registrado NA HORA por qualquer fase (skill memory,
-registrar-aprendizado). 1 linha, grep-ável:
-`- AAAA-MM-DD | <fase> | <aprendizado em 1 frase>`
-
-- 2026-08-24 | e2e | Porta 3000 fica ocupada por servidor órfão de sessão anterior — teardown sempre.
+Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep — skill memory, registrar-aprendizado).
 
 ## Índice de nós [carga: sempre]
 

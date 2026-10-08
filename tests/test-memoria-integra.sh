@@ -176,4 +176,22 @@ assert_eq "$(git -C "$p" show HEAD~1:docs/audora/aprendizados.md)" "$(cat "$p/do
 assert_not_contains "$(git -C "$p" show --name-only --format= HEAD)" 'aprendizados.md' "memoria-integra/19 commit da cleanup sem aprendizados.md"
 assert_contains "$(achata skills/cleanup/SKILL.md)" 'fora da seção Aprendizados e de `docs/audora/aprendizados.md`' "memoria-integra/19 skill cita a exceção"
 
+# /14 — registrar-aprendizado grava em docs/audora/aprendizados.md, nunca no MEMORY.md
+P='Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep — skill memory, registrar-aprendizado).'
+op5="$(tr -d '\r' < skills/memory/SKILL.md | awk '/^### 5\./{on=1} on && /^## /{on=0} on' | tr '\n' ' ' | tr -s ' ')"
+assert_contains "$op5" '1 linha no fim de `docs/audora/aprendizados.md` (sem o arquivo, crie-o por `templates/aprendizados-template.md`), nunca no `MEMORY.md`' "memoria-integra/14 registrar-aprendizado grava em aprendizados.md"
+assert_not_contains "$op5" '1 linha na seção `## Aprendizados` do `MEMORY.md`' "memoria-integra/14 registrar-aprendizado não grava no MEMORY"
+assert_contains "$op5" "grep -si '<termo>' docs/audora/aprendizados.md MEMORY.md" "memoria-integra/14 dedupe busca nos dois arquivos"
+assert_file templates/aprendizados-template.md "memoria-integra/14 template do arquivo de aprendizados"
+assert_eq '# Aprendizados' "$(head -1 templates/aprendizados-template.md 2>/dev/null | tr -d '\r')" "memoria-integra/14 template linha 1"
+assert_contains "$(cat templates/aprendizados-template.md 2>/dev/null)" '`- AAAA-MM-DD | <fase> | <aprendizado em 1 frase>`' "memoria-integra/14 template traz o formato"
+assert_eq 0 "$(grep -cE '^- [0-9]{4}-[0-9]{2}-[0-9]{2} \| ' templates/aprendizados-template.md 2>/dev/null)" "memoria-integra/14 template sem aprendizado de exemplo"
+# /17 — bootstrap: seção Aprendizados só com o ponteiro, sem criar aprendizados.md
+assert_eq "$P" "$(tr -d '\r' < templates/MEMORY-template.md | awk '/^## Aprendizados/{on=1; next} on && /^## /{on=0} on && NF')" "memoria-integra/17 seção Aprendizados do template = só o ponteiro"
+assert_contains "$(achata skills/memory/references/bootstrap.md)" 'seção Aprendizados só com a linha de ponteiro do template, sem criar `docs/audora/aprendizados.md`' "memoria-integra/17 bootstrap não cria aprendizados.md"
+b="$SP/boot"; mkdir -p "$b"; cp templates/MEMORY-template.md "$b/MEMORY.md"
+run_hook memory-validate "$b/MEMORY.md"
+assert_eq 0 "$code" "memoria-integra/17 MEMORY do bootstrap válido"
+assert_no_file "$b/docs/audora/aprendizados.md" "memoria-integra/17 bootstrap sem aprendizados.md"
+
 report
