@@ -538,8 +538,8 @@ assert_contains "$(cat "$p/MEMORY.md")" '- p | planned |' "skill-cleanup/14 linh
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/14 (c) estado igual"
 # (d)(e)(f) pré-checagem: item proibido ou sumido depois de um item válido → nada aplicado
 p="$SP/t9d"; mkt2 "$p"
-for caso in 'src/app.ts|fora de docs/audora/' 'docs/audora/arquivo/2026-01-01-d.md|arquivo/ e decisões vivas nunca são removidos' \
-            'docs/audora/decisoes-vivas.md|arquivo/ e decisões vivas nunca são removidos'; do
+for caso in 'src/app.ts|fora de docs/audora/' 'docs/audora/arquivo/2026-01-01-d.md|arquivo lido pelo framework nunca é removido' \
+            'docs/audora/decisoes-vivas.md|arquivo lido pelo framework nunca é removido'; do
   alvo="${caso%%|*}"; mot="${caso#*|}"
   lote_de "$SP/lote9d.txt" '## depuração velha' '- docs/audora/depuracao/cacada-2026-01-01.md | sem nó vivo ligado' \
     '## sem referência' "- $alvo | x"

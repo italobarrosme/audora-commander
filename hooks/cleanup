@@ -166,8 +166,8 @@ sub ligacao {
   return ();
 }
 
-# Fora de candidato: nós (vivos e arquivados) e decisões vivas nunca são removidos.
-sub protegido { $_[0] =~ m{^docs/audora/(memory|arquivo)/} || $_[0] eq 'docs/audora/decisoes-vivas.md' }
+# Fora de candidato: arquivo que o framework lê — nós (vivos e arquivados), decisões vivas e aprendizados.
+sub protegido { $_[0] =~ m{^docs/audora/(memory|arquivo)/} || $_[0] =~ m{^docs/audora/(decisoes-vivas|aprendizados)\.md$} }
 
 # Critérios <id>/<n> citados em $f e ausentes do nó arquivado (+ irmão -historico),
 # sem repetição, em ordem numérica. Nó arquivado = caminho após "→" no índice;
@@ -503,7 +503,7 @@ sub pre_checa {
     my $link = $s eq 'link quebrado';
     my $f = $link ? ($a =~ s/:\d+$//r) : $a;
     return 'fora de docs/audora/' unless $f =~ m{^docs/audora/} || ($link && $f eq 'MEMORY.md');
-    return 'arquivo/ e decisões vivas nunca são removidos' if !$link && protegido($f);
+    return 'arquivo lido pelo framework nunca é removido' if !$link && protegido($f);
     return 'alvo não existe mais' unless -e $f;
     if ($link) {   # link quebrado só se o alvo existiu (lote montado à mão pode trazer nunca versionado)
       my ($ln) = $a =~ /:(\d+)$/;

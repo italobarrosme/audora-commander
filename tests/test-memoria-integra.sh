@@ -122,4 +122,36 @@ runc "$p" varrer
 assert_line "$(secao "$out" 'mantido')" '- docs/audora/specs/d-escopo.md | mantido: cita d/2 sem cópia no nó arquivado' "memoria-integra/4 sem seta: acha o nó em arquivo/ pelo id"
 assert_contains "$(achata skills/cleanup/SKILL.md)" 'spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado' "memoria-integra/4 skill explica o mantido por critério"
 
+# /12 — arquivo que o framework lê nunca entra no lote; aplicar recusa lote à mão que o traga
+lote_de() { local a="$1"; shift; printf '%s\n' 'cleanup: relatório — nada foi alterado' "$@" > "$a"; }
+mk12() {
+  local p="$1"; mkproj "$p"
+  printf -- '- v | in-progress | V | r | k | —\n' >> "$p/MEMORY.md"
+  printf -- '---\nid: v\nestado: in-progress\norigem: humano\ndepende-de: []\narquivos: []\nkeywords: []\nresumo: r\natualizado-em: 2026-01-01\n---\n# v\n' > "$p/docs/audora/memory/v.md"
+  mkdir -p "$p/docs/audora/depuracao"; printf '# velha\n' > "$p/docs/audora/depuracao/velha.md"
+  printf '# Aprendizados\n\n- 2026-01-01 | execute | A1 x\n' > "$p/docs/audora/aprendizados.md"
+  git -C "$p" add -A; git -C "$p" commit -qm c12
+}
+p="$SP/c12"; mk12 "$p"
+runc "$p" varrer
+assert_not_contains "$out" 'aprendizados.md' "memoria-integra/12 varrer não lista aprendizados.md"
+for caso in 'sem referência|docs/audora/aprendizados.md|arquivo lido pelo framework nunca é removido' \
+            'spec de nó entregue|docs/audora/memory/v.md|arquivo lido pelo framework nunca é removido' \
+            'plano arquivado|MEMORY.md|fora de docs/audora/'; do
+  sec="${caso%%|*}"; r="${caso#*|}"; alvo="${r%%|*}"; mot="${r#*|}"
+  p="$SP/c12-$sec"; mk12 "$p"
+  lote_de "$SP/lote12.txt" '## depuração velha' '- docs/audora/depuracao/velha.md | sem nó vivo ligado' "## $sec" "- $alvo | x"
+  antes="$(snap "$p")"
+  runc "$p" aplicar "$SP/lote12.txt"
+  assert_eq 1 "$code" "memoria-integra/12 aplicar recusa $alvo → exit 1"
+  assert_contains "$out" "cleanup: falhou em: - $alvo | x — $mot" "memoria-integra/12 aplicar recusa $alvo → $mot"
+  assert_eq "$antes" "$(snap "$p")" "memoria-integra/12 $alvo → nada aplicado"
+done
+
+# /13 — princípio declarado na skill, com red flag
+cs="$(achata skills/cleanup/SKILL.md)"
+assert_contains "$cs" 'só sai o que não é mais usado: nunca arquivo que o framework lê nem conteúdo que afeta aprendizado ou critério sem outra cópia viva' "memoria-integra/13 princípio na skill"
+assert_contains "$(grep -E '^\| "' skills/cleanup/SKILL.md)" 'sem outra cópia viva' "memoria-integra/13 red flag do princípio"
+assert_contains "$cs" 'planned órfão aprovado segue apagando o próprio nó' "memoria-integra/13 órfão aprovado segue apagando o nó"
+
 report

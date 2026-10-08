@@ -9,6 +9,9 @@ description: 'Use quando o humano pedir limpeza ou faxina do processo num projet
 LEI DE FERRO: NADA SAI SEM APROVAÇÃO EXPLÍCITA DO LOTE — E O LOTE SAI NUM COMMIT SÓ
 ```
 
+**Princípio**: só sai o que não é mais usado: nunca arquivo que o framework
+lê nem conteúdo que afeta aprendizado ou critério sem outra cópia viva.
+
 **Anuncie ao começar:** "Usando cleanup para varrer as sobras do processo."
 
 Skill-ferramenta, invocada pelo humano em qualquer projeto com `MEMORY.md`.
@@ -29,8 +32,11 @@ carregar). O julgamento semântico fica aqui. Rode tudo na raiz do projeto.
 | sem referência | arquivo de `docs/audora/` que nenhum documento vivo cita (índice, nós vivos, decisões vivas, skills, PRD, READMEs) |
 | link quebrado | link em `MEMORY.md` (fora da seção Aprendizados) ou `docs/audora/` para arquivo que existiu no histórico e não existe mais (fora de frontmatter e de bloco de código) |
 
-Nunca entram: nós (`docs/audora/memory/`, `docs/audora/arquivo/`), decisões
-vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
+Nunca entram — o framework os lê: `MEMORY.md`, nós (`docs/audora/memory/`,
+`docs/audora/arquivo/`), `docs/audora/decisoes-vivas.md` e
+`docs/audora/aprendizados.md`; nem arquivo fora de `docs/audora/`. O
+`aplicar` recusa lote à mão que traga algum deles, sem alterar nada; planned
+órfão aprovado segue apagando o próprio nó. Fora do lote, com aviso:
 - `## mantido` — planned órfão com dependente vivo, e spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado;
 - `## não tocado` — fora do git ou com mudança não commitada;
 - `## nunca existiu` — link para caminho que nunca foi versionado (erro de digitação, exemplo ou fixture): aviso fora do lote, que o humano corrige à mão se quiser; o `aplicar` ignora a seção.
@@ -85,6 +91,7 @@ indisponível: avise o humano, não faça a limpeza à mão.
 
 | Racionalização | Realidade |
 |---|---|
+| "Ninguém mais abre isso, pode sair" | Só sai o que não é mais usado. Arquivo que o framework lê, ou critério/aprendizado sem outra cópia viva, fica. |
 | "O lote é óbvio, aplico direto" | Sem aprovação explícita do lote não roda `aplicar`. Nunca. |
 | "Apago à mão, é mais rápido" | À mão não troca link, não valida o MEMORY, não desfaz na falha. Script. |
 | "Esse planned parece velho, marco órfão" | Velho não é órfão. Só absorvido por delivered ou alvo ausente conferido no histórico. |
