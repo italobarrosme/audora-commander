@@ -57,6 +57,10 @@ sem perder linha de assert (anti-fraude do gate).
 
 **Conflitos MEMORY vs código encontrados:** 1 — /18 pedia provar as linhas de aprendizado `[invalidado-em:` de uma ferramenta já removida em `docs/audora/aprendizados.md`, mas o commit 75add24 (faxina-restos, delivered) já as apagou e `faxina-restos/2` exige a busca pelo nome dela vazia. Humano decidiu (2026-10-08): tirar tudo sobre isso da memória; /18 ficou "MEMORY sem aprendizado, todos em `docs/audora/aprendizados.md`, e a suíte DEVE provar isso" (decisão + delta MODIFICADO no nó).
 
+## Decisões tomadas pela IA
+
+- T4 (execute): o comando de contagem do sync usa `grep -cE '(^|[^[:alnum:]_-])<id>/[0-9]+'` em vez de `'<id>/[0-9]+'` — sem borda à esquerda, `z/[0-9]+` casa `zz/1` e a asserção "nó só com `zz/1` → 0" do próprio plano falharia.
+
 ## Notas de sessão
 
 - **Antes da T1**: os artefatos do scope e do plano ainda não estão commitados

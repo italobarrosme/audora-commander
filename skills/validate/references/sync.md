@@ -11,7 +11,13 @@ senão `memory-validate` bloqueia a próxima escrita.
    aprovadas no portão, só as que passaram no filtro de entrada
    (`decisoes-vivas.md` desta pasta); e consolidar os aprendizados na seção
    Aprendizados do `MEMORY.md` (skill memory, compactar — dedupe por grep).
-2. **Estado e movimento**: nó → `delivered` (nó primeiro, índice depois) e
+2. **Antes do `git mv`**: conte os critérios do nó com
+   `awk '/^## criterios-aceite/{f=1;next} /^## /{f=0} f' docs/audora/memory/<id>.md | grep -cE '(^|[^[:alnum:]_-])<id>/[0-9]+'`.
+   Zero e a spec `docs/audora/specs/<id>-escopo.md` tem critério `<id>/<n>`
+   → copie literalmente cada um (a linha e suas continuações) para
+   `## criterios-aceite` do nó. Segue zero → PARE sem arquivar e avise o
+   humano: "Nó <id> sem critério numerado — sync parado, nada arquivado."
+   **Estado e movimento**: nó → `delivered` (nó primeiro, índice depois) e
    `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
    Nó com `<id>-historico.md`: mover os DOIS, mesmo prefixo de data, e
    corrigir o ponteiro relativo no corpo. Plano →

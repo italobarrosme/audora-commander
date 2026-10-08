@@ -43,4 +43,21 @@ assert_contains "$sc" 'só com contexto (pesquisa, alternativas, diagramas) — 
 assert_not_contains "$sc" 'nó aponta para ela' "memoria-integra/1 nó não aponta para a spec"
 assert_not_contains "$sc" 'ou a spec dedicada (HIGH)' "memoria-integra/1 fechamento sem spec como artefato de critério"
 
+# /2 e /3 — sync copia critérios da spec antes do git mv; sem critério, para
+sy="$(achata skills/validate/references/sync.md)"
+assert_contains "$sy" 'Antes do `git mv`' "memoria-integra/2 sync: Antes do git mv"
+assert_contains "$sy" 'copie literalmente cada um (a linha e suas continuações) para `## criterios-aceite` do nó' "memoria-integra/2 sync copia literal da spec"
+assert_contains "$sy" 'Nó <id> sem critério numerado — sync parado, nada arquivado.' "memoria-integra/3 sync para e nomeia o nó"
+assert_contains "$sy" 'nó primeiro, índice depois' "memoria-integra/2 sync mantém a ordem da transição"
+conta="$(tr -d '\r' < skills/validate/references/sync.md | perl -ne 'print "$1\n" if /`(awk \x27\/\^## criterios-aceite\/[^`]*)`/' | head -1)"
+assert_contains "$conta" "docs/audora/memory/<id>.md | grep -cE '" "memoria-integra/2 comando de contagem no sync"
+conta="${conta//<id>/z}"
+fz="$SP/f23"; mkdir -p "$fz/docs/audora/memory"
+printf -- '# z\n\n## criterios-aceite\n\n- **z/1** — QUANDO a O SISTEMA DEVE b\n- **z/2** — QUANDO c O SISTEMA DEVE d\n\n## delta\n\n- z/3 citado\n' > "$fz/docs/audora/memory/z.md"
+assert_eq 2 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/2 conta 2 critérios do nó"
+printf -- '# z\n\n## criterios-aceite\n\n## delta\n\n- ADICIONADO z/3\n' > "$fz/docs/audora/memory/z.md"
+assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/3 critério só no delta não conta"
+printf -- '# z\n\n## criterios-aceite\n\n- **zz/1** — QUANDO a O SISTEMA DEVE b\n' > "$fz/docs/audora/memory/z.md"
+assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/3 critério de outro id não conta"
+
 report
