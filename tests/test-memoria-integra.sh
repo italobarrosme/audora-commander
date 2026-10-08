@@ -36,4 +36,11 @@ assert_contains "$(achata skills/memory/SKILL.md)" 'Arquivo do nó primeiro, lin
 assert_contains "$(achata templates/MEMORY-template.md)" 'Arquivo do nó primeiro, linha do índice logo depois (criação e transição)' "memoria-integra/7 regra 1 do MEMORY-template"
 assert_contains "$(achata templates/no-template.md)" '(arquivo do nó primeiro, linha do índice logo depois)' "memoria-integra/7 no-template"
 
+# /1 — scope grava critérios de HIGH no nó; spec só contexto
+sc="$(achata skills/scope/SKILL.md)"
+assert_contains "$sc" 'MEDIUM e HIGH: os três campos direto no nó, critérios numerados em `## criterios-aceite`' "memoria-integra/1 critérios no nó"
+assert_contains "$sc" 'só com contexto (pesquisa, alternativas, diagramas) — nunca critério' "memoria-integra/1 spec só contexto"
+assert_not_contains "$sc" 'nó aponta para ela' "memoria-integra/1 nó não aponta para a spec"
+assert_not_contains "$sc" 'ou a spec dedicada (HIGH)' "memoria-integra/1 fechamento sem spec como artefato de critério"
+
 report

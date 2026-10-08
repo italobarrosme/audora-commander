@@ -46,9 +46,10 @@ funções, banco, biblioteca — isso é a fase plan. Se o humano puxar para o
    limite. Critério que não cabe na sintaxe EARS é critério ambíguo — reescreva.
 5. **Fechar os três campos** no nó do MEMORY: `objetivo` (1-2 frases),
    `criterios-aceite` (EARS), `fora-de-escopo` (explícito — o que NÃO entra).
-   - Categoria MEDIUM: os três campos direto no nó.
-   - Categoria HIGH: spec dedicada em `docs/audora/specs/<id>-escopo.md`,
-     nó aponta para ela.
+   - MEDIUM e HIGH: os três campos direto no nó, critérios numerados em
+     `## criterios-aceite`.
+   - HIGH pode ter spec dedicada `docs/audora/specs/<id>-escopo.md` só com
+     contexto (pesquisa, alternativas, diagramas) — nunca critério.
 6. **Auto-revisão** (rodar você mesmo, corrigir inline):
    - Zero `[PRECISA-CLARIFICAR]` aberto?
    - Todo critério em EARS e testável?
@@ -100,7 +101,7 @@ de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sess
 
 - **Produzido**: quantos critérios EARS, se o fora-de-escopo ficou explícito,
   e quantas decisões foram registradas.
-- **Arquivos**: o nó (MEDIUM) ou a spec dedicada (HIGH), e a linha do índice.
+- **Arquivos**: o nó, a spec de contexto (HIGH, se houver) e a linha do índice.
 - **Próximo**: o portão humano de escopo; aprovado, a fase plan.
 
 ## PRÓXIMA SKILL
