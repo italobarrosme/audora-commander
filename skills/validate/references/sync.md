@@ -14,6 +14,7 @@ senão `memory-validate` bloqueia a próxima escrita.
    para o fim de `docs/audora/aprendizados.md`, sem tocar as que já estão lá:
    ```bash
    [ -f docs/audora/aprendizados.md ] || cp "<raiz do plugin>/templates/aprendizados-template.md" docs/audora/aprendizados.md
+   [ -z "$(tail -c1 docs/audora/aprendizados.md)" ] || echo >> docs/audora/aprendizados.md
    perl -ne 'if (/^## /) { $s = /^## Aprendizados/ } print if $s && /^- \d{4}-\d{2}-\d{2} \| /' MEMORY.md >> docs/audora/aprendizados.md
    ```
    e deixar na seção só a linha de ponteiro de `templates/MEMORY-template.md`.

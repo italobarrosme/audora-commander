@@ -477,6 +477,6 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; carga FULL na regra.
 - **carga FULL**: sim (sync.md).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "m16d sem newline final"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/16): sync completa a quebra de linha antes de mover aprendizados"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "m16d sem newline final"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/16): sync completa a quebra de linha antes de mover aprendizados"`

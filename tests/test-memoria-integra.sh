@@ -246,11 +246,13 @@ m_cria="$(tr -d '\r' < skills/validate/references/sync.md | grep -E '^ *\[ -f do
 m_move="$(tr -d '\r' < skills/validate/references/sync.md | grep -E "^ *perl -ne 'if \(/\^## /\)" | sed -E 's/^ +//' | head -1)"
 assert_contains "$m_cria" 'templates/aprendizados-template.md' "memoria-integra/16 comando que cria o arquivo pelo template"
 assert_contains "$m_move" '>> docs/audora/aprendizados.md' "memoria-integra/16 comando que move as linhas"
+m_nl="$(tr -d '\r' < skills/validate/references/sync.md | grep -E '^ *\[ -z "\$\(tail -c1' | sed -E 's/^ +//' | head -1)"
+assert_contains "$m_nl" 'tail -c1 docs/audora/aprendizados.md' "memoria-integra/16 comando que completa a quebra de linha"
 m_cria="${m_cria//<raiz do plugin>/$ROOT}"
 L1='- 2026-01-01 | plan | L1 um'; L2='- 2026-01-02 | execute | L2 dois [invalidado-em: 2026-02-01] [substituido-por: L1]'; L3='- 2026-01-03 | e2e | L3 três'
 mem16() { mkdir -p "$1/docs/audora"; printf '%s\n' 'memory-schema: 1' '' '## Constituição [carga: sempre]' '' '- **stack**: x' '' \
   '## Aprendizados [carga: sempre]' '' "$L1" '' "$L2" "$L3" '' '## Índice de nós [carga: sempre]' '' '- z | planned | Z | r | k | —' > "$1/MEMORY.md"; }
-move16() { (cd "$1" && bash -c "$m_cria" && bash -c "$m_move"); }
+move16() { (cd "$1" && bash -c "$m_cria" && bash -c "$m_nl" && bash -c "$m_move"); }
 d="$SP/m16a"; mem16 "$d"; move16 "$d"
 assert_eq '# Aprendizados' "$(head -1 "$d/docs/audora/aprendizados.md" 2>/dev/null | tr -d '\r')" "memoria-integra/16 arquivo criado pelo template"
 assert_eq "$L1|$L2|$L3" "$(grep -E '^- [0-9]{4}' "$d/docs/audora/aprendizados.md" 2>/dev/null | tr -d '\r' | paste -sd'|')" "memoria-integra/16 L1 L2 L3 literais, na ordem"
@@ -267,6 +269,10 @@ assert_eq "$L1|$L2|$L3" "$(tail -c +$((antes_b + 1)) "$d/docs/audora/aprendizado
 d="$SP/m16c"; mem16 "$d"; perl -i -pe 's/\n/\r\n/' "$d/MEMORY.md"; printf '# Aprendizados\r\n' > "$d/docs/audora/aprendizados.md"
 move16 "$d"
 assert_eq "$(printf '%s\r\n' "$L1" "$L2" "$L3" | md5sum)" "$(tail -c +17 "$d/docs/audora/aprendizados.md" | md5sum)" "memoria-integra/16 MEMORY em CRLF: linhas movidas byte a byte (\\r\\n)"
+d="$SP/m16d"; mem16 "$d"; printf '# Aprendizados\n\n- 2026-01-00 | plan | X1 a' > "$d/docs/audora/aprendizados.md"
+move16 "$d"
+assert_eq 4 "$(grep -cE '^- [0-9]{4}' "$d/docs/audora/aprendizados.md")" "memoria-integra/16 m16d sem newline final: 4 linhas de aprendizado"
+assert_eq '- 2026-01-00 | plan | X1 a' "$(grep -xF -- '- 2026-01-00 | plan | X1 a' "$d/docs/audora/aprendizados.md")" "memoria-integra/16 m16d sem newline final: linha antiga intacta"
 
 # /20 — memory-guard e memory-validate calados para aprendizados.md de qualquer tamanho
 d="$SP/g20"; memp "$d"
