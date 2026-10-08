@@ -131,13 +131,14 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
 - **Quando dispara**: chamada pelas outras skills (carregar contexto,
   registrar nó, delta ou aprendizado) ou direto por você.
 - **O que faz**: é dona do MEMORY — o índice mestre `MEMORY.md` (Propósito,
-  Constituição, Aprendizados, uma linha rica por nó) mais um arquivo por nó.
+  Constituição, ponteiro para os Aprendizados, uma linha rica por nó) mais um
+  arquivo por nó e os aprendizados em `docs/audora/aprendizados.md`.
   Seis operações: `carregar-contexto`, `bootstrap`, `registrar-no`,
   `registrar-delta`, `registrar-aprendizado`, `compactar`.
   Roteador: operações quentes inline, o resto em
   `skills/memory/references/`, lidas uma por operação. Leitura seletiva
   (`MEMORY.md` por seção: Propósito e Constituição inteiras, Aprendizados por
-  grep na fase e nos termos do nó, nunca os invalidados, índice de nós inteiro
+  grep em `docs/audora/aprendizados.md` na fase e nos termos do nó, nunca os invalidados, índice de nós inteiro
   só na porta, no scope e no plan; só os nós que a demanda toca; grep para
   consulta estrutural); o
   que já foi carregado na sessão não é relido. O bootstrap oferece gerar
@@ -165,8 +166,9 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   EARS numerados (`<id>/<n>`, "QUANDO … O SISTEMA DEVE …", com erro e borda)
   e o fora-de-escopo explícito, e faz auto-revisão (sem marcador aberto, tudo
   testável, sem conflito com a Constituição).
-- **O que deixa no disco**: MEDIUM → os três campos no nó; HIGH → spec
-  dedicada `docs/audora/specs/<id>-escopo.md`; uma linha por decisão
+- **O que deixa no disco**: MEDIUM → os três campos no nó; HIGH → os três
+  campos no nó também, e, se precisar, spec de contexto
+  `docs/audora/specs/<id>-escopo.md` (nunca critério); uma linha por decisão
   respondida no nó.
 - **Portões humanos**: o portão de escopo — espera sua aprovação explícita.
 - **Próxima**: `plan`, depois de uma PARADA — você roda `/clear` e digita
@@ -206,7 +208,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   visto falhando pelo motivo certo; GREEN — o mínimo, com a suíte toda verde
   (ou o `gate:` da Constituição saindo 0); REFACTOR; COMMIT citando o
   critério. Os testes cobrem integração real e caminhos de erro e borda.
-  Micro-decisões vão para o plano, aprendizados para o MEMORY na hora.
+  Micro-decisões vão para o plano, aprendizados para
+  `docs/audora/aprendizados.md` na hora.
   HOTFIX: teste de reprodução antes do fix. Falha desconhecida → `debug`;
   beco sem saída → nó `blocked` e você decide.
 - **O que deixa no disco**: código e testes, um commit por etapa verde, a
@@ -248,7 +251,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   bloqueantes corrigidos. Efeito
   irreversível fora do repo nunca é disparado pela IA. Depois da aprovação,
   quando o trabalho entra na main, roda o sync de `references/sync.md`:
-  consolida o delta, promove decisões vivas e aprendizados, nó →
+  consolida o delta, promove decisões vivas, migra os Aprendizados antigos do
+  MEMORY para `docs/audora/aprendizados.md`, nó →
   `delivered`, `git mv` para o arquivo, `arquivos:` do diff real, foto do
   `PRD.md` atualizada (o que é, stack, arquitetura, metas futuras — sem
   histórico de entregas) e uma linha acrescentada ao `CHANGELOG.md`; `PRD.md`
@@ -279,8 +283,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   schemas, documentação viva e contagens, bordas de erro, configuração e
   execução) e verifica cada achado antes de reportar.
 - **O que deixa no disco**: teste de reprodução permanente; relatório de
-  caçada em `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas e
-  aprendizados no MEMORY.
+  caçada em `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas no nó e
+  aprendizados em `docs/audora/aprendizados.md`.
 - **Portões humanos**: escalada após 3 hipóteses refutadas; na caçada, quais
   melhorias viram nó é decisão sua.
 - **Próxima**: `execute` (fix via TDD), `validate` ou decisão sua.
@@ -335,7 +339,9 @@ mais sandbox. Configure o harness — não conte com prosa para segurar o agente
 ## Artefatos nos projetos que usam o framework
 
 - `MEMORY.md` — raiz do projeto: índice mestre da memória viva (propósito,
-  constituição, aprendizados, uma linha rica por nó).
+  constituição, uma linha rica por nó).
+- `docs/audora/aprendizados.md` — aprendizados, 1 por linha, consultados por
+  grep.
 - `docs/audora/memory/` — um arquivo por nó (requisitos, critérios EARS
   numerados, decisões, delta).
 - `docs/audora/decisoes-vivas.md` — decisões duráveis promovidas de nós
@@ -343,7 +349,8 @@ mais sandbox. Configure o harness — não conte com prosa para segurar o agente
 - `docs/audora/arquivo/` — nós entregues, arquivados por movimento.
 - `docs/audora/planos/` — planos ativos; `arquivo/` para os encerrados.
 - `docs/audora/e2e/` — relatórios E2E por demanda.
-- `docs/audora/specs/` — specs de escopo de demandas HIGH.
+- `docs/audora/specs/` — contexto de escopo de demandas HIGH (critérios
+  ficam no nó).
 - `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill debug).
 
 ## Checklist de validação da instalação

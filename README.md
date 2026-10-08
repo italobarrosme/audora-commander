@@ -131,13 +131,14 @@ Details per skill: [Skills in detail](#skills-in-detail).
 - **When it fires**: called by the other skills (load context, register a
   node, delta or learning), or directly by you.
 - **What it does**: owns the MEMORY — the master index `MEMORY.md` (Purpose,
-  Constitution, Learnings, one rich line per node) plus one file per node.
+  Constitution, a pointer to the Learnings, one rich line per node) plus one
+  file per node and the learnings in `docs/audora/aprendizados.md`.
   Six operations: `carregar-contexto`, `bootstrap`, `registrar-no`,
   `registrar-delta`, `registrar-aprendizado`, `compactar`.
   Router: hot operations inline, the rest in
   `skills/memory/references/`, read one per operation. Selective reading
   (`MEMORY.md` by section: Purpose and Constitution whole, Learnings by grep
-  on the phase and the node's terms, invalidated ones never, the node index
+  in `docs/audora/aprendizados.md` on the phase and the node's terms, invalidated ones never, the node index
   whole only at the entry, scope and plan; only the nodes the demand touches;
   grep for structural queries);
   whatever is already loaded in the session is not read again. The bootstrap
@@ -165,7 +166,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   cases included) and an explicit out-of-scope, then self-reviews (no open
   marker, everything testable, no clash with the Constitution).
 - **What it leaves on disk**: MEDIUM → the three fields in the node; HIGH →
-  a dedicated spec `docs/audora/specs/<id>-escopo.md`; one line per answered
+  the three fields in the node too and, if needed, a context-only spec
+  `docs/audora/specs/<id>-escopo.md` (never criteria); one line per answered
   decision in the node.
 - **Human gates**: the scope gate — waits for your explicit approval.
 - **Next**: `plan`, after a STOP — you run `/clear` and type `plan de <id>`;
@@ -205,8 +207,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   citing `<id>/<n>`, seen failing for the right reason; GREEN — the minimum,
   with the whole suite green (or the Constitution's `gate:` exiting 0);
   REFACTOR; COMMIT citing the criterion. Tests must cover real integrations
-  and error/edge paths. Micro-decisions go to the plan, learnings to the
-  MEMORY on the spot. HOTFIX: reproduction test before the fix. Unknown
+  and error/edge paths. Micro-decisions go to the plan, learnings to
+  `docs/audora/aprendizados.md` on the spot. HOTFIX: reproduction test before the fix. Unknown
   failure → `debug`; dead end → node `blocked` and you decide.
 - **What it leaves on disk**: code and tests, one commit per green step,
   the "Decisões tomadas pela IA" list in the plan.
@@ -248,7 +250,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   blockers. Irreversible
   effects outside the repo are never fired by the AI. After approval, when
   the work lands on main, runs the sync in `references/sync.md`: consolidate
-  the delta, promote durable decisions and learnings, node → `delivered`,
+  the delta, promote durable decisions, move old MEMORY learnings to
+  `docs/audora/aprendizados.md`, node → `delivered`,
   `git mv` to the archive, `arquivos:` from the real diff, the `PRD.md`
   snapshot updated (what it is, stack, architecture, future goals — no
   delivery history) and one line appended to `CHANGELOG.md`; a `PRD.md`
@@ -278,8 +281,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   docs and counts, error edges, configuration and execution) and verifies
   every finding before reporting it.
 - **What it leaves on disk**: a permanent reproduction test; hunt reports in
-  `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas and learnings in the
-  MEMORY.
+  `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas in the node and
+  learnings in `docs/audora/aprendizados.md`.
 - **Human gates**: escalation after 3 refuted hypotheses; in hunt mode,
   which improvements become nodes is up to you.
 - **Next**: `execute` (fix via TDD), `validate`, or your decision.
@@ -337,7 +340,8 @@ rely on prose to stop the agent.
 ## Artifacts in projects using the framework
 
 - `MEMORY.md` — project root: master index of the living memory (purpose,
-  constitution, learnings, one rich line per node).
+  constitution, one rich line per node).
+- `docs/audora/aprendizados.md` — learnings, one per line, queried by grep.
 - `docs/audora/memory/` — one file per node (requirements, numbered EARS
   criteria, decisions, delta).
 - `docs/audora/decisoes-vivas.md` — durable decisions promoted from
@@ -345,7 +349,8 @@ rely on prose to stop the agent.
 - `docs/audora/arquivo/` — delivered nodes, archived by move.
 - `docs/audora/planos/` — active plans; `arquivo/` for closed ones.
 - `docs/audora/e2e/` — E2E reports per demand.
-- `docs/audora/specs/` — scope specs for HIGH demands.
+- `docs/audora/specs/` — scope context for HIGH demands (criteria live in
+  the node).
 - `docs/audora/depuracao/` — defect hunt reports (debug skill).
 
 ## Installation validation checklist

@@ -279,4 +279,15 @@ assert_contains "$out" 'docs/audora/aprendizados.md' "memoria-integra/21 memory-
 assert_contains "$(achata templates/MEMORY-template.md)" "aprendizado → \`grep -i '<termo>' docs/audora/aprendizados.md\`" "memoria-integra/21 MEMORY-template consulta aprendizados.md"
 assert_contains "$(achata skills/memory/references/compactar.md)" 'vivem em `docs/audora/aprendizados.md`' "memoria-integra/21 compactar aponta aprendizados.md"
 
+# /14 e /1 nas docs — READMEs e fundamentos não contradizem as skills
+pt="$(achata README.pt-BR.md)"; en="$(achata README.md)"; fu="$(achata docs/fundamentos.md)"
+assert_contains "$pt" 'docs/audora/aprendizados.md' "memoria-integra/14 docs README PT cita aprendizados.md"
+assert_contains "$en" 'docs/audora/aprendizados.md' "memoria-integra/14 docs README EN cita aprendizados.md"
+assert_contains "$fu" 'docs/audora/aprendizados.md' "memoria-integra/14 docs fundamentos cita aprendizados.md"
+assert_not_contains "$pt" 'aprendizados para o MEMORY na hora' "memoria-integra/14 docs README PT sem aprendizado no MEMORY"
+assert_not_contains "$pt" 'HIGH → spec dedicada' "memoria-integra/1 docs README PT sem critério de HIGH na spec"
+assert_not_contains "$en" 'learnings to the MEMORY on the spot' "memoria-integra/14 docs README EN sem aprendizado no MEMORY"
+assert_not_contains "$en" 'HIGH → a dedicated spec' "memoria-integra/1 docs README EN sem critério de HIGH na spec"
+assert_not_contains "$fu" 'HIGH exige spec dedicada' "memoria-integra/1 docs fundamentos sem spec obrigatória"
+
 report

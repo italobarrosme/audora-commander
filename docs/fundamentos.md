@@ -26,8 +26,8 @@ externa durável do produto — o NOTES.md estruturado do projeto.
 
 Regras:
 1. **Índice mestre + 1 nó = 1 arquivo**: `MEMORY.md` (linha 1
-   `memory-schema: 1`) guarda Propósito, Constituição, Aprendizados e uma
-   linha rica por nó; o corpo de cada nó vive em `docs/audora/memory/<id>.md`
+   `memory-schema: 1`) guarda Propósito, Constituição, um ponteiro para os
+   Aprendizados e uma linha rica por nó; o corpo de cada nó vive em `docs/audora/memory/<id>.md`
    com frontmatter grep-ável (`id`, `estado` — `planned | in-progress |
    blocked | delivered | discarded`, + `hotfix-pending-record` —, `origem`,
    `depende-de`, `arquivos`, `keywords`, `resumo`, `atualizado-em`). A skill
@@ -47,8 +47,8 @@ Regras:
    ela: cumpre ou documenta exceção.
 4. **Aprendizados na hora**: armadilha, preferência do humano ou padrão que
    vale para toda demanda futura vira 1 linha `data | fase | aprendizado` em
-   `## Aprendizados`, registrada pela fase que descobriu — nunca guardada para
-   o fim.
+   `docs/audora/aprendizados.md` (consultado por grep, fora do `MEMORY.md`),
+   registrada pela fase que descobriu — nunca guardada para o fim.
 5. **Atualização por delta + sync** (inspirado em OpenSpec): durante a demanda,
    mudanças de requisito são registradas como delta no nó (`ADICIONADO` /
    `MODIFICADO` / `REMOVIDO`). No sync pós-merge, a skill validate consolida o
@@ -124,8 +124,9 @@ altitude só (Spec Kit): escopo fala de comportamento, plano fala de arquivos.
 **Lei de Ferro:** `NENHUM CÓDIGO ANTES DO ESCOPO FECHADO EM ARTEFATO ESCRITO`
 
 Regras:
-1. **Artefato de fronteira**: escopo fecha em artefato escrito (nó do MEMORY ou
-   spec dedicada em `docs/audora/specs/`) antes de qualquer código. `/clear` é
+1. **Artefato de fronteira**: escopo fecha em artefato escrito (critérios no
+   nó do MEMORY; em HIGH, spec de contexto opcional em `docs/audora/specs/`,
+   nunca com critério) antes de qualquer código. `/clear` é
    seguro porque nada importante vive só na conversa.
 2. **Incerteza marcada, nunca preenchida** (inspirado em Spec Kit): lacuna de
    requisito recebe marcador `[PRECISA-CLARIFICAR]` no artefato. Escopo não
@@ -149,7 +150,7 @@ Regras:
    plano (abordagens descartadas + porquê, estado parcial, próximos passos).
 7. **Estrutura sempre, extensão proporcional**: P4 governa o tamanho, P3 a
    estrutura. Categoria LIGHT entra com critérios curtos direto no nó; HIGH
-   exige spec dedicada. Os três campos (objetivo, critérios, fora-de-escopo)
+   também grava os critérios no nó e pode ter spec só de contexto. Os três campos (objetivo, critérios, fora-de-escopo)
    nunca são opcionais; o tamanho deles sim.
 8. **Teste discriminante pergunta vs reabertura**: a resposta muda critérios de
    aceite ou fora-de-escopo? Sim → volta formal à fase scope, registra delta no
