@@ -98,6 +98,7 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-07 | validate | Suíte de ferramenta que COMMITA precisa de fixture com hook `commit-msg` do projeto-alvo (commitlint `config-conventional`: linha de corpo ≤ 100) e lote grande: a da cleanup só tinha lotes pequenos e o 1º lote real (pepity, 189 itens) foi recusado e desfeito.
 - 2026-10-08 | execute | Outra sessão com edição aberta no `MEMORY.md` (ou em qualquer arquivo): `git add -p` não roda no Bash tool — commitar só as próprias linhas aplicando a mesma troca sobre `git show HEAD:<arq>`, `git hash-object -w` no resultado e `git update-index --cacheinfo 100644,<hash>,<arq>`; a cópia de trabalho recebe a troca por cima da edição alheia.
 - 2026-10-08 | execute | Guardas de carga BASE pinadas no byte (`leitura-por-secao/11`, `parada-revisao/9`): trocar UMA palavra em arquivo da BASE ("segue" → "agente", +1 byte no template) reprova a suíte — medir com `bash tests/test-carga.sh` e subir guarda e nota de medição no mesmo commit.
+- 2026-10-08 | execute | O anti-fraude 2 do `hooks/gate` casa `xit\(` em qualquer linha nova de teste: `exit(` dentro de um `perl -e` no teste reprova o gate como "skip/only adicionado" — em teste, perl sem `exit(...)` (usar `print ... if`).
 
 ## Índice de nós [carga: sempre]
 

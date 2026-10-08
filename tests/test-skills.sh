@@ -186,7 +186,7 @@ for s in audora-commander scope plan execute e2e validate debug; do
 done
 for s in scope plan; do assert_contains "$(cat skills/$s/SKILL.md)" 'PARADA: rode /clear' "contexto-por-fase/1 $s para (substitui otimizacao-tokens/4)"; done
 # validate-estado-no/10 — ordem da transição: nó primeiro, índice depois
-assert_contains "$(cat skills/memory/references/registrar-no.md)" 'nó primeiro, índice depois' "validate-estado-no/10 registrar-no ensina a ordem"
+assert_contains "$(cat skills/memory/references/registrar-no.md)" 'arquivo do nó primeiro, linha do índice logo depois' "validate-estado-no/10 registrar-no ensina a ordem"
 assert_contains "$(cat skills/validate/references/sync.md)" 'nó primeiro, índice depois' "validate-estado-no/10 sync ensina a ordem"
 assert_contains "$(cat skills/memory/SKILL.md)" 'estado índice↔nó' "validate-estado-no/10 memory lista a checagem nova"
 report

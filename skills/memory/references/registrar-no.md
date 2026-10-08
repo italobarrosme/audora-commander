@@ -12,9 +12,11 @@
    schema é rejeitada (`memory-validate`). Exceção declarada: nó recém-aberto
    pela porta de entrada (MEDIUM/HIGH) pode ter `criterios-aceite` vazio ATÉ
    a fase scope; LIGHT/HOTFIX já entram com ≥1 critério numerado.
-2. Escrever `docs/audora/memory/<id>.md` E a linha rica do índice NA MESMA
-   EDIÇÃO (resumo/keywords espelhados). Índice e pasta divergentes = memória
-   inconsistente → PARAR e corrigir. Transição de estado: nó primeiro, índice depois — o `memory-validate` só cobra a igualdade na escrita do índice.
+2. Escrever o arquivo do nó primeiro, linha do índice logo depois — na
+   criação e na transição de estado (resumo/keywords espelhados). O
+   `memory-validate` cobra índice↔pasta (nó sem linha, estado divergente) só
+   na escrita do índice: índice e pasta divergentes depois dela = memória
+   inconsistente → PARAR e corrigir.
 3. Máximo 3 nós `in-progress` (contagem global pelo índice). Quarto chegando →
    porta de entrada resolve com o humano.
 4. Em branch de demanda: editar SOMENTE os arquivos dos nós daquela demanda

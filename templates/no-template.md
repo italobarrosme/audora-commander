@@ -19,7 +19,8 @@ atualizado-em: 2026-08-24
      depende-de: lista de ids de nós do índice
      arquivos: paths/globs tocados pela demanda — preenchido no sync da validate
        via `git diff --name-only`, nunca de memória
-     keywords + resumo: espelham a linha do índice mestre (mesma edição) -->
+     keywords + resumo: espelham a linha do índice mestre (arquivo do nó
+       primeiro, linha do índice logo depois) -->
 
 ## objetivo
 

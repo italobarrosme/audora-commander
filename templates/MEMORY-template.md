@@ -47,9 +47,10 @@ Uma linha rica por nó — decide relevância SEM abrir o corpo; o corpo vive em
 0. Nó `planned` pode viver SÓ na linha do índice (sem arquivo) até ser
    detalhado. A partir de `in-progress`, arquivo docs/audora/memory/<id>.md
    obrigatório (templates/no-template.md).
-1. A linha do índice é editada NA MESMA EDIÇÃO que cria/altera o nó — índice
-   e pasta divergentes = memória inconsistente, PARAR (hook memory-validate
-   acusa; sem hook, a skill verifica).
+1. Arquivo do nó primeiro, linha do índice logo depois (criação e
+   transição) — índice e pasta divergentes depois da linha = memória
+   inconsistente, PARAR (hook memory-validate acusa na escrita do índice; sem
+   hook, a skill verifica).
 2. Consulta estrutural via grep, sem carregar corpos: estado →
    `grep -l '^estado: in-progress' docs/audora/memory/*.md`; deps reversas →
    `grep -l 'depende-de:.*<id>' docs/audora/memory/*.md`; nó por arquivo de

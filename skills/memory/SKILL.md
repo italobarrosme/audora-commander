@@ -122,7 +122,7 @@ reler. Depois de `/clear` ou compactação, recarregar.
 | "Eu lembro do requisito, registro depois" | Depois = nunca. Sessão morre, memória morre. Registre agora. |
 | "Carrego a pasta memory/ inteira pra garantir" | Contexto é o gargalo. Índice decide; grep consulta; Read só o tocado. |
 | "Leio o MEMORY.md inteiro" | Recorte da fase; o resto, grep. |
-| "Edito o nó agora, índice depois" | Índice desatualizado quebra a carga de todo mundo. Mesma edição. |
+| "Atualizo a linha do índice no fim da fase" | Índice atrasado quebra a carga de todo mundo. Arquivo do nó primeiro, linha do índice logo depois. |
 | "Aprendizado eu guardo no sync final" | Sync final é depois do /clear. Aprendizado é NA HORA, 1 linha. |
 | "Apago a decisão velha, tá superada" | Apagar mata rastreabilidade. invalidado-em + substituido-por. |
 | "O nó inferido parece certo, sigo com ele" | Inferido é hipótese. Confirme com o humano antes de construir em cima. |
