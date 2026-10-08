@@ -83,6 +83,36 @@ sem perder linha de assert (anti-fraude do gate).
 - **Fixture com caminho `docs/audora/…`** neste plano ou no relatório: só dentro
   de bloco de código (aprendizado 2026-10-03), senão a cleanup acusa
   `## nunca existiu`.
+- **validate 2026-10-08**: gate passou; e2e 17/17 passou
+  (`docs/audora/e2e/e2e-memoria-integra.md`). Os dois bloqueantes abaixo
+  viraram as Tarefas 14 e 15, por decisão do humano no portão. Depois delas,
+  a próxima validate refaz no e2e os cenários `sync`/`sync0`/`limpa` (/2,
+  /3, /4, /16) com o nó no formato antigo e o `aprendizados.md` sem newline
+  final.
+- **revisão adversarial: passagem 1** (2026-10-08):
+  - Bloqueante 1, classe (b) `memoria-integra/2` + (c). A contagem do sync
+    (`sync.md:21`) e a `criterios_sem_copia` (`hooks/cleanup:175`) contam a
+    simples menção a `<id>/<n>`. Nó HIGH no formato antigo cita o intervalo
+    na linha de ponteiro (`limpeza-codigo-morto/1..9`, em 6 dos 7 arquivados
+    daqui que apontam para spec). Resultado: contagem 1, a cópia não
+    acontece, e a cleanup põe a spec no lote e a apaga. Prova conferida:
+    `awk … 2026-09-27-limpeza-codigo-morto.md | grep -cE …` → 1, com 0
+    linhas `- **<id>/<n>**`. Estado: aberto, vai para a Tarefa 14.
+  - Bloqueante 2, classe (b) `memoria-integra/16` + (c). Com
+    `aprendizados.md` sem newline final, o `>>` do `sync.md:17` gruda a
+    linha nova na última linha. Prova conferida: `cat -A` →
+    `- 2026-01-01 | plan | X1 antigo- 2026-02-01 | plan | M1 novo$`, e
+    `grep -c '^- 2026'` → 1. Estado: aberto, vai para a Tarefa 15.
+  - Ressalvas (não bloqueiam, vão ao roteiro):
+    - critério com ponto (`x/1.1` × `x/1.2`) é comparado só pelo inteiro;
+    - plano não arquivado de nó delivered cai em "sem referência" sem passar
+      pelo /4;
+    - `aplicar` com lote à mão não reconfere o /4;
+    - o fallback sem seta pega o arquivado mais antigo do id;
+    - o move do /16 não é idempotente se o sync for interrompido;
+    - o move do /16 só leva linhas de 1 linha;
+    - `skills/memory/SKILL.md:15` ainda lista "Aprendizados" no índice;
+    - id de 10 caracteres só de dígito e hífen casaria o grep do /15.
 
 ---
 
@@ -406,3 +436,47 @@ sem perder linha de assert (anti-fraude do gate).
 - [x] **red** — `bash tests/test-dogfood.sh` falha em "memoria-integra/18 MEMORY sem linha de aprendizado" (hoje 54)
 - [x] **green** — rodar as 2 linhas do bloco do `sync.md` na raiz (com `<raiz do plugin>` = raiz deste repo), Edit da seção para P; `bash tests/test-dogfood.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
 - [x] **commit** — `git add MEMORY.md docs/audora/aprendizados.md tests/test-dogfood.sh && git commit -m "chore(memoria-integra/18): aprendizados deste repo migram para docs/audora/aprendizados.md"`
+
+## Tarefa 14: "critério numerado" = linha `- **<id>/<n>**`, no sync e na cleanup
+
+- **depende-de**: [Tarefa 4, Tarefa 5]
+- **origem**: revisão adversarial, passagem 1, bloqueante 1. Decisão do humano no portão (2026-10-08): contar só a linha de critério.
+- **requisito**: `memoria-integra/2` (texto sem mudança). A definição do comentário de `## criterios-aceite` do nó muda: "critério numerado" passa de `<id>/<n>` para "linha `- **<id>/<n>** — …`".
+- **decisões relevantes**: vale para a contagem do sync E para a `criterios_sem_copia` da cleanup. Do lado do artefato (spec, plano, e2e), a citação continua sendo qualquer menção `<id>/<n>`. Só a "cópia no nó arquivado" exige a linha.
+- **ponto de mudança**:
+  - **Antes de tudo, o nó**: `docs/audora/memory/memoria-integra.md` está no teto (~100 linhas). Primeiro compactar (skill memory, operação compactar, passo 4: histórico frio para `memoria-integra-historico.md`). Depois, nó primeiro:
+    - em `## decisoes`, a linha `- 2026-10-08 (humano, validate): critério numerado = linha `- **<id>/<n>** — …`; menção em ponteiro não conta. Descartado: só o sync; rebaixar a ressalva.`;
+    - em `## delta`, `MODIFICADO (2026-10-08, validate): "critério numerado" = `<id>/<n>` → linha `- **<id>/<n>** — …``;
+    - o comentário da linha 22 com a definição nova.
+  - `skills/validate/references/sync.md:21`: o comando de contagem passa a ser `awk '/^## criterios-aceite/{f=1;next} /^## /{f=0} f' docs/audora/memory/<id>.md | grep -cE '^- \*\*<id>/[0-9]+'`. A frase "a spec … tem critério `<id>/<n>`" vira "tem linha de critério `- **<id>/<n>** — …`".
+  - `hooks/cleanup:175-189` (`criterios_sem_copia`): `%tem` passa a ser montado só a partir das linhas `^- \*\*\Q$id\E/(\d+)(?!\d)` (com `/m`) do nó arquivado e do `-historico`; `%cita` não muda. Atualizar o comentário da sub.
+  - `skills/cleanup/SKILL.md`: onde explica o `## mantido` por critério, dizer que a cópia no nó é a linha `- **<id>/<n>**`.
+- **teste**: `tests/test-memoria-integra.sh`, blocos /2 e /4.
+- **asserções**:
+  - comando do sync, na fixture `f23`: nó `z` com só `9 critérios \`z/1..9\` na spec dedicada` em `## criterios-aceite` → `0`. Os 3 casos atuais seguem `2`/`0`/`0`.
+  - cleanup: `mk4` com o nó arquivado só com a linha de ponteiro `Spec: 2 critérios (d/1..2) na spec dedicada` (sem `- **d/1**`) → `## mantido` com `- <spec de d> | mantido: cita d/1, d/2 sem cópia no nó arquivado`. Os casos atuais de `c4`/`c4b`/`c4c`/`c4d` seguem iguais.
+  - dogfood: `hooks/cleanup varrer` neste repo sem mudança no relatório, salvo item que passe a `## mantido` (anotar nas Notas).
+- **done quando**: casos verdes; `tests/test-skill-cleanup.sh` verde, sem perder assert; carga FULL na regra.
+- **carga FULL**: sim (sync.md, cleanup SKILL.md).
+
+- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "ponteiro com intervalo não conta" e no `## mantido` do nó só com ponteiro
+- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [ ] **commit** — `git add docs/audora/memory/ skills/validate/references/sync.md hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/2,4): criterio numerado e a linha do criterio, nao a mencao"`
+
+## Tarefa 15: sync põe a quebra de linha que falta antes de mover os aprendizados
+
+- **depende-de**: [Tarefa 10]
+- **origem**: revisão adversarial, passagem 1, bloqueante 2. Decisão do humano no portão (2026-10-08): corrigir.
+- **requisito**: `memoria-integra/16` — "… sem alterar as linhas que já estão lá".
+- **ponto de mudança**: `skills/validate/references/sync.md:15-18`. Nova linha no bloco bash, entre o `cp` e o `perl`: `[ -z "$(tail -c1 docs/audora/aprendizados.md)" ] || echo >> docs/audora/aprendizados.md`.
+- **teste**: `tests/test-memoria-integra.sh`, bloco /16. Extrair a linha nova como `m_nl` (grep `^ *\[ -z "\$\(tail -c1`) e incluí-la em `move16`, entre `m_cria` e `m_move`.
+- **asserções**:
+  - `m_nl` extraído contém `tail -c1 docs/audora/aprendizados.md`.
+  - fixture `m16d`: `aprendizados.md` = `printf '# Aprendizados\n\n- 2026-01-00 | plan | X1 a'` (sem newline final) → depois do move, `grep -cE '^- [0-9]{4}'` = 4, e a linha `- 2026-01-00 | plan | X1 a` fica intacta (`grep -xF`).
+  - os casos `m16a`/`m16b`/`m16c` seguem byte a byte iguais (a linha não mexe em arquivo que já termina em `\n` ou `\r\n`).
+- **done quando**: casos verdes; carga FULL na regra.
+- **carga FULL**: sim (sync.md).
+
+- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "m16d sem newline final"
+- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [ ] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/16): sync completa a quebra de linha antes de mover aprendizados"`

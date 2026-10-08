@@ -95,6 +95,6 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 
 ## e2e
 
-pendente
+passou (17/17, 2026-10-08) — [relatório](../e2e/e2e-memoria-integra.md)
 
 ## feedback-reprovacao
