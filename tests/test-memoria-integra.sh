@@ -194,4 +194,38 @@ run_hook memory-validate "$b/MEMORY.md"
 assert_eq 0 "$code" "memoria-integra/17 MEMORY do bootstrap válido"
 assert_no_file "$b/docs/audora/aprendizados.md" "memoria-integra/17 bootstrap sem aprendizados.md"
 
+# /15 — carregar-contexto busca em aprendizados.md e no MEMORY.md, sem invalidados, sem erro se faltar
+cc="$(tr -d '\r' < skills/memory/SKILL.md | awk '/^### 1\. carregar-contexto/{on=1; next} on && /^### /{on=0} on')"
+cmds() { printf '%s' "$cc" | grep -oE "\`$1 '[^\`]*\`" | tr -d '\`'; }
+c_porta="$(cmds 'grep -shiE' | sed -n 1p)"; c_fase="$(cmds 'grep -shiE' | sed -n 2p)"
+assert_contains "$c_porta" 'docs/audora/aprendizados.md MEMORY.md' "memoria-integra/15 comando da porta lê os dois arquivos"
+assert_contains "$c_fase" 'docs/audora/aprendizados.md MEMORY.md' "memoria-integra/15 comando das fases lê os dois arquivos"
+sub_fase()  { local c="${c_fase//"<fase>"/"$1"}"; printf '%s' "${c//"<termo>|<termo>"/"$2"}"; }
+sub_porta() { printf '%s' "${c_porta//"<termo>|<termo>"/"$1"}"; }
+roda()      { (cd "$1" && bash -c "$2" 2>&1) | tr -d '\r'; }
+ids_apr()   { sed -E 's/^- [0-9-]{10} \| [a-z0-9]+ \| ([A-Z0-9]+) .*/\1/' | tr '\n' ' ' | sed 's/ $//'; }
+memp() { # memp <dir> [linhas de aprendizado no MEMORY...]
+  local d="$1"; shift; mkdir -p "$d/docs/audora"
+  printf '%s\n' 'memory-schema: 1' '' '## Propósito [carga: sempre]' '' 'x' '' '## Constituição [carga: sempre]' '' '- **stack**: x' '' \
+    '## Aprendizados [carga: sempre]' '' "$P" "$@" '' '## Índice de nós [carga: sempre]' '' '- z | planned | Z | r | k | —' > "$d/MEMORY.md"
+}
+memp "$SP/fa"; printf '%s\n' '# Aprendizados' '' '- 2026-01-01 | plan | A1 cache' '- 2026-01-02 | plan | A2 nada' \
+  '- 2026-01-03 | plan | A3 cache [invalidado-em: 2026-02-01] [substituido-por: A1]' > "$SP/fa/docs/audora/aprendizados.md"
+memp "$SP/fb" '- 2026-01-04 | execute | M1 cache'; printf '%s\n' '# Aprendizados' '' '- 2026-01-01 | plan | A1 cache' > "$SP/fb/docs/audora/aprendizados.md"
+memp "$SP/fc"
+mkdir -p "$SP/facr/docs/audora"
+for f in MEMORY.md docs/audora/aprendizados.md; do perl -pe 's/\n/\r\n/' "$SP/fa/$f" > "$SP/facr/$f"; done
+for d in fa facr; do
+  o_plan="$(roda "$SP/$d" "$(sub_fase plan 'cache|deploy')")"; o_porta="$(roda "$SP/$d" "$(sub_porta 'cache|deploy')")"
+  assert_eq 'A1 A2' "$(printf '%s\n' "$o_plan" | ids_apr)" "memoria-integra/15 $d plan → A1 A2"
+  assert_eq 'A1' "$(printf '%s\n' "$o_porta" | ids_apr)" "memoria-integra/15 $d porta → A1"
+  assert_not_contains "$o_plan$o_porta" 'A3' "memoria-integra/15 $d sem invalidado"
+done
+assert_eq 'A1 M1' "$(roda "$SP/fb" "$(sub_fase execute cache)" | ids_apr)" "memoria-integra/15 fb execute → aprendizados.md e depois MEMORY"
+assert_eq '' "$(roda "$SP/fc" "$(sub_fase plan cache)")" "memoria-integra/15 fc sem aprendizados.md: fases → vazio, sem erro"
+assert_eq '' "$(roda "$SP/fc" "$(sub_porta cache)")" "memoria-integra/15 fc sem aprendizados.md: porta → vazio, sem erro"
+ccf="$(printf '%s' "$cc" | tr '\n' ' ' | tr -s ' ')"
+assert_contains "$ccf" 'nada casou → seguir sem aprendizados, sem ler a seção' "memoria-integra/15 nada casou segue"
+assert_contains "$ccf" 'arquivo ausente não é erro' "memoria-integra/15 arquivo ausente não é erro"
+
 report

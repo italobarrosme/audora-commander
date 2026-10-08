@@ -39,8 +39,8 @@ assert_eq 0 "$code" "leitura-por-secao/9 memory-validate aceita o MEMORY.md atua
 # Comandos literais do carregar-contexto (trechos em crase), placeholders trocados.
 cmds() { printf '%s' "$cc" | grep -oE "\`$1 '[^\`]*\`" | tr -d '\`'; }
 c_sec="$(cmds 'grep -n' | sed -n 1p)"
-c_porta="$(cmds 'grep -iE' | sed -n 1p)"
-c_fase="$(cmds 'grep -iE' | sed -n 2p)"
+c_porta="$(cmds 'grep -shiE' | sed -n 1p)"
+c_fase="$(cmds 'grep -shiE' | sed -n 2p)"
 c_idx="$(cmds 'grep -E' | sed -n 1p)"
 sub_fase()  { local c="${c_fase//"<fase>"/"$1"}"; printf '%s' "${c//"<termo>|<termo>"/"$2"}"; }
 sub_porta() { printf '%s' "${c_porta//"<termo>|<termo>"/"$1"}"; }
@@ -87,7 +87,7 @@ done
 assert_eq 'Propósito Constituição Índice' "$(roda "$SP/fxsem" "$c_sec" | secoes)" "leitura-por-secao/8 comando expõe a seção faltando"
 
 apr_repo="$(roda "$ROOT" "$(sub_fase plan 'leitura|secao')")"
-sec_apr="$(tr -d '\r' < MEMORY.md | awk '/^## Aprendizados/{f=1;next} /^## /{f=0} f')"
+sec_apr="$(cat docs/audora/aprendizados.md MEMORY.md 2>/dev/null | tr -d '\r' | grep -E '^- [0-9-]{10} \|')"
 assert_not_contains "$apr_repo" '[invalidado-em:' "leitura-por-secao/4 recorte do MEMORY.md do repo sem invalidados"
 b_rec="$(printf '%s' "$apr_repo" | wc -c)"; b_sec="$(printf '%s' "$sec_apr" | wc -c)"
 [ "$b_rec" -gt 0 ] && [ "$b_rec" -lt "$b_sec" ] && ok || ko "leitura-por-secao/4 recorte do repo ($b_rec B) não-vazio e menor que a seção ($b_sec B)"
@@ -126,7 +126,7 @@ assert_contains "$tc" 'TETO_FULL=63000' "leitura-por-secao/11 teto FULL vigente"
 co="$(bash tests/test-carga.sh 2>&1)"; cc_code=$?
 assert_eq 0 "$cc_code" "leitura-por-secao/11 test-carga dentro dos tetos"
 base="$(printf '%s' "$co" | sed -nE 's/.*base=([0-9]+).*/\1/p')"
-[ -n "$base" ] && [ "$base" -le 53557 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 53557 (guarda de parada-revisao/9)"
+[ -n "$base" ] && [ "$base" -le 53752 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 53752 (guarda de parada-revisao/9)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   mj="$(tr -d '\r' < "$j")"
   assert_contains "$mj" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"

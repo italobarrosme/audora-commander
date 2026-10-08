@@ -75,10 +75,12 @@ reler. Depois de `/clear` ou compactação, recarregar.
 1. `grep -n '^## ' MEMORY.md` → linha de cada seção. Sem `MEMORY.md` →
    **bootstrap** (operação 2), nunca inventar um. Faltou `## Propósito`, `## Constituição`, `## Aprendizados` ou `## Índice de nós` → avisar em 1 linha qual seção faltou, ler o arquivo inteiro e seguir a fase.
 2. Propósito e Constituição: inteiras, Read por `offset`/`limit`.
-3. Aprendizados só por busca; `[invalidado-em:` nunca entra; nada casou →
-   seguir sem aprendizados, sem ler a seção:
-   - porta de entrada, termos do pedido: `grep -iE '^- [0-9-]{10} \| .*(<termo>|<termo>)' MEMORY.md | grep -vF '[invalidado-em:'`
-   - demais fases, a fase + keywords e arquivos-chave do nó (debug sem nó: termos do sintoma): `grep -iE '^- [0-9-]{10} \| (<fase> \||.*(<termo>|<termo>))' MEMORY.md | grep -vF '[invalidado-em:'`
+3. Aprendizados só por busca em `docs/audora/aprendizados.md` e no
+   `MEMORY.md` (enquanto ele tiver linha de aprendizado); `[invalidado-em:`
+   nunca entra; nada casou → seguir sem aprendizados, sem ler a seção;
+   arquivo ausente não é erro (`-s`):
+   - porta de entrada, termos do pedido: `grep -shiE '^- [0-9-]{10} \| .*(<termo>|<termo>)' docs/audora/aprendizados.md MEMORY.md | grep -vF '[invalidado-em:'`
+   - demais fases, a fase + keywords e arquivos-chave do nó (debug sem nó: termos do sintoma): `grep -shiE '^- [0-9-]{10} \| (<fase> \||.*(<termo>|<termo>))' docs/audora/aprendizados.md MEMORY.md | grep -vF '[invalidado-em:'`
 4. Índice de nós: inteiro na porta de entrada, scope e plan; execute, e2e,
    validate e debug pegam só a linha do nó e as de `depende-de`:
    `grep -E '^- (<id>|<dep>) \|' MEMORY.md`.
