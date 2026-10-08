@@ -60,4 +60,66 @@ assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/3 critério só n
 printf -- '# z\n\n## criterios-aceite\n\n- **zz/1** — QUANDO a O SISTEMA DEVE b\n' > "$fz/docs/audora/memory/z.md"
 assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/3 critério de outro id não conta"
 
+# --- fixtures git da cleanup (copiadas de tests/test-skill-cleanup.sh) ---
+C="$ROOT/hooks/cleanup"
+mkproj() {
+  local d="$1"; rm -rf "$d"; mkdir -p "$d/docs/audora/arquivo" "$d/docs/audora/memory"
+  git -C "$d" init -q
+  git -C "$d" config user.email cleanup@test; git -C "$d" config user.name cleanup
+  git -C "$d" config core.autocrlf false; git -C "$d" config core.excludesFile "$d/.nao-existe"
+  printf 'memory-schema: 1\n\n## Propósito [carga: sempre]\n\nx\n\n## Constituição [carga: sempre]\n\n- **stack**: x\n\n## Aprendizados [carga: sempre]\n\n## Índice de nós [carga: sempre]\n\n- d | delivered | D → docs/audora/arquivo/2026-01-01-d.md\n' > "$d/MEMORY.md"
+  printf -- '---\nid: d\nestado: delivered\norigem: humano\ndepende-de: []\narquivos: []\nkeywords: []\nresumo: r\natualizado-em: 2026-01-01\n---\n# d\n' > "$d/docs/audora/arquivo/2026-01-01-d.md"
+  printf '# Decisões vivas\n' > "$d/docs/audora/decisoes-vivas.md"
+  printf '# proj\n' > "$d/README.md"
+  git -C "$d" add -A; git -C "$d" commit -qm base
+}
+addc() { mkdir -p "$(dirname "$1/$2")"; printf '%s\n' "$3" > "$1/$2"; git -C "$1" add -- "$2"; git -C "$1" commit -qm "add $2"; }
+runc() { local d="$1"; shift; out="$(cd "$d" && bash "$C" "$@" 2>&1)"; code=$?; }
+snap() {
+  ( cd "$1" && git rev-parse HEAD && git status --porcelain && \
+    find . -path ./.git -prune -o -type f -print | LC_ALL=C sort | while IFS= read -r f; do md5sum "$f"; done )
+}
+secao() { printf '%s\n' "$1" | awk -v t="## $2" '$0==t {on=1; next} /^## |^total:|^cleanup:/ {on=0} on'; }
+assert_line() { printf '%s\n' "$1" | grep -qxF -- "$2" && ok || ko "$3 — sem a linha '$2'"; }
+
+# /4 — artefato que cita critério sem cópia no nó arquivado fica em ## mantido
+mk4() {
+  mkproj "$1"
+  printf -- '\n## criterios-aceite\n\n- **d/1** — QUANDO x O SISTEMA DEVE y\n' >> "$1/docs/audora/arquivo/2026-01-01-d.md"
+  git -C "$1" add -A; git -C "$1" commit -qm crit
+  addc "$1" docs/audora/specs/d-escopo.md 'Critérios: d/1 e d/2.'
+  addc "$1" docs/audora/planos/arquivo/plano-d.md 'Cobre d/1.'
+  addc "$1" docs/audora/e2e/e2e-d.md 'd/10 passou; d/3, d/2, d/3 e dd/7 também.'
+}
+p="$SP/c4"; mk4 "$p"
+antes="$(snap "$p")"
+runc "$p" varrer
+assert_eq 0 "$code" "memoria-integra/4 varrer → 0"
+assert_eq 'cleanup: relatório — nada foi alterado
+## plano arquivado
+- docs/audora/planos/arquivo/plano-d.md | nó d delivered
+## mantido
+- docs/audora/e2e/e2e-d.md | mantido: cita d/2, d/3, d/10 sem cópia no nó arquivado
+- docs/audora/specs/d-escopo.md | mantido: cita d/2 sem cópia no nó arquivado
+total: 1 item(ns) no lote' "$out" "memoria-integra/4 spec com d/2 em mantido, e2e com dedupe e ordem numérica, plano no lote"
+runc "$p" contar
+assert_eq 1 "$out" "memoria-integra/4 contar → 1"
+assert_eq "$antes" "$(snap "$p")" "memoria-integra/4 varrer e contar não alteram nada"
+addc "$p" docs/audora/specs/d-escopo.md 'Sem critério citado.'
+runc "$p" varrer
+assert_line "$(secao "$out" 'spec de nó entregue')" '- docs/audora/specs/d-escopo.md | nó d delivered' "memoria-integra/4 spec sem critério segue no lote"
+p="$SP/c4b"; mk4 "$p"
+git -C "$p" rm -q docs/audora/arquivo/2026-01-01-d.md; git -C "$p" commit -qm "sem arquivo"
+runc "$p" varrer
+assert_line "$(secao "$out" 'mantido')" '- docs/audora/specs/d-escopo.md | mantido: cita d/1, d/2 sem cópia no nó arquivado' "memoria-integra/4 nó arquivado ausente: nenhum critério tem cópia"
+p="$SP/c4c"; mk4 "$p"
+addc "$p" docs/audora/arquivo/2026-01-01-d-historico.md '- **d/2** — QUANDO a O SISTEMA DEVE b'
+runc "$p" varrer
+assert_line "$(secao "$out" 'spec de nó entregue')" '- docs/audora/specs/d-escopo.md | nó d delivered' "memoria-integra/4 critério no -historico conta como cópia"
+p="$SP/c4d"; mk4 "$p"
+perl -i -pe 's/ D → .*$/ D/' "$p/MEMORY.md"; git -C "$p" commit -qam "sem seta"
+runc "$p" varrer
+assert_line "$(secao "$out" 'mantido')" '- docs/audora/specs/d-escopo.md | mantido: cita d/2 sem cópia no nó arquivado' "memoria-integra/4 sem seta: acha o nó em arquivo/ pelo id"
+assert_contains "$(achata skills/cleanup/SKILL.md)" 'spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado' "memoria-integra/4 skill explica o mantido por critério"
+
 report

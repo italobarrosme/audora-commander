@@ -60,6 +60,7 @@ sem perder linha de assert (anti-fraude do gate).
 ## Decisões tomadas pela IA
 
 - T4 (execute): o comando de contagem do sync usa `grep -cE '(^|[^[:alnum:]_-])<id>/[0-9]+'` em vez de `'<id>/[0-9]+'` — sem borda à esquerda, `z/[0-9]+` casa `zz/1` e a asserção "nó só com `zz/1` → 0" do próprio plano falharia.
+- T5 (execute): a fixture `mkt11` de `tests/test-skill-cleanup.sh` cita `(d/1..2)` no plano arquivado sem critério no nó — com /4 o plano ia para `## mantido` e quebrava `cleanup-lote-encadeado/1,3`. O nó arquivado da fixture ganhou `- **d/1** — …` (nó real tem critério); nenhum assert mudou. O "nada muda lá" do plano estava errado.
 
 ## Notas de sessão
 

@@ -169,6 +169,25 @@ sub ligacao {
 # Fora de candidato: nós (vivos e arquivados) e decisões vivas nunca são removidos.
 sub protegido { $_[0] =~ m{^docs/audora/(memory|arquivo)/} || $_[0] eq 'docs/audora/decisoes-vivas.md' }
 
+# Critérios <id>/<n> citados em $f e ausentes do nó arquivado (+ irmão -historico),
+# sem repetição, em ordem numérica. Nó arquivado = caminho após "→" no índice;
+# sem seta (ou alvo ausente), o 1º docs/audora/arquivo/AAAA-MM-DD-<id>.md.
+sub criterios_sem_copia {
+  my ($f, $id) = @_;
+  my $tok = qr{(?<![A-Za-z0-9_-])\Q$id\E/(\d+)(?!\d)};
+  my $art = ler($f);
+  my %cita; $cita{$1 + 0} = 1 while $art =~ /$tok/g;
+  return () unless %cita;
+  my ($e) = grep { $_->{id} eq $id } @INDICE;
+  my ($no) = (($e->{cols}[2] // '') =~ /→\s*(\S+)/);
+  unless (defined $no && -f $no) {
+    ($no) = grep { m{/\d{4}-\d{2}-\d{2}-\Q$id\E\.md$} } sort glob('docs/audora/arquivo/*.md');
+  }
+  my $txt = defined $no ? ler($no) . "\n" . ler($no =~ s/\.md$/-historico.md/r) : '';
+  my %tem; $tem{$1 + 0} = 1 while $txt =~ /$tok/g;
+  return map { "$id/$_" } sort { $a <=> $b } grep { !$tem{$_} } keys %cita;
+}
+
 # Artefatos de nó entregue, depuração velha e sem referência.
 sub classifica_artefatos {
   my $nos = texto_nos(); my $vivo = texto_vivo();
@@ -176,7 +195,11 @@ sub classifica_artefatos {
     next if protegido($f);
     my ($tipo, $id) = ligacao($f);
     my $e = defined $id ? ($ESTADO{$id} // '') : '';
-    if ($tipo && $e eq 'delivered') { item($tipo, $f, "nó $id delivered"); next; }
+    if ($tipo && $e eq 'delivered') {
+      my @sem = criterios_sem_copia($f, $id);
+      if (@sem) { push @MANTIDO, "- $f | mantido: cita " . join(', ', @sem) . ' sem cópia no nó arquivado'; next; }
+      item($tipo, $f, "nó $id delivered"); next;
+    }
     next if $VIVO{$e};
     (my $b = $f) =~ s{.*/}{};
     if ($f =~ m{^docs/audora/depuracao/}) {

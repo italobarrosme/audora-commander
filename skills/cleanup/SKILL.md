@@ -31,7 +31,7 @@ carregar). O julgamento semântico fica aqui. Rode tudo na raiz do projeto.
 
 Nunca entram: nós (`docs/audora/memory/`, `docs/audora/arquivo/`), decisões
 vivas, arquivo fora de `docs/audora/`. Fora do lote, com aviso:
-- `## mantido` — planned órfão com dependente vivo;
+- `## mantido` — planned órfão com dependente vivo, e spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado;
 - `## não tocado` — fora do git ou com mudança não commitada;
 - `## nunca existiu` — link para caminho que nunca foi versionado (erro de digitação, exemplo ou fixture): aviso fora do lote, que o humano corrige à mão se quiser; o `aplicar` ignora a seção.
 

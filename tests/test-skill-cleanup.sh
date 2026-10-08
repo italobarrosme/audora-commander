@@ -629,7 +629,7 @@ mkt11() {
   mkdir -p "$d/docs/audora/specs" "$d/docs/audora/planos/arquivo" "$d/docs/audora/e2e"
   printf '# spec d\n' > "$d/docs/audora/specs/d-escopo.md"
   printf '# plano d\n\nEscopo: `docs/audora/specs/d-escopo.md` (d/1..2)\n\n- [spec](../../specs/d-escopo.md) — critérios\n' > "$d/docs/audora/planos/arquivo/plano-d.md"
-  printf '\nSpec: docs/audora/specs/d-escopo.md\n' >> "$d/docs/audora/arquivo/2026-01-01-d.md"
+  printf '\n- **d/1** — QUANDO x O SISTEMA DEVE y\n\nSpec: docs/audora/specs/d-escopo.md\n' >> "$d/docs/audora/arquivo/2026-01-01-d.md"
   printf '# e2e d\n\nVer [sumiu](../specs/sumiu.md).\n' > "$d/docs/audora/e2e/e2e-d.md"
   git -C "$d" add -A; git -C "$d" commit -qm t11
 }
