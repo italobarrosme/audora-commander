@@ -9,8 +9,14 @@ senão `memory-validate` bloqueia a próxima escrita.
 1. **Julgamento, primeiro** (só você faz): consolidar o bloco `delta` no
    corpo do nó; promover a `docs/audora/decisoes-vivas.md` as decisões
    aprovadas no portão, só as que passaram no filtro de entrada
-   (`decisoes-vivas.md` desta pasta); e consolidar os aprendizados na seção
-   Aprendizados do `MEMORY.md` (skill memory, compactar — dedupe por grep).
+   (`decisoes-vivas.md` desta pasta); e, se a seção Aprendizados do
+   `MEMORY.md` tem linha de aprendizado, movê-las — literal, na mesma ordem,
+   para o fim de `docs/audora/aprendizados.md`, sem tocar as que já estão lá:
+   ```bash
+   [ -f docs/audora/aprendizados.md ] || cp "<raiz do plugin>/templates/aprendizados-template.md" docs/audora/aprendizados.md
+   perl -ne 'if (/^## /) { $s = /^## Aprendizados/ } print if $s && /^- \d{4}-\d{2}-\d{2} \| /' MEMORY.md >> docs/audora/aprendizados.md
+   ```
+   e deixar na seção só a linha de ponteiro de `templates/MEMORY-template.md`.
 2. **Antes do `git mv`**: conte os critérios do nó com
    `awk '/^## criterios-aceite/{f=1;next} /^## /{f=0} f' docs/audora/memory/<id>.md | grep -cE '(^|[^[:alnum:]_-])<id>/[0-9]+'`.
    Zero e a spec `docs/audora/specs/<id>-escopo.md` tem critério `<id>/<n>`

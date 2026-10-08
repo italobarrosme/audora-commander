@@ -228,4 +228,36 @@ ccf="$(printf '%s' "$cc" | tr '\n' ' ' | tr -s ' ')"
 assert_contains "$ccf" 'nada casou → seguir sem aprendizados, sem ler a seção' "memoria-integra/15 nada casou segue"
 assert_contains "$ccf" 'arquivo ausente não é erro' "memoria-integra/15 arquivo ausente não é erro"
 
+# /16 — sync move as linhas de aprendizado do MEMORY, literais e na ordem, para o fim de aprendizados.md
+sy="$(achata skills/validate/references/sync.md)"
+assert_contains "$sy" 'literal, na mesma ordem, para o fim de `docs/audora/aprendizados.md`, sem tocar as que já estão lá' "memoria-integra/16 sync move literal e na ordem"
+assert_contains "$sy" 'deixar na seção só a linha de ponteiro' "memoria-integra/16 sync deixa só o ponteiro"
+assert_not_contains "$sy" 'consolidar os aprendizados na seção' "memoria-integra/16 sync não consolida mais no MEMORY"
+assert_contains "$sy" 'nó primeiro, índice depois' "memoria-integra/16 sync mantém a ordem da transição"
+m_cria="$(tr -d '\r' < skills/validate/references/sync.md | grep -E '^ *\[ -f docs/audora/aprendizados\.md \]' | sed -E 's/^ +//' | head -1)"
+m_move="$(tr -d '\r' < skills/validate/references/sync.md | grep -E "^ *perl -ne 'if \(/\^## /\)" | sed -E 's/^ +//' | head -1)"
+assert_contains "$m_cria" 'templates/aprendizados-template.md' "memoria-integra/16 comando que cria o arquivo pelo template"
+assert_contains "$m_move" '>> docs/audora/aprendizados.md' "memoria-integra/16 comando que move as linhas"
+m_cria="${m_cria//<raiz do plugin>/$ROOT}"
+L1='- 2026-01-01 | plan | L1 um'; L2='- 2026-01-02 | execute | L2 dois [invalidado-em: 2026-02-01] [substituido-por: L1]'; L3='- 2026-01-03 | e2e | L3 três'
+mem16() { mkdir -p "$1/docs/audora"; printf '%s\n' 'memory-schema: 1' '' '## Constituição [carga: sempre]' '' '- **stack**: x' '' \
+  '## Aprendizados [carga: sempre]' '' "$L1" '' "$L2" "$L3" '' '## Índice de nós [carga: sempre]' '' '- z | planned | Z | r | k | —' > "$1/MEMORY.md"; }
+move16() { (cd "$1" && bash -c "$m_cria" && bash -c "$m_move"); }
+d="$SP/m16a"; mem16 "$d"; move16 "$d"
+assert_eq '# Aprendizados' "$(head -1 "$d/docs/audora/aprendizados.md" 2>/dev/null | tr -d '\r')" "memoria-integra/16 arquivo criado pelo template"
+assert_eq "$L1|$L2|$L3" "$(grep -E '^- [0-9]{4}' "$d/docs/audora/aprendizados.md" 2>/dev/null | tr -d '\r' | paste -sd'|')" "memoria-integra/16 L1 L2 L3 literais, na ordem"
+tpl_b="$(wc -c < templates/aprendizados-template.md)"
+assert_eq "$(md5sum < templates/aprendizados-template.md)" "$(head -c "$tpl_b" "$d/docs/audora/aprendizados.md" 2>/dev/null | md5sum)" "memoria-integra/16 resto do arquivo = template byte a byte"
+assert_eq "$((tpl_b + $(printf '%s\n' "$L1" "$L2" "$L3" | wc -c)))" "$(wc -c 2>/dev/null < "$d/docs/audora/aprendizados.md")" "memoria-integra/16 só o template e as 3 linhas"
+assert_not_contains "$(cat "$d/docs/audora/aprendizados.md" 2>/dev/null)" '**stack**' "memoria-integra/16 Constituição não vai para o arquivo"
+assert_not_contains "$(cat "$d/docs/audora/aprendizados.md" 2>/dev/null)" '- z | planned' "memoria-integra/16 índice não vai para o arquivo"
+d="$SP/m16b"; mem16 "$d"; printf '%s\n' '# Aprendizados' '' '- 2026-01-00 | plan | X1 a' '- 2026-01-00 | plan | X2 b' > "$d/docs/audora/aprendizados.md"
+cp "$d/docs/audora/aprendizados.md" "$SP/m16b.antes"; antes_b="$(wc -c < "$SP/m16b.antes")"
+move16 "$d"
+assert_eq "$(md5sum < "$SP/m16b.antes")" "$(head -c "$antes_b" "$d/docs/audora/aprendizados.md" | md5sum)" "memoria-integra/16 linhas que já estavam lá ficam intactas"
+assert_eq "$L1|$L2|$L3" "$(tail -c +$((antes_b + 1)) "$d/docs/audora/aprendizados.md" | tr -d '\r' | paste -sd'|')" "memoria-integra/16 L1 L2 L3 depois das antigas"
+d="$SP/m16c"; mem16 "$d"; perl -i -pe 's/\n/\r\n/' "$d/MEMORY.md"; printf '# Aprendizados\r\n' > "$d/docs/audora/aprendizados.md"
+move16 "$d"
+assert_eq "$(printf '%s\r\n' "$L1" "$L2" "$L3" | md5sum)" "$(tail -c +17 "$d/docs/audora/aprendizados.md" | md5sum)" "memoria-integra/16 MEMORY em CRLF: linhas movidas byte a byte (\\r\\n)"
+
 report
