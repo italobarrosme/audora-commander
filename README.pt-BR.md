@@ -170,7 +170,7 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   respondida no nó.
 - **Portões humanos**: o portão de escopo — espera sua aprovação explícita.
 - **Próxima**: `plan`, depois de uma PARADA — você roda `/clear` e digita
-  `plan de <id>`; dizer "segue" roda a fase num subagente de contexto limpo.
+  `plan de <id>`; dizer "agente" roda a fase num subagente de contexto limpo.
 
 ### `plan`
 

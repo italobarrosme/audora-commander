@@ -115,7 +115,7 @@ fase seguinte na mesma resposta. O **Próximo** do bloco fica:
 
 Sem parada: porta de entrada → 1ª fase; LIGHT, HOTFIX; e2e ↔ validate.
 
-- Humano diz "segue", "continua" ou "sem clear" → a fase seguinte roda em
+- Humano diz "agente", "continua" ou "sem clear" → a fase seguinte roda em
   subagente de contexto zerado pelo
   [fase-subagente-template.md](templates/fase-subagente-template.md); a sessão
   principal recebe só o bloco dele.

@@ -169,7 +169,7 @@ Details per skill: [Skills in detail](#skills-in-detail).
   decision in the node.
 - **Human gates**: the scope gate — waits for your explicit approval.
 - **Next**: `plan`, after a STOP — you run `/clear` and type `plan de <id>`;
-  saying "segue" runs it in a clean-context subagent instead.
+  saying "agente" runs it in a clean-context subagent instead.
 
 ### `plan`
 

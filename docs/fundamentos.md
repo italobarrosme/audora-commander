@@ -143,7 +143,7 @@ Regras:
    pergunta cuja resposta muda outra vai em série.
 6. **Fim de fase é PARADA; `/clear` é do humano**: ao fechar scope, plan ou
    execute de MEDIUM/HIGH, a skill PARA e não emenda a fase seguinte — imprime
-   "PARADA: rode /clear e, na sessão nova: `<fase> de <id>`". "Segue" sem
+   "PARADA: rode /clear e, na sessão nova: `<fase> de <id>`". "Agente" sem
    /clear roda a fase seguinte em subagente de contexto zerado.
    Antes de `/clear` no meio de demanda: despejar notas de sessão no arquivo do
    plano (abordagens descartadas + porquê, estado parcial, próximos passos).

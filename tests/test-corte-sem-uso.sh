@@ -20,14 +20,14 @@ for f in hooks/loop templates/loop-prompt-template.md tests/test-loop.sh tests/t
   assert_no_file "$f" "corte-sem-uso/7,11 $f removido"
 done
 assert_not_contains "$(cat MEMORY.md templates/MEMORY-template.md)" '**loop**:' "corte-sem-uso/7 Constituição sem bullet loop:"
-# --- /8 "segue" continua em subagente; template sem motor ---
+# --- /8 "agente" continua em subagente; template sem motor ---
 fs="$(tr -d '\r' < templates/fase-subagente-template.md)"
 assert_contains "$fs" 'o humano diz "agente" na PARADA' "corte-sem-uso/8 template cobre o agente"
 assert_contains "$fs" 'contexto zerado rodando {{FASE}} de {{ID}}' "corte-sem-uso/8 subagente de contexto zerado"
 assert_not_contains "$fs" 'motor' "corte-sem-uso/8 template sem motor"
 assert_not_contains "$fs" '{{TAREFA}}' "corte-sem-uso/8 placeholder do fallback do motor fora"
 pa="$(tr -d '\r' < templates/bloco-fechamento-template.md | awk '/^## Parada entre fases/{f=1;next} /^## /{f=0} f')"
-assert_contains "$pa" 'templates/fase-subagente-template.md' "corte-sem-uso/8 segue aponta o subagente"
+assert_contains "$pa" 'templates/fase-subagente-template.md' "corte-sem-uso/8 agente aponta o subagente"
 # --- /9 9 skills (skill-cleanup somou a cleanup), nenhuma superfície cita a skill worktree ---
 assert_eq "9" "$(ls -d skills/*/ | wc -l | tr -d ' ')" "skill-cleanup 9 skills (substitui corte-sem-uso/9 8 skills)"
 assert_no_file skills/worktree/SKILL.md "corte-sem-uso/9 skill worktree removida"

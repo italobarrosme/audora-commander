@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# contexto-por-fase — parada entre fases, retomada, "segue" em subagente.
+# contexto-por-fase — parada entre fases, retomada, "agente" em subagente.
 source "$(dirname "$0")/lib.sh"
 cd "$ROOT" || exit 1
 # sec <arquivo> '<cabeçalho exato>' → corpo da seção, sem \r (checkout CRLF)
@@ -14,7 +14,7 @@ assert_contains "$pa" 'porta de entrada → 1ª fase' "/2 entrada emenda"
 assert_contains "$pa" 'LIGHT, HOTFIX' "/3 LIGHT e HOTFIX emendam"
 assert_contains "$pa" 'e2e ↔ validate' "/4 e2e e validate na mesma sessão"
 assert_not_contains "$pa" 'autopilot' "corte-sem-uso/6 parada sem exceção de autopilot"
-assert_contains "$pa" 'templates/fase-subagente-template.md' "/5 segue aponta o template do subagente"
+assert_contains "$pa" 'templates/fase-subagente-template.md' "/5 agente aponta o template do subagente"
 assert_contains "$pa" 'recusar nomeando o que falta e a fase certa' "/9 retomada inválida recusa"
 assert_contains "$pa" 'interrompida, bloqueada ou reprovada não tem PARADA' "/12 fase parada sem retomada"
 assert_not_contains "$(tr -d '\r' < "$T")" '/clear recomendado' "/13 template não volta a só recomendar"

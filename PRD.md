@@ -126,7 +126,7 @@ Code.
 Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
 a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
 `<fase> de <id>`; a fase nova se reancora só pelos artefatos em disco.
-"Segue" sem `/clear` roda a fase seguinte num subagente de contexto zerado
+"Agente" sem `/clear` roda a fase seguinte num subagente de contexto zerado
 (`templates/fase-subagente-template.md`), que nunca aprova portão e devolve
 pergunta humana à sessão principal. Sem parada: entrada → 1ª fase, LIGHT,
 HOTFIX e e2e ↔ validate. Todo portão do meio é humano — não há modo que o

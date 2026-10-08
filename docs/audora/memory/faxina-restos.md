@@ -48,5 +48,8 @@ fica); arquivos locais fora do git (`docs/study/`,
 - 2026-10-08 (humano): os templates `bloco-fechamento` (formato para o
   painel do VS Code) e `fase-subagente` ("agente" na PARADA, regra 6) são a
   verdade — os testes acompanham o texto novo. Teto da carga sobe pelo
-  template maior: BASE 47741 → 53226 (teto 54900), FULL 55661 → 61146
+  template maior: BASE 47741 → 53227 (teto 54900), FULL 55661 → 61147
   (teto 63000).
+- 2026-10-08 (humano): o comando da PARADA que despacha o subagente passa a ser
+  "agente" em todo lugar (template, PRD, READMEs, fundamentos, aprendizado
+  do e2e) — "segue" sai; CHANGELOG e nós arquivados ficam como história.
