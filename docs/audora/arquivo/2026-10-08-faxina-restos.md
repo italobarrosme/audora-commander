@@ -1,9 +1,9 @@
 ---
 id: faxina-restos
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/arquivo/2026-08-25-grafo-v2.md, docs/audora/arquivo/2026-08-31-memory-fatiada-historico.md, docs/audora/arquivo/2026-08-31-memory-fatiada.md, docs/audora/arquivo/2026-09-04-gate-mecanico.md, docs/audora/arquivo/2026-09-27-limpeza-codigo-morto.md, docs/audora/arquivo/2026-09-27-memory-graphify.md, docs/audora/arquivo/2026-09-27-plugin-v0.1.0.md, docs/audora/arquivo/2026-09-29-remover-graphify.md, docs/audora/arquivo/2026-09-30-corte-sem-uso.md, docs/audora/decisoes-vivas.md, docs/fundamentos.md, docs/specs/2026-08-24-estudo-grafo-mercado.md, templates/bloco-fechamento-template.md, templates/fase-subagente-template.md, tests/test-carga.sh, tests/test-contexto-por-fase.sh, tests/test-corte-sem-uso.sh, tests/test-docs.sh, tests/test-dogfood.sh, tests/test-leitura-por-secao.sh, tests/test-memory-guard.sh, tests/test-memory-validate.sh, tests/test-parada-revisao.sh, tests/test-plano-mapa.sh, tests/test-session-start.sh, tests/test-skills.sh, tests/test-templates.sh]
 keywords: [faxina, limpeza, historico, sem-uso]
 resumo: Apagar do repo o que não é usado — estudo parado em docs/specs e toda menção à antiga ferramenta externa de índice de código.
 atualizado-em: 2026-10-08
@@ -53,3 +53,13 @@ fica); arquivos locais fora do git (`docs/study/`,
 - 2026-10-08 (humano): o comando da PARADA que despacha o subagente passa a ser
   "agente" em todo lugar (template, PRD, READMEs, fundamentos, aprendizado
   do e2e) — "segue" sai; CHANGELOG e nós arquivados ficam como história.
+
+## evidencia
+
+- faxina-restos/1 — `git ls-files docs/specs` → só o spec de design.
+- faxina-restos/2 — `git grep -i -l -e graphify -e consultar-codigo` → vazio
+  (fica 1 menção no nó `memoria-integra`, de outra demanda, não versionado).
+- faxina-restos/3 — `bash tests/run.sh` → exit 0, 0 falha, 1238 asserts
+  (`6cc10cb`); suíte em worktree limpo do `75add24` → 0 falha;
+  `hooks/cleanup varrer` → nada a limpar.
+- Portão: humano mandou commitar (2026-10-08) e fechar ("fecha").

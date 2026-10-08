@@ -95,6 +95,8 @@ time pequeno em projetos web/mobile/api.
 - 2026-10-03 | execute | Nesta máquina `env` no PATH é `~/.local/bin/env` (script do instalador do uv): `env VAR=x cmd` não roda `cmd` e sai 0 calado (falso verde) — em teste, setar variável com `unset`/`export` num subshell, nunca `env`; shebang `#!/usr/bin/env` (caminho absoluto) não é afetado.
 - 2026-10-04 | e2e | TaskStop num script bash em background mata só o invólucro: o script e os filhos (`run.sh`, teste travado) seguem vivos. Matar pelo `/proc/*/cmdline` com padrão ANCORADO no começo (`"bash tests/run.sh"*`): padrão solto (`*test-zz*`) casa a linha de comando do próprio shell e o `kill -9` derruba ele.
 - 2026-10-07 | validate | Suíte de ferramenta que COMMITA precisa de fixture com hook `commit-msg` do projeto-alvo (commitlint `config-conventional`: linha de corpo ≤ 100) e lote grande: a da cleanup só tinha lotes pequenos e o 1º lote real (pepity, 189 itens) foi recusado e desfeito.
+- 2026-10-08 | execute | Outra sessão com edição aberta no `MEMORY.md` (ou em qualquer arquivo): `git add -p` não roda no Bash tool — commitar só as próprias linhas aplicando a mesma troca sobre `git show HEAD:<arq>`, `git hash-object -w` no resultado e `git update-index --cacheinfo 100644,<hash>,<arq>`; a cópia de trabalho recebe a troca por cima da edição alheia.
+- 2026-10-08 | execute | Guardas de carga BASE pinadas no byte (`leitura-por-secao/11`, `parada-revisao/9`): trocar UMA palavra em arquivo da BASE ("segue" → "agente", +1 byte no template) reprova a suíte — medir com `bash tests/test-carga.sh` e subir guarda e nota de medição no mesmo commit.
 
 ## Índice de nós [carga: sempre]
 
@@ -124,7 +126,7 @@ time pequeno em projetos web/mobile/api.
 - cleanup-link-preciso | delivered | Link preciso da cleanup → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
 - suite-paralela | delivered | Suíte em paralelo → docs/audora/arquivo/2026-10-05-suite-paralela.md
 - cleanup-commit-curto | delivered | Commit curto da cleanup → docs/audora/arquivo/2026-10-07-cleanup-commit-curto.md
-- faxina-restos | in-progress | Faxina do sem uso | Apagar do repo o que não é usado — estudo parado em docs/specs e toda menção à antiga ferramenta externa de índice de código | faxina, limpeza, historico, sem-uso | docs/specs/, tests/, PRD.md, CHANGELOG.md, docs/audora/arquivo/, MEMORY.md
+- faxina-restos | delivered | Faxina do sem uso → docs/audora/arquivo/2026-10-08-faxina-restos.md
 - memory-inicio-fim | planned | Memória no início e fim | Memória escrita/atualizada no início e no fim de toda demanda | memory, ciclo, enforcement | skills/
 - scope-batch | delivered | Scope em lote → docs/audora/arquivo/2026-09-01-scope-batch.md
 - sync-mecanizado | delivered | Sync mecanizado → docs/audora/arquivo/2026-09-04-sync-mecanizado.md

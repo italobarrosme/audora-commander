@@ -19,6 +19,7 @@ Formato: `- AAAA-MM-DD | <versão ou —> | <id> | <1 frase> → docs/audora/arq
 - 2026-10-03 | 0.16.0 | cleanup-link-preciso | A cleanup só trata como link quebrado o alvo que existiu no histórico do HEAD (com a nota "já não existia … (link limpo pela cleanup)"); link para caminho nunca versionado vira aviso `## nunca existiu` fora do lote, e a seção Aprendizados do `MEMORY.md` sai da varredura e da troca. → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
 - 2026-10-05 | — | suite-paralela | `tests/run.sh` roda os arquivos de teste em paralelo (`SUITE_JOBS`, default = núcleos; `1` = série) com timeout por arquivo (`SUITE_TIMEOUT`, default 300 s; `0` desliga), blocos na ordem do glob (stderr antes do stdout), tempo no resumo e o mesmo código de saída — suíte de 213 s para ~73 s. → docs/audora/arquivo/2026-10-05-suite-paralela.md
 - 2026-10-07 | — | cleanup-commit-curto | O commit do lote da cleanup quebra a lista de cada tipo em linhas de até 100 caracteres e passa no commitlint `config-conventional`, qualquer que seja o tamanho do lote. → docs/audora/arquivo/2026-10-07-cleanup-commit-curto.md
+- 2026-10-08 | — | faxina-restos | Sai do repo o que não tinha uso (estudo parado em `docs/specs/` e toda menção à antiga ferramenta de índice de código, guardas de teste inclusas, 671 → 654 asserts); o bloco de fechamento ganha formato para o painel do VS Code e o comando da PARADA que despacha o subagente passa de "segue" para "agente". → docs/audora/arquivo/2026-10-08-faxina-restos.md
 
 ## Histórico até 2026-10-01
 
