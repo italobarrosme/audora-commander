@@ -455,13 +455,13 @@ sem perder linha de assert (anti-fraude do gate).
 - **asserções**:
   - comando do sync, na fixture `f23`: nó `z` com só `9 critérios \`z/1..9\` na spec dedicada` em `## criterios-aceite` → `0`. Os 3 casos atuais seguem `2`/`0`/`0`.
   - cleanup: `mk4` com o nó arquivado só com a linha de ponteiro `Spec: 2 critérios (d/1..2) na spec dedicada` (sem `- **d/1**`) → `## mantido` com `- <spec de d> | mantido: cita d/1, d/2 sem cópia no nó arquivado`. Os casos atuais de `c4`/`c4b`/`c4c`/`c4d` seguem iguais.
-  - dogfood: `hooks/cleanup varrer` neste repo sem mudança no relatório, salvo item que passe a `## mantido` (anotar nas Notas).
+  - dogfood: `hooks/cleanup varrer` neste repo sem mudança no relatório, salvo item que passe a `## mantido` (anotar nas Notas). Resultado: `cleanup: nada a limpar` com o hook do HEAD e o novo — sem specs aqui, nada muda.
 - **done quando**: casos verdes; `tests/test-skill-cleanup.sh` verde, sem perder assert; carga FULL na regra.
 - **carga FULL**: sim (sync.md, cleanup SKILL.md).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "ponteiro com intervalo não conta" e no `## mantido` do nó só com ponteiro
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add docs/audora/memory/ skills/validate/references/sync.md hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/2,4): criterio numerado e a linha do criterio, nao a mencao"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "ponteiro com intervalo não conta" e no `## mantido` do nó só com ponteiro
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add docs/audora/memory/ skills/validate/references/sync.md hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/2,4): criterio numerado e a linha do criterio, nao a mencao"`
 
 ## Tarefa 15: sync põe a quebra de linha que falta antes de mover os aprendizados
 

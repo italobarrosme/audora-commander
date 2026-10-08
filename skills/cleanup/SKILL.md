@@ -37,7 +37,7 @@ Nunca entram — o framework os lê: `MEMORY.md`, nós (`docs/audora/memory/`,
 `docs/audora/aprendizados.md`; nem arquivo fora de `docs/audora/`. O
 `aplicar` recusa lote à mão que traga algum deles, sem alterar nada; planned
 órfão aprovado segue apagando o próprio nó. Fora do lote, com aviso:
-- `## mantido` — planned órfão com dependente vivo, e spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado;
+- `## mantido` — planned órfão com dependente vivo, e spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado (cópia = linha `- **<id>/<n>**` do nó);
 - `## não tocado` — fora do git ou com mudança não commitada;
 - `## nunca existiu` — link para caminho que nunca foi versionado (erro de digitação, exemplo ou fixture): aviso fora do lote, que o humano corrige à mão se quiser; o `aplicar` ignora a seção.
 

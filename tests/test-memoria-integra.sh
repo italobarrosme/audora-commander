@@ -59,6 +59,9 @@ printf -- '# z\n\n## criterios-aceite\n\n## delta\n\n- ADICIONADO z/3\n' > "$fz/
 assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/3 critério só no delta não conta"
 printf -- '# z\n\n## criterios-aceite\n\n- **zz/1** — QUANDO a O SISTEMA DEVE b\n' > "$fz/docs/audora/memory/z.md"
 assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/3 critério de outro id não conta"
+printf -- '# z\n\n## criterios-aceite\n\n9 critérios `z/1..9` na spec dedicada\n' > "$fz/docs/audora/memory/z.md"
+assert_eq 0 "$(cd "$fz" && bash -c "$conta")" "memoria-integra/2 ponteiro com intervalo não conta"
+assert_contains "$sy" 'tem linha de critério `- **<id>/<n>** — …`' "memoria-integra/2 sync: critério da spec é a linha"
 
 # --- fixtures git da cleanup (copiadas de tests/test-skill-cleanup.sh) ---
 C="$ROOT/hooks/cleanup"
@@ -120,7 +123,12 @@ p="$SP/c4d"; mk4 "$p"
 perl -i -pe 's/ D → .*$/ D/' "$p/MEMORY.md"; git -C "$p" commit -qam "sem seta"
 runc "$p" varrer
 assert_line "$(secao "$out" 'mantido')" '- docs/audora/specs/d-escopo.md | mantido: cita d/2 sem cópia no nó arquivado' "memoria-integra/4 sem seta: acha o nó em arquivo/ pelo id"
+p="$SP/c4e"; mk4 "$p"
+perl -i -pe 's/^- \*\*d\/1\*\* .*$/Spec: 2 critérios (d\/1..2) na spec dedicada/' "$p/docs/audora/arquivo/2026-01-01-d.md"; git -C "$p" commit -qam "so ponteiro"
+runc "$p" varrer
+assert_line "$(secao "$out" 'mantido')" '- docs/audora/specs/d-escopo.md | mantido: cita d/1, d/2 sem cópia no nó arquivado' "memoria-integra/4 nó só com ponteiro: menção não é cópia"
 assert_contains "$(achata skills/cleanup/SKILL.md)" 'spec, plano arquivado ou relatório e2e que cita critério `<id>/<n>` sem cópia no nó arquivado' "memoria-integra/4 skill explica o mantido por critério"
+assert_contains "$(achata skills/cleanup/SKILL.md)" 'cópia = linha `- **<id>/<n>**` do nó' "memoria-integra/4 skill: cópia é a linha do critério"
 
 # /12 — arquivo que o framework lê nunca entra no lote; aplicar recusa lote à mão que o traga
 lote_de() { local a="$1"; shift; printf '%s\n' 'cleanup: relatório — nada foi alterado' "$@" > "$a"; }

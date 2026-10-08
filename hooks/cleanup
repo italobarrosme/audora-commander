@@ -169,9 +169,10 @@ sub ligacao {
 # Fora de candidato: arquivo que o framework lê — nós (vivos e arquivados), decisões vivas e aprendizados.
 sub protegido { $_[0] =~ m{^docs/audora/(memory|arquivo)/} || $_[0] =~ m{^docs/audora/(decisoes-vivas|aprendizados)\.md$} }
 
-# Critérios <id>/<n> citados em $f e ausentes do nó arquivado (+ irmão -historico),
-# sem repetição, em ordem numérica. Nó arquivado = caminho após "→" no índice;
-# sem seta (ou alvo ausente), o 1º docs/audora/arquivo/AAAA-MM-DD-<id>.md.
+# Critérios <id>/<n> citados em $f e sem linha "- **<id>/<n>**" no nó arquivado
+# (+ irmão -historico): menção em ponteiro não é cópia. Sem repetição, em ordem
+# numérica. Nó arquivado = caminho após "→" no índice; sem seta (ou alvo
+# ausente), o 1º docs/audora/arquivo/AAAA-MM-DD-<id>.md.
 sub criterios_sem_copia {
   my ($f, $id) = @_;
   my $tok = qr{(?<![A-Za-z0-9_-])\Q$id\E/(\d+)(?!\d)};
@@ -184,7 +185,7 @@ sub criterios_sem_copia {
     ($no) = grep { m{/\d{4}-\d{2}-\d{2}-\Q$id\E\.md$} } sort glob('docs/audora/arquivo/*.md');
   }
   my $txt = defined $no ? ler($no) . "\n" . ler($no =~ s/\.md$/-historico.md/r) : '';
-  my %tem; $tem{$1 + 0} = 1 while $txt =~ /$tok/g;
+  my %tem; $tem{$1 + 0} = 1 while $txt =~ /^- \*\*\Q$id\E\/(\d+)(?!\d)/mg;
   return map { "$id/$_" } sort { $a <=> $b } grep { !$tem{$_} } keys %cita;
 }
 

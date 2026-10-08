@@ -19,7 +19,7 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 
 ## criterios-aceite
 
-<!-- "Linha de aprendizado" = bullet `- AAAA-MM-DD | <fase> | ...`; "critério numerado" = `<id>/<n>`. -->
+<!-- "Linha de aprendizado" = bullet `- AAAA-MM-DD | <fase> | ...`; "critério numerado" = linha `- **<id>/<n>** — …` (menção em ponteiro não conta). -->
 
 - **memoria-integra/1** — QUANDO a fase scope fecha uma demanda HIGH O
   SISTEMA DEVE gravar os critérios numerados em `## criterios-aceite` do nó,
@@ -72,19 +72,12 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 
 ## decisoes
 
-- 2026-10-08 (humano): 12 pontos → 3 demandas, esta primeiro. Descartado: demanda única HIGH (portão gigante).
-- 2026-10-08 (humano): critérios de HIGH sempre no nó; spec só contexto —
-  esta demanda já segue isso, sem spec. Descartado: spec copiada no sync
-  (duas cópias vivas); spec nunca apagada (critério fora da memória).
-- 2026-10-08 (humano): não reparar arquivados; "nó primeiro, índice depois"
-  ao criar e transicionar. Descartado: reparo; índice primeiro na criação.
-- 2026-10-08 (humano): cleanup só apaga o que não é mais usado (/4, /12,
-  /13). Plano arquivado e relatório e2e de nó entregue seguem saindo, salvo
-  se citam critério ausente do nó.
+- 4 decisões do scope (3 demandas; critério de HIGH no nó; sem reparo de arquivados; cleanup só apaga o sem uso) → [histórico](memoria-integra-historico.md).
 - 2026-10-08 (humano, plan): não compactar; aprendizados saem do MEMORY para `docs/audora/aprendizados.md`, consultado por grep. Descartado: aviso > 40 + compactação no sync (decisão anterior, invalidada); histórico manual.
 - 2026-10-08 (humano, plan): MEMORY antigo migra no próximo sync; arquivo nasce no 1º aprendizado. Descartado: migrar no 1º registro; nunca migrar; criar no bootstrap.
 - 2026-10-08 (humano, plan): /12 vale para itens que removem arquivo pelo caminho; planned órfão aprovado segue apagando o próprio nó. Descartado: órfão com arquivo vai para `## mantido`.
 - 2026-10-08 (humano, plan): divergência MEMORY × código no /18 (a prova citava linhas que o faxina-restos já apagou) → /18 sem essa prova; ferramenta removida não volta à memória. Descartado: restaurar as linhas; trocar por prova das invalidadas atuais.
+- 2026-10-08 (humano, validate): critério numerado = linha `- **<id>/<n>** — …`; menção em ponteiro não conta. Descartado: só o sync; rebaixar a ressalva.
 
 ## delta
 
@@ -92,6 +85,7 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 - MODIFICADO (2026-10-08): /12 `aprendizados-historico.md` → `aprendizados.md`; fora-de-escopo sem a busca no histórico.
 - ADICIONADO (2026-10-08): /14–/21. Já aplicado no corpo pela reabertura do scope, antes do plano.
 - MODIFICADO (2026-10-08, plan): /18 perde a prova de linhas de ferramenta já removida — só "MEMORY sem aprendizado, todos em `docs/audora/aprendizados.md`".
+- MODIFICADO (2026-10-08, validate): "critério numerado" = `<id>/<n>` → linha `- **<id>/<n>** — …`.
 
 ## e2e
 
