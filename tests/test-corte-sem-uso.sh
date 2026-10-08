@@ -22,7 +22,7 @@ done
 assert_not_contains "$(cat MEMORY.md templates/MEMORY-template.md)" '**loop**:' "corte-sem-uso/7 Constituição sem bullet loop:"
 # --- /8 "segue" continua em subagente; template sem motor ---
 fs="$(tr -d '\r' < templates/fase-subagente-template.md)"
-assert_contains "$fs" 'o humano diz "segue" na PARADA' "corte-sem-uso/8 template cobre o segue"
+assert_contains "$fs" 'o humano diz "agente" na PARADA' "corte-sem-uso/8 template cobre o agente"
 assert_contains "$fs" 'contexto zerado rodando {{FASE}} de {{ID}}' "corte-sem-uso/8 subagente de contexto zerado"
 assert_not_contains "$fs" 'motor' "corte-sem-uso/8 template sem motor"
 assert_not_contains "$fs" '{{TAREFA}}' "corte-sem-uso/8 placeholder do fallback do motor fora"

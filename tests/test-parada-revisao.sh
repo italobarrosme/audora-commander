@@ -56,7 +56,7 @@ assert_not_contains "$(cat tests/test-carga.sh)" 'revisao-adversarial' "parada-r
 carga_out="$(bash tests/test-carga.sh 2>&1)"; carga_code=$?
 assert_eq 0 "$carga_code" "parada-revisao/9 test-carga.sh sai 0"
 base="$(printf '%s' "$carga_out" | grep -o 'base=[0-9]*' | cut -d= -f2)"
-[ -n "$base" ] && [ "$base" -le 47773 ] && ok || ko "parada-revisao/9 carga BASE '$base' > 47773"
+[ -n "$base" ] && [ "$base" -le 53226 ] && ok || ko "parada-revisao/9 carga BASE '$base' > 53226"
 
 # --- /4 /5 — 1 passagem completa + reverificação restrita; nunca 3ª ---
 p="$(flat "$R" '## Parada')"

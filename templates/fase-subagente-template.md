@@ -1,6 +1,6 @@
 # Template — prompt do subagente de fase
 
-> Usado quando o humano diz "segue" na PARADA (seção Parada entre fases de
+> Usado quando o humano diz "agente" na PARADA (seção Parada entre fases de
 > `templates/bloco-fechamento-template.md`). A sessão principal preenche
 > `{{FASE}}` e `{{ID}}` e despacha UM subagente (ferramenta Agent) com o texto abaixo.
 
@@ -11,8 +11,10 @@ Você é um subagente de contexto zerado rodando {{FASE}} de {{ID}} no framework
 3. NUNCA aprove portão: prepare o material; o portão é apresentado na sessão principal, ao humano.
 4. Precisa de input humano (requisito faltante, [PRECISA-CLARIFICAR: ...], falha irrecuperável) → pare e devolva a pergunta ou o diagnóstico. Nunca suponha a resposta.
 5. Ao terminar, devolva SÓ o bloco de fechamento da fase (formato de templates/bloco-fechamento-template.md).
+6. No chat da sessão mostra os agentes em execução abre outra sessao para continuar o processo enquanto os agentes estão trabalhando.
 ```
 
 Regras da sessão principal:
+
 - Subagente devolveu pergunta → perguntar ao humano, registrar a resposta no nó e redespachar.
 - Bloco devolvido com portão (plano HIGH, portão final da validate) → apresentar aqui e ESPERAR a decisão explícita.

@@ -73,8 +73,8 @@ assert_contains "$fu" 'A tarefa é mapa' "plano-mapa/1 fundamentos P2: tarefa é
 
 # --- /14 /15 — teto BASE intacto (FULL: prd-foto/2); versão 0.16.0 (skill-cleanup) ---
 tc="$(tr -d '\r' < tests/test-carga.sh)"
-assert_contains "$tc" 'TETO_BASE=48000' "plano-mapa/14 teto BASE intacto"
-assert_contains "$tc" 'TETO_FULL=56900' "prd-foto/2 teto FULL 56900 — sync com CHANGELOG + template no FULL (substitui plano-mapa/14)"
+assert_contains "$tc" 'TETO_BASE=54900' "plano-mapa/14 teto BASE intacto"
+assert_contains "$tc" 'TETO_FULL=63000' "prd-foto/2 teto FULL 63000 — sync com CHANGELOG + template no FULL (substitui plano-mapa/14)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   assert_contains "$(tr -d '\r' < "$j")" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"
   assert_not_contains "$(tr -d '\r' < "$j")" '"version": "0.11.0"' "plano-mapa/15 $j sem 0.11.0"

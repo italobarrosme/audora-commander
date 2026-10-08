@@ -45,3 +45,8 @@ fica); arquivos locais fora do git (`docs/study/`,
   de ausência da ferramenta (test-corte-sem-uso, test-docs, test-skills,
   test-session-start, test-templates, test-dogfood); asserts de comportamento
   vivo nas mesmas linhas ficam, só com rótulo novo.
+- 2026-10-08 (humano): os templates `bloco-fechamento` (formato para o
+  painel do VS Code) e `fase-subagente` ("agente" na PARADA, regra 6) são a
+  verdade — os testes acompanham o texto novo. Teto da carga sobe pelo
+  template maior: BASE 47741 → 53226 (teto 54900), FULL 55661 → 61146
+  (teto 63000).

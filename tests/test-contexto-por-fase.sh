@@ -8,8 +8,8 @@ sec() { tr -d '\r' 2>/dev/null < "$1" | awk -v h="$2" '$0==h{f=1;next} /^## /{f=
 # --- /1 /2 /3 /4 /9 /10 /12 /13 — regra de parada no template de fechamento ---
 T=templates/bloco-fechamento-template.md
 pa="$(sec "$T" '## Parada entre fases')"
-assert_contains "$pa" 'PARADA: rode /clear e, na sessão nova,' "/1 Próximo vira PARADA com retomada"
-assert_contains "$pa" 'NÃO emenda a fase seguinte na mesma resposta' "/1 fase não emenda a seguinte"
+assert_contains "$pa" '**PARADA** — rode `/clear` e, na sessão nova, cole:' "/1 Próximo vira PARADA com retomada"
+assert_contains "$pa" 'é PARADA: a fase NÃO emenda a' "/1 fase não emenda a seguinte"
 assert_contains "$pa" 'porta de entrada → 1ª fase' "/2 entrada emenda"
 assert_contains "$pa" 'LIGHT, HOTFIX' "/3 LIGHT e HOTFIX emendam"
 assert_contains "$pa" 'e2e ↔ validate' "/4 e2e e validate na mesma sessão"
