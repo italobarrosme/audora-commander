@@ -154,4 +154,26 @@ assert_contains "$cs" 'só sai o que não é mais usado: nunca arquivo que o fra
 assert_contains "$(grep -E '^\| "' skills/cleanup/SKILL.md)" 'sem outra cópia viva' "memoria-integra/13 red flag do princípio"
 assert_contains "$cs" 'planned órfão aprovado segue apagando o próprio nó' "memoria-integra/13 órfão aprovado segue apagando o nó"
 
+# /19 — docs/audora/aprendizados.md fora da varredura e da troca de links
+sumiu() {
+  local d="$1" f; shift
+  for f in "$@"; do mkdir -p "$(dirname "$d/$f")"; printf 'existiu\n' > "$d/$f"; git -C "$d" add -- "$f"; done
+  git -C "$d" commit -qm "existiu: $*"; git -C "$d" rm -q -- "$@"; git -C "$d" commit -qm "sumiu: $*"
+}
+p="$SP/c19"; mkproj "$p"; sumiu "$p" docs/audora/specs/velha.md
+addc "$p" docs/audora/notas/n.md '# nota'
+addc "$p" docs/audora/aprendizados.md '- 2026-01-01 | execute | ver [v](specs/velha.md), `docs/audora/x/nunca.md` e notas/n.md'
+runc "$p" varrer
+assert_eq 'cleanup: nada a limpar' "$out" "memoria-integra/19 varrer → nada a limpar (sem link quebrado, nunca existiu nem sem referência)"
+addc "$p" docs/audora/specs/d-escopo.md '# spec d'
+printf -- '- 2026-01-02 | plan | contexto em [s](specs/d-escopo.md)\n' >> "$p/docs/audora/aprendizados.md"
+git -C "$p" commit -qam "aprendizado cita a spec"
+runc "$p" varrer; printf '%s\n' "$out" > "$SP/lote19.txt"
+assert_line "$out" '- docs/audora/specs/d-escopo.md | nó d delivered' "memoria-integra/19 spec de d no lote"
+runc "$p" aplicar "$SP/lote19.txt"
+assert_eq 0 "$code" "memoria-integra/19 aplicar → 0"
+assert_eq "$(git -C "$p" show HEAD~1:docs/audora/aprendizados.md)" "$(cat "$p/docs/audora/aprendizados.md")" "memoria-integra/19 aprendizados.md intocado pelo aplicar"
+assert_not_contains "$(git -C "$p" show --name-only --format= HEAD)" 'aprendizados.md' "memoria-integra/19 commit da cleanup sem aprendizados.md"
+assert_contains "$(achata skills/cleanup/SKILL.md)" 'fora da seção Aprendizados e de `docs/audora/aprendizados.md`' "memoria-integra/19 skill cita a exceção"
+
 report

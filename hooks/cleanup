@@ -149,10 +149,10 @@ sub mds_em {
   return sort { $a cmp $b } @a;
 }
 
-# Documentos vivos (/8): índice, nós não arquivados, decisões vivas, PRD, READMEs, skills.
+# Documentos vivos (/8): índice, nós não arquivados, decisões vivas, aprendizados, PRD, READMEs, skills.
 sub texto_vivo {
-  my @f = ('MEMORY.md', 'docs/audora/decisoes-vivas.md', 'PRD.md', glob('README*.md'),
-           glob('docs/audora/memory/*.md'), mds_em('skills'), mds_em('.claude/skills'));
+  my @f = ('MEMORY.md', 'docs/audora/decisoes-vivas.md', 'docs/audora/aprendizados.md', 'PRD.md',
+           glob('README*.md'), glob('docs/audora/memory/*.md'), mds_em('skills'), mds_em('.claude/skills'));
   return join "\n", map { ler($_) } @f;
 }
 
@@ -251,9 +251,11 @@ sub percorre {
   return $o . tokens($s, $cb);
 }
 # linhas_de_link <linhas> <arquivo> → índices (0-based) das linhas fora de frontmatter e fence;
-# no MEMORY.md, também fora da seção Aprendizados (aprendizado cita caminho como exemplo histórico).
+# no MEMORY.md, também fora da seção Aprendizados, e nada em docs/audora/aprendizados.md
+# (aprendizado cita caminho como exemplo histórico).
 sub linhas_de_link {
   my ($l, $f) = @_; my @i; my ($fm, $fence, $apr) = (0, 0, 0);
+  return () if $f eq 'docs/audora/aprendizados.md';
   for my $k (0 .. $#$l) {
     (my $s = $l->[$k]) =~ s/\r$//;
     if ($k == 0 && $s eq '---') { $fm = 1; next; }

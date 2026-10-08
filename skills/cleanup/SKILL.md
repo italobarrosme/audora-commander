@@ -30,7 +30,7 @@ carregar). O julgamento semântico fica aqui. Rode tudo na raiz do projeto.
 | relatório e2e | `docs/audora/e2e/e2e-<id>.md` de nó delivered |
 | depuração velha | `docs/audora/depuracao/*` sem nó vivo ligado (não citada no índice nem em nó de `docs/audora/memory/`) |
 | sem referência | arquivo de `docs/audora/` que nenhum documento vivo cita (índice, nós vivos, decisões vivas, skills, PRD, READMEs) |
-| link quebrado | link em `MEMORY.md` (fora da seção Aprendizados) ou `docs/audora/` para arquivo que existiu no histórico e não existe mais (fora de frontmatter e de bloco de código) |
+| link quebrado | link em `MEMORY.md` (fora da seção Aprendizados e de `docs/audora/aprendizados.md`) ou `docs/audora/` para arquivo que existiu no histórico e não existe mais (fora de frontmatter e de bloco de código) |
 
 Nunca entram — o framework os lê: `MEMORY.md`, nós (`docs/audora/memory/`,
 `docs/audora/arquivo/`), `docs/audora/decisoes-vivas.md` e
