@@ -102,9 +102,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **ler**: `hooks/memory-validate:84-118`, `tests/test-memory-validate.sh:1-20`
 - **done quando**: os 4 casos passam e `tests/test-memory-validate.sh` segue verde.
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/5 … → 0" (hoje sai 2 com "sem linha no índice mestre")
-- [ ] **green** — `bash tests/test-memoria-integra.sh` passa; `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add hooks/memory-validate tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/5): memory-validate cobra no orfao so na escrita do indice"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/5 … → 0" (hoje sai 2 com "sem linha no índice mestre")
+- [x] **green** — `bash tests/test-memoria-integra.sh` passa; `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add hooks/memory-validate tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/5): memory-validate cobra no orfao so na escrita do indice"`
 
 ## Tarefa 2: regra única "arquivo do nó primeiro, linha do índice logo depois"
 
@@ -127,9 +127,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes, `tests/test-skills.sh` verde, carga BASE dentro da regra.
 - **carga BASE**: sim (memory SKILL, registrar-no, no-template).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/7 sem 'mesma edição'" (acha registrar-no, SKILL, 2 templates)
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
-- [ ] **commit** — `git add skills/memory/SKILL.md skills/memory/references/registrar-no.md templates/MEMORY-template.md templates/no-template.md tests/test-skills.sh tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "docs(memoria-integra/7): regra unica arquivo do no primeiro, linha do indice logo depois"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/7 sem 'mesma edição'" (acha registrar-no, SKILL, 2 templates)
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
+- [x] **commit** — `git add skills/memory/SKILL.md skills/memory/references/registrar-no.md templates/MEMORY-template.md templates/no-template.md tests/test-skills.sh tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "docs(memoria-integra/7): regra unica arquivo do no primeiro, linha do indice logo depois"`
 
 ## Tarefa 3: scope grava critérios de HIGH no nó; spec só contexto
 
@@ -150,9 +150,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; `tests/test-corte-sem-uso.sh` e `tests/test-skills.sh` verdes; carga BASE na regra.
 - **carga BASE**: sim (scope SKILL).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/1 critérios no nó"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
-- [ ] **commit** — `git add skills/scope/SKILL.md tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "docs(memoria-integra/1): scope grava criterios de HIGH no no, spec so contexto"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/1 critérios no nó"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
+- [x] **commit** — `git add skills/scope/SKILL.md tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "docs(memoria-integra/1): scope grava criterios de HIGH no no, spec so contexto"`
 
 ## Tarefa 4: sync copia critérios da spec e para sem critério
 
@@ -169,9 +169,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; `tests/test-prd-foto.sh`, `tests/test-parada-revisao.sh`, `tests/test-skills.sh` verdes; carga FULL na regra.
 - **carga FULL**: sim (sync.md).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/2 sync: Antes do git mv"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "docs(memoria-integra/2): sync copia criterios da spec e para no sem criterio"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/2 sync: Antes do git mv"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "docs(memoria-integra/2): sync copia criterios da spec e para no sem criterio"`
 
 ## Tarefa 5: cleanup mantém artefato com critério sem cópia no nó arquivado
 
@@ -205,9 +205,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **ler**: `hooks/cleanup:44-70,121-188,329-346`, `tests/test-skill-cleanup.sh:12-37,74-117`
 - **done quando**: casos verdes; `tests/test-skill-cleanup.sh` inteiro verde (suas fixtures não citam critério, nada muda lá).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/4 spec com d/2 em mantido"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/4): cleanup mantem artefato com criterio sem copia no no arquivado"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/4 spec com d/2 em mantido"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/4): cleanup mantem artefato com criterio sem copia no no arquivado"`
 
 ## Tarefa 6: cleanup nunca remove arquivo que o framework lê; princípio na skill
 
@@ -226,9 +226,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **ler**: `hooks/cleanup:169-170,474-499`, `skills/cleanup/SKILL.md:1-40,84-93`, `tests/test-skill-cleanup.sh:500-560`
 - **done quando**: casos verdes; `tests/test-skill-cleanup.sh` verde com as 2 strings trocadas; SKILL.md ≤ 250 linhas.
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/12 aplicar recusa aprendizados.md"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add hooks/cleanup skills/cleanup/SKILL.md tests/test-skill-cleanup.sh tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/12): cleanup nunca remove arquivo que o framework le"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/12 aplicar recusa aprendizados.md"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add hooks/cleanup skills/cleanup/SKILL.md tests/test-skill-cleanup.sh tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/12): cleanup nunca remove arquivo que o framework le"`
 
 ## Tarefa 7: cleanup ignora `docs/audora/aprendizados.md` na varredura de links
 
@@ -249,9 +249,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **ler**: `hooks/cleanup:150-157,228-267,383-392`, `tests/test-skill-cleanup.sh:580-605`
 - **done quando**: casos verdes; `tests/test-skill-cleanup.sh` verde.
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/19 varrer → nada a limpar"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/19): cleanup ignora aprendizados.md na varredura de links"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/19 varrer → nada a limpar"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add hooks/cleanup skills/cleanup/SKILL.md tests/test-memoria-integra.sh && git commit -m "fix(memoria-integra/19): cleanup ignora aprendizados.md na varredura de links"`
 
 ## Tarefa 8: aprendizado vive em `docs/audora/aprendizados.md`; bootstrap só com ponteiro
 
@@ -275,9 +275,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; `tests/test-templates.sh`, `tests/test-skills.sh` (`'| <fase> |'` no roteador) e `tests/test-leitura-por-secao.sh` (cabeçalho `## Aprendizados [carga: sempre]` no template) verdes; carga BASE na regra.
 - **carga BASE**: sim (memory SKILL).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/14 registrar-aprendizado grava em aprendizados.md"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
-- [ ] **commit** — `git add templates/aprendizados-template.md templates/MEMORY-template.md skills/memory/SKILL.md skills/memory/references/bootstrap.md tests/test-templates.sh tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(memoria-integra/14): aprendizado em docs/audora/aprendizados.md, bootstrap so com ponteiro"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/14 registrar-aprendizado grava em aprendizados.md"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
+- [x] **commit** — `git add templates/aprendizados-template.md templates/MEMORY-template.md skills/memory/SKILL.md skills/memory/references/bootstrap.md tests/test-templates.sh tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(memoria-integra/14): aprendizado em docs/audora/aprendizados.md, bootstrap so com ponteiro"`
 
 ## Tarefa 9: carregar-contexto busca nos dois arquivos, sem erro
 
@@ -308,9 +308,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; `tests/test-leitura-por-secao.sh` verde (fixtures dele só têm MEMORY → `-s` cobre); carga BASE na regra.
 - **carga BASE**: sim (memory SKILL).
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/15 fa plan → A1 A2" (comando atual não lê aprendizados.md)
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
-- [ ] **commit** — `git add skills/memory/SKILL.md tests/test-leitura-por-secao.sh tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh && git commit -m "feat(memoria-integra/15): carregar-contexto busca aprendizados nos dois arquivos, sem erro"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/15 fa plan → A1 A2" (comando atual não lê aprendizados.md)
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0; regra de carga BASE aplicada
+- [x] **commit** — `git add skills/memory/SKILL.md tests/test-leitura-por-secao.sh tests/test-memoria-integra.sh tests/test-carga.sh tests/test-parada-revisao.sh && git commit -m "feat(memoria-integra/15): carregar-contexto busca aprendizados nos dois arquivos, sem erro"`
 
 ## Tarefa 10: sync migra os Aprendizados do MEMORY para o arquivo próprio
 
@@ -335,9 +335,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; `tests/test-skills.sh`, `tests/test-prd-foto.sh`, `tests/test-parada-revisao.sh` verdes; carga FULL na regra.
 - **carga FULL**: sim.
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/16 comando do sync existe"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "feat(memoria-integra/16): sync move os Aprendizados do MEMORY para aprendizados.md"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/16 comando do sync existe"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add skills/validate/references/sync.md tests/test-memoria-integra.sh && git commit -m "feat(memoria-integra/16): sync move os Aprendizados do MEMORY para aprendizados.md"`
 
 ## Tarefa 11: skills, templates e hooks citam só o arquivo próprio; guard calado nele
 
@@ -359,9 +359,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **done quando**: casos verdes; `tests/test-memory-guard.sh` ('teto ~300') e `tests/test-skills.sh` verdes; carga FULL na regra (compactar).
 - **carga FULL**: sim.
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/21 sem aprendizados-historico" (acha compactar, template, memory-guard)
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add hooks/memory-guard skills/memory/references/compactar.md templates/MEMORY-template.md skills/debug/SKILL.md tests/test-skills.sh tests/test-memoria-integra.sh && git commit -m "docs(memoria-integra/21): aprendizado citado so em aprendizados.md, sem teto nem historico"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/21 sem aprendizados-historico" (acha compactar, template, memory-guard)
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add hooks/memory-guard skills/memory/references/compactar.md templates/MEMORY-template.md skills/debug/SKILL.md tests/test-skills.sh tests/test-memoria-integra.sh && git commit -m "docs(memoria-integra/21): aprendizado citado so em aprendizados.md, sem teto nem historico"`
 
 ## Tarefa 12: READMEs e fundamentos acompanham
 
@@ -382,9 +382,9 @@ sem perder linha de assert (anti-fraude do gate).
 - **ler**: `README.md:125-142,160-170,204-212,246-256,278-284,312-320,335-350`, `README.pt-BR.md:125-142,160-172,204-212,246-256,278-285,312-320,334-348`, `docs/fundamentos.md:24-55,124-156`
 - **done quando**: caso verde; `tests/test-docs.sh`, `tests/test-leitura-por-secao.sh`, `tests/test-parada-revisao.sh`, `tests/test-corte-sem-uso.sh` verdes.
 
-- [ ] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/14 docs README PT cita aprendizados.md"
-- [ ] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-memoria-integra.sh && git commit -m "docs(memoria-integra/14): READMEs e fundamentos com aprendizados.md e criterio de HIGH no no"`
+- [x] **red** — `bash tests/test-memoria-integra.sh` falha em "memoria-integra/14 docs README PT cita aprendizados.md"
+- [x] **green** — `bash tests/test-memoria-integra.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add README.md README.pt-BR.md docs/fundamentos.md tests/test-memoria-integra.sh && git commit -m "docs(memoria-integra/14): READMEs e fundamentos com aprendizados.md e criterio de HIGH no no"`
 
 ## Tarefa 13: este repo migra os Aprendizados (dogfood)
 
@@ -403,6 +403,6 @@ sem perder linha de assert (anti-fraude do gate).
 - **ler**: `MEMORY.md:40-102`, `tests/test-dogfood.sh:1-16`
 - **done quando**: casos verdes; `tests/test-leitura-por-secao.sh` verde (recorte do repo vem de aprendizados.md, ajuste da Tarefa 9); `bash hooks/cleanup varrer` neste repo sem `aprendizados.md` em nenhuma seção.
 
-- [ ] **red** — `bash tests/test-dogfood.sh` falha em "memoria-integra/18 MEMORY sem linha de aprendizado" (hoje 54)
-- [ ] **green** — rodar as 2 linhas do bloco do `sync.md` na raiz (com `<raiz do plugin>` = raiz deste repo), Edit da seção para P; `bash tests/test-dogfood.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
-- [ ] **commit** — `git add MEMORY.md docs/audora/aprendizados.md tests/test-dogfood.sh && git commit -m "chore(memoria-integra/18): aprendizados deste repo migram para docs/audora/aprendizados.md"`
+- [x] **red** — `bash tests/test-dogfood.sh` falha em "memoria-integra/18 MEMORY sem linha de aprendizado" (hoje 54)
+- [x] **green** — rodar as 2 linhas do bloco do `sync.md` na raiz (com `<raiz do plugin>` = raiz deste repo), Edit da seção para P; `bash tests/test-dogfood.sh`, `bash tests/run.sh` e `bash hooks/gate memoria-integra` saem 0
+- [x] **commit** — `git add MEMORY.md docs/audora/aprendizados.md tests/test-dogfood.sh && git commit -m "chore(memoria-integra/18): aprendizados deste repo migram para docs/audora/aprendizados.md"`
