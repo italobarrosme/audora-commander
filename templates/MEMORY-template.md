@@ -49,16 +49,14 @@ Uma linha rica por nó — decide relevância SEM abrir o corpo; o corpo vive em
    `grep -l '^estado: in-progress' docs/audora/memory/*.md`; deps reversas →
    `grep -l 'depende-de:.*<id>' docs/audora/memory/*.md`; nó por arquivo de
    código → `grep -l '<caminho>' docs/audora/memory/*.md`; aprendizado →
-   `grep -i '<termo>' MEMORY.md`.
+   `grep -i '<termo>' docs/audora/aprendizados.md`.
 3. Nó delivered (sync da validate): promover decisões ainda válidas para
-   docs/audora/decisoes-vivas.md, consolidar aprendizados da demanda aqui,
-   depois `git mv docs/audora/memory/<id>.md
+   docs/audora/decisoes-vivas.md, depois `git mv docs/audora/memory/<id>.md
    docs/audora/arquivo/AAAA-MM-DD-<id>.md` e trocar a linha do índice para
    `- <id> | delivered | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
    Movimento, nunca reescrita.
-4. Tetos: este arquivo ~300 linhas (hook memory-guard); Aprendizados ~40
-   linhas → mover os antigos para docs/audora/aprendizados-historico.md;
-   por nó ver no-template.
+4. Tetos: este arquivo ~300 linhas (hook memory-guard); por nó ver
+   no-template.
 5. Máximo 3 nós in-progress, contados globalmente por este índice.
 6. Caminhos sempre relativos ao arquivo que os contém.
 7. O corpo do nó é resolvido pelo id (id = nome do arquivo em

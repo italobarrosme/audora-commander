@@ -9,12 +9,12 @@
    fora-de-escopo), critério novo recebe o próximo `<id>/<n>`, e esvaziar
    `## delta`.
 1. Gatilhos: nó virou `delivered` (sync da validate); `MEMORY.md` > ~300
-   linhas (`memory-guard` acusa); arquivo de nó > ~100 linhas; seção
-   Aprendizados > ~40 linhas.
+   linhas (`memory-guard` acusa); arquivo de nó > ~100 linhas.
 2. Nó `delivered`: (a) promover as decisões AINDA VÁLIDAS aprovadas no portão
    para `docs/audora/decisoes-vivas.md` (1 linha: data | nó | decisão);
-   (b) consolidar os aprendizados da demanda na seção Aprendizados (dedupe
-   pelo grep da operação 5); (c) `git mv docs/audora/memory/<id>.md
+   (b) aprendizados não se consolidam aqui: vivem em
+   `docs/audora/aprendizados.md` (registrar-aprendizado; o sync migra o
+   MEMORY antigo); (c) `git mv docs/audora/memory/<id>.md
    docs/audora/arquivo/AAAA-MM-DD-<id>.md`; (d) linha do índice vira
    `- <id> | delivered | <título> → docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
    Movimento, nunca reescrita. Nó com `<id>-historico.md`: mover os DOIS
@@ -23,7 +23,6 @@
    `[invalidado-em: data] [substituido-por: <ref>]`.
 4. Nó ativo > ~100 linhas: mover histórico frio (delta consolidado, decisões
    antigas) para `docs/audora/memory/<id>-historico.md` + ponteiro de 1
-   linha. Aprendizados > ~40 linhas: mover os mais antigos para
-   `docs/audora/aprendizados-historico.md` + ponteiro de 1 linha.
+   linha.
 5. A foto do `PRD.md` e a linha do `CHANGELOG.md` são da skill validate,
    no sync (direção única MEMORY → PRD; o PRD nunca alimenta o MEMORY).

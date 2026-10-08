@@ -46,7 +46,7 @@ done
 # /2 — conteúdo de cada operação movida está na SUA reference
 # o gate fecha o bootstrap
 assert_contains "$(cat "$MR/bootstrap.md")" '**Etapa gate** (sempre, ao fim do bootstrap)' "bootstrap: gate fecha o bootstrap"
-for s in 'docs/audora/arquivo/' 'aprendizados-historico.md' 'git mv'; do
+for s in 'docs/audora/arquivo/' 'docs/audora/aprendizados.md' 'git mv'; do
   assert_contains "$(cat "$MR/compactar.md" 2>/dev/null)" "$s" "/2 compactar cita '$s'"
 done
 for s in 'no-template.md' 'hotfix-pending-record' 'planned | in-progress'; do

@@ -260,4 +260,23 @@ d="$SP/m16c"; mem16 "$d"; perl -i -pe 's/\n/\r\n/' "$d/MEMORY.md"; printf '# Apr
 move16 "$d"
 assert_eq "$(printf '%s\r\n' "$L1" "$L2" "$L3" | md5sum)" "$(tail -c +17 "$d/docs/audora/aprendizados.md" | md5sum)" "memoria-integra/16 MEMORY em CRLF: linhas movidas byte a byte (\\r\\n)"
 
+# /20 — memory-guard e memory-validate calados para aprendizados.md de qualquer tamanho
+d="$SP/g20"; memp "$d"
+for i in $(seq 1 500); do printf -- '- 2026-01-01 | plan | linha %s\n' "$i"; done > "$d/docs/audora/aprendizados.md"
+run_hook memory-guard "$d/docs/audora/aprendizados.md"
+assert_eq 0 "$code" "memoria-integra/20 memory-guard em aprendizados.md de 500 linhas → 0"; assert_empty "$out" "memoria-integra/20 memory-guard sem aviso"
+run_hook memory-validate "$d/docs/audora/aprendizados.md"
+assert_eq 0 "$code" "memoria-integra/20 memory-validate em aprendizados.md → 0"; assert_empty "$out" "memoria-integra/20 memory-validate sem aviso"
+
+# /21 — skills, templates e hooks citam só aprendizados.md, sem teto ~40 nem histórico
+assert_empty "$(grep -rlF 'aprendizados-historico' skills templates hooks)" "memoria-integra/21 sem aprendizados-historico"
+assert_empty "$(grep -rnE '~ ?40' skills templates hooks)" "memoria-integra/21 sem teto de ~40"
+assert_empty "$(grep -rnF 'registrar-aprendizado no `MEMORY.md`' skills)" "memoria-integra/21 debug não manda aprendizado ao MEMORY"
+d="$SP/g21"; mkdir -p "$d"; { echo 'memory-schema: 1'; seq 1 310; } > "$d/MEMORY.md"
+run_hook memory-guard "$d/MEMORY.md"
+assert_eq 2 "$code" "memoria-integra/21 MEMORY.md de 311 linhas → 2"
+assert_contains "$out" 'docs/audora/aprendizados.md' "memoria-integra/21 memory-guard aponta aprendizados.md"
+assert_contains "$(achata templates/MEMORY-template.md)" "aprendizado → \`grep -i '<termo>' docs/audora/aprendizados.md\`" "memoria-integra/21 MEMORY-template consulta aprendizados.md"
+assert_contains "$(achata skills/memory/references/compactar.md)" 'vivem em `docs/audora/aprendizados.md`' "memoria-integra/21 compactar aponta aprendizados.md"
+
 report

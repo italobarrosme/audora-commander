@@ -50,7 +50,7 @@ Contexto: carregar-contexto (skill memory) antes de qualquer Read;
 6. **Registrar o que o bug ensinou** (skill memory): revelou requisito
    ausente → registrar-delta no nó; revelou lacuna de teste → anotar a
    classe de lacuna nas decisões do nó; revelou armadilha do projeto ou do
-   ambiente → registrar-aprendizado no `MEMORY.md`, na hora.
+   ambiente → registrar-aprendizado (`docs/audora/aprendizados.md`), na hora.
 
 **Escalada:** 3 hipóteses testadas e refutadas → PARAR. Apresentar ao humano:
 reprodução, hipóteses testadas, evidência de cada refutação. Padrão repetido

@@ -31,7 +31,7 @@ case "$file_path" in
     head -1 "$file_path" | tr -d '\r' | grep -q '^memory-schema: 1' || exit 0
     n=$(wc -l < "$file_path" | tr -d ' ')
     if [ "$n" -gt 300 ]; then
-      echo "memory-guard: MEMORY.md (índice mestre) com $n linhas — teto ~300. Compactar agora: arquivar nós entregues, mover Aprendizados antigos para docs/audora/aprendizados-historico.md, encurtar resumos (skill memory, operação compactar)." >&2
+      echo "memory-guard: MEMORY.md (índice mestre) com $n linhas — teto ~300. Compactar agora: arquivar nós entregues, mover as linhas de Aprendizados para docs/audora/aprendizados.md (sync da validate), encurtar resumos (skill memory, operação compactar)." >&2
       exit 2
     fi
     ;;
