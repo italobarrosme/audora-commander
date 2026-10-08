@@ -3,7 +3,7 @@
 # Acusa: seção obrigatória ausente no MEMORY.md; linha do índice sem coluna
 # de estado; estado fora do enum (no índice e no frontmatter de cada nó); nó
 # sem campo estado:; nó in-progress/blocked sem arquivo; arquivo de nó sem
-# linha no índice; depende-de inexistente; ciclo.
+# linha no índice (só na escrita do índice); depende-de inexistente; ciclo.
 # Erro → exit 2 + stderr. Fora do MEMORY, ou MEMORY.md sem "memory-schema: 1"
 # na linha 1 → exit 0.
 # Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
@@ -22,8 +22,8 @@ file_path="$(printf '%s' "$input" | perl -MJSON::PP -0777 -ne '
 [ -n "$file_path" ] || exit 0
 file_path="${file_path//\\//}"
 
-# Divergência índice × nó só é cobrada na escrita do ÍNDICE (ponto de
-# fechamento): transição é nó primeiro, índice depois.
+# Órfão (arquivo sem linha) e divergência índice × nó só são cobrados na
+# escrita do ÍNDICE: arquivo do nó primeiro, linha do índice logo depois.
 escreveu_indice=0
 case "$file_path" in
   *MEMORY.md) root="$(dirname "$file_path")"; escreveu_indice=1 ;;
@@ -88,7 +88,7 @@ if [ -d "$dir" ]; then
     [ -e "$f" ] || continue
     b="$(basename "$f" .md)"
     case "$b" in *-historico) continue ;; esac
-    printf '%s\n' "$idx_ids" | grep -qx "$b" || erros="$erros
+    [ "$escreveu_indice" -eq 1 ] && ! printf '%s\n' "$idx_ids" | grep -qx "$b" && erros="$erros
 - arquivo docs/audora/memory/$b.md sem linha no índice mestre"
     fe="$(fm_estado "$f")"
     if [ -z "$fe" ]; then
