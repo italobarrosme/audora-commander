@@ -245,6 +245,47 @@ out="$(roda_evals --teto 1 2>/dev/null)"; code=$?
 assert_eq 3 "$code" "evals-comportamento/8 erro de infra vence teto no exit"
 assert_contains "$out" "NÃO RODADO · b · não rodado: teto" "evals-comportamento/8 teto vale depois de erro de infra"
 
+# --- evals-comportamento/2: modo completo, 3 com e 3 sem ---
+# runs <braço> <score|T>... — runs de custo 0.1 e tokens 10; 0 reprova no grader
+# categoria; T = erro de timeout
+runs() {
+  local b="$1" s i=0 r=() t; shift
+  for s in "$@"; do
+    i=$((i+1)); t="$SP/claude-eval-$b$i/out/trace.jsonl"; trace "$t" 1 2 3 4
+    case "$s" in
+      T) r+=("$(run 1 '"timed out after 600s"' 0.1 "$t")") ;;
+      0) r+=("$(run 0.5 null 0.1 "$t" "$G_CAT")") ;;
+      *) r+=("$(run 1 null 0.1 "$t")") ;;
+    esac
+  done
+  local IFS=,; printf '%s' "${r[*]}"
+}
+RZ="$SP/raiz1"
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 1 0 0)"
+out="$(roda_evals --completo 2>/dev/null)"; code=$?
+assert_eq 0 "$code" "evals-comportamento/2 3/3 com o plugin sai 0"
+assert_contains "$out" "evals: modo completo · modelo sonnet · teto US\$ 10.00" "evals-comportamento/2 cabeçalho do modo completo"
+assert_contains "$out" "PASSOU · porta · com 3/3 · sem 1/3 · Δ +67 pp · US\$ 0.6000 · tokens 60" "evals-comportamento/2 taxa sem o plugin e diferença"
+assert_contains "$(grep '^plugin eval' "$SP/stub.log")" "--runs 3 --ablation with-without" "evals-comportamento/2 invoca 3 runs com e sem"
+
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 0)" "$(runs s 0 0 0)"
+out="$(roda_evals --completo 2>/dev/null)"; code=$?
+assert_eq 1 "$code" "evals-comportamento/2 2/3 com o plugin reprova"
+assert_contains "$out" "REPROVOU · porta · com 2/3 · sem 0/3 · Δ +67 pp · US\$ 0.6000 · tokens 60 · motivo: categoria: no match" "evals-comportamento/2 reprovado só passa com 3/3"
+
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 1 1 1)"
+out="$(roda_evals --completo 2>/dev/null)"
+assert_contains "$out" "PASSOU · porta · com 3/3 · sem 3/3 · Δ +0 pp" "evals-comportamento/2 diferença zero com sinal"
+
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 1 T 0)"
+out="$(roda_evals --completo 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/2 infra no braço sem sai 3"
+assert_contains "$out" "ERRO INFRA · porta · causa: timeout (timed out after 600s) · US\$ 0.6000 · tokens 60" "evals-comportamento/2 infra em qualquer braço vira erro de infra"
+
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 0 0 1)" "$(runs s 1 1 1)"
+out="$(roda_evals --completo 2>/dev/null)"
+assert_contains "$out" "com 1/3 · sem 3/3 · Δ -67 pp" "evals-comportamento/2 diferença negativa"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"

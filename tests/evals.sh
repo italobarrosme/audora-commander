@@ -103,7 +103,11 @@ for caso in "${casos[@]}"; do
     printf -- '-\tteto\t0\t0\t\n' > "$reg"; agrega_caso "$caso" "$reg" "$completo"; continue
   fi
   restante="$(awk -v t="$teto" -v g="$GASTO" 'BEGIN { printf "%.4f", t - g }')"
-  roda_plugin_eval "$caso" "$raiz" 1 none "$restante" > "$reg"
+  if [ "$completo" -eq 1 ]; then
+    roda_plugin_eval "$caso" "$raiz" 3 with-without "$restante" > "$reg"
+  else
+    roda_plugin_eval "$caso" "$raiz" 1 none "$restante" > "$reg"
+  fi
   agrega_caso "$caso" "$reg" "$completo"
 done
 
