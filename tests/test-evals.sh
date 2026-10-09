@@ -387,6 +387,44 @@ ev_tool c Edit '{"file_path":"C:\\w\\lib.sh"}' >> "$SP/tdd.jsonl"; ev_tool d Bas
 assert_eq "passou" "$(grader_tdd "$SP/tdd.jsonl")" "evals-comportamento/6 vários tool_use num evento"
 assert_eq "reprovou: faltou teste novo" "$(grader_tdd "$SP/nao-existe.jsonl")" "evals-comportamento/6 stream ausente reprova"
 
+# --- fixtures: projeto-base e caso tdd (evals-comportamento/6,7) ---
+EV="$ROOT/tests/evals"
+# na_fixture <dir> <script> — roda o script com cwd = <dir> vazio, como o scaffold
+na_fixture() { mkdir -p "$1" && ( cd "$1" && bash -c ". \"\$1\"" _ "$2" ) >/dev/null 2>&1; }
+F="$SP/fx-base"
+na_fixture "$F" "$EV/_lib/projeto-base.sh"
+assert_eq "memory-schema: 1" "$(head -1 "$F/MEMORY.md" 2>/dev/null | tr -d '\r')" "fixture base: MEMORY.md com schema na linha 1"
+for sec in 'Propósito' 'Constituição' 'Aprendizados' 'Índice de nós'; do
+  assert_contains "$(grep "^## " "$F/MEMORY.md" 2>/dev/null)" "## $sec" "fixture base: seção $sec"
+done
+const="$(sed -n '/^## Constituição/,/^## Aprendizados/p' "$F/MEMORY.md" 2>/dev/null)"
+assert_contains "$const" "- **stack**: bash" "fixture base: stack bash"
+assert_contains "$const" '- **como-rodar**: `bash tests/run.sh`' "fixture base: como-rodar"
+assert_contains "$const" "- **gate**: recusado" "fixture base: gate recusado (porta não desvia oferecendo gate)"
+assert_eq "$(cat "$ROOT/templates/aprendizados-template.md")" "$(cat "$F/docs/audora/aprendizados.md" 2>/dev/null)" "fixture base: aprendizados.md = template"
+assert_contains "$(cat "$F/lib.sh" 2>/dev/null)" "soma()" "fixture base: lib.sh com soma"
+assert_file "$F/tests/test-soma.sh" "fixture base: teste da soma"
+( cd "$F" && bash tests/run.sh ) >/dev/null 2>&1; assert_eq 0 "$?" "fixture base: suíte da fixture passa"
+run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "fixture base: memory-validate aceita o MEMORY ($out)"
+assert_no_file "$F/.git" "fixture base: não commita (o caso commita)"
+printf '#!/usr/bin/env bash\nfalse\n' > "$F/tests/test-falha.sh"
+( cd "$F" && bash tests/run.sh ) >/dev/null 2>&1; assert_eq 1 "$?" "fixture base: run.sh sai 1 se algum teste falha"
+
+F="$SP/fx-tdd"
+na_fixture "$F" "$EV/tdd/fixture.sh"
+assert_eq "estado: in-progress" "$(grep '^estado:' "$F/docs/audora/memory/dobro.md" 2>/dev/null | tr -d '\r')" "fixture tdd: nó dobro in-progress"
+no="$(tr '\n' ' ' < "$F/docs/audora/memory/dobro.md" 2>/dev/null | tr -s ' ')"
+assert_contains "$no" '**dobro/1** — QUANDO `dobro 4` é chamado O SISTEMA DEVE imprimir 8' "fixture tdd: critério dobro/1"
+assert_contains "$no" '**dobro/2** — QUANDO o argumento não é numérico O SISTEMA DEVE imprimir "erro: não numérico" no stderr e sair 1' "fixture tdd: critério dobro/2"
+assert_contains "$(grep '^- dobro | in-progress |' "$F/MEMORY.md" 2>/dev/null)" "dobro" "fixture tdd: linha do nó no índice"
+run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "fixture tdd: memory-validate aceita ($out)"
+assert_eq 0 "$(grep -c dobro "$F/lib.sh" 2>/dev/null)" "fixture tdd: dobro ainda não existe na lib"
+( cd "$F" && bash tests/run.sh ) >/dev/null 2>&1; assert_eq 0 "$?" "fixture tdd: suíte passa antes da demanda"
+assert_eq 1 "$(git -C "$F" log --oneline 2>/dev/null | wc -l | tr -d ' ')" "fixture tdd: 1 commit"
+assert_empty "$(git -C "$F" status --porcelain 2>&1)" "fixture tdd: árvore limpa depois do commit"
+assert_eq "execute de dobro" "$(tr -d '\r' < "$EV/tdd/harness.md" 2>/dev/null)" "fixture tdd: harness.md é o prompt"
+assert_eq "$(printf 'tdd\tharness')" "$(lista_casos "$ROOT" | grep '^tdd')" "fixture tdd: tdd é caso harness"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"
