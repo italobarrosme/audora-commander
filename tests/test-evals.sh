@@ -207,6 +207,44 @@ out="$(roda_evals 2>/dev/null)"; code=$?
 assert_eq 3 "$code" "evals-comportamento/9 plugin eval sem JSON sai 3"
 assert_contains "$out" "ERRO INFRA · porta · causa: plugin eval saiu 1: No eval cases found · US\$ 0.0000 · tokens 0" "evals-comportamento/9 plugin eval sem JSON explica"
 
+# --- evals-comportamento/8: teto de custo da rodada ---
+RZ="$SP/raiz3"; mkraiz "$RZ" a b c
+TA="$SP/claude-eval-a/out/trace.jsonl"; TB="$SP/claude-eval-b/out/trace.jsonl"
+reseta_pe; trace "$TA" 1 1 1 1
+resultado "$SP/pe/a.json" "$(run 1 null 1.2 "$TA")"
+out="$(roda_evals --teto 1 2>/dev/null)"; code=$?
+assert_eq 2 "$code" "evals-comportamento/8 teto atingido sai 2 (≠ reprovação)"
+assert_contains "$out" "PASSOU · a · com 1/1 · US\$ 1.2000" "evals-comportamento/8 caso que estourou ainda conta"
+assert_contains "$out" "NÃO RODADO · b · não rodado: teto" "evals-comportamento/8 caso seguinte não rodado"
+assert_contains "$out" "NÃO RODADO · c · não rodado: teto" "evals-comportamento/8 todos os restantes não rodados"
+assert_eq 1 "$(grep -c '^plugin eval' "$SP/stub.log")" "evals-comportamento/8 para antes do próximo run"
+assert_contains "$out" "total: 3 caso(s) · 1 passou · 0 reprovou · 0 erro de infra · 2 não rodado · US\$ 1.2000 · tokens 4" "evals-comportamento/8 total conta não rodado e mantém o gasto"
+assert_contains "$out" "teto US\$ 1.00" "evals-comportamento/8 cabeçalho mostra o teto configurado"
+
+reseta_pe; trace "$TA" 1 1 1 1; trace "$TB" 1 1 1 1
+resultado "$SP/pe/a.json" "$(run 1 null 0.4123 "$TA")"; resultado "$SP/pe/b.json" "$(run 1 null 0.1 "$TB")"
+roda_evals --caso a --caso b >/dev/null 2>&1
+assert_contains "$(grep -- '--case b' "$SP/stub.log")" "--max-cost-usd 9.5877" "evals-comportamento/8 run seguinte recebe teto − gasto"
+
+reseta_pe; resultado "$SP/pe/a.json" "" "" true cost_ceiling; echo 2 > "$SP/pe/rc"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 2 "$code" "evals-comportamento/8 teto do host (cost_ceiling) sai 2"
+assert_contains "$out" "NÃO RODADO · a · não rodado: teto" "evals-comportamento/8 cost_ceiling do host vira não rodado"
+assert_contains "$out" "NÃO RODADO · c · não rodado: teto" "evals-comportamento/8 cost_ceiling para a rodada"
+assert_eq 1 "$(grep -c '^plugin eval' "$SP/stub.log")" "evals-comportamento/8 cost_ceiling não invoca o resto"
+
+reseta_pe; trace "$TA" 1 1 1 1; trace "$TB" 1 1 1 1
+resultado "$SP/pe/a.json" "$(run 0 null 0.5 "$TA" "$G_CAT")"; resultado "$SP/pe/b.json" "$(run 1 null 0.6 "$TB")"
+out="$(roda_evals --teto 1 2>/dev/null)"; code=$?
+assert_eq 2 "$code" "evals-comportamento/8 teto vence reprovação no exit"
+assert_contains "$out" "NÃO RODADO · c · não rodado: teto" "evals-comportamento/8 teto atingido pela soma de casos"
+
+reseta_pe; trace "$TA" 1 1 1 1
+resultado "$SP/pe/a.json" "$(run 1 '"timed out after 600s"' 1.5 "$TA")"
+out="$(roda_evals --teto 1 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/8 erro de infra vence teto no exit"
+assert_contains "$out" "NÃO RODADO · b · não rodado: teto" "evals-comportamento/8 teto vale depois de erro de infra"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"

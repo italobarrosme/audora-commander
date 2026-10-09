@@ -136,7 +136,7 @@ registros_plugin_eval() {
 
 # --- contadores da rodada e aritmética decimal (awk; o Git Bash não tem bc) ---
 N_CASOS=0; N_PASSOU=0; N_REPROVOU=0; N_INFRA=0; N_NAO_RODADO=0
-GASTO=0; TOKENS=0; ISOLAMENTO_VIOLADO=0
+GASTO=0; TOKENS=0; ISOLAMENTO_VIOLADO=0; TETO_ATINGIDO=0
 soma() { awk -v a="$1" -v b="$2" 'BEGIN{printf "%.10g", a+b}'; }
 usd()  { awk -v a="$1" 'BEGIN{printf "%.4f", a}'; }
 
@@ -170,6 +170,7 @@ agrega_caso() {
   fi
   if mot="$(motivo_de infra "$f")"; then registra_infra "$caso" "$mot" "$custo" "$tok"; return; fi
   if motivo_de teto "$f" >/dev/null; then
+    TETO_ATINGIDO=1
     N_CASOS=$((N_CASOS+1)); N_NAO_RODADO=$((N_NAO_RODADO+1)); acumula "$custo" "$tok"
     echo "NÃO RODADO · $caso · não rodado: teto"; return
   fi

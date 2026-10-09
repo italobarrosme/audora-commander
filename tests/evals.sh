@@ -87,6 +87,7 @@ roda_plugin_eval() {
     case "$pr" in
       "") [ "$rc" -eq 0 ] || printf -- '-\tinfra\t0\t0\tplugin eval saiu %s: %s\n' "$rc" "$linha" ;;
       auth_failed) printf -- '-\tinfra\t0\t0\tsem autenticação\n' ;;
+      cost_ceiling) printf -- '-\tteto\t0\t0\t\n' ;;
       *) printf -- '-\tinfra\t0\t0\tplugin eval parcial: %s\n' "$pr" ;;
     esac
   fi
@@ -97,6 +98,10 @@ reg="$(mktemp)"
 trap 'rm -f "$reg"' EXIT
 for caso in "${casos[@]}"; do
   if [ -n "$infra" ]; then registra_infra "$caso" "$infra" 0 0; continue; fi
+  # teto: atingido (gasto >= teto ou o host parou por custo) → o caso nem é invocado
+  if [ "$TETO_ATINGIDO" -eq 1 ] || awk -v t="$teto" -v g="$GASTO" 'BEGIN { exit !(g >= t) }'; then
+    printf -- '-\tteto\t0\t0\t\n' > "$reg"; agrega_caso "$caso" "$reg" "$completo"; continue
+  fi
   restante="$(awk -v t="$teto" -v g="$GASTO" 'BEGIN { printf "%.4f", t - g }')"
   roda_plugin_eval "$caso" "$raiz" 1 none "$restante" > "$reg"
   agrega_caso "$caso" "$reg" "$completo"
