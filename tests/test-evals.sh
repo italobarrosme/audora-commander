@@ -656,6 +656,36 @@ ge Edit 'C:\w\tests\test-conversor.sh' reprovou
 F="$SP/fx-escopo"; na_fixture "$F" "$CE/fixture.sh"; assert_file "$F/MEMORY.md" "evals-comportamento/4 fixture cria o projeto"
 run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "evals-comportamento/4 fixture: memory-validate ($out)"
 
+# --- evals-comportamento/5: caso memoria ---
+CM="$EV/memoria"
+# gm <grader> <esperado> <descrição> — emula sobre o workspace $SP/emws
+gm() { assert_eq "$2" "$(emula_grader "$CM/graders/$1.md" "$SP/em.jsonl" "$SP/emws")" "evals-comportamento/5 $1: $3"; }
+assert_contains "$(tr -d '\r' < "$CM/prompt.md" 2>/dev/null | tr '\n' ' ')" "Demanda dobro-negativo: a função dobro da lib deve aceitar números negativos (hoje recusa). E fica a dica para sempre neste projeto: a suíte só passa com LC_ALL=C bash tests/run.sh." "evals-comportamento/5 prompt do caso"
+assert_contains "$(cat "$CM/case.yaml" 2>/dev/null)" "name: memoria" "evals-comportamento/5 case.yaml"
+for g in no-com-ears aprendizado-fora-do-memory aprendizado-registrado; do
+  assert_contains "$(cat "$CM/graders/$g.md" 2>/dev/null)" "arm: both" "evals-comportamento/5 $g com arm: both"
+done
+rm -rf "$SP/emws"; mkdir -p "$SP/emws/docs/audora/memory"; : > "$SP/em.jsonl"
+NO="$SP/emws/docs/audora/memory/dobro-negativo.md"
+gm no-com-ears reprovou "nó ausente"
+printf -- '- **dobro-negativo/1** — QUANDO `dobro -3` é chamado O\n  SISTEMA DEVE imprimir -6\n' > "$NO"; gm no-com-ears passou "critério EARS quebrado em linha"
+printf -- '- dobro-negativo/1 — aceitar negativos\n' > "$NO"; gm no-com-ears reprovou "critério sem EARS"
+printf -- '- QUANDO x O SISTEMA DEVE y\n' > "$NO"; gm no-com-ears reprovou "EARS sem endereço <id>/<n>"
+printf 'memory-schema: 1\n## Aprendizados\n- 2026-10-09 | execute | LC_ALL=C bash tests/run.sh\n' > "$SP/emws/MEMORY.md"
+gm aprendizado-fora-do-memory reprovou "linha de aprendizado no MEMORY"
+printf 'memory-schema: 1\n## Aprendizados\nAprendizados vivem em docs/audora/aprendizados.md\n- dobro | in-progress | x\n' > "$SP/emws/MEMORY.md"
+gm aprendizado-fora-do-memory passou "MEMORY sem linha datada"
+cp "$ROOT/templates/aprendizados-template.md" "$SP/emws/docs/audora/aprendizados.md"
+gm aprendizado-registrado reprovou "aprendizados.md só com o cabeçalho"
+echo "- 2026-10-09 | execute | suíte só passa com LC_ALL=C" >> "$SP/emws/docs/audora/aprendizados.md"
+gm aprendizado-registrado passou "aprendizado com LC_ALL=C"
+F="$SP/fx-memoria"; na_fixture "$F" "$CM/fixture.sh"; assert_file "$F/MEMORY.md" "evals-comportamento/5 fixture cria o projeto"
+run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "evals-comportamento/5 fixture: memory-validate ($out)"
+( cd "$F" && bash tests/run.sh ) >/dev/null 2>&1; assert_eq 0 "$?" "evals-comportamento/5 fixture: suíte passa"
+r="$(cd "$F" && bash -c 'source lib.sh; dobro 4; dobro -3 2>&1; echo "rc=$?"')"
+assert_eq "$(printf '8\nerro: não numérico ou negativo\nrc=1')" "$r" "evals-comportamento/5 fixture: dobro recusa negativo"
+assert_eq 1 "$(git -C "$F" log --oneline 2>/dev/null | wc -l | tr -d ' ')" "evals-comportamento/5 fixture: commitada"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"
