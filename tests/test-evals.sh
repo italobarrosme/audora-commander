@@ -41,7 +41,8 @@ jcaminho() {
 # trace <arquivo> <in> <cc> <cr> <out> [plugins-json] — init + evento result
 trace() {
   mkdir -p "$(dirname "$1")"
-  local pl="${6-[{\"name\":\"audora-commander\",\"source\":\"audora-commander@inline\"}]}"
+  local pl='[{"name":"audora-commander","source":"audora-commander@inline"}]'
+  [ $# -lt 6 ] || pl="$6"
   printf '%s\n' "{\"type\":\"system\",\"subtype\":\"init\",\"plugins\":$pl}" \
     "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"total_cost_usd\":0.1,\"usage\":{\"input_tokens\":$2,\"cache_creation_input_tokens\":$3,\"cache_read_input_tokens\":$4,\"output_tokens\":$5}}" > "$1"
 }
@@ -246,12 +247,13 @@ assert_eq 3 "$code" "evals-comportamento/8 erro de infra vence teto no exit"
 assert_contains "$out" "NÃO RODADO · b · não rodado: teto" "evals-comportamento/8 teto vale depois de erro de infra"
 
 # --- evals-comportamento/2: modo completo, 3 com e 3 sem ---
-# runs <braço> <score|T>... — runs de custo 0.1 e tokens 10; 0 reprova no grader
-# categoria; T = erro de timeout
+# runs <c|s> <score|T>... — runs de custo 0.1 e tokens 10; 0 reprova no grader
+# categoria; T = erro de timeout; braço s com a sessão sem plugin
 runs() {
   local b="$1" s i=0 r=() t; shift
   for s in "$@"; do
-    i=$((i+1)); t="$SP/claude-eval-$b$i/out/trace.jsonl"; trace "$t" 1 2 3 4
+    i=$((i+1)); t="$SP/claude-eval-$b$i/out/trace.jsonl"
+    if [ "$b" = s ]; then trace "$t" 1 2 3 4 '[]'; else trace "$t" 1 2 3 4; fi
     case "$s" in
       T) r+=("$(run 1 '"timed out after 600s"' 0.1 "$t")") ;;
       0) r+=("$(run 0.5 null 0.1 "$t" "$G_CAT")") ;;
@@ -285,6 +287,56 @@ assert_contains "$out" "ERRO INFRA · porta · causa: timeout (timed out after 6
 reseta_pe; resultado "$SP/pe/r.json" "$(runs c 0 0 1)" "$(runs s 1 1 1)"
 out="$(roda_evals --completo 2>/dev/null)"
 assert_contains "$out" "com 1/3 · sem 3/3 · Δ -67 pp" "evals-comportamento/2 diferença negativa"
+
+# --- evals-comportamento/7: isolamento conferido no caso plugin-eval ---
+RZ="$SP/raiz1"
+PL_OUTRO='[{"name":"audora-commander","source":"audora-commander@inline"},{"name":"outro","source":"outro@inline"}]'
+PL_BUILTIN='[{"name":"audora-commander","source":"audora-commander@inline"},{"name":"agents-md","source":"agents-md@builtin"},{"name":"telemetry","source":"telemetry@builtin"}]'
+reseta_pe; trace "$T1" 1 1 1 1
+resultado "$SP/pe/r.json" "$(run 1 null 0.1 "$T1")"
+sed -i 's/"plugins":\[{"name":"audora-commander","version":"0.16.0"}\]/"plugins":[{"name":"audora-commander"},{"name":"outro"}]/' "$SP/pe/r.json"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/7 plugin extra no suite sai 3"
+assert_contains "$out" "RECUSADO · porta · isolamento: plugins carregados audora-commander,outro" "evals-comportamento/7 recusa plugin extra no suite"
+assert_contains "$out" "· 1 erro de infra ·" "evals-comportamento/7 RECUSADO conta como erro de infra"
+
+reseta_pe; trace "$T1" 1 1 1 1 "$PL_OUTRO"
+resultado "$SP/pe/r.json" "$(run 1 null 0.1 "$T1")"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/7 plugin extra na sessão sai 3"
+assert_contains "$out" "RECUSADO · porta · isolamento: plugins na sessão audora-commander,outro" "evals-comportamento/7 recusa plugin extra na sessão"
+
+reseta_pe; trace "$SP/claude-eval-s1/out/trace.jsonl" 1 1 1 1
+resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(run 1 null 0.1 "$SP/claude-eval-s1/out/trace.jsonl")"
+out="$(roda_evals --completo 2>/dev/null)"
+assert_contains "$out" "RECUSADO · porta · isolamento: plugins na sessão audora-commander" "evals-comportamento/7 braço sem não pode carregar o plugin"
+
+reseta_pe; trace "$T1" 1 1 1 1 "$PL_BUILTIN"
+resultado "$SP/pe/r.json" "$(run 1 null 0.1 "$T1")"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 0 "$code" "evals-comportamento/7 plugins @builtin não recusam"
+assert_contains "$out" "PASSOU · porta" "evals-comportamento/7 @builtin aceito"
+
+reseta_pe; resultado "$SP/pe/r.json" "$(run 1 null 0.1 "$SP/sem-trace/out/trace.jsonl")"
+out="$(roda_evals 2>/dev/null)"
+assert_contains "$out" "RECUSADO · porta · isolamento: sem evento init no trace" "evals-comportamento/7 sem trace não dá para garantir isolamento"
+
+reseta_pe; trace "$T1" 1 1 1 1
+resultado "$SP/pe/r.json" "$(run 1 null 0.1 "$T1")"
+echo "[ \"\$1\" = plugin ] && echo x > \"$RZ/sujeira.txt\"" > "$SP/cenario.sh"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/7 git status mudou sai 3"
+assert_eq "ISOLAMENTO VIOLADO · git status mudou: ?? sujeira.txt" "$(printf '%s\n' "$out" | tail -2 | head -1)" "evals-comportamento/7 git status mudou é a linha antes do total"
+rm -f "$RZ/sujeira.txt"
+tmpj="$(sed -n 's/.* --json \([^ ]*\) .*/\1/p' "$SP/stub.log")"
+case "$tmpj" in "$RZ"/*) ko "evals-comportamento/7 --json dentro da raiz: $tmpj" ;; *) ok ;; esac
+case "$(sed -n 's/.* --output-dir \([^ ]*\).*/\1/p' "$SP/stub.log")" in "$RZ"/*) ko "evals-comportamento/7 --output-dir dentro da raiz" ;; *) ok ;; esac
+
+reseta_pe; mkdir -p "$SP/sem-git/tests/evals/porta"; echo p > "$SP/sem-git/tests/evals/porta/prompt.md"
+out="$(bash "$ROOT/tests/evals.sh" --claude "$STUB" --raiz "$SP/sem-git" 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/7 raiz fora de repo git sai 3"
+assert_contains "$out" "RECUSADO · porta · isolamento: raiz fora de um repo git (sem como conferir o git status)" "evals-comportamento/7 recusa raiz sem git"
+assert_eq 0 "$(grep -c '^plugin eval' "$SP/stub.log")" "evals-comportamento/7 recusado não invoca"
 
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"

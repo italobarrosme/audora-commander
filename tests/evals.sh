@@ -71,7 +71,7 @@ fi
 # roda_plugin_eval <caso> <alvo> <runs> <ablation> <restante> — registros de run
 # (ver evals-lib.sh); a invocação que não produz JSON utilizável vira erro de infra
 roda_plugin_eval() {
-  local caso="$1" alvo="$2" tmp rc pr linha
+  local caso="$1" alvo="$2" tmp rc pr ps linha
   tmp="$(mktemp -d)"
   "$claude" plugin eval "$alvo" --eval-dir tests/evals --case "$caso" --runs "$3" --ablation "$4" \
     --threshold 0 --trust-plugin --scaffold --allow-tools Write Edit --model "$modelo" \
@@ -83,6 +83,8 @@ roda_plugin_eval() {
     printf -- '-\tinfra\t0\t0\tplugin eval saiu %s: %s\n' "$rc" "$linha"
   else
     pr="$(motivo_parcial "$tmp/r.json")"
+    ps="$(plugins_suite "$tmp/r.json")"
+    [ "$ps" = "$PLUGIN" ] || printf -- '-\trecusado\t0\t0\tplugins carregados %s\n' "${ps:-(nenhum)}"
     registros_plugin_eval "$tmp/r.json"
     case "$pr" in
       "") [ "$rc" -eq 0 ] || printf -- '-\tinfra\t0\t0\tplugin eval saiu %s: %s\n' "$rc" "$linha" ;;
@@ -94,9 +96,17 @@ roda_plugin_eval() {
   rm -rf "$tmp"
 }
 
+# o repo do plugin sai da rodada com o git status de antes; sem git não há como conferir
+recusa=""
+antes="$(git -C "$raiz" status --porcelain 2>/dev/null)" \
+  || recusa="raiz fora de um repo git (sem como conferir o git status)"
+
 reg="$(mktemp)"
 trap 'rm -f "$reg"' EXIT
 for caso in "${casos[@]}"; do
+  if [ -n "$recusa" ]; then
+    printf -- '-\trecusado\t0\t0\t%s\n' "$recusa" > "$reg"; agrega_caso "$caso" "$reg" "$completo"; continue
+  fi
   if [ -n "$infra" ]; then registra_infra "$caso" "$infra" 0 0; continue; fi
   # teto: atingido (gasto >= teto ou o host parou por custo) → o caso nem é invocado
   if [ "$TETO_ATINGIDO" -eq 1 ] || awk -v t="$teto" -v g="$GASTO" 'BEGIN { exit !(g >= t) }'; then
@@ -110,6 +120,11 @@ for caso in "${casos[@]}"; do
   fi
   agrega_caso "$caso" "$reg" "$completo"
 done
+
+if [ -z "$recusa" ] && ! div="$(confere_git "$antes" "$(git -C "$raiz" status --porcelain 2>/dev/null)")"; then
+  ISOLAMENTO_VIOLADO=1
+  echo "ISOLAMENTO VIOLADO · git status mudou: $div"
+fi
 
 linha_total
 exit "$(exit_rodada)"

@@ -80,6 +80,7 @@ tokens_trace() {
 # le_resultado <json> — por run do 1º caso: braço<TAB>score<TAB>erro<TAB>custo<TAB>trace<TAB>motivo
 # (custo = costUsd + judgeCostUsd; motivo = "nome: explanation" dos graders reprovados)
 le_resultado() {
+  [ -s "$1" ] || return 1
   perl -MJSON::PP -0777 -ne '
     my $d = eval { decode_json($_) } or die "json inválido\n";
     my $arms = $d->{cases}[0]{arms} // {};
@@ -109,15 +110,63 @@ limpa_temp_eval() {
   case "$(basename "$d")" in claude-eval-*) rm -rf "$d" ;; esac
 }
 
+# --- isolamento ---
+PLUGIN=audora-commander
+
+# plugins_suite <json> — nomes dos plugins que o host carregou, por vírgula
+plugins_suite() {
+  perl -MJSON::PP -0777 -ne '
+    my $d = eval { decode_json($_) } or next;
+    print join(",", map { $_->{name} // "" } @{ $d->{suite}{plugins} // [] });' "$1" 2>/dev/null
+}
+
+# plugins_sessao <trace.jsonl> — plugins não-@builtin do evento system/init,
+# por vírgula; exit 1 sem arquivo ou sem init
+plugins_sessao() {
+  [ -f "$1" ] || return 1
+  perl -MJSON::PP -ne '
+    next unless /"init"/;
+    my $d = eval { decode_json($_) } or next;
+    next unless ($d->{type} // "") eq "system" && ($d->{subtype} // "") eq "init";
+    print join(",", map { $_->{name} // "" } grep { ($_->{source} // "") !~ /\@builtin$/ } @{ $d->{plugins} // [] });
+    $achou = 1; last;
+    END { $? = $achou ? 0 : 1 }' "$1" 2>/dev/null
+}
+
+# isolamento_run <trace> <braço> <erro> — vazio se a sessão do run tinha só o
+# esperado (com: o plugin; sem: nenhum); senão o motivo da recusa. Run com erro
+# e sem trace é infra, não recusa.
+isolamento_run() {
+  local p esperado=""
+  [ "$2" = sem ] || esperado="$PLUGIN"
+  if p="$(plugins_sessao "$1")"; then
+    [ "$p" = "$esperado" ] || echo "plugins na sessão ${p:-(nenhum)}"
+  elif [ -z "$3" ]; then
+    echo "sem evento init no trace"
+  fi
+}
+
+# confere_git <antes> <depois> — exit 0 se iguais; senão 1 e a 1ª linha divergente
+confere_git() {
+  [ "$1" = "$2" ] && return 0
+  local so_em='NR == FNR { if ($0 != "") a[$0] = 1; next } $0 != "" && !($0 in a) { print; exit }'
+  { awk "$so_em" <(printf '%s\n' "$1") <(printf '%s\n' "$2")
+    awk "$so_em" <(printf '%s\n' "$2") <(printf '%s\n' "$1"); } | head -1
+  return 1
+}
+
 # registros_plugin_eval <json> — registros de run a partir do JSON do host
-# (lê os tokens do trace e apaga o temporário de cada run)
+# (lê os tokens do trace, confere o isolamento e apaga o temporário de cada run)
 registros_plugin_eval() {
-  local l braco score erro custo tr mot t tok cls
+  local l braco score erro custo tr mot t tok cls iso
   # TAB é whitespace de IFS (campos vazios se fundiriam): separa por \x1f
   while IFS= read -r l; do
     IFS=$'\x1f' read -r braco score erro custo tr mot <<< "${l//$'\t'/$'\x1f'}"
     t="$(posix_path "$tr")"; tok="$(tokens_trace "$t")"
-    if [ -n "$erro" ]; then
+    iso="$(isolamento_run "$t" "$braco" "$erro")"
+    if [ -n "$iso" ]; then
+      printf '%s\trecusado\t%s\t%s\t%s\n' "$braco" "$custo" "$tok" "$iso"
+    elif [ -n "$erro" ]; then
       cls="$(classifica_erro "$erro")"
       case "$cls" in
         "infra: timeout") printf '%s\tinfra\t%s\t%s\ttimeout (%s)\n' "$braco" "$custo" "$tok" "$erro" ;;
