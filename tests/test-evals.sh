@@ -23,6 +23,8 @@ if [ "\$1" = plugin ]; then
     case "\${a[\$i]}" in --json) J="\${a[\$((i+1))]}" ;; --case) C="\${a[\$((i+1))]}" ;; esac
   done
   src="$SP/pe/\$C.json"; [ -f "\$src" ] || src="$SP/pe/r.json"
+  # mutação: alvo ≠ \$SP/pe/raiz é a cópia mutada → \$SP/pe/copia.json
+  [ -f "$SP/pe/copia.json" ] && [ "\$3" != "\$(cat "$SP/pe/raiz" 2>/dev/null)" ] && src="$SP/pe/copia.json"
   [ -f "\$src" ] && [ -n "\$J" ] && cp "\$src" "\$J"
   [ -f "$SP/pe/stderr" ] && cat "$SP/pe/stderr" >&2
   exit "\$(cat "$SP/pe/rc" 2>/dev/null || echo 0)"
@@ -685,6 +687,91 @@ run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "evals-comportament
 r="$(cd "$F" && bash -c 'source lib.sh; dobro 4; dobro -3 2>&1; echo "rc=$?"')"
 assert_eq "$(printf '8\nerro: não numérico ou negativo\nrc=1')" "$r" "evals-comportamento/5 fixture: dobro recusa negativo"
 assert_eq 1 "$(git -C "$F" log --oneline 2>/dev/null | wc -l | tr -d ' ')" "evals-comportamento/5 fixture: commitada"
+
+# --- evals-comportamento/10: mutação de regra ---
+RZ="$SP/raizm"; mkdir -p "$RZ/skills/x" "$RZ/tests/evals/tdd"
+printf 'linha 1\nREGRA A\ncorpo\nfim da regra\nREGRA B dup\nREGRA B dup\nlinha 7\n' > "$RZ/skills/x/SKILL.md"
+echo "execute de dobro" > "$RZ/tests/evals/tdd/harness.md"
+printf '#!/usr/bin/env bash\ntrue\n' > "$RZ/tests/evals/tdd/fixture.sh"
+printf '%s\n' '# regra	caso	arquivo	início	fim' \
+  'r-ok	porta	skills/x/SKILL.md	REGRA A	fim da regra' \
+  'r-sem-inicio	porta	skills/x/SKILL.md	NAO TEM	fim' \
+  'r-ambiguo	porta	skills/x/SKILL.md	REGRA B dup	linha 7' \
+  'r-sem-fim	porta	skills/x/SKILL.md	REGRA A	NAO TEM' \
+  'r-tdd	tdd	skills/x/SKILL.md	REGRA A	REGRA A' > "$RZ/tests/evals/mutacoes.tsv"
+mkraiz "$RZ" porta
+sha_antes="$(sha1sum "$RZ/skills/x/SKILL.md")"; st_antes="$(git -C "$RZ" status --porcelain)"
+TO="$SP/outro/out/trace.jsonl"
+reseta_pe; echo "$RZ" > "$SP/pe/raiz"; trace "$TO" 1 1 1 1
+err="$(roda_evals --mutar nada 2>&1 >/dev/null)"; code=$?
+assert_eq 4 "$code" "evals-comportamento/10 regra desconhecida sai 4"
+assert_contains "$err" "evals: regra desconhecida: nada" "evals-comportamento/10 regra desconhecida explica"
+err="$(roda_evals --mutar r-sem-inicio 2>&1 >/dev/null)"; code=$?
+assert_eq 4 "$code" "evals-comportamento/10 início ausente sai 4"
+assert_contains "$err" "evals: mutação inválida: início não encontrado em skills/x/SKILL.md" "evals-comportamento/10 início ausente"
+err="$(roda_evals --mutar r-ambiguo 2>&1 >/dev/null)"
+assert_contains "$err" "evals: mutação inválida: início ambíguo (2 ocorrências) em skills/x/SKILL.md" "evals-comportamento/10 início ambíguo"
+err="$(roda_evals --mutar r-sem-fim 2>&1 >/dev/null)"
+assert_contains "$err" "evals: mutação inválida: fim não encontrado depois do início em skills/x/SKILL.md" "evals-comportamento/10 fim ausente"
+assert_no_file "$SP/stub.log" "evals-comportamento/10 mutação inválida não chama o claude"
+
+resultado "$SP/pe/r.json" "$(run 1 null 0.1 "$TO")"; resultado "$SP/pe/copia.json" "$(run 0.5 null 0.1 "$TO" "$G_CAT")"
+out="$(roda_evals --mutar r-ok --runs 1 2>/dev/null)"; code=$?
+assert_eq 0 "$code" "evals-comportamento/10 mutação com efeito sai 0"
+assert_contains "$out" "mutação r-ok · caso porta · skills/x/SKILL.md (linhas 2-4)" "evals-comportamento/10 cabeçalho da mutação"
+assert_contains "$out" "com a regra 1/1 · sem a regra 0/1 · efeito -100 pp" "evals-comportamento/10 taxa com e sem a regra"
+inv="$(grep '^plugin eval' "$SP/stub.log")"
+assert_eq 2 "$(printf '%s\n' "$inv" | grep -c -- '--runs 1 --ablation none')" "evals-comportamento/10 dois braços com o plugin, --runs 1"
+assert_contains "$(printf '%s\n' "$inv" | sed -n 1p)" "plugin eval $RZ " "evals-comportamento/10 1º braço na raiz"
+copia="$(printf '%s\n' "$inv" | sed -n 2p | awk '{print $3}')"
+case "$copia" in "$RZ"|"") ko "evals-comportamento/10 2º braço na cópia (obtido '$copia')" ;; *) ok ;; esac
+assert_no_file "$copia" "evals-comportamento/10 cópia apagada no fim"
+assert_eq "$sha_antes" "$(sha1sum "$RZ/skills/x/SKILL.md")" "evals-comportamento/10 skill do repo intocada"
+assert_eq "$st_antes" "$(git -C "$RZ" status --porcelain)" "evals-comportamento/10 git status da raiz intocado"
+
+resultado "$SP/pe/copia.json" "$(run 1 null 0.1 "$TO")"; rm -f "$SP/stub.log"
+out="$(roda_evals --mutar r-ok --runs 1 2>/dev/null)"; code=$?
+assert_contains "$out" "com a regra 1/1 · sem a regra 1/1 · sem efeito" "evals-comportamento/10 taxa igual = sem efeito"
+assert_eq 0 "$code" "evals-comportamento/10 sem efeito ainda sai 0 (relatório)"
+resultado "$SP/pe/r.json" "$(run 0.5 null 0.1 "$TO" "$G_CAT")"
+out="$(roda_evals --mutar r-ok --runs 1 2>/dev/null)"
+assert_contains "$out" "com a regra 0/1 · sem a regra 1/1 · sem efeito" "evals-comportamento/10 taxa que sobe = sem efeito"
+rm -f "$SP/stub.log"; roda_evals --mutar r-ok >/dev/null 2>&1
+assert_eq 2 "$(grep -c -- '--runs 3 --ablation none' "$SP/stub.log")" "evals-comportamento/10 --runs padrão 3"
+
+resultado "$SP/pe/r.json" "$(run 1 '"timed out after 600s"' 0.1 "$TO")"
+out="$(roda_evals --mutar r-ok --runs 1 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/10 infra na mutação sai 3"
+assert_contains "$out" "ERRO INFRA · porta · causa: timeout" "evals-comportamento/10 infra na mutação"
+resultado "$SP/pe/r.json" "$(run 1 null 1.5 "$TO")"; rm -f "$SP/stub.log"
+out="$(roda_evals --mutar r-ok --runs 1 --teto 1 2>/dev/null)"; code=$?
+assert_eq 2 "$code" "evals-comportamento/10 teto na mutação sai 2"
+assert_eq 1 "$(grep -c '^plugin eval' "$SP/stub.log")" "evals-comportamento/10 teto: braço mutado não roda"
+
+export CLAUDE_CODE_OAUTH_TOKEN=tok-teste
+reseta_hs; echo "$RZ" > "$SP/pe/raiz"
+out="$(roda_evals --mutar r-tdd --runs 1 2>/dev/null)"; code=$?
+assert_eq 2 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/10 caso harness: 2 runs"
+assert_contains "$(grep '^-p ' "$SP/stub.log" | sed -n 1p)" "--plugin-dir $RZ " "evals-comportamento/10 harness: raiz"
+assert_not_contains "$(grep '^-p ' "$SP/stub.log" | sed -n 2p)" "--plugin-dir $RZ " "evals-comportamento/10 harness: cópia"
+assert_contains "$out" "mutação r-tdd · caso tdd · skills/x/SKILL.md (linhas 2-2)" "evals-comportamento/10 harness: cabeçalho"
+assert_contains "$out" "com a regra 1/1 · sem a regra 1/1 · sem efeito" "evals-comportamento/10 harness: relatório"
+unset CLAUDE_CODE_OAUTH_TOKEN
+
+# todo registro real do mutacoes.tsv tem âncoras válidas e caso existente
+while IFS=$'\t' read -r regra caso arq ini fim; do
+  case "$regra" in ''|'#'*) continue ;; esac
+  assert_eq 1 "$(grep -cF -- "$ini" "$ROOT/$arq")" "evals-comportamento/10 $regra: início único em $arq"
+  n="$(grep -nF -- "$ini" "$ROOT/$arq" | head -1 | cut -d: -f1)"
+  assert_contains "$(tail -n +"${n:-1}" "$ROOT/$arq")" "$fim" "evals-comportamento/10 $regra: fim depois do início"
+  assert_contains "$(lista_casos "$ROOT" | cut -f1)" "$caso" "evals-comportamento/10 $regra: caso $caso existe"
+done < <(tr -d '\r' < "$EV/mutacoes.tsv" 2>/dev/null)
+assert_eq 6 "$(grep -cv '^#' "$EV/mutacoes.tsv" 2>/dev/null)" "evals-comportamento/10 mutacoes.tsv com as 6 regras"
+d="$SP/mut1"; mkdir -p "$d"; printf 'a\nINI\nb\nFIM\nc\n' > "$d/f"
+assert_eq "linhas 2-4" "$(aplica_mutacao "$d/f" INI FIM)" "aplica_mutacao imprime as linhas"
+assert_eq "$(printf 'a\nc')" "$(cat "$d/f")" "aplica_mutacao remove o trecho"
+printf 'a\r\nINI\r\nc\r\n' > "$d/g"; aplica_mutacao "$d/g" INI INI >/dev/null
+assert_eq 2 "$(tr -cd '\r' < "$d/g" | wc -c | tr -d ' ')" "aplica_mutacao preserva CRLF"
 
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"

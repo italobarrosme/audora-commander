@@ -1,0 +1,7 @@
+# regra	caso	arquivo	início	fim — remove da linha com <início> até a 1ª seguinte com <fim> (bash tests/evals.sh --mutar <regra>)
+porta-anuncio	porta	skills/audora-commander/SKILL.md	4. **Anunciar**:	Correção do humano vale na hora.
+porta-criterio-light	memoria	skills/audora-commander/SKILL.md	5. **Registrar o nó**	esses endereços.
+scope-lei-de-ferro	escopo-antes	skills/scope/SKILL.md	LEI DE FERRO: NENHUM CÓDIGO ANTES DO ESCOPO FECHADO EM ARTEFATO ESCRITO	LEI DE FERRO: NENHUM CÓDIGO ANTES DO ESCOPO FECHADO EM ARTEFATO ESCRITO
+memory-aprendizado-local	memoria	skills/memory/SKILL.md	2. Registrar NA HORA em que foi descoberto	(grep-ável).
+execute-lei-de-ferro	tdd	skills/execute/SKILL.md	LEI DE FERRO: NENHUM CÓDIGO DE PRODUÇÃO SEM TESTE FALHANDO ANTES	LEI DE FERRO: NENHUM CÓDIGO DE PRODUÇÃO SEM TESTE FALHANDO ANTES
+execute-apague	tdd	skills/execute/SKILL.md	Escreveu código antes do teste?	Violar a letra da regra é violar a regra.

@@ -52,7 +52,24 @@ for p in "${pedidos[@]}"; do [ -n "${tipo_de[$p]+x}" ] || uso "caso desconhecido
 casos=("${todos[@]}")
 [ "${#pedidos[@]}" -eq 0 ] || casos=("${pedidos[@]}")
 
+reg=""; copia=""
+trap 'rm -rf "$reg" "$reg.2" "$copia" "$copia.err"' EXIT
+
+# mutação: valida a regra e prepara a cópia mutada ANTES de qualquer saída
+if [ -n "$mutar" ]; then
+  linha="$(busca_mutacao "$raiz" "$mutar")" || uso "regra desconhecida: $mutar"
+  IFS=$'\x1f' read -r mcaso marq mini mfim <<< "${linha//$'\t'/$'\x1f'}"
+  [ -n "${tipo_de[$mcaso]+x}" ] || uso "mutação inválida: caso $mcaso inexistente"
+  [ -f "$raiz/$marq" ] || uso "mutação inválida: arquivo $marq inexistente"
+  copia="$(mktemp -d)"
+  copia_plugin "$raiz" "$copia"
+  mlinhas="$(aplica_mutacao "$copia/$marq" "$mini" "$mfim" 2>"$copia.err")" \
+    || uso "mutação inválida: $(cat "$copia.err") em $marq"
+  runs="${runs:-3}"
+fi
+
 modo="modo rápido"; [ "$completo" -eq 0 ] || modo="modo completo"
+[ -z "$mutar" ] || modo="mutação"
 echo "evals: $modo · modelo $modelo · teto US\$ $(awk -v t="$teto" 'BEGIN{printf "%.2f", t}')"
 
 # pré-checagem do claude: ausente ou abaixo da mínima → todo caso vira erro de infra
@@ -153,8 +170,52 @@ recusa=""
 antes="$(git -C "$raiz" status --porcelain 2>/dev/null)" \
   || recusa="raiz fora de um repo git (sem como conferir o git status)"
 
+# confere_repo — o git status da raiz no fim igual ao de antes da rodada
+confere_repo() {
+  [ -z "$recusa" ] || return 0
+  if ! div="$(confere_git "$antes" "$(git -C "$raiz" status --porcelain 2>/dev/null)")"; then
+    ISOLAMENTO_VIOLADO=1
+    echo "ISOLAMENTO VIOLADO · git status mudou: $div"
+  fi
+}
+# soma_registros <registros> — acumula custo e tokens no total da rodada
+soma_registros() {
+  acumula "$(awk -F'\t' '{ s += $3 } END { printf "%.10g", s+0 }' "$1")" "$(awk -F'\t' '{ s += $4 } END { print s+0 }' "$1")"
+}
+# roda_variante <alvo> — os runs do caso mutado com o plugin em <alvo>
+roda_variante() {
+  case "${tipo_de[$mcaso]}" in
+    plugin-eval) roda_plugin_eval "$mcaso" "$1" "$runs" none "$(awk -v t="$teto" -v g="$GASTO" 'BEGIN { printf "%.4f", t - g }')" ;;
+    harness) roda_caso_harness "$mcaso" "$1" com "$runs" ;;
+  esac
+}
+
 reg="$(mktemp)"
-trap 'rm -f "$reg"' EXIT
+
+# mutação: o caso com a skill original (com) e com a cópia sem a regra (sem).
+# Relatório: o humano decide o corte — sai 0 mesmo "sem efeito".
+if [ -n "$mutar" ]; then
+  echo "mutação $mutar · caso $mcaso · $marq ($mlinhas)"
+  : > "$reg.2"
+  if [ -n "$recusa" ]; then printf -- '-\trecusado\t0\t0\t%s\n' "$recusa" > "$reg"
+  elif [ -n "$infra" ]; then printf -- '-\tinfra\t0\t0\t%s\n' "$infra" > "$reg"
+  else
+    roda_variante "$raiz" > "$reg"; soma_registros "$reg"
+    if motivo_de teto "$reg" >/dev/null || awk -v t="$teto" -v g="$GASTO" 'BEGIN { exit !(g >= t) }'; then
+      printf -- 'sem\tteto\t0\t0\t\n' > "$reg.2"
+    else
+      roda_variante "$copia" | awk -F'\t' -v OFS='\t' '$1 == "com" { $1 = "sem" } 1' > "$reg.2"
+      soma_registros "$reg.2"
+    fi
+  fi
+  cat "$reg.2" >> "$reg"
+  relatorio_mutacao "$mcaso" "$reg"; code=$?
+  echo "custo: US\$ $(usd "$GASTO") · tokens $TOKENS"
+  confere_repo
+  [ "$ISOLAMENTO_VIOLADO" -eq 0 ] || code=3
+  exit "$code"
+fi
+
 for caso in "${casos[@]}"; do
   if [ -n "$recusa" ]; then
     printf -- '-\trecusado\t0\t0\t%s\n' "$recusa" > "$reg"; agrega_caso "$caso" "$reg" "$completo"; continue
@@ -174,10 +235,7 @@ for caso in "${casos[@]}"; do
   agrega_caso "$caso" "$reg" "$completo"
 done
 
-if [ -z "$recusa" ] && ! div="$(confere_git "$antes" "$(git -C "$raiz" status --porcelain 2>/dev/null)")"; then
-  ISOLAMENTO_VIOLADO=1
-  echo "ISOLAMENTO VIOLADO · git status mudou: $div"
-fi
+confere_repo
 
 linha_total
 exit "$(exit_rodada)"

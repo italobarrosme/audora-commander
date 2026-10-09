@@ -356,6 +356,65 @@ analisa_stream() {
   fi
 }
 
+# --- mutação de regra ---
+
+# busca_mutacao <raiz> <regra> — "caso<TAB>arquivo<TAB>início<TAB>fim" da regra em
+# <raiz>/tests/evals/mutacoes.tsv (# = comentário); exit 1 se não existe
+busca_mutacao() {
+  [ -f "$1/tests/evals/mutacoes.tsv" ] || return 1
+  tr -d '\r' < "$1/tests/evals/mutacoes.tsv" | awk -F'\t' -v OFS='\t' -v r="$2" '
+    $1 == r && $1 !~ /^#/ { print $2, $3, $4, $5; achou = 1; exit } END { exit !achou }'
+}
+
+# copia_plugin <raiz> <destino> — cópia dos arquivos do repo (versionados e
+# não ignorados), sem .git: o plugin como o humano o tem, para mutar sem tocar no repo
+copia_plugin() {
+  local f lista=()
+  while IFS= read -r -d '' f; do [ -f "$1/$f" ] && lista+=("$f"); done \
+    < <(git -C "$1" ls-files -co --exclude-standard -z)
+  mkdir -p "$2"
+  printf '%s\0' "${lista[@]}" | ( cd "$1" && tar --null -T - -cf - ) | tar -xf - -C "$2"
+}
+
+# aplica_mutacao <arquivo> <início> <fim> — remove da linha que contém <início>
+# (única) até a 1ª linha seguinte, inclusive, que contém <fim>; preserva CRLF.
+# Imprime "linhas A-B"; erro → exit 1 e o motivo no stderr
+aplica_mutacao() {
+  perl - "$@" <<'PERL'
+use strict; use warnings;
+my ($f, $ini, $fim) = @ARGV;
+open(my $h, '<:raw', $f) or do { print STDERR "arquivo ilegível\n"; exit 1 };
+my @l = <$h>; close $h;
+my @i = grep { index($l[$_], $ini) >= 0 } 0 .. $#l;
+if (!@i) { print STDERR "início não encontrado\n"; exit 1 }
+if (@i > 1) { print STDERR "início ambíguo (" . scalar(@i) . " ocorrências)\n"; exit 1 }
+my ($b) = grep { index($l[$_], $fim) >= 0 } $i[0] .. $#l;
+if (!defined $b) { print STDERR "fim não encontrado depois do início\n"; exit 1 }
+splice @l, $i[0], $b - $i[0] + 1;
+open($h, '>:raw', $f) or do { print STDERR "arquivo não gravável\n"; exit 1 };
+print $h @l; close $h;
+print "linhas ", $i[0] + 1, "-", $b + 1, "\n";
+PERL
+}
+
+# relatorio_mutacao <caso> <registros> — linha do resultado (registros "com" =
+# skill original, "sem" = sem a regra); imprime e devolve o exit da rodada
+relatorio_mutacao() {
+  local mot cp cn sp sn ef
+  if mot="$(motivo_de recusado "$2")"; then echo "RECUSADO · $1 · isolamento: $mot"; return 3; fi
+  if mot="$(motivo_de infra "$2")"; then echo "ERRO INFRA · $1 · causa: $mot"; return 3; fi
+  if motivo_de teto "$2" >/dev/null; then echo "NÃO RODADO · $1 · não rodado: teto"; return 2; fi
+  cn="$(conta com '*' "$2")"; cp="$(conta com passou "$2")"
+  sn="$(conta sem '*' "$2")"; sp="$(conta sem passou "$2")"
+  if [ "$sp" -ge "$cp" ]; then
+    ef="sem efeito"
+  else
+    ef="efeito $(awk -v c="$cp" -v s="$sp" -v n="$cn" 'BEGIN { v = 100 * (s - c) / n; r = int(v < 0 ? v - 0.5 : v + 0.5); printf "%+d", r }') pp"
+  fi
+  echo "com a regra $cp/$cn · sem a regra $sp/$sn · $ef"
+  return 0
+}
+
 # --- contadores da rodada e aritmética decimal (awk; o Git Bash não tem bc) ---
 N_CASOS=0; N_PASSOU=0; N_REPROVOU=0; N_INFRA=0; N_NAO_RODADO=0
 GASTO=0; TOKENS=0; ISOLAMENTO_VIOLADO=0; TETO_ATINGIDO=0
