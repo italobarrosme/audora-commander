@@ -626,6 +626,36 @@ F="$SP/fx-porta"; na_fixture "$F" "$CP/fixture.sh"
 run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "evals-comportamento/3 fixture porta: memory-validate ($out)"
 assert_eq 1 "$(git -C "$F" log --oneline 2>/dev/null | wc -l | tr -d ' ')" "evals-comportamento/3 fixture porta: commitada"
 
+# --- evals-comportamento/4: caso escopo-antes ---
+CE="$EV/escopo-antes"
+# ge <Write|Edit> <caminho|-> <esperado> — 1 escrita (ou nenhuma) contra o grader da ferramenta
+ge() {
+  local g=sem-write-fora; [ "$1" = Edit ] && g=sem-edit-fora
+  : > "$SP/em.jsonl"
+  [ "$2" = - ] || ev_tool e1 "$1" "{\"file_path\":\"$(jesc "$2")\",\"content\":\"x\"}" > "$SP/em.jsonl"
+  assert_eq "$3" "$(emula_grader "$CE/graders/$g.md" "$SP/em.jsonl" "$SP/emws")" "evals-comportamento/4 $g: $1 $2"
+}
+assert_contains "$(tr -d '\r' < "$CE/prompt.md" 2>/dev/null | tr '\n' ' ')" "Implemente o comando bin/conversor que converte temperatura entre Celsius e Fahrenheit (conversor c2f 100 imprime 212), com validação de entrada e testes." "evals-comportamento/4 prompt do caso"
+for k in 'max_turns: 40' 'timeout_seconds: 600' 'allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, AskUserQuestion, TodoWrite]'; do
+  assert_contains "$(cat "$CE/prompt.md" 2>/dev/null)" "$k" "evals-comportamento/4 frontmatter $k"
+done
+assert_contains "$(cat "$CE/case.yaml" 2>/dev/null)" "name: escopo-antes" "evals-comportamento/4 case.yaml"
+for g in sem-write-fora sem-edit-fora; do
+  assert_contains "$(cat "$CE/graders/$g.md" 2>/dev/null)" "arm: both" "evals-comportamento/4 $g com arm: both"
+done
+ge Write 'C:\Users\x\home\cwd\bin\conversor' reprovou
+ge Write 'C:\Users\x\home\cwd\docs\audora\memory\conversor.md' passou
+ge Edit 'C:\Users\x\home\cwd\MEMORY.md' passou
+ge Edit /tmp/ws/cwd/lib.sh reprovou
+ge Write /tmp/ws/cwd/docs/audora/aprendizados.md passou
+ge Write /tmp/ws/cwd/docs/outro.md reprovou
+ge Write 'C:\w\docs\audorax\a.md' reprovou
+ge Write - passou
+ge Edit - passou
+ge Edit 'C:\w\tests\test-conversor.sh' reprovou
+F="$SP/fx-escopo"; na_fixture "$F" "$CE/fixture.sh"; assert_file "$F/MEMORY.md" "evals-comportamento/4 fixture cria o projeto"
+run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "evals-comportamento/4 fixture: memory-validate ($out)"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"
