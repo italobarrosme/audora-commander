@@ -68,8 +68,38 @@ if [ -z "$infra" ]; then
   fi
 fi
 
+# roda_plugin_eval <caso> <alvo> <runs> <ablation> <restante> — registros de run
+# (ver evals-lib.sh); a invocação que não produz JSON utilizável vira erro de infra
+roda_plugin_eval() {
+  local caso="$1" alvo="$2" tmp rc pr linha
+  tmp="$(mktemp -d)"
+  "$claude" plugin eval "$alvo" --eval-dir tests/evals --case "$caso" --runs "$3" --ablation "$4" \
+    --threshold 0 --trust-plugin --scaffold --allow-tools Write Edit --model "$modelo" \
+    --keep-temp --no-publish --max-cost-usd "$5" --json "$tmp/r.json" --output-dir "$tmp/out" \
+    </dev/null >"$tmp/stdout" 2>"$tmp/stderr"
+  rc=$?
+  linha="$(tr -d '\r' < "$tmp/stderr" | grep -m1 -v '^[[:space:]]*$')"
+  if ! le_resultado "$tmp/r.json" >/dev/null 2>&1; then
+    printf -- '-\tinfra\t0\t0\tplugin eval saiu %s: %s\n' "$rc" "$linha"
+  else
+    pr="$(motivo_parcial "$tmp/r.json")"
+    registros_plugin_eval "$tmp/r.json"
+    case "$pr" in
+      "") [ "$rc" -eq 0 ] || printf -- '-\tinfra\t0\t0\tplugin eval saiu %s: %s\n' "$rc" "$linha" ;;
+      auth_failed) printf -- '-\tinfra\t0\t0\tsem autenticação\n' ;;
+      *) printf -- '-\tinfra\t0\t0\tplugin eval parcial: %s\n' "$pr" ;;
+    esac
+  fi
+  rm -rf "$tmp"
+}
+
+reg="$(mktemp)"
+trap 'rm -f "$reg"' EXIT
 for caso in "${casos[@]}"; do
   if [ -n "$infra" ]; then registra_infra "$caso" "$infra" 0 0; continue; fi
+  restante="$(awk -v t="$teto" -v g="$GASTO" 'BEGIN { printf "%.4f", t - g }')"
+  roda_plugin_eval "$caso" "$raiz" 1 none "$restante" > "$reg"
+  agrega_caso "$caso" "$reg" "$completo"
 done
 
 linha_total

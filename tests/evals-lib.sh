@@ -46,6 +46,94 @@ lista_casos() {
   done | LC_ALL=C sort
 }
 
+# --- resultado de um run ---
+# Registro de run (comum aos dois tipos de caso), 1 por linha:
+#   braço<TAB>status<TAB>custo<TAB>tokens<TAB>motivo
+# braço ∈ com|sem|- (- = a invocação toda); status ∈ passou|reprovou|infra|recusado|teto
+
+# posix_path <caminho> — caminho do Windows (como o host devolve) em forma POSIX
+posix_path() {
+  [ -n "$1" ] || return 0
+  if command -v cygpath >/dev/null 2>&1; then cygpath -u "$1"; else printf '%s' "${1//\\//}"; fi
+}
+
+# classifica_erro <texto> — erro de um run: infra (timeout, API) ou reprovação
+classifica_erro() {
+  if printf '%s' "$1" | grep -qiE 'timed? ?out'; then echo "infra: timeout"
+  elif printf '%s' "$1" | grep -qiE 'API Error|overloaded|rate.?limit|ECONNRESET|ETIMEDOUT|socket hang up'; then echo "infra: API"
+  else echo "reprovado"
+  fi
+}
+
+# tokens_trace <trace.jsonl> — input + cache_creation + cache_read + output do
+# último evento com total_cost_usd; 0 sem arquivo ou sem esse evento
+tokens_trace() {
+  [ -f "$1" ] || { echo 0; return; }
+  perl -MJSON::PP -ne '
+    next unless /"total_cost_usd"/;
+    my $d = eval { decode_json($_) } or next;
+    my $u = $d->{usage} // {};
+    $t = 0; $t += $u->{$_} // 0 for qw(input_tokens cache_creation_input_tokens cache_read_input_tokens output_tokens);
+    END { print $t // 0, "\n" }' "$1" 2>/dev/null || echo 0
+}
+
+# le_resultado <json> — por run do 1º caso: braço<TAB>score<TAB>erro<TAB>custo<TAB>trace<TAB>motivo
+# (custo = costUsd + judgeCostUsd; motivo = "nome: explanation" dos graders reprovados)
+le_resultado() {
+  perl -MJSON::PP -0777 -ne '
+    my $d = eval { decode_json($_) } or die "json inválido\n";
+    my $arms = $d->{cases}[0]{arms} // {};
+    for my $arm ([with => "com"], [without => "sem"]) {
+      for my $r (@{ $arms->{$arm->[0]} // [] }) {
+        my @m = map { "$_->{name}: " . ($_->{explanation} // "") } grep { !$_->{passed} } @{ $r->{graders} // [] };
+        my $e = $r->{error} // ""; $e =~ s/\s+/ /g;
+        my $mot = join("; ", @m); $mot =~ s/\s+/ /g;
+        print join("\t", $arm->[1], $r->{score} // 0, $e,
+          ($r->{costUsd} // 0) + ($r->{judgeCostUsd} // 0), $r->{tracePath} // "", $mot), "\n";
+      }
+    }' "$1"
+}
+
+# motivo_parcial <json> — partialReason se a rodada do host ficou parcial; vazio senão
+motivo_parcial() {
+  perl -MJSON::PP -0777 -ne '
+    my $d = eval { decode_json($_) } or exit;
+    print $d->{partialReason} // "desconhecido" if $d->{partial};' "$1" 2>/dev/null
+}
+
+# limpa_temp_eval <tracePath> — apaga o diretório 2 níveis acima do trace só se
+# ele é um claude-eval-* (o --keep-temp o deixa para trás no Windows)
+limpa_temp_eval() {
+  [ -n "$1" ] || return 0
+  local d; d="$(dirname "$(dirname "$(posix_path "$1")")")"
+  case "$(basename "$d")" in claude-eval-*) rm -rf "$d" ;; esac
+}
+
+# registros_plugin_eval <json> — registros de run a partir do JSON do host
+# (lê os tokens do trace e apaga o temporário de cada run)
+registros_plugin_eval() {
+  local l braco score erro custo tr mot t tok cls
+  # TAB é whitespace de IFS (campos vazios se fundiriam): separa por \x1f
+  while IFS= read -r l; do
+    IFS=$'\x1f' read -r braco score erro custo tr mot <<< "${l//$'\t'/$'\x1f'}"
+    t="$(posix_path "$tr")"; tok="$(tokens_trace "$t")"
+    if [ -n "$erro" ]; then
+      cls="$(classifica_erro "$erro")"
+      case "$cls" in
+        "infra: timeout") printf '%s\tinfra\t%s\t%s\ttimeout (%s)\n' "$braco" "$custo" "$tok" "$erro" ;;
+        "infra: API") printf '%s\tinfra\t%s\t%s\tAPI (%s)\n' "$braco" "$custo" "$tok" "$erro" ;;
+        *) printf '%s\treprovou\t%s\t%s\trun: %s\n' "$braco" "$custo" "$tok" "$erro" ;;
+      esac
+    elif awk -v s="$score" 'BEGIN{exit !(s == 1)}'; then
+      printf '%s\tpassou\t%s\t%s\t\n' "$braco" "$custo" "$tok"
+    else
+      [ -n "$mot" ] || mot="score $score"
+      printf '%s\treprovou\t%s\t%s\t%s\n' "$braco" "$custo" "$tok" "$mot"
+    fi
+    limpa_temp_eval "$tr"
+  done < <(le_resultado "$1")
+}
+
 # --- contadores da rodada e aritmética decimal (awk; o Git Bash não tem bc) ---
 N_CASOS=0; N_PASSOU=0; N_REPROVOU=0; N_INFRA=0; N_NAO_RODADO=0
 GASTO=0; TOKENS=0; ISOLAMENTO_VIOLADO=0
@@ -59,6 +147,49 @@ acumula() { GASTO="$(soma "$GASTO" "$1")"; TOKENS=$((TOKENS + $2)); }
 registra_infra() {
   N_CASOS=$((N_CASOS+1)); N_INFRA=$((N_INFRA+1)); acumula "$3" "$4"
   echo "ERRO INFRA · $1 · causa: $2 · US\$ $(usd "$3") · tokens $4"
+}
+
+# motivo_de <status> <registros> — motivo do 1º registro com esse status; exit 1 se nenhum
+motivo_de() {
+  awk -F'\t' -v s="$1" '$2 == s { print $5; achou = 1; exit } END { exit !achou }' "$2"
+}
+# conta <braço> <status|*> <registros> — quantos registros do braço com o status
+conta() {
+  awk -F'\t' -v b="$1" -v s="$2" '$1 == b && (s == "*" || $2 == s) { n++ } END { print n+0 }' "$3"
+}
+
+# agrega_caso <caso> <registros> <completo 0|1> — linha do caso e contadores
+# (recusado > infra > teto > passou/reprovou; passa só com todos os runs com o plugin)
+agrega_caso() {
+  local caso="$1" f="$2" custo tok mot cp cn sp sn det delta
+  custo="$(awk -F'\t' '{ s += $3 } END { printf "%.10g", s+0 }' "$f")"
+  tok="$(awk -F'\t' '{ s += $4 } END { print s+0 }' "$f")"
+  if mot="$(motivo_de recusado "$f")"; then
+    N_CASOS=$((N_CASOS+1)); N_INFRA=$((N_INFRA+1)); acumula "$custo" "$tok"
+    echo "RECUSADO · $caso · isolamento: $mot"; return
+  fi
+  if mot="$(motivo_de infra "$f")"; then registra_infra "$caso" "$mot" "$custo" "$tok"; return; fi
+  if motivo_de teto "$f" >/dev/null; then
+    N_CASOS=$((N_CASOS+1)); N_NAO_RODADO=$((N_NAO_RODADO+1)); acumula "$custo" "$tok"
+    echo "NÃO RODADO · $caso · não rodado: teto"; return
+  fi
+  cn="$(conta com '*' "$f")"; cp="$(conta com passou "$f")"
+  [ "$cn" -gt 0 ] || { registra_infra "$caso" "nenhum run com o plugin" "$custo" "$tok"; return; }
+  det="com $cp/$cn"
+  if [ "$3" = 1 ]; then
+    sn="$(conta sem '*' "$f")"; sp="$(conta sem passou "$f")"
+    delta="$(awk -v c="$cp" -v s="$sp" -v n="$cn" 'BEGIN { v = 100 * (c - s) / n; r = int(v < 0 ? v - 0.5 : v + 0.5); printf "%+d", r }')"
+    det="$det · sem $sp/$sn · Δ $delta pp"
+  fi
+  N_CASOS=$((N_CASOS+1)); acumula "$custo" "$tok"
+  if [ "$cp" -eq "$cn" ]; then
+    N_PASSOU=$((N_PASSOU+1))
+    echo "PASSOU · $caso · $det · US\$ $(usd "$custo") · tokens $tok"
+  else
+    N_REPROVOU=$((N_REPROVOU+1))
+    mot="$(awk -F'\t' '$1 == "com" && $2 == "reprovou" { print $5; exit }' "$f")"
+    echo "REPROVOU · $caso · $det · US\$ $(usd "$custo") · tokens $tok · motivo: $mot"
+  fi
 }
 
 # linha_total — a última linha do relatório
