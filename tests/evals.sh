@@ -96,6 +96,58 @@ roda_plugin_eval() {
   rm -rf "$tmp"
 }
 
+# GNU timeout (como no tests/run.sh); o timeout.exe do Windows conta como ausente
+lim=(timeout -k 5 "$timeout_run")
+timeout --version >/dev/null 2>&1 || lim=()
+winpath() { if command -v cygpath >/dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
+
+# roda_harness <caso> <braço> <alvo> <restante> — 1 run do caso harness num
+# workspace temporário (fixture + HOME/config/TEMP próprios, ambiente zerado);
+# imprime o registro do run (ver evals-lib.sh)
+roda_harness() {
+  local caso="$1" b="$2" alvo="$3" ws rc pd=() envs v
+  ws="$(mktemp -d)"; mkdir -p "$ws/cwd" "$ws/home" "$ws/config" "$ws/tmp"
+  ( cd "$ws/cwd" && bash "$alvo/tests/evals/$caso/fixture.sh" ) >"$ws/fixture.log" 2>&1
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
+    printf '%s\tinfra\t0\t0\tfixture saiu %s\n' "$b" "$rc"; rm -rf "$ws"; return
+  fi
+  [ "$b" = sem ] || pd=(--plugin-dir "$alvo")
+  envs=(PATH="$PATH" HOME="$ws/home" USERPROFILE="$(winpath "$ws/home")"
+        TEMP="$(winpath "$ws/tmp")" TMP="$(winpath "$ws/tmp")" CLAUDE_CONFIG_DIR="$(winpath "$ws/config")")
+  for v in SYSTEMROOT COMSPEC CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_API_KEY; do
+    [ -n "${!v-}" ] && [ "${!v}" != "$PLACEHOLDER" ] && envs+=("$v=${!v}")
+  done
+  # /usr/bin/env por caminho: o `env` do PATH pode não ser o coreutils
+  ( cd "$ws/cwd" && /usr/bin/env -i "${envs[@]}" "${lim[@]}" "$claude" -p "$(tr -d '\r' < "$alvo/tests/evals/$caso/harness.md")" \
+      "${pd[@]}" --model "$modelo" --output-format stream-json --verbose --max-budget-usd "$4" \
+      --permission-mode dontAsk --strict-mcp-config --no-session-persistence \
+      --allowedTools Read Glob Grep Skill TodoWrite "Edit(./**)" "Write(./**)" "Bash(bash *)" "Bash(git *)" \
+  ) </dev/null >"$ws/stream.jsonl" 2>"$ws/err"
+  rc=$?
+  analisa_stream "$ws/stream.jsonl" "$b" "$rc" "$timeout_run"
+  rm -rf "$ws"
+}
+
+# roda_caso_harness <caso> <alvo> <braços> <runs> — registros de todos os runs;
+# para no 1º run que atinge o teto (gasto da rodada + do caso >= teto)
+roda_caso_harness() {
+  local caso="$1" alvo="$2" b i r gasto_caso=0 restante
+  if ! token_ok; then
+    printf -- '-\trecusado\t0\t0\tsem CLAUDE_CODE_OAUTH_TOKEN nem ANTHROPIC_API_KEY (rode claude setup-token)\n'; return
+  fi
+  for b in $3; do
+    for ((i=1; i<=$4; i++)); do
+      restante="$(awk -v t="$teto" -v g="$GASTO" -v c="$gasto_caso" 'BEGIN { printf "%.4f", t - g - c }')"
+      if awk -v r="$restante" 'BEGIN { exit !(r <= 0) }'; then printf '%s\tteto\t0\t0\t\n' "$b"; return; fi
+      r="$(roda_harness "$caso" "$b" "$alvo" "$restante")"
+      printf '%s\n' "$r"
+      gasto_caso="$(soma "$gasto_caso" "$(printf '%s' "$r" | cut -f3)")"
+      [ "$(printf '%s' "$r" | cut -f2)" != teto ] || return
+    done
+  done
+}
+
 # o repo do plugin sai da rodada com o git status de antes; sem git não há como conferir
 recusa=""
 antes="$(git -C "$raiz" status --porcelain 2>/dev/null)" \
@@ -113,11 +165,12 @@ for caso in "${casos[@]}"; do
     printf -- '-\tteto\t0\t0\t\n' > "$reg"; agrega_caso "$caso" "$reg" "$completo"; continue
   fi
   restante="$(awk -v t="$teto" -v g="$GASTO" 'BEGIN { printf "%.4f", t - g }')"
-  if [ "$completo" -eq 1 ]; then
-    roda_plugin_eval "$caso" "$raiz" 3 with-without "$restante" > "$reg"
-  else
-    roda_plugin_eval "$caso" "$raiz" 1 none "$restante" > "$reg"
-  fi
+  case "${tipo_de[$caso]}:$completo" in
+    plugin-eval:1) roda_plugin_eval "$caso" "$raiz" 3 with-without "$restante" ;;
+    plugin-eval:0) roda_plugin_eval "$caso" "$raiz" 1 none "$restante" ;;
+    harness:1) roda_caso_harness "$caso" "$raiz" "com sem" 3 ;;
+    harness:0) roda_caso_harness "$caso" "$raiz" com 1 ;;
+  esac > "$reg"
   agrega_caso "$caso" "$reg" "$completo"
 done
 

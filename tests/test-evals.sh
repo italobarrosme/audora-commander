@@ -27,6 +27,18 @@ if [ "\$1" = plugin ]; then
   [ -f "$SP/pe/stderr" ] && cat "$SP/pe/stderr" >&2
   exit "\$(cat "$SP/pe/rc" 2>/dev/null || echo 0)"
 fi
+# claude -p: grava env e pwd, escreve o init (com o plugin se veio --plugin-dir,
+# ou \$SP/hs/init) e o corpo \$SP/hs/stream.jsonl; dorme \$SP/hs/sleep; sai \$SP/hs/rc
+if [ "\$1" = -p ]; then
+  /usr/bin/env > "$SP/stub.env"; pwd > "$SP/stub.pwd"; ls > "$SP/stub.ls"
+  [ -f "$SP/hs/sleep" ] && sleep "\$(cat "$SP/hs/sleep")"
+  pl='[{"name":"telemetry","source":"telemetry@builtin"}]'
+  case " \$* " in *" --plugin-dir "*) pl='[{"name":"audora-commander","source":"audora-commander@inline"},{"name":"telemetry","source":"telemetry@builtin"}]' ;; esac
+  [ -f "$SP/hs/init" ] && pl="\$(cat "$SP/hs/init")"
+  echo "{\"type\":\"system\",\"subtype\":\"init\",\"plugins\":\$pl}"
+  [ -f "$SP/hs/stream.jsonl" ] && cat "$SP/hs/stream.jsonl"
+  exit "\$(cat "$SP/hs/rc" 2>/dev/null || echo 0)"
+fi
 exit 0
 EOF
 chmod +x "$STUB"
@@ -424,6 +436,103 @@ assert_eq 1 "$(git -C "$F" log --oneline 2>/dev/null | wc -l | tr -d ' ')" "fixt
 assert_empty "$(git -C "$F" status --porcelain 2>&1)" "fixture tdd: árvore limpa depois do commit"
 assert_eq "execute de dobro" "$(tr -d '\r' < "$EV/tdd/harness.md" 2>/dev/null)" "fixture tdd: harness.md é o prompt"
 assert_eq "$(printf 'tdd\tharness')" "$(lista_casos "$ROOT" | grep '^tdd')" "fixture tdd: tdd é caso harness"
+
+# --- harness próprio do caso tdd (evals-comportamento/2,7,9) ---
+RZ="$SP/raizh"; mkdir -p "$RZ/tests/evals/tdd"
+echo "execute de dobro" > "$RZ/tests/evals/tdd/harness.md"
+printf '#!/usr/bin/env bash\necho fixture > semente.txt\n' > "$RZ/tests/evals/tdd/fixture.sh"
+mkraiz "$RZ"
+# result_ev <custo> [campos-extra] — evento result com usage {1,2,3,4}
+result_ev() { printf '{"type":"result","subtype":"success","is_error":false,"api_error_status":null,"total_cost_usd":%s,"usage":{"input_tokens":1,"cache_creation_input_tokens":2,"cache_read_input_tokens":3,"output_tokens":4}%s}\n' "$1" "${2-}"; }
+# reseta_hs [stream-de-tdd] — cenário do -p: fluxo tdd que passa + result 0.3
+reseta_hs() {
+  reseta_pe; rm -rf "$SP/hs" "$SP/stub.env" "$SP/stub.pwd" "$SP/stub.ls"; mkdir -p "$SP/hs"
+  fluxo "$SP/hs/stream.jsonl" $TT B- $LB B+; result_ev 0.3 >> "$SP/hs/stream.jsonl"
+}
+export EVALS_CANARIO=vazou
+
+reseta_hs
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/7 harness sem token sai 3"
+assert_contains "$out" "RECUSADO · tdd · isolamento: sem CLAUDE_CODE_OAUTH_TOKEN nem ANTHROPIC_API_KEY (rode claude setup-token)" "evals-comportamento/7 harness sem token é recusado"
+assert_eq 0 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/7 harness sem token não chama -p"
+reseta_hs
+out="$(CLAUDE_CODE_OAUTH_TOKEN=__coloque_o_valor__ roda_evals 2>/dev/null)"
+assert_contains "$out" "RECUSADO · tdd · isolamento: sem CLAUDE_CODE_OAUTH_TOKEN" "evals-comportamento/7 placeholder não é token"
+
+export CLAUDE_CODE_OAUTH_TOKEN=tok-teste
+reseta_hs
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 0 "$code" "evals-comportamento/2 harness que passa sai 0"
+assert_contains "$out" "PASSOU · tdd · com 1/1 · US\$ 0.3000 · tokens 10" "evals-comportamento/2 harness: veredito do grader_tdd, custo e tokens"
+env_visto="$(cat "$SP/stub.env" 2>/dev/null)"
+assert_contains "$env_visto" "PATH=" "evals-comportamento/7 stub gravou o ambiente (guarda contra env vazio)"
+assert_not_contains "$env_visto" "EVALS_CANARIO" "evals-comportamento/7 harness não herda o ambiente do humano"
+assert_contains "$env_visto" "CLAUDE_CODE_OAUTH_TOKEN=tok-teste" "evals-comportamento/7 harness passa o token"
+assert_not_contains "$(grep '^HOME=' <<< "$env_visto")" "HOME=$HOME" "evals-comportamento/7 harness com HOME temporário"
+ws="$(dirname "$(cat "$SP/stub.pwd")")"
+# /tmp e /c/Users/... (e o nome 8.3) são o mesmo lugar: compara pelo nome único do workspace
+cfg="$(sed -n 's/^CLAUDE_CONFIG_DIR=//p' <<< "$env_visto" | tr '\\' /)"
+assert_eq "$(basename "$ws")/config" "$(basename "$(dirname "$cfg")")/$(basename "$cfg")" "evals-comportamento/7 harness com CLAUDE_CONFIG_DIR no workspace"
+case "$(cat "$SP/stub.pwd")" in "$RZ"*) ko "evals-comportamento/7 harness roda dentro da raiz" ;; *) ok ;; esac
+assert_contains "$(cat "$SP/stub.ls" 2>/dev/null)" "semente.txt" "evals-comportamento/7 harness roda na fixture"
+assert_no_file "$ws" "evals-comportamento/7 workspace apagado depois do run"
+inv="$(grep '^-p ' "$SP/stub.log")"
+assert_contains "$inv" "-p execute de dobro --plugin-dir $RZ --model sonnet --output-format stream-json --verbose --max-budget-usd 10.0000 --permission-mode dontAsk --strict-mcp-config --no-session-persistence --allowedTools Read Glob Grep Skill TodoWrite Edit(./**) Write(./**) Bash(bash *) Bash(git *)" "evals-comportamento/7 invocação exata do harness"
+
+reseta_hs; printf '%s\n' '{"type":"result","subtype":"success","is_error":true,"api_error_status":null,"total_cost_usd":0,"result":"Not logged in · Please run /login"}' > "$SP/hs/stream.jsonl"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 3 "$code" "evals-comportamento/9 harness sem login sai 3"
+assert_contains "$out" "ERRO INFRA · tdd · causa: sem autenticação · US\$ 0.0000" "evals-comportamento/9 harness sem login é infra"
+
+reseta_hs; : > "$SP/hs/stream.jsonl"; echo 1 > "$SP/hs/rc"
+out="$(roda_evals 2>/dev/null)"
+assert_contains "$out" "ERRO INFRA · tdd · causa: sem evento result (exit 1)" "evals-comportamento/9 harness sem result é infra"
+
+reseta_hs; fluxo "$SP/hs/stream.jsonl" $TT B-; result_ev 0.1 ',"api_error_status":529' >> "$SP/hs/stream.jsonl"
+sed -i 's/"api_error_status":null,//' "$SP/hs/stream.jsonl"
+out="$(roda_evals 2>/dev/null)"
+assert_contains "$out" "ERRO INFRA · tdd · causa: API (529)" "evals-comportamento/9 harness com erro de API é infra"
+
+reseta_hs; fluxo "$SP/hs/stream.jsonl" $TT; printf '%s\n' '{"type":"result","subtype":"error_max_budget_usd","is_error":true,"total_cost_usd":0.2,"usage":{}}' >> "$SP/hs/stream.jsonl"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 2 "$code" "evals-comportamento/8 harness no teto sai 2"
+assert_contains "$out" "NÃO RODADO · tdd · não rodado: teto" "evals-comportamento/8 harness no teto"
+
+reseta_hs; echo '[{"name":"audora-commander","source":"audora-commander@inline"},{"name":"outro","source":"outro@inline"}]' > "$SP/hs/init"
+out="$(roda_evals 2>/dev/null)"
+assert_contains "$out" "RECUSADO · tdd · isolamento: plugins na sessão audora-commander,outro" "evals-comportamento/7 harness com plugin extra é recusado"
+
+reseta_hs; fluxo "$SP/hs/stream.jsonl" $LB $TT B+; result_ev 0.1 >> "$SP/hs/stream.jsonl"
+out="$(roda_evals 2>/dev/null)"; code=$?
+assert_eq 1 "$code" "evals-comportamento/6 harness que fura o TDD sai 1"
+assert_contains "$out" "REPROVOU · tdd · com 0/1 · US\$ 0.1000 · tokens 10 · motivo: código editado antes do teste falhando" "evals-comportamento/6 harness reprova pelo grader_tdd"
+
+reseta_hs; echo 5 > "$SP/hs/sleep"
+out="$(roda_evals --timeout-run 1 2>/dev/null)"
+if timeout --version >/dev/null 2>&1; then
+  assert_contains "$out" "ERRO INFRA · tdd · causa: timeout (1 s)" "evals-comportamento/9 harness com timeout é infra"
+fi
+
+reseta_hs; printf '#!/usr/bin/env bash\nexit 7\n' > "$SP/fx-ruim.sh"
+cp "$RZ/tests/evals/tdd/fixture.sh" "$SP/fx-bom.sh"; cp "$SP/fx-ruim.sh" "$RZ/tests/evals/tdd/fixture.sh"
+out="$(roda_evals 2>/dev/null)"
+cp "$SP/fx-bom.sh" "$RZ/tests/evals/tdd/fixture.sh"
+assert_contains "$out" "ERRO INFRA · tdd · causa: fixture saiu 7" "evals-comportamento/9 fixture quebrada é infra"
+assert_eq 0 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/9 fixture quebrada não chama -p"
+
+reseta_hs
+out="$(roda_evals --completo 2>/dev/null)"; code=$?
+assert_eq 6 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/2 harness completo: 6 runs"
+assert_eq 3 "$(grep '^-p ' "$SP/stub.log" | grep -c -- '--plugin-dir')" "evals-comportamento/2 harness completo: 3 com o plugin"
+assert_contains "$out" "PASSOU · tdd · com 3/3 · sem 3/3 · Δ +0 pp · US\$ 1.8000 · tokens 60" "evals-comportamento/2 harness completo: taxa e diferença"
+
+reseta_hs
+out="$(roda_evals --teto 0.5 --completo 2>/dev/null)"; code=$?
+assert_eq 2 "$code" "evals-comportamento/8 harness para no teto entre runs"
+assert_eq 2 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/8 harness: nenhum run depois do teto"
+assert_contains "$(grep '^-p ' "$SP/stub.log" | sed -n 2p)" "--max-budget-usd 0.2000" "evals-comportamento/8 harness: run recebe o teto restante"
+unset CLAUDE_CODE_OAUTH_TOKEN EVALS_CANARIO
 
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"

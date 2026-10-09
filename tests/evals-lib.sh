@@ -228,6 +228,55 @@ registros_plugin_eval() {
   done < <(le_resultado "$1")
 }
 
+# --- caso harness (claude -p próprio) ---
+
+# token_ok — exit 0 se há CLAUDE_CODE_OAUTH_TOKEN ou ANTHROPIC_API_KEY de verdade
+token_ok() {
+  local v
+  for v in CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_API_KEY; do
+    [ -n "${!v-}" ] && [ "${!v}" != "$PLACEHOLDER" ] && return 0
+  done
+  return 1
+}
+
+# resultado_stream <stream.jsonl> — do último evento result, separados por \x1f:
+# subtype, is_error (0/1), api_error_status, total_cost_usd, texto; exit 1 sem result
+resultado_stream() {
+  [ -f "$1" ] || return 1
+  perl -MJSON::PP -ne '
+    next unless /"type"\s*:\s*"result"/;
+    my $d = eval { decode_json($_) } or next;
+    next unless ($d->{type} // "") eq "result";
+    my $t = $d->{result} // ""; $t =~ s/\s+/ /g;
+    $r = join("\x1f", $d->{subtype} // "", $d->{is_error} ? 1 : 0, $d->{api_error_status} // "", $d->{total_cost_usd} // 0, $t);
+    END { print "$r\n" if defined $r; $? = defined $r ? 0 : 1 }' "$1" 2>/dev/null
+}
+
+# analisa_stream <stream.jsonl> <braço> <exit do claude> <timeout-run> — registro
+# de run: timeout > sem result > isolamento > teto > auth > API > erro > grader_tdd
+analisa_stream() {
+  local s="$1" b="$2" rc="$3" r sub ie api custo txt tok iso v
+  if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
+    printf '%s\tinfra\t0\t%s\ttimeout (%s s)\n' "$b" "$(tokens_trace "$s")" "$4"; return
+  fi
+  r="$(resultado_stream "$s")" || { printf '%s\tinfra\t0\t0\tsem evento result (exit %s)\n' "$b" "$rc"; return; }
+  IFS=$'\x1f' read -r sub ie api custo txt <<< "$r"
+  tok="$(tokens_trace "$s")"
+  iso="$(isolamento_run "$s" "$b" "")"
+  if [ -n "$iso" ]; then printf '%s\trecusado\t%s\t%s\t%s\n' "$b" "$custo" "$tok" "$iso"
+  elif [ "$sub" = error_max_budget_usd ]; then printf '%s\tteto\t%s\t%s\t\n' "$b" "$custo" "$tok"
+  elif [ "$ie" = 1 ] && printf '%s' "$txt" | grep -qiE 'not logged in|/login|invalid api key|authenticat'; then
+    printf '%s\tinfra\t%s\t%s\tsem autenticação\n' "$b" "$custo" "$tok"
+  elif [ -n "$api" ]; then printf '%s\tinfra\t%s\t%s\tAPI (%s)\n' "$b" "$custo" "$tok" "$api"
+  elif [ "$ie" = 1 ]; then printf '%s\treprovou\t%s\t%s\trun: %s\n' "$b" "$custo" "$tok" "$sub"
+  else
+    v="$(grader_tdd "$s")"
+    if [ "$v" = passou ]; then printf '%s\tpassou\t%s\t%s\t\n' "$b" "$custo" "$tok"
+    else printf '%s\treprovou\t%s\t%s\t%s\n' "$b" "$custo" "$tok" "${v#reprovou: }"
+    fi
+  fi
+}
+
 # --- contadores da rodada e aritmética decimal (awk; o Git Bash não tem bc) ---
 N_CASOS=0; N_PASSOU=0; N_REPROVOU=0; N_INFRA=0; N_NAO_RODADO=0
 GASTO=0; TOKENS=0; ISOLAMENTO_VIOLADO=0; TETO_ATINGIDO=0
