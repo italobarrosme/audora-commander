@@ -582,6 +582,50 @@ gr "$G" "type: regex" "pattern: x" "target: last_message"; emula "erro: alvo nã
 gr "$G" "type: tool_used" "tool: Write" "arm: both" "weight: 2"; : > "$SP/em.jsonl"
 emula reprovou "arm e weight aceitos"
 
+# --- evals-comportamento/3: caso porta ---
+ev_text() { printf '{"type":"assistant","message":{"content":[{"type":"text","text":"%s"}]}}\n' "$1"; }
+# skills <arquivo> <skill>... — trace com uma chamada Skill por nome, em ordem
+skills() { local f="$1" s n=0; shift; : > "$f"; for s in "$@"; do n=$((n+1)); ev_tool "k$n" Skill "{\"skill\":\"$s\",\"args\":\"x\"}" >> "$f"; done; }
+CP="$EV/porta"
+# gp <grader> <esperado> <descrição> — emula um grader do caso porta sobre $SP/em.jsonl
+gp() { assert_eq "$2" "$(emula_grader "$CP/graders/$1.md" "$SP/em.jsonl" "$SP/emws")" "evals-comportamento/3 $1: $3"; }
+assert_contains "$(tr -d '\r' < "$CP/prompt.md" 2>/dev/null | tr '\n' ' ')" "Quero acrescentar à lib as funções media e mediana sobre os números passados como argumento, com erro claro para lista vazia ou valor não numérico, e um comando bin/estat que expõe as duas. Com testes." "evals-comportamento/3 prompt do caso porta"
+for k in 'max_turns: 40' 'timeout_seconds: 600' 'tags: [comportamento]' 'allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, AskUserQuestion, TodoWrite]'; do
+  assert_contains "$(cat "$CP/prompt.md" 2>/dev/null)" "$k" "evals-comportamento/3 frontmatter $k"
+done
+for k in 'schema_version: "1.1"' 'name: porta' 'scaffold_script: fixture.sh'; do
+  assert_contains "$(cat "$CP/case.yaml" 2>/dev/null)" "$k" "evals-comportamento/3 case.yaml $k"
+done
+for g in primeira-skill categoria fase-seguinte; do
+  assert_contains "$(cat "$CP/graders/$g.md" 2>/dev/null)" "arm: both" "evals-comportamento/3 $g com arm: both"
+done
+skills "$SP/em.jsonl" audora-commander:audora-commander audora-commander:memory audora-commander:scope
+gp primeira-skill passou "porta primeiro"; gp fase-seguinte passou "porta, memory, scope"
+skills "$SP/em.jsonl" audora-commander:memory audora-commander:audora-commander audora-commander:scope
+gp primeira-skill reprovou "memory antes da porta"
+skills "$SP/em.jsonl" audora-commander audora-commander:scope
+gp primeira-skill passou "porta sem prefixo"; gp fase-seguinte passou "porta, scope"
+: > "$SP/em.jsonl"; gp primeira-skill reprovou "nenhum Skill"; gp fase-seguinte reprovou "nenhum Skill"
+skills "$SP/em.jsonl" audora-commander:audora-commander audora-commander:execute
+gp fase-seguinte reprovou "porta, execute"
+skills "$SP/em.jsonl" audora-commander:audora-commander audora-commander:plan audora-commander:scope
+gp fase-seguinte reprovou "porta, plan, scope"
+skills "$SP/em.jsonl" audora-commander:audora-commander
+gp fase-seguinte reprovou "só porta"
+skills "$SP/em.jsonl" superpowers:brainstorming audora-commander:audora-commander audora-commander:scope
+gp primeira-skill reprovou "outra skill antes da porta"
+printf '%s\n' '{"type":"assistant","message":{"content":[{"type":"tool_use","id":"a","name": "Skill","input": {"skill": "audora-commander:audora-commander"}}]}}' > "$SP/em.jsonl"
+ev_tool b Skill '{"skill":"audora-commander:scope"}' >> "$SP/em.jsonl"
+gp fase-seguinte passou "tolera espaço entre chave e valor"
+ev_text "Demanda classificada como **MEDIUM** porque nenhuma pergunta de risco deu SIM" > "$SP/em.jsonl"; gp categoria passou "MEDIUM em negrito"
+ev_text "Classificada como MEDIUM — me corrija" > "$SP/em.jsonl"; gp categoria passou "MEDIUM sem negrito"
+ev_text "Demanda classificada como **LIGHT** porque" > "$SP/em.jsonl"; gp categoria reprovou "LIGHT"
+ev_text "Demanda classificada como **HIGH** porque" > "$SP/em.jsonl"; gp categoria reprovou "HIGH"
+ev_text "não seria MEDIUM" > "$SP/em.jsonl"; gp categoria reprovou "MEDIUM sem o anúncio"
+F="$SP/fx-porta"; na_fixture "$F" "$CP/fixture.sh"
+run_hook memory-validate "$F/MEMORY.md"; assert_eq 0 "$code" "evals-comportamento/3 fixture porta: memory-validate ($out)"
+assert_eq 1 "$(git -C "$F" log --oneline 2>/dev/null | wc -l | tr -d ' ')" "evals-comportamento/3 fixture porta: commitada"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"

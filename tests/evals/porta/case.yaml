@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: porta
+description: Pedido de mudança MEDIUM num projeto com MEMORY entra pela porta, é anunciado MEDIUM e segue para scope (evals-comportamento/3).
+context:
+  scaffold_script: fixture.sh
