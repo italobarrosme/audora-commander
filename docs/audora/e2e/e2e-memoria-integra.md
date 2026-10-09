@@ -121,3 +121,59 @@ cleanup: lote desfeito, nada commitado        exit=1  nada mudou
   necessário"; o caminho "spec criada só com contexto" do /1 ficou coberto
   pela suíte, não por sessão real.
 - Teardown: nenhum processo levantado; fixtures só no scratchpad.
+
+## Rodada 2 — Tarefas 14 e 15 (2026-10-09)
+
+Parcial, por decisão do humano: refaz `sync`, `sync0` e `limpa` nas
+variantes que a revisão adversarial (passagem 1) provou quebradas. Produto:
+plugin 0.16.0 da `main` em `b501ae5`, reinstalado (uninstall + `./install.sh`);
+`diff -r` de `skills/`, `hooks/`, `templates/` contra o cache → iguais. Gate
+antes: `bash hooks/gate memoria-integra` → `GATE: passou`, 18 arquivos, 1362
+asserts. Os outros critérios seguem com a rodada 1.
+
+```text
+syncv   nó carrinho in-progress no FORMATO ANTIGO: `## criterios-aceite` só com
+        "Spec: 2 critérios `carrinho/1..2` na spec dedicada"; spec com as linhas
+        `- **carrinho/1** — …` (2 linhas) e /2; MEMORY com L1, linha em branco, L2;
+        docs/audora/aprendizados.md com A0 SEM newline final           → /2, /16
+sync0v  igual, mas a spec só cita carrinho/1 e carrinho/2 em prosa      → /3
+limpav  nó d delivered só com o ponteiro "(d/1..2)"; spec de d com as linhas
+        d/1 e d/2; plano arquivado de d citando SÓ d/1; nó e com `- **e/1**`
+        e relatório e2e de e                                           → /4
+```
+
+Controle da fixture (mesma `limpav`, `varrer` sem aplicar): hook de `fe5298b`
+põe o plano de d no lote (`## plano arquivado … | nó d delivered`, total 2);
+hook de `b501ae5` o mantém. Contagem do sync na `syncv`: regra antiga 1, nova 0.
+
+Prompts iguais aos da rodada 1 (`sync`: "O portão … foi APROVADO … Rode só o
+sync pós-aprovação … e commite."; `limpa`: "Faz uma faxina …" e "Aprovo o lote
+inteiro.").
+
+| Critério | Passo | Evidência | Veredito |
+|---|---|---|---|
+| memoria-integra/2 — nó só com ponteiro conta 0 e copia da spec antes do `git mv` | `syncv` | sessão rodou a contagem nova (0), Edit dos critérios no nó ANTES do Bash com `git mv`; nó arquivado com as 2 linhas, `diff` contra a spec → LITERAL; commit `cc7f411` com o rename | passou |
+| memoria-integra/3 — spec só com menção em prosa → para sem arquivar | `sync0v` | resposta: "Nó carrinho sem critério numerado — sync parado, nada arquivado."; nó segue `in-progress` em memory/, sem pasta arquivo, plano no lugar | passou |
+| memoria-integra/4 — nó arquivado só com ponteiro não é cópia | `limpav` turnos 1–2 | relatório: plano de d `mantido: cita d/1 sem cópia`, spec `mantido: cita d/1, d/2 sem cópia`; lote só com o e2e de e; commit `4c6af3a` remove só esse arquivo; spec e plano de d seguem no disco | passou |
+| memoria-integra/16 — `aprendizados.md` sem newline final | `syncv` | bloco D: A0 intacta na própria linha, L1 e L2 depois, `grep -c '^- 2026'` → 3; seção do MEMORY só com o ponteiro | passou |
+
+### Bloco D — `syncv`, `cat -A docs/audora/aprendizados.md` depois do sync
+
+```text
+# Aprendizados$
+$
+- 2026-01-01 | plan | A0 Projeto sem dependM-CM-*ncias: sM-CM-3 node:test.$
+- 2026-01-02 | execute | L1 Carrinho: preM-CM-'o em centavos (inteiro), nunca float.$
+- 2026-01-03 | validate | L2 Frete: CEP vai sem hM-CM--fen na API de frete.$
+```
+
+### Observações da rodada 2
+
+- `syncv`: a sessão editou o ponteiro da seção Aprendizados do MEMORY DEPOIS
+  de pôr o nó em `delivered` e antes da linha do índice (fora da ordem do
+  `sync.md`, que faz o passo 1 antes). Ela relata que o `memory-validate`
+  reclamou nesse edit intermediário; o texto do aviso não aparece no
+  stream-json. No fim, `memory-validate` manual → exit 0.
+- `sync0v`: de novo a sessão rodou o passo 1 e commitou só ele antes de parar.
+  O /3 só exige não arquivar e avisar.
+- Teardown: nenhum processo levantado; fixtures só no scratchpad.

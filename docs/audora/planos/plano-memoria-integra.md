@@ -113,6 +113,20 @@ sem perder linha de assert (anti-fraude do gate).
     - o move do /16 só leva linhas de 1 linha;
     - `skills/memory/SKILL.md:15` ainda lista "Aprendizados" no índice;
     - id de 10 caracteres só de dígito e hífen casaria o grep do /15.
+- **revisão adversarial: reverificação** (2026-10-09), contra 6e909df e
+  b501ae5, por subagente de contexto limpo, com as provas conferidas no e2e
+  rodada 2:
+  - Bloqueante 1 (/2, /4): corrigido. Ponteiro `limpeza-codigo-morto/1..9`
+    → contagem 0; nó arquivado só com ponteiro → spec em `## mantido`.
+  - Bloqueante 2 (/16): corrigido. Sem newline final, vazio, só `\r` e
+    inexistente: nada gruda, ordem mantida.
+  - Ressalvas novas (sem nova passagem):
+    - cleanup aceita `- **<id>/<n>**` em qualquer seção do nó (ex.: `## delta`); o sync só em `## criterios-aceite` — com reprodução;
+    - `aprendizados.md` CRLF sem quebra final ganha `\n` puro (fim de linha misto, cosmético) — com reprodução;
+    - critério indentado (`  - **d/1**`) não conta no sync nem na cleanup — com reprodução;
+    - o bloco do passo 1 rodado sem aprendizado no MEMORY ainda completa a quebra de linha — sem reprodução no fluxo.
+- **validate 2026-10-09**: gate passou (18 arquivos, 1362 asserts); e2e
+  rodada 2 4/4 passou (/2, /3, /4, /16).
 
 ---
 
