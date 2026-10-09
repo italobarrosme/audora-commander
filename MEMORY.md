@@ -73,7 +73,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - cleanup-link-preciso | delivered | Link preciso da cleanup → docs/audora/arquivo/2026-10-03-cleanup-link-preciso.md
 - suite-paralela | delivered | Suíte em paralelo → docs/audora/arquivo/2026-10-05-suite-paralela.md
 - cleanup-commit-curto | delivered | Commit curto da cleanup → docs/audora/arquivo/2026-10-07-cleanup-commit-curto.md
-- memoria-integra | in-progress | Memória íntegra | Critérios de HIGH sobrevivem ao arquivamento e à cleanup; ordem nó/índice sem contradição nem erro transitório; Aprendizados em arquivo próprio fora do MEMORY | memory, sync, cleanup, spec, criterios, indice, aprendizados | skills/validate/references/sync.md, skills/cleanup/SKILL.md, hooks/cleanup, skills/memory/, hooks/memory-validate
+- memoria-integra | delivered | Memória íntegra → docs/audora/arquivo/2026-10-09-memoria-integra.md
 - caminhos-sem-saida | planned | Caminhos sem saída | HOTFIX com regra única de registro; debug avulso passa pela porta; rota para pedido sem mudança; e2e volta após fix; retomada do sync pós-merge | roteamento, hotfix, debug, e2e, sync, porta | skills/audora-commander/SKILL.md, skills/debug/SKILL.md, skills/e2e/SKILL.md, skills/validate/
 - contratos-de-texto | planned | Contratos de texto | Seção "Decisões tomadas pela IA" no template e destino em LIGHT; localização da execute sem mapa; PARADA clara no plan; cosméticos de numeração e skill-ferramenta | template, plano, execute, plan, decisoes | templates/plano-template.md, skills/execute/SKILL.md, skills/plan/SKILL.md, skills/memory/SKILL.md, templates/bloco-fechamento-template.md
 - faxina-restos | delivered | Faxina do sem uso → docs/audora/arquivo/2026-10-08-faxina-restos.md

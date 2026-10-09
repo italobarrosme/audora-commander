@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-08
+> Última atualização: 2026-10-09
 
 ## O que é e para que serve
 
@@ -38,28 +38,37 @@ Code.
   HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
   Projeto sem `MEMORY.md` → oferece bootstrap.
 - `memory` — dona do MEMORY (memória externa do produto, `memory-schema: 1`):
-  `MEMORY.md` é índice mestre (Propósito, Constituição, Aprendizados, linha
-  rica por nó); corpo de cada nó em `docs/audora/memory/<id>.md` com
-  frontmatter grep-ável e critérios EARS numerados `<id>/<n>`; decisões
-  duráveis em `docs/audora/decisoes-vivas.md`; arquivamento por `git mv` para
-  `docs/audora/arquivo/`. Operações: carregar-contexto, bootstrap (MEMORY +
-  etapa gate, sem índice de código), registrar-no, registrar-delta, registrar-aprendizado
-  (1 linha `data | fase | aprendizado`, na hora, por qualquer fase) e
-  compactar. A skill é um **roteador**: `carregar-contexto`,
-  `registrar-delta` e `registrar-aprendizado` ficam inline no `SKILL.md`
-  (135 linhas); `bootstrap`, `registrar-no` e `compactar` vivem em
+  `MEMORY.md` é índice mestre (Propósito, Constituição, ponteiro de
+  Aprendizados, linha rica por nó); corpo de cada nó em
+  `docs/audora/memory/<id>.md` com frontmatter grep-ável e critérios EARS
+  numerados (linha `- **<id>/<n>** — …`, também em HIGH); escrita de nó é
+  "arquivo do nó primeiro, linha do índice logo depois", na criação e na
+  transição; decisões duráveis em `docs/audora/decisoes-vivas.md`;
+  aprendizados em `docs/audora/aprendizados.md`, sem teto nem compactação,
+  só por grep; arquivamento por `git mv` para `docs/audora/arquivo/`.
+  Operações: carregar-contexto, bootstrap (MEMORY + etapa gate, sem índice
+  de código; Aprendizados só com o ponteiro, arquivo nasce no 1º
+  aprendizado), registrar-no, registrar-delta, registrar-aprendizado (1
+  linha `data | fase | aprendizado` no fim de `docs/audora/aprendizados.md`,
+  na hora, por qualquer fase, nunca no `MEMORY.md`) e compactar. A skill é
+  um **roteador**: `carregar-contexto`, `registrar-delta` e
+  `registrar-aprendizado` ficam inline no `SKILL.md` (138 linhas);
+  `bootstrap`, `registrar-no` e `compactar` vivem em
   `skills/memory/references/`, lidas UMA por operação — reference ausente
   avisa e degrada, sem travar a fase. O `carregar-contexto` lê o
   `MEMORY.md` por seção, nunca inteiro, e as fases o chamam antes de
   qualquer Read:
   - Propósito e Constituição: inteiras, por `offset`/`limit`.
-  - Aprendizados: por `grep` — linhas da fase + keywords e arquivos do nó
-    (porta: termos do pedido); `[invalidado-em:` nunca entra; nada casou →
-    segue sem aprendizados.
+  - Aprendizados: por `grep` em `docs/audora/aprendizados.md` e no
+    `MEMORY.md` (enquanto ele tiver linha legada) — linhas da fase +
+    keywords e arquivos do nó (porta: termos do pedido); `[invalidado-em:`
+    nunca entra; nada casou ou arquivo ausente → segue sem aprendizados.
   - Índice de nós: inteiro na porta, scope e plan; execute, e2e, validate e
     debug pegam só a linha do nó e as de `depende-de`.
   - Seção não encontrada → aviso de 1 linha, leitura inteira, a fase segue.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
+  Critérios sempre no nó, também em HIGH; spec dedicada, se criada, só
+  traz contexto.
 - `plan` — fase "Como" just-in-time: plano-arquivo em que cada tarefa é um
   MAPA, sem corpo de teste nem de implementação. A tarefa traz o requisito
   `<id>/<n>`, o ponto de mudança `caminho:linha`, o arquivo e o caso de
@@ -81,9 +90,13 @@ Code.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
   fortemente recomendada).
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
-  MEMORY → PRD no merge (consolida delta, decisões vivas e aprendizados,
-  arquiva o nó por movimento, atualiza a foto do `PRD.md` e acrescenta 1
-  linha ao `CHANGELOG.md` da raiz, em toda categoria). O `PRD.md` é foto
+  MEMORY → PRD no merge (consolida delta e decisões vivas, move literal as
+  linhas de aprendizado legadas do `MEMORY.md` para o fim de
+  `docs/audora/aprendizados.md`, completando a quebra de linha que faltar;
+  nó sem linha de critério copia os da spec antes do `git mv`, e sem
+  nenhum para sem arquivar; arquiva o nó por movimento, atualiza a foto do
+  `PRD.md` e acrescenta 1 linha ao `CHANGELOG.md` da raiz, em toda
+  categoria). O `PRD.md` é foto
   (o que é, stack, arquitetura, metas futuras) com até 200 linhas; o
   histórico de entregas mora no `CHANGELOG.md` (formato em
   `templates/changelog-template.md`), e PRD com histórico é convertido
@@ -113,8 +126,13 @@ Code.
   em commit alcançável do HEAD; caminho nunca versionado vira aviso
   `## nunca existiu`, fora do lote e nunca trocado (o `aplicar` recusa lote
   à mão que o traga como link quebrado). A seção Aprendizados do
-  `MEMORY.md` não é varrida nem reescrita (segue contando como referência
-  viva). Fora do git ou sujo fica fora do lote. Pela
+  `MEMORY.md` e o `docs/audora/aprendizados.md` não são varridos nem
+  reescritos (seguem contando como referência viva). Princípio: só sai o
+  que não é mais usado. Arquivo que o framework lê (nós vivos e
+  arquivados, `decisoes-vivas.md`, `aprendizados.md`) nunca entra no lote,
+  e o `aplicar` recusa lote à mão que o traga. Spec, plano arquivado ou e2e
+  que cita `<id>/<n>` sem a linha `- **<id>/<n>**` no nó arquivado vai para
+  `## mantido`, com o motivo. Fora do git ou sujo fica fora do lote. Pela
   coluna arquivos-chave, o script só marca "alvo ausente" o caminho que
   existiu em commit alcançável do HEAD e sumiu do disco (`git
   --literal-pathspecs log --full-history HEAD`). Caminho que nunca existiu
@@ -137,10 +155,12 @@ Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
 PostToolUse (Edit|Write) validam escritas no MEMORY: `memory-guard` (tetos
 de ~300 linhas no índice e ~100 por nó, e 200 linhas no `PRD.md` irmão de
 um `MEMORY.md` com schema) e `memory-validate` (seções
-obrigatórias do índice, índice↔pasta, depende-de existente, ciclo, estado
-dentro do enum EN no índice E no frontmatter de cada nó, nó sem `estado:`, e
-— só na escrita do índice — estado índice ≠ nó; transição é nó primeiro,
-índice depois) — erro volta ao modelo via exit 2; arquivo sem
+obrigatórias do índice, depende-de existente, ciclo, estado dentro do enum
+EN no índice E no frontmatter de cada nó, nó sem `estado:`, e — só na
+escrita do índice — arquivo de nó sem linha e estado índice ≠ nó: arquivo
+do nó primeiro, linha do índice logo depois, sem erro transitório) — erro
+volta ao modelo via exit 2; `docs/audora/aprendizados.md` não tem teto;
+arquivo sem
 `memory-schema: 1` na linha 1 é ignorado; sem bash, as skills seguem sendo a
 fonte normativa.
 
@@ -151,26 +171,21 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 1. Futuro: porte para outros harnesses, marketplace público,
    agentes dedicados.
-2. Candidato a nó: eliminar o erro transitório na CRIAÇÃO de nó ("arquivo
-   sem linha no índice" ao escrever o nó antes do índice), fora do escopo de
-   `validate-estado-no`.
-3. Candidato a nó: acabamento da PARADA (`contexto-por-fase`, observações do
+2. Candidato a nó: acabamento da PARADA (`contexto-por-fase`, observações do
    e2e aceitas no portão) — unificar a pontuação (template com vírgula,
    skills com dois-pontos), recusa de retomada imprimindo o bloco de fase
    bloqueada, e folga na carga BASE (12 bytes do teto).
-4. Candidato a nó: ressalvas da revisão adversarial do `corte-sem-uso`
+3. Candidato a nó: ressalvas da revisão adversarial do `corte-sem-uso`
    (aceitas no portão).
    - As guardas de ausência de `tests/test-corte-sem-uso.sh` deixam passar
      variações de texto: "loop engine", "nove skills", `|  \`worktree\`  |`
      com espaço extra e o bullet `**loop:**`.
    - `hooks/gate` compara contra HEAD. Por isso, depois do commit, não prova
      o `gate-asserts:` nem teste apagado.
-5. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
+4. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
    - /4 (subagente de exploração conferido) e /8 (3ª leitura fora do mapa)
      só têm guarda de texto. Nenhuma sessão real chegou a esses gatilhos.
    - O plan ainda pode ler um arquivo grande inteiro. O critério exige só o
      header por trecho.
    - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
      novo numa demanda maior.
-   - A seção Aprendizados do `MEMORY.md` está com 51 linhas, acima do
-     gatilho de ~40.

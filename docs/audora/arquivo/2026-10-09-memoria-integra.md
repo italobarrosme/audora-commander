@@ -1,12 +1,12 @@
 ---
 id: memoria-integra
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/aprendizados.md, docs/audora/e2e/e2e-memoria-integra.md, docs/audora/planos/arquivo/plano-memoria-integra.md, docs/fundamentos.md, hooks/cleanup, hooks/memory-guard, hooks/memory-validate, skills/cleanup/SKILL.md, skills/debug/SKILL.md, skills/memory/SKILL.md, skills/memory/references/bootstrap.md, skills/memory/references/compactar.md, skills/memory/references/registrar-no.md, skills/scope/SKILL.md, skills/validate/references/sync.md, templates/MEMORY-template.md, templates/aprendizados-template.md, templates/no-template.md, tests/test-carga.sh, tests/test-dogfood.sh, tests/test-leitura-por-secao.sh, tests/test-memoria-integra.sh, tests/test-parada-revisao.sh, tests/test-skill-cleanup.sh, tests/test-skills.sh, tests/test-templates.sh]
 keywords: [memory, sync, cleanup, spec, criterios, indice, aprendizados]
 resumo: Critérios de HIGH sobrevivem ao arquivamento e à cleanup; ordem nó/índice sem contradição nem erro transitório; Aprendizados em arquivo próprio fora do MEMORY
-atualizado-em: 2026-10-08
+atualizado-em: 2026-10-09
 ---
 
 # memoria-integra
@@ -72,7 +72,7 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 
 ## decisoes
 
-- 4 decisões do scope (3 demandas; critério de HIGH no nó; sem reparo de arquivados; cleanup só apaga o sem uso) → [histórico](memoria-integra-historico.md).
+- 4 decisões do scope (3 demandas; critério de HIGH no nó; sem reparo de arquivados; cleanup só apaga o sem uso) → [histórico](2026-10-09-memoria-integra-historico.md).
 - 2026-10-08 (humano, plan): não compactar; aprendizados saem do MEMORY para `docs/audora/aprendizados.md`, consultado por grep. Descartado: aviso > 40 + compactação no sync (decisão anterior, invalidada); histórico manual.
 - 2026-10-08 (humano, plan): MEMORY antigo migra no próximo sync; arquivo nasce no 1º aprendizado. Descartado: migrar no 1º registro; nunca migrar; criar no bootstrap.
 - 2026-10-08 (humano, plan): /12 vale para itens que removem arquivo pelo caminho; planned órfão aprovado segue apagando o próprio nó. Descartado: órfão com arquivo vai para `## mantido`.
@@ -80,12 +80,6 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 - 2026-10-08 (humano, validate): critério numerado = linha `- **<id>/<n>** — …`; menção em ponteiro não conta. Descartado: só o sync; rebaixar a ressalva.
 
 ## delta
-
-- REMOVIDO (2026-10-08): /8–/11 (aviso > 40, compactação, histórico, ≤ 40 no repo) — humano não quer compactação.
-- MODIFICADO (2026-10-08): /12 `aprendizados-historico.md` → `aprendizados.md`; fora-de-escopo sem a busca no histórico.
-- ADICIONADO (2026-10-08): /14–/21. Já aplicado no corpo pela reabertura do scope, antes do plano.
-- MODIFICADO (2026-10-08, plan): /18 perde a prova de linhas de ferramenta já removida — só "MEMORY sem aprendizado, todos em `docs/audora/aprendizados.md`".
-- MODIFICADO (2026-10-08, validate): "critério numerado" = `<id>/<n>` → linha `- **<id>/<n>** — …`.
 
 ## e2e
 

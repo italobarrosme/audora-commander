@@ -14,3 +14,13 @@
 - 2026-10-08 (humano): cleanup só apaga o que não é mais usado (/4, /12,
   /13). Plano arquivado e relatório e2e de nó entregue seguem saindo, salvo
   se citam critério ausente do nó.
+
+## delta consolidado (sync 2026-10-09)
+
+> Já aplicado no corpo do nó; registro de rastreabilidade.
+
+- REMOVIDO (2026-10-08): /8–/11 (aviso > 40, compactação, histórico, ≤ 40 no repo) — humano não quer compactação.
+- MODIFICADO (2026-10-08): /12 `aprendizados-historico.md` → `aprendizados.md`; fora-de-escopo sem a busca no histórico.
+- ADICIONADO (2026-10-08): /14–/21. Já aplicado no corpo pela reabertura do scope, antes do plano.
+- MODIFICADO (2026-10-08, plan): /18 perde a prova de linhas de ferramenta já removida — só "MEMORY sem aprendizado, todos em `docs/audora/aprendizados.md`".
+- MODIFICADO (2026-10-08, validate): "critério numerado" = `<id>/<n>` → linha `- **<id>/<n>** — …`.
