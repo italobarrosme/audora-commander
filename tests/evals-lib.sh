@@ -155,6 +155,85 @@ grader_tdd() {
     }' "$1" 2>/dev/null
 }
 
+# emula_grader <grader.md> <trace.jsonl> <workspace> — "passou" | "reprovou" |
+# "erro: <motivo>". Emula OFFLINE só o que os casos usam (regex sobre trace ou
+# arquivo; tool_used; tool_order), para provar graders sem gastar. NÃO é o
+# veredito — o do host é; a rodada real confirma.
+emula_grader() {
+  perl - "$@" <<'PERL'
+use strict; use warnings;
+my ($gf, $tf, $ws) = @ARGV;
+sub sai { print "$_[0]\n"; exit 0 }
+sub ler { my $f = shift; open(my $h, '<:raw', $f) or return undef; local $/; my $t = <$h>; close $h; $t =~ s/\r\n/\n/g; $t }
+sub val {
+  my $v = shift; $v =~ s/^\s+|\s+$//g;
+  if ($v =~ /^'(.*)'$/s) { (my $x = $1) =~ s/''/'/g; return $x }
+  if ($v =~ /^"(.*)"$/s) { (my $x = $1) =~ s/\\(.)/$1/g; return $x }
+  if ($v =~ /^\{(.*)\}$/s) {
+    my ($in, %h) = ($1);
+    while ($in =~ /\s*(\w+)\s*:\s*('(?:[^']|'')*'|"(?:[^"\\]|\\.)*"|[^,]*?)\s*(?:,|$)/g) { $h{$1} = val($2) }
+    return \%h;
+  }
+  $v;
+}
+my $g = ler($gf) // sai("erro: grader ausente");
+$g =~ /\A---\n(.*?)\n---/s or sai("erro: sem frontmatter");
+my %c;
+my %ok = map { $_ => 1 } qw(type weight arm pattern flags match target tool input_match min max before after);
+for my $l (split /\n/, $1) {
+  next if $l =~ /^\s*(#|$)/;
+  $l =~ /^(\w+):\s*(.*)$/ or sai("erro: linha inválida: $l");
+  $ok{$1} or sai("erro: chave desconhecida: $1");
+  $c{$1} = val($2);
+}
+my $tipo = $c{type} // "";
+# chamadas de ferramenta na ordem do trace: [nome, input JSON como está no trace]
+my @usos;
+my $trace = ler($tf) // "";
+for my $l (split /\n/, $trace) {
+  while ($l =~ /"type":"tool_use","id":"[^"]*","name":"([^"]+)","input":(?<bal>\{(?:[^{}"]++|"(?:[^"\\]++|\\.)*+"|(?&bal))*+\})/g) {
+    push @usos, [$1, $+{bal}];
+  }
+}
+sub casa_uso {
+  my ($u, $spec) = @_;
+  my ($t, $im) = ref $spec ? ($spec->{tool}, $spec->{input_match}) : ($spec, undef);
+  return 0 unless $u->[0] eq ($t // "");
+  return 1 unless defined $im;
+  return $u->[1] =~ /$im/ ? 1 : 0;
+}
+if ($tipo eq "regex") {
+  my $alvo = $c{target} // "last_message";
+  my $texto;
+  if (ref $alvo) { $texto = ler("$ws/$alvo->{path}") // sai("reprovou") }
+  elsif ($alvo eq "trace") { $texto = $trace }
+  else { sai("erro: alvo não emulado: $alvo") }
+  my $fl = $c{flags} // ""; $fl =~ /^[ims]*$/ or sai("erro: flags não emuladas: $fl");
+  my $re = eval { length $fl ? qr/(?$fl)$c{pattern}/ : qr/$c{pattern}/ } or sai("erro: regex inválida");
+  my $n = () = $texto =~ /$re/g;
+  my $m = $c{match} // "contains";
+  if ($m eq "contains") { sai($n > 0 ? "passou" : "reprovou") }
+  if ($m eq "not_contains") { sai($n == 0 ? "passou" : "reprovou") }
+  if ($m =~ /^count:(\d+)$/) { sai($n == $1 ? "passou" : "reprovou") }
+  sai("erro: match não emulado: $m");
+}
+if ($tipo eq "tool_used") {
+  my $n = grep { casa_uso($_, { tool => $c{tool}, input_match => $c{input_match} }) } @usos;
+  my $min = $c{min} // 1;
+  sai($n >= $min && (!defined $c{max} || $n <= $c{max}) ? "passou" : "reprovou");
+}
+if ($tipo eq "tool_order") {
+  my ($ib, $ia) = (-1, -1);
+  for my $i (0 .. $#usos) {
+    $ib = $i if $ib < 0 && casa_uso($usos[$i], $c{before});
+    $ia = $i if $ia < 0 && casa_uso($usos[$i], $c{after});
+  }
+  sai($ib >= 0 && $ia >= 0 && $ib < $ia ? "passou" : "reprovou");
+}
+sai("erro: tipo não emulado: $tipo");
+PERL
+}
+
 # --- isolamento ---
 PLUGIN=audora-commander
 
