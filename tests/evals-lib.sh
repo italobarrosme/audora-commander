@@ -110,6 +110,51 @@ limpa_temp_eval() {
   case "$(basename "$d")" in claude-eval-*) rm -rf "$d" ;; esac
 }
 
+# grader_tdd <stream.jsonl> — "passou" se o transcript mostra, nesta ordem: teste
+# novo escrito → teste rodado falhando → código editado → teste rodado passando;
+# senão "reprovou: <motivo>". Teste novo = Write/Edit em tests/; teste rodado =
+# Bash que cita tests/ (falhando = is_error do tool_result); código = Write/Edit
+# fora de tests/ e não .md. Código antes do 1º teste falhando reprova.
+grader_tdd() {
+  perl -MJSON::PP -ne '
+    my $d = eval { decode_json($_) } or next;
+    next unless ref $d->{message} eq "HASH" && ref $d->{message}{content} eq "ARRAY";
+    for my $b (@{ $d->{message}{content} }) {
+      next unless ref $b eq "HASH";
+      my $t = $b->{type} // "";
+      if ($t eq "tool_use") { push @ev, [$b->{id} // "", $b->{name} // "", $b->{input} // {}] }
+      elsif ($t eq "tool_result") { $erro{$b->{tool_use_id} // ""} = $b->{is_error} ? "F" : "P" }
+    }
+    END {
+      my @k;
+      for my $e (@ev) {
+        my ($id, $nome, $in) = @$e;
+        my $k = "-";
+        if ($nome =~ /^(Write|Edit|MultiEdit)$/) {
+          my $p = $in->{file_path} // "";
+          if ($p =~ m{(^|[\\/])tests[\\/]}) { $k = "T" }
+          elsif ($p !~ /\.md$/i) { $k = "C" }
+        } elsif ($nome eq "Bash" && ($in->{command} // "") =~ m{tests[\\/]}) {
+          $k = $erro{$id} // "-";
+        }
+        push @k, $k;
+      }
+      my $s = join "", @k;
+      my $i1 = index $s, "T";
+      my $i2 = $i1 < 0 ? -1 : index $s, "F", $i1;
+      my $i3 = $i2 < 0 ? -1 : index $s, "C", $i2;
+      my $i4 = $i3 < 0 ? -1 : index $s, "P", $i3;
+      my $c = index $s, "C";
+      if ($i1 < 0) { print "reprovou: faltou teste novo\n" }
+      elsif ($c >= 0 && $c < $i1) { print "reprovou: código editado antes do teste falhando\n" }
+      elsif ($i2 < 0) { print "reprovou: faltou teste falhando depois do teste novo\n" }
+      elsif ($c >= 0 && $c < $i2) { print "reprovou: código editado antes do teste falhando\n" }
+      elsif ($i3 < 0) { print "reprovou: faltou código editado depois do teste falhando\n" }
+      elsif ($i4 < 0) { print "reprovou: faltou teste passando depois do código\n" }
+      else { print "passou\n" }
+    }' "$1" 2>/dev/null
+}
+
 # --- isolamento ---
 PLUGIN=audora-commander
 

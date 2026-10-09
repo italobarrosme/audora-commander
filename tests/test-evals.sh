@@ -338,6 +338,55 @@ assert_eq 3 "$code" "evals-comportamento/7 raiz fora de repo git sai 3"
 assert_contains "$out" "RECUSADO · porta · isolamento: raiz fora de um repo git (sem como conferir o git status)" "evals-comportamento/7 recusa raiz sem git"
 assert_eq 0 "$(grep -c '^plugin eval' "$SP/stub.log")" "evals-comportamento/7 recusado não invoca"
 
+# --- evals-comportamento/6: grader do tdd pela ordem no transcript ---
+# eventos do stream-json do claude -p (formato do spike)
+jesc() { printf '%s' "$1" | sed 's/\\/\\\\/g'; }
+ev_tool() { printf '{"type":"assistant","message":{"content":[{"type":"tool_use","id":"%s","name":"%s","input":%s}]}}\n' "$1" "$2" "$3"; }
+ev_result() { printf '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"%s","is_error":%s,"content":"x"}]}}\n' "$1" "$2"; }
+# fluxo <arquivo> <passo>... — W:<caminho> / E:<caminho> (Write/Edit);
+# B- / B+ = bash tests/run.sh falhando / passando
+fluxo() {
+  local f="$1" p n=0; shift; : > "$f"
+  for p in "$@"; do
+    n=$((n+1))
+    case "$p" in
+      W:*) ev_tool "t$n" Write "{\"file_path\":\"$(jesc "${p#W:}")\",\"content\":\"x\"}"; ev_result "t$n" false ;;
+      E:*) ev_tool "t$n" Edit "{\"file_path\":\"$(jesc "${p#E:}")\",\"old_string\":\"a\",\"new_string\":\"b\"}"; ev_result "t$n" false ;;
+      B-) ev_tool "t$n" Bash '{"command":"bash tests/run.sh","description":"x"}'; ev_result "t$n" true ;;
+      B+) ev_tool "t$n" Bash '{"command":"bash tests/run.sh","description":"x"}'; ev_result "t$n" false ;;
+    esac >> "$f"
+  done
+}
+# tdd_caso <esperado> <passo>... — roda o grader sobre o fluxo
+tdd_caso() {
+  local esp="$1"; shift
+  fluxo "$SP/tdd.jsonl" "$@"
+  assert_eq "$esp" "$(grader_tdd "$SP/tdd.jsonl")" "evals-comportamento/6 [$*]"
+}
+TT=W:/ws/cwd/tests/test-dobro.sh; LB=E:/ws/cwd/lib.sh
+tdd_caso "passou" $TT B- $LB B+
+tdd_caso "reprovou: código editado antes do teste falhando" $LB $TT B+
+tdd_caso "reprovou: código editado antes do teste falhando" $TT $LB B- B+
+tdd_caso "reprovou: faltou teste passando depois do código" $TT B- $LB
+tdd_caso "reprovou: faltou teste novo"
+tdd_caso "reprovou: faltou código editado depois do teste falhando" $TT B-
+tdd_caso "reprovou: faltou teste falhando depois do teste novo" $TT B+ $LB B+
+tdd_caso "passou" E:/ws/cwd/docs/audora/memory/dobro.md E:/ws/cwd/MEMORY.md $TT B- $LB B+
+tdd_caso "passou" B- $TT B- $LB B+
+tdd_caso "passou" 'W:C:\x\cwd\tests\test-dobro.sh' B- 'E:C:\x\cwd\lib.sh' B+
+tdd_caso "reprovou: faltou teste novo" $LB B- B+
+tdd_caso "passou" $TT B- $LB B- E:/ws/cwd/lib.sh B+
+# teste rodado é Bash que cita tests/; outro Bash falhando não conta
+fluxo "$SP/tdd.jsonl" $TT; ev_tool x1 Bash '{"command":"ls"}' >> "$SP/tdd.jsonl"; ev_result x1 true >> "$SP/tdd.jsonl"
+ev_tool x2 Edit '{"file_path":"/ws/cwd/lib.sh"}' >> "$SP/tdd.jsonl"
+assert_eq "reprovou: faltou teste falhando depois do teste novo" "$(grader_tdd "$SP/tdd.jsonl")" "evals-comportamento/6 Bash sem tests/ não é teste rodado"
+# vários tool_use no mesmo evento, Windows com tests\ no comando
+printf '%s\n' '{"type":"assistant","message":{"content":[{"type":"text","text":"x"},{"type":"tool_use","id":"a","name":"Write","input":{"file_path":"C:\\w\\tests\\test-x.sh"}},{"type":"tool_use","id":"b","name":"Bash","input":{"command":"bash tests\\run.sh"}}]}}' \
+  '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"a","is_error":false},{"type":"tool_result","tool_use_id":"b","is_error":true}]}}' > "$SP/tdd.jsonl"
+ev_tool c Edit '{"file_path":"C:\\w\\lib.sh"}' >> "$SP/tdd.jsonl"; ev_tool d Bash '{"command":"bash tests/run.sh"}' >> "$SP/tdd.jsonl"; ev_result d false >> "$SP/tdd.jsonl"
+assert_eq "passou" "$(grader_tdd "$SP/tdd.jsonl")" "evals-comportamento/6 vários tool_use num evento"
+assert_eq "reprovou: faltou teste novo" "$(grader_tdd "$SP/nao-existe.jsonl")" "evals-comportamento/6 stream ausente reprova"
+
 # --- funções da Tarefa 2 ---
 assert_eq "infra: timeout" "$(classifica_erro 'Timeout: run exceeded')" "classifica_erro timeout"
 assert_eq "infra: API" "$(classifica_erro 'API Error: 500')" "classifica_erro API"
