@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Orquestrador de evals de comportamento (tests/evals.sh) — tudo offline, com um
+# Orquestrador de evals de comportamento (evals.sh) — tudo offline, com um
 # claude falso (stub). O claude real nunca roda aqui (evals-comportamento/12).
 source "$(dirname "$0")/lib.sh"
 . "$ROOT/tests/evals-lib.sh"
 unset CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_API_KEY
+# evals-comportamento/12: claude/claude.exe do PATH viram shims que denunciam a chamada
+mkdir -p "$SP/shims"
+for s in claude claude.exe; do printf '#!/usr/bin/env bash\ntouch "%s/chamou-claude"\nexit 1\n' "$SP" > "$SP/shims/$s"; chmod +x "$SP/shims/$s"; done
+PATH="$SP/shims:$PATH"
 
 # Stub: grava os argumentos de cada chamada (1 chamada por linha) em $SP/stub.log;
 # --version lê $SP/versao; o resto do comportamento vem de $SP/cenario.sh.
@@ -347,7 +351,7 @@ case "$tmpj" in "$RZ"/*) ko "evals-comportamento/7 --json dentro da raiz: $tmpj"
 case "$(sed -n 's/.* --output-dir \([^ ]*\).*/\1/p' "$SP/stub.log")" in "$RZ"/*) ko "evals-comportamento/7 --output-dir dentro da raiz" ;; *) ok ;; esac
 
 reseta_pe; mkdir -p "$SP/sem-git/tests/evals/porta"; echo p > "$SP/sem-git/tests/evals/porta/prompt.md"
-out="$(bash "$ROOT/tests/evals.sh" --claude "$STUB" --raiz "$SP/sem-git" 2>/dev/null)"; code=$?
+out="$(RZ="$SP/sem-git"; roda_evals 2>/dev/null)"; code=$?
 assert_eq 3 "$code" "evals-comportamento/7 raiz fora de repo git sai 3"
 assert_contains "$out" "RECUSADO · porta · isolamento: raiz fora de um repo git (sem como conferir o git status)" "evals-comportamento/7 recusa raiz sem git"
 assert_eq 0 "$(grep -c '^plugin eval' "$SP/stub.log")" "evals-comportamento/7 recusado não invoca"
@@ -780,5 +784,29 @@ assert_eq "reprovado" "$(classifica_erro 'reached max turns (40)')" "classifica_
 printf 'x\n' > "$SP/sem-result.jsonl"
 assert_eq 0 "$(tokens_trace "$SP/sem-result.jsonl")" "tokens_trace sem evento result → 0"
 assert_eq 0 "$(tokens_trace "$SP/nao-existe.jsonl")" "tokens_trace sem arquivo → 0"
+
+# --- evals-comportamento/12: evals fora da suíte, docs e envs ---
+for f in "$ROOT"/tests/evals*.sh $(find "$ROOT/tests/evals" -type f); do
+  case "${f#$ROOT/}" in tests/test-*.sh) ko "evals-comportamento/12 $f casa o glob da suíte" ;; *) ok ;; esac
+done
+assert_eq "tests/test-evals.sh" "$(cd "$ROOT" && grep -l 'evals\.sh' tests/test-*.sh)" "evals-comportamento/12 só test-evals.sh cita o orquestrador"
+# o nome vai por partes para este guarda não se contar
+orq='tests/evals''.sh'
+assert_eq 1 "$(grep -cF "$orq" "$ROOT/tests/test-evals.sh")" "evals-comportamento/12 orquestrador chamado só por roda_evals"
+assert_contains "$(grep -F "$orq" "$ROOT/tests/test-evals.sh")" "roda_evals() { bash \"\$ROOT/$orq\" --claude \"\$STUB\"" "evals-comportamento/12 roda_evals sempre com o stub"
+LEIA="$(cat "$EV/README.md" 2>/dev/null)"
+for t in PASSOU REPROVOU 'ERRO INFRA' RECUSADO 'NÃO RODADO' 'claude setup-token' --completo --mutar '## Calibração' '| caso | condição ruim | data | resultado |'; do
+  assert_contains "$LEIA" "$t" "evals-comportamento/12 README cita $t"
+done
+for c in '| `0` |' '| `1` |' '| `2` |' '| `3` |' '| `4` |'; do
+  assert_contains "$LEIA" "$c" "evals-comportamento/12 README: tabela de exits $c"
+done
+assert_contains "$(tr -d '\r' < "$ROOT/.gitignore")" ".env" "evals-comportamento/12 .gitignore com .env"
+assert_eq 1 "$(tr -d '\r' < "$ROOT/.gitignore" | grep -cx '\.env')" "evals-comportamento/12 .env é linha própria"
+assert_eq 1 "$(tr -d '\r' < "$ROOT/.gitignore" | grep -cx 'tests/evals/results/')" "evals-comportamento/12 .gitignore com tests/evals/results/"
+assert_contains "$(cat "$ROOT/.env.example" 2>/dev/null)" "CLAUDE_CODE_OAUTH_TOKEN=__coloque_o_valor__" "evals-comportamento/12 .env.example com o token"
+git -C "$ROOT" check-ignore -q .env; assert_eq 0 "$?" "evals-comportamento/12 .env ignorado pelo git"
+assert_contains "$(sed -n '/^## Constituição/,/^## Aprendizados/p' "$ROOT/MEMORY.md")" "evals de comportamento: \`bash $orq\`" "evals-comportamento/12 Constituição como-rodar cita os evals"
+assert_no_file "$SP/chamou-claude" "evals-comportamento/12 nenhum claude real chamado pelo test-evals.sh"
 
 report

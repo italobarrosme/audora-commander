@@ -1,3 +1,5 @@
 .in_use/
 *.log
 docs/study/
+.env
+tests/evals/results/

@@ -35,7 +35,8 @@ time pequeno em projetos web/mobile/api.
 - **como-rodar**: `bash tests/run.sh` (suíte do plugin, em paralelo; exit 1
   se algo falha; `SUITE_JOBS=1` = em série). Validação de instalação = `claude plugin uninstall
   audora-commander@audora-commander-dev && ./install.sh` seguido do
-  checklist do README.md em sessão interativa.
+  checklist do README.md em sessão interativa. Rodar
+  evals de comportamento: `bash tests/evals.sh` (manual, custa; fora do `run.sh`).
 - **ferramenta-e2e**: `claude -p` (projeto não-web, sem docker) — sessão
   real do Claude Code com o plugin instalado do cache.
 - **gate**: `bash hooks/gate <id-da-demanda>` — suíte + anti-fraude de teste;
@@ -91,6 +92,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - docs-bilingues | delivered | README bilíngue → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - e2e-playwright-docker | delivered | e2e Playwright + compose → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - skill-depurar | delivered | Skill de debug → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
+- evals-comportamento | in-progress | Evals de comportamento | Provar comportamento das skills com claude plugin eval e mutação de regra, no lugar de guarda de texto. | eval, plugin-eval, comportamento, mutacao, metrica, custo | tests/evals/, tests/evals.sh, tests/evals-lib.sh, tests/test-evals.sh
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
      Nós entregues até 2026-08-24 vivem no legado
