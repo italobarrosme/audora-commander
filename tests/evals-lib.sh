@@ -112,47 +112,68 @@ limpa_temp_eval() {
 
 # grader_tdd <stream.jsonl> — "passou" se o transcript mostra, nesta ordem: teste
 # novo escrito → teste rodado falhando → código editado → teste rodado passando;
-# senão "reprovou: <motivo>". Teste novo = Write/Edit em tests/; teste rodado =
-# Bash que cita tests/ (falhando = is_error do tool_result); código = Write/Edit
-# fora de tests/ e não .md. Código antes do 1º teste falhando reprova.
+# senão "reprovou: <motivo>". Código antes do 1º teste falhando reprova.
+# - escrita: Write/Edit, ou Bash com `>`/`>>`/`tee` (corpo de heredoc descartado;
+#   `>&N` e /dev/* ignorados) — em tests/ é teste novo; fora, e não .md, é código;
+# - teste rodado: Bash que executa algo em tests/ (`bash|sh tests/…`, `./tests/…`);
+#   falhando = is_error OU a saída mostra falha ("N teste(s) falhando" N>0,
+#   FALHOU, exit=N≠0) — `bash tests/run.sh; echo "exit=$?"` sai 0 com a suíte falhando;
+# - um comando Bash vira várias ações, na ordem em que aparecem nele.
 grader_tdd() {
-  perl -MJSON::PP -ne '
-    my $d = eval { decode_json($_) } or next;
-    next unless ref $d->{message} eq "HASH" && ref $d->{message}{content} eq "ARRAY";
-    for my $b (@{ $d->{message}{content} }) {
-      next unless ref $b eq "HASH";
-      my $t = $b->{type} // "";
-      if ($t eq "tool_use") { push @ev, [$b->{id} // "", $b->{name} // "", $b->{input} // {}] }
-      elsif ($t eq "tool_result") { $erro{$b->{tool_use_id} // ""} = $b->{is_error} ? "F" : "P" }
+  perl - "$1" <<'PERL' 2>/dev/null
+use strict; use warnings; use JSON::PP;
+my (@ev, %erro);
+open(my $h, '<', $ARGV[0]) or do { print "reprovou: faltou teste novo\n"; exit 0 };
+while (my $l = <$h>) {
+  my $d = eval { decode_json($l) } or next;
+  next unless ref $d->{message} eq "HASH" && ref $d->{message}{content} eq "ARRAY";
+  for my $b (@{ $d->{message}{content} }) {
+    next unless ref $b eq "HASH";
+    my $t = $b->{type} // "";
+    if ($t eq "tool_use") { push @ev, [$b->{id} // "", $b->{name} // "", $b->{input} // {}] }
+    elsif ($t eq "tool_result") {
+      my $c = $b->{content} // "";
+      $c = join "\n", map { ref $_ eq "HASH" ? $_->{text} // "" : $_ } @$c if ref $c eq "ARRAY";
+      my $falhou = $b->{is_error} || $c =~ /\b[1-9]\d* teste\(s\) falhando|FALHOU|\bexit=[1-9]/;
+      $erro{$b->{tool_use_id} // ""} = $falhou ? "F" : "P";
     }
-    END {
-      my @k;
-      for my $e (@ev) {
-        my ($id, $nome, $in) = @$e;
-        my $k = "-";
-        if ($nome =~ /^(Write|Edit|MultiEdit)$/) {
-          my $p = $in->{file_path} // "";
-          if ($p =~ m{(^|[\\/])tests[\\/]}) { $k = "T" }
-          elsif ($p !~ /\.md$/i) { $k = "C" }
-        } elsif ($nome eq "Bash" && ($in->{command} // "") =~ m{tests[\\/]}) {
-          $k = $erro{$id} // "-";
-        }
-        push @k, $k;
-      }
-      my $s = join "", @k;
-      my $i1 = index $s, "T";
-      my $i2 = $i1 < 0 ? -1 : index $s, "F", $i1;
-      my $i3 = $i2 < 0 ? -1 : index $s, "C", $i2;
-      my $i4 = $i3 < 0 ? -1 : index $s, "P", $i3;
-      my $c = index $s, "C";
-      if ($i1 < 0) { print "reprovou: faltou teste novo\n" }
-      elsif ($c >= 0 && $c < $i1) { print "reprovou: código editado antes do teste falhando\n" }
-      elsif ($i2 < 0) { print "reprovou: faltou teste falhando depois do teste novo\n" }
-      elsif ($c >= 0 && $c < $i2) { print "reprovou: código editado antes do teste falhando\n" }
-      elsif ($i3 < 0) { print "reprovou: faltou código editado depois do teste falhando\n" }
-      elsif ($i4 < 0) { print "reprovou: faltou teste passando depois do código\n" }
-      else { print "passou\n" }
-    }' "$1" 2>/dev/null
+  }
+}
+sub alvo {
+  my $p = shift;
+  return "T" if $p =~ m{(^|[\\/])tests[\\/]};
+  return "-" if $p =~ /\.md$/i;
+  return "C";
+}
+my @k;
+for my $e (@ev) {
+  my ($id, $nome, $in) = @$e;
+  if ($nome =~ /^(Write|Edit|MultiEdit)$/) { push @k, alvo($in->{file_path} // ""); next }
+  next unless $nome eq "Bash";
+  my $cmd = $in->{command} // "";
+  $cmd =~ s/<<-?\s*(['"]?)(\w+)\1([^\n]*)\n(?:.*?\n)??[ \t]*\2[ \t]*(?=\n|\z)/<<H$3/gs;
+  my @a;
+  while ($cmd =~ /(?<![0-9&>])>>?\s*(['"]?)([^\s;&|<>'"]+)\1/g) {
+    push @a, [$-[0], alvo($2)] unless $2 =~ m{^/dev/};
+  }
+  while ($cmd =~ /\btee\s+(?:-a\s+)?(['"]?)([^\s;&|<>'"]+)\1/g) { push @a, [$-[0], alvo($2)] }
+  while ($cmd =~ m{(?:\b(?:bash|sh)\s+|\./)tests[\\/]}g) { push @a, [$-[0], $erro{$id} // "-"] }
+  push @k, map { $_->[1] } sort { $a->[0] <=> $b->[0] } @a;
+}
+my $s = join "", @k;
+my $i1 = index $s, "T";
+my $i2 = $i1 < 0 ? -1 : index $s, "F", $i1;
+my $i3 = $i2 < 0 ? -1 : index $s, "C", $i2;
+my $i4 = $i3 < 0 ? -1 : index $s, "P", $i3;
+my $c = index $s, "C";
+if ($i1 < 0) { print "reprovou: faltou teste novo\n" }
+elsif ($c >= 0 && $c < $i1) { print "reprovou: código editado antes do teste falhando\n" }
+elsif ($i2 < 0) { print "reprovou: faltou teste falhando depois do teste novo\n" }
+elsif ($c >= 0 && $c < $i2) { print "reprovou: código editado antes do teste falhando\n" }
+elsif ($i3 < 0) { print "reprovou: faltou código editado depois do teste falhando\n" }
+elsif ($i4 < 0) { print "reprovou: faltou teste passando depois do código\n" }
+else { print "passou\n" }
+PERL
 }
 
 # emula_grader <grader.md> <trace.jsonl> <workspace> — "passou" | "reprovou" |

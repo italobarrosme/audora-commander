@@ -30,7 +30,10 @@ Pré-requisitos: Claude Code ≥ 2.1.269 (`claude` no PATH ou em
 `claude setup-token` e ponha o valor em `.env` (`CLAUDE_CODE_OAUTH_TOKEN=`;
 `.env` é ignorado pelo git). Sem token o caso `tdd` sai **RECUSADO** — o
 harness isola `HOME`/config num diretório temporário, e copiar as credenciais
-do humano arriscaria rotacionar o refresh token.
+do humano arriscaria rotacionar o refresh token. O harness também liga
+`CLAUDE_CODE_DISABLE_CLAUDE_MDS=1` (no Windows o `claude` acha o seu
+`~/.claude/CLAUDE.md` pela API do SO, mesmo com `HOME` trocado) e libera Bash
+**sem sandbox** dentro do workspace temporário — rode só em máquina sua.
 
 ## Casos
 
@@ -85,3 +88,15 @@ tem uma rodada registrada em que REPROVA numa condição sabidamente ruim.
 
 | caso | condição ruim | data | resultado |
 |---|---|---|---|
+| escopo-antes | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
+| memoria | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
+| porta | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin também 0/3: achado `porta-anuncio`) |
+| tdd | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 2/3: achado `retomada-execute`) |
+
+Achados da 1ª rodada real (2026-10-10, `sonnet`, ~US$ 6 com a depuração):
+- **porta** — com o plugin o modelo classifica MEDIUM e vai para scope, mas
+  pula o anúncio "Demanda classificada como … — me corrija se discordar"
+  (5/5 runs). Nó `porta-anuncio`.
+- **tdd** — em ~1 de 3 runs o modelo não reconhece `execute de dobro` (o
+  comando de retomada que o bloco de fechamento manda colar), não invoca skill
+  e pergunta o que fazer. Nó `retomada-execute`.

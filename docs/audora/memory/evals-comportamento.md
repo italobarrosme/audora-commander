@@ -16,10 +16,8 @@ atualizado-em: 2026-10-09
 Ter uma suíte de evals de comportamento (`claude plugin eval`, com e sem o
 plugin) que prova que as regras críticas das skills mudam o que o modelo faz,
 e uma mutação de regra que mostra qual regra é peso morto — régua para
-encolher e endurecer o framework sem medir por sensação.
-
-Origem: grupo B do estudo `docs/study/2026-10-09-estudo-aprimoramento.md`
-(local). Categoria: MEDIUM (nenhuma pergunta de risco SIM; vários arquivos).
+encolher e endurecer o framework sem medir por sensação. Origem: grupo B do
+estudo `docs/study/2026-10-09-estudo-aprimoramento.md` (local). MEDIUM: sem risco SIM; vários arquivos.
 
 ## criterios-aceite
 
@@ -89,12 +87,14 @@ transcript e arquivos nesta versão); WSL2.
 - teto por rodada US$ 10 + custo no relatório (só mostrar; ignorar; 5; 20);
 - TDD por harness próprio `claude -p` em fixture (WSL2; pular sem sandbox);
 - rápido 1x, completo 3x passa com 3/3 (maioria 2/3; sempre 3x);
-- comparação sem plugin só no completo (sempre: dobra custo; nunca).
+- comparação sem plugin só no completo (sempre: dobra custo; nunca);
+- 2026-10-10: harness do tdd com Bash livre (lista ampliada; dica no prompt);
+- 2026-10-10: achado vira nó, grader estrito (corrigir aqui; afrouxar): porta
+  sem anúncio → `porta-anuncio`; tdd ignora `execute de <id>` → `retomada-execute` (IA, idem).
 
 ## delta
 
 ## e2e
-
 pendente
 
 ## feedback-reprovacao

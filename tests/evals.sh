@@ -130,8 +130,11 @@ roda_harness() {
     printf '%s\tinfra\t0\t0\tfixture saiu %s\n' "$b" "$rc"; rm -rf "$ws"; return
   fi
   [ "$b" = sem ] || pd=(--plugin-dir "$alvo")
+  # o claude acha o CLAUDE.md global pela API do SO, ignorando HOME/USERPROFILE:
+  # só CLAUDE_CODE_DISABLE_CLAUDE_MDS corta (as skills do --plugin-dir seguem)
   envs=(PATH="$PATH" HOME="$ws/home" USERPROFILE="$(winpath "$ws/home")"
-        TEMP="$(winpath "$ws/tmp")" TMP="$(winpath "$ws/tmp")" CLAUDE_CONFIG_DIR="$(winpath "$ws/config")")
+        TEMP="$(winpath "$ws/tmp")" TMP="$(winpath "$ws/tmp")" CLAUDE_CONFIG_DIR="$(winpath "$ws/config")"
+        CLAUDE_CODE_DISABLE_CLAUDE_MDS=1)
   for v in SYSTEMROOT COMSPEC CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_API_KEY; do
     [ -n "${!v-}" ] && [ "${!v}" != "$PLACEHOLDER" ] && envs+=("$v=${!v}")
   done
@@ -139,7 +142,7 @@ roda_harness() {
   ( cd "$ws/cwd" && /usr/bin/env -i "${envs[@]}" "${lim[@]}" "$claude" -p "$(tr -d '\r' < "$alvo/tests/evals/$caso/harness.md")" \
       "${pd[@]}" --model "$modelo" --output-format stream-json --verbose --max-budget-usd "$4" \
       --permission-mode dontAsk --strict-mcp-config --no-session-persistence \
-      --allowedTools Read Glob Grep Skill TodoWrite "Edit(./**)" "Write(./**)" "Bash(bash *)" "Bash(git *)" \
+      --allowedTools Read Glob Grep Skill TodoWrite "Edit(./**)" "Write(./**)" Bash \
   ) </dev/null >"$ws/stream.jsonl" 2>"$ws/err"
   rc=$?
   analisa_stream "$ws/stream.jsonl" "$b" "$rc" "$timeout_run"

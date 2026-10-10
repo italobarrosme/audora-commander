@@ -93,6 +93,8 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - e2e-playwright-docker | delivered | e2e Playwright + compose → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - skill-depurar | delivered | Skill de debug → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - evals-comportamento | in-progress | Evals de comportamento | Provar comportamento das skills com claude plugin eval e mutação de regra, no lugar de guarda de texto. | eval, plugin-eval, comportamento, mutacao, metrica, custo | tests/evals/, tests/evals.sh, tests/evals-lib.sh, tests/test-evals.sh
+- porta-anuncio | planned | Anúncio da porta obrigatório | O eval porta mostrou o plugin pulando o anúncio "Demanda classificada como [X] porque… — me corrija" (2/2 runs, 2026-10-10); endurecer o passo 4 até o eval passar. | porta, anuncio, categoria, eval | skills/audora-commander/SKILL.md
+- retomada-execute | planned | Retomada por comando | O eval tdd mostrou o plugin ignorando "execute de <id>" em ~1/3 dos runs (2026-10-10): sem skill, pergunta o que fazer; a porta deve reconhecer "<fase> de <id>" sempre. | retomada, execute, porta, session-start, eval | skills/audora-commander/SKILL.md, hooks/session-start
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
      Nós entregues até 2026-08-24 vivem no legado
