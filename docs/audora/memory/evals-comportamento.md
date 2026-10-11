@@ -95,6 +95,6 @@ transcript e arquivos nesta versão); WSL2.
 ## delta
 
 ## e2e
-pendente
+2026-10-11: 13/13 passou — [e2e-evals-comportamento.md](../e2e/e2e-evals-comportamento.md) (rodada real, US$ 2.29; porta segue reprovando: `porta-anuncio`).
 
 ## feedback-reprovacao
