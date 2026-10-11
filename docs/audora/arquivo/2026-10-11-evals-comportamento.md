@@ -1,12 +1,12 @@
 ---
 id: evals-comportamento
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, docs/audora/decisoes-vivas.md, docs/audora/planos/arquivo/plano-evals-comportamento.md, .env.example, .gitignore, docs/audora/aprendizados.md, docs/audora/e2e/e2e-evals-comportamento.md, tests/evals-lib.sh, tests/evals-testlib.sh, tests/evals.sh, tests/evals/README.md, tests/evals/_lib/projeto-base.sh, tests/evals/escopo-antes/case.yaml, tests/evals/escopo-antes/fixture.sh, tests/evals/escopo-antes/graders/sem-edit-fora.md, tests/evals/escopo-antes/graders/sem-write-fora.md, tests/evals/escopo-antes/prompt.md, tests/evals/memoria/case.yaml, tests/evals/memoria/fixture.sh, tests/evals/memoria/graders/aprendizado-fora-do-memory.md, tests/evals/memoria/graders/aprendizado-registrado.md, tests/evals/memoria/graders/no-com-ears.md, tests/evals/memoria/prompt.md, tests/evals/mutacoes.tsv, tests/evals/porta/case.yaml, tests/evals/porta/fixture.sh, tests/evals/porta/graders/categoria.md, tests/evals/porta/graders/fase-seguinte.md, tests/evals/porta/graders/primeira-skill.md, tests/evals/porta/prompt.md, tests/evals/tdd/fixture.sh, tests/evals/tdd/harness.md, tests/test-evals-graders.sh, tests/test-evals-harness.sh, tests/test-evals.sh]
 keywords: [eval, plugin-eval, comportamento, mutacao, metrica, custo]
 resumo: Provar comportamento das skills com claude plugin eval e mutação de regra, no lugar de guarda de texto.
-atualizado-em: 2026-10-09
+atualizado-em: 2026-10-11
 ---
 
 # evals-comportamento

@@ -34,6 +34,8 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-10-02 | skill-cleanup | Exceção à regra "índice nunca gerado por script" (grafo-v2): o `hooks/cleanup` só APAGA a linha planned que o humano aprovou no lote e roda o `memory-validate` antes do commit — gerar ou editar linha do índice por script segue proibido.
 - 2026-10-05 | suite-paralela | Arquivo de teste não escreve no repo real nem depende de estado deixado por outro arquivo: `tests/run.sh` roda os arquivos em paralelo — fixture sempre no `$SP` do `lib.sh`.
 - 2026-10-05 | suite-paralela | Variável de ambiente que só ajusta ferramenta de dev do repo (runner, gate) e tem default fica documentada no README e no `como-rodar` da Constituição, sem `.env`/`.env.example`.
+- 2026-10-11 | evals-comportamento | Eval que reprova COM o plugin é achado de produto: vira nó e o grader segue estrito — nunca afrouxar o grader para o caso passar.
+- 2026-10-11 | evals-comportamento | Regra de skill só é cortada por decisão humana sobre relatório de mutação (`bash tests/evals.sh --mutar`, idealmente `--runs 3`); a mutação nunca corta sozinha.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro

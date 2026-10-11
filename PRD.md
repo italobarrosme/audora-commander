@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-09
+> Última atualização: 2026-10-11
 
 ## O que é e para que serve
 
@@ -24,6 +24,9 @@ Code.
   `run.sh` roda os arquivos em paralelo (`SUITE_JOBS`, default = núcleos;
   `1` = série) com timeout por arquivo (`SUITE_TIMEOUT`, default 300 s; `0`
   desliga) e imprime em blocos na ordem do glob, com o tempo no resumo.
+- Evals de comportamento (manuais, pagos, fora do `run.sh`): `bash tests/evals.sh`
+  roda 4 casos com o `claude` real em fixture isolada, teto de custo, modo
+  completo com/sem plugin e mutação de regra; casos em `tests/evals/`.
 - Localização de código pela busca do símbolo do harness, com leitura por
   trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
@@ -189,3 +192,8 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
      header por trecho.
    - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
      novo numa demanda maior.
+5. Candidato a nó: observações do `evals-comportamento` (2026-10-11; achados
+   de produto já são `porta-anuncio` e `retomada-execute`).
+   - Mutação `scope-lei-de-ferro` "sem efeito" em 1 run — rodar `--runs 3`.
+   - `test-evals.sh`/`test-evals-harness.sh` ~400 s com a máquina carregada,
+     acima do `SUITE_TIMEOUT` padrão (300 s).
