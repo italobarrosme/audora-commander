@@ -60,6 +60,10 @@ retomada por comando (`retomada-execute`); juiz LLM no grader.
 - cobertura só MEDIUM, caso existente (MEDIUM+LIGHT+HIGH: ~3x o custo);
 - prova = completo 3/3 com e 0/3 sem (rápido 1/1: não distingue sorte de regra).
 
+2026-10-12 (IA, execute): carga BASE 53752 → 53879 (+127 bytes do passo 4
+endurecido, já enxuto); guardas `parada-revisao/9` e `leitura-por-secao/11`
+sobem junto.
+
 ## delta
 
 ## e2e

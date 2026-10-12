@@ -61,6 +61,13 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
   ~1,5 (T6). Não editar NADA no repo durante uma rodada (ISOLAMENTO
   VIOLADO). `claude` fica em `~/.local/bin/claude.exe`.
 
+### Decisões tomadas pela IA
+
+- 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
+  passo 5, frase própria, sempre, bloco não substitui) — a 1ª versão (+255
+  bytes) furava a guarda de carga; a final soma +127 e a guarda sobe para
+  53879 (ver T1).
+
 ---
 
 ## Tarefa 1: passo 4 da porta vira regra dura
@@ -70,6 +77,13 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
 - **decisões relevantes**: anúncio como frase própria antes do 1º registro, não só no bloco de fechamento (humano, 2026-10-12); toda a regra fica DENTRO do trecho de `4. **Anunciar**:` até a 1ª linha com `Correção do humano vale na hora.` (a mutação /5 tem de cortar a regra inteira — nada de linha nova em red flags); SKILL ≤ 250 linhas; carga BASE ≤ 54900; fora-de-escopo: pausar depois do anúncio, mexer nas perguntas de risco.
 - **interfaces**: consome `flat <arquivo> [cabeçalho]` (cópia da de `tests/test-plano-mapa.sh:7-13`) e `aplica_mutacao <arquivo> <início> <fim>` (`tests/evals-lib.sh`) · produz `tests/test-porta-anuncio.sh` (fonte `lib.sh`, `evals-lib.sh`, `evals-testlib.sh`; termina em `report`; NUNCA escreve o nome do orquestrador `tests/evals` + `.sh` — guarda `evals-comportamento/12`)
 - **ponto de mudança**: `skills/audora-commander/SKILL.md:40-41` — passo 4 reescrito, começando com `4. **Anunciar**:` e terminando na linha com `Correção do humano vale na hora.`
+  - replanejado na execute (gatilho d, 2026-10-12): o passo 4 novo soma
+    +127 bytes à carga BASE (53752 → 53879) e duas guardas travam em 53752.
+    Guardas sobem, como `memoria-integra` fez 4 vezes:
+    `tests/test-parada-revisao.sh:59` e `tests/test-leitura-por-secao.sh:129`
+    (53752 → 53879), `tests/test-carga.sh:7` (comentário da medição:
+    `porta-anuncio/1: BASE 53752 → 53879.`); motivo no nó, em `## decisoes`.
+    Lidos: `tests/test-parada-revisao.sh:56-59`, `tests/test-leitura-por-secao.sh:126-129`, `tests/test-carga.sh:1-22`.
 - **teste**: `tests/test-porta-anuncio.sh` — caso "porta-anuncio/1 passo 4 é regra dura e cabe inteiro na mutação"
 - **asserções** (sobre `flat skills/audora-commander/SKILL.md '## Fluxo'`):
   - contém `Demanda classificada como <CATEGORIA> porque <respostas às perguntas de risco> — me corrija se discordar.`
