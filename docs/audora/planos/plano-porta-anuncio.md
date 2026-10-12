@@ -61,6 +61,14 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
   ~1,5 (T6). Não editar NADA no repo durante uma rodada (ISOLAMENTO
   VIOLADO). `claude` fica em `~/.local/bin/claude.exe`.
 
+- T2 (spike real, 2026-10-12, 1 run, US$ 0,17, 34 s, 76 linhas de trace,
+  CLI 2.1.284), com o passo 4 da T1 já carregado:
+  - (a) ✓ texto do assistente: `{"type":"assistant","message":{"model":…,"type":"message","role":"assistant","content":[{"type":"text","text":"Usando audora-commander para classificar…`
+  - (b) ✓ corpo da skill: `{"type":"user","message":{"role":"user","content":[{"type":"text","text":"Base directory for this skill: …` (sem `"type":"assistant"` na linha)
+  - (c) ✗ Edit: `"name":"Edit","input":{"replace_all":false,"file_path":"…\\MEMORY.md",…` — `file_path` NÃO é a 1ª chave. Write: `"input":{"file_path":…` (1ª). Replanejo da T3 (gatilho a): o prefixo tempered aceita `file_path` em qualquer posição do input (pula chaves e strings antes dele); asserção nova: Edit com `replace_all` antes de `file_path` em `MEMORY.md`, antes do anúncio → `reprovou`.
+  - achado de produto: sequência real = Skill porta → texto "Usando audora-commander…" → Skill memory → Bash/Read → Read `registrar-no.md` e `no-template.md` → Write do nó → Edit do `MEMORY.md` → Skill scope. NENHUM texto entre a classificação e o Write: o passo 4 endurecido não bastou neste run. Vai para debug com a rodada da T4 (3+3 runs) como evidência.
+  - custo real por run ~US$ 0,17 (não 0,4–0,6): completo do porta ≈ US$ 1.
+
 ### Decisões tomadas pela IA
 
 - 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
