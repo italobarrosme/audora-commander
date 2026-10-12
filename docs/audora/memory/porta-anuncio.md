@@ -79,15 +79,11 @@ garantir que o humano veja a narração (exibição é do harness).
 ## decisoes
 
 Decisões do 1º escopo, da carga BASE, da 1ª reabertura (hook, alvo, janela,
-falha deixa passar, frase completa), da 2ª (narração conta) e o delta
-anterior: `porta-anuncio-historico.md`.
+falha deixa passar, frase completa), da 2ª (narração conta), da 3ª (narração
+por sentido) e o delta anterior: `porta-anuncio-historico.md`.
 
-2026-10-12, 3ª reabertura (plan), do humano: na narração o anúncio vale por
-sentido — `classific…` + `como <CAT>` + convite (`me corrija`/`me avise`) +
-`discordar`, sem exigir `porque` (anunciar e pausar; parar e reverter o
-hook; só a categoria). Motivo: a narração é resumo do servidor e parafraseia
-(0/6 `classificada como`, 0/6 `porque`, 1/6 `me corrija`; plano, Notas).
-IA, plan: `classific…` = radical `classifi(c|qu)` ("Classifiquei" em 6/12).
+- 2026-10-12 (medição, porta-anuncio/5): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 0/3 · efeito -100 pp
+  (US$ 1.0441, hook ativo nos dois braços); manter ou cortar a regra é decisão do humano.
 
 ## delta
 

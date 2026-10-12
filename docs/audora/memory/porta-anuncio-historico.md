@@ -26,6 +26,13 @@ anúncio = frase completa, como o grader (só a categoria).
 anúncio no hook e no grader (anunciar e pausar: uma ida e volta a mais por
 demanda; parar e reverter o hook; descartar a demanda).
 
+2026-10-12, 3ª reabertura (plan), do humano: na narração o anúncio vale por
+sentido — `classific…` + `como <CAT>` + convite (`me corrija`/`me avise`) +
+`discordar`, sem exigir `porque` (anunciar e pausar; parar e reverter o
+hook; só a categoria). Motivo: a narração é resumo do servidor e parafraseia
+(0/6 `classificada como`, 0/6 `porque`, 1/6 `me corrija`; plano, Notas).
+IA, plan: `classific…` = radical `classifi(c|qu)` ("Classifiquei" em 6/12).
+
 ## delta
 
 - ADICIONADO (2026-10-12): /7–/11, hook (debug: texto não basta, sonnet e opus)

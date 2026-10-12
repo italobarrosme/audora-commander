@@ -556,9 +556,9 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
 - **ler**: `docs/audora/memory/porta-anuncio.md:50-68`, `tests/evals-lib.sh:423-437`
 - **done quando**: rodada real terminou com `com a regra x/3 · sem a regra y/3 · …` (exit `0`) e a linha está no nó; o `memory-validate` aceita a escrita.
 
-- [ ] **rodar** — `bash tests/evals.sh --mutar porta-anuncio --runs 3; echo "exit=$?"` → linha `com a regra …/3 · sem a regra …/3 · …` e `exit=0`
-- [ ] **registrar** — linha no nó; grep das asserções
-- [ ] **commit** — `git add docs/audora/memory/porta-anuncio.md && git commit -m "docs(porta-anuncio/5): resultado da mutacao porta-anuncio no no"`
+- [x] **rodar** — `bash tests/evals.sh --mutar porta-anuncio --runs 3; echo "exit=$?"` → linha `com a regra …/3 · sem a regra …/3 · …` e `exit=0`
+- [x] **registrar** — linha no nó; grep das asserções
+- [x] **commit** — `git add docs/audora/memory/porta-anuncio.md && git commit -m "docs(porta-anuncio/5): resultado da mutacao porta-anuncio no no"`
 
 ## Tarefa 6: rodada rápida dos outros casos
 
