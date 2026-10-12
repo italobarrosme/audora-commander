@@ -16,8 +16,9 @@ atualizado-em: 2026-10-12
 Fazer a porta de entrada sempre anunciar "Demanda classificada como [X]
 porque … — me corrija se discordar" antes de rotear, até o eval `porta`
 passar com o plugin e reprovar sem ele. Origem: e2e do
-`evals-comportamento` (2026-10-10/11), porta 0/3 com o plugin. MEDIUM:
-sem risco SIM; vários arquivos e forma de endurecer em aberto.
+`evals-comportamento` (2026-10-10/11), porta 0/3 com o plugin. Reaberto em
+2026-10-12: texto não basta (o modelo narra o anúncio no thinking); um hook
+recusa o registro do nó da porta sem o anúncio em texto.
 
 ## criterios-aceite
 
@@ -42,13 +43,32 @@ sem risco SIM; vários arquivos e forma de endurecer em aberto.
 - **porta-anuncio/6** — QUANDO a rodada rápida roda os casos `escopo-antes`,
   `memoria` e `tdd` depois da mudança O SISTEMA DEVE manter os três `PASSOU`
   (a porta endurecida não quebra o resto do fluxo)
+- **porta-anuncio/7** — QUANDO o modelo cria (Write) arquivo de nó novo em
+  `docs/audora/memory/` com `estado: in-progress` ou `hotfix-pending-record`,
+  num projeto com `MEMORY.md` em `memory-schema: 1`, e nenhum bloco de texto
+  do assistente desde a última mensagem do humano tem `classificada como
+  <LIGHT|MEDIUM|HIGH|HOTFIX>`, `porque` e `me corrija` O SISTEMA DEVE recusar
+  a escrita (exit 2) com mensagem ao modelo que manda escrever o anúncio em
+  texto ao humano antes de registrar o nó, citando a frase-modelo
+- **porta-anuncio/8** — QUANDO esse anúncio completo está num bloco de texto
+  do assistente desde a última mensagem do humano O SISTEMA DEVE deixar a
+  criação do nó passar (exit 0, sem saída)
+- **porta-anuncio/9** — QUANDO a escrita é Edit, Write de nó já existente, de
+  nó com outro estado, fora de `docs/audora/memory/` ou em projeto sem
+  `memory-schema: 1` O SISTEMA DEVE deixar passar sem saída
+- **porta-anuncio/10** — QUANDO o anúncio está só no raciocínio, em input de
+  ferramenta, em skill carregada ou antes da última mensagem do humano (que
+  não é resultado de ferramenta nem skill) O SISTEMA DEVE recusar como em /7
+- **porta-anuncio/11** — QUANDO o transcript está ausente ou ilegível, ou o
+  próprio hook falha O SISTEMA DEVE deixar a escrita passar (exit 0)
 
 ## fora-de-escopo
 
 Casos de eval para LIGHT e HIGH; pausar e esperar confirmação depois do
 anúncio (porta → 1ª fase segue sem parada); mudar as perguntas de risco ou as
 regras de categoria; afrouxar qualquer grader; anúncio em outras fases;
-retomada por comando (`retomada-execute`); juiz LLM no grader.
+retomada por comando (`retomada-execute`); juiz LLM no grader; hook julgar
+se a categoria está certa; mutação que desligue o hook (a /5 mede o passo 4).
 
 ## decisoes
 
@@ -60,11 +80,18 @@ retomada por comando (`retomada-execute`); juiz LLM no grader.
 - cobertura só MEDIUM, caso existente (MEDIUM+LIGHT+HIGH: ~3x o custo);
 - prova = completo 3/3 com e 0/3 sem (rápido 1/1: não distingue sorte de regra).
 
-2026-10-12 (IA, execute): carga BASE 53752 → 53879 (+127 bytes do passo 4
-endurecido, já enxuto); guardas `parada-revisao/9` e `leitura-por-secao/11`
-sobem junto.
+2026-10-12 (IA, execute): carga BASE 53752 → 53879 (+127 bytes do passo 4,
+já enxuto); guardas `parada-revisao/9` e `leitura-por-secao/11` sobem junto.
+
+2026-10-12, reabertura, do humano: hook que recusa o registro (aceitar a
+narração no thinking / parar em /3); alvo só nó novo in-progress ou
+hotfix-pending-record (qualquer nó novo: falso bloqueio); janela desde a
+última mensagem do humano (sessão inteira); falha deixa passar (recusar);
+anúncio = frase completa, como o grader (só a categoria).
 
 ## delta
+
+- ADICIONADO (2026-10-12): /7–/11, hook (debug: texto não basta, sonnet e opus)
 
 ## e2e
 pendente
