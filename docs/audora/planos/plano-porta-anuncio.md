@@ -132,6 +132,30 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
     o hook." + `**Classificação:** MEDIUM …` (sem convite) e para: nó não
     criado, `MEMORY.md` intocado. O modelo crê que a narração é visível.
   - → debug (gatilho da T9). Gasto da demanda ≈ US$ 3,7.
+- DEBUG T9 (modo sintoma, 2026-10-12, sem custo — só leitura):
+  - reprodução: 10/10 runs (9 do debug anterior + `hk-1`).
+  - evidência 1: no `hk-1`, os blocos do anúncio ([54], [98]) são `thinking`
+    com assinatura `block_kind` = `narration` e texto; os de raciocínio
+    ([11], [29], [104]) têm `block_kind` = `thinking` e vêm VAZIOS.
+  - evidência 2: o `claude.exe` 2.1.284 descreve esses blocos como "thinking
+    blocks whose signature the server tagged block_kind 'narration' (server
+    summaries of the prose between tool calls, not the model's own
+    reasoning)"; no VSCode ganham `narration_hint: hidden|faint`.
+  - evidência 3: a ferramenta `SendUserMessage` (modo Brief, ausente no eval:
+    `tools=Task,Edit,Glob,Grep,NotebookEdit,Read,Skill,TaskStop,TodoWrite,ToolSearch,Write`)
+    existe "for content they need to see exactly as written between tool
+    calls"; texto de fim de turno chega normal ([105] chegou como `text`).
+  - evidência 4: sessões interativas do VSCode deste usuário também gravam
+    `narration` (176 de 313 transcripts locais).
+  - CAUSA RAIZ: o modelo ESCREVE o anúncio; o servidor troca a prosa entre
+    ferramentas por resumo em bloco narration. Explica H1–H3 refutadas (o
+    texto da skill não governa o servidor), o "Eu já escrevi esse anúncio"
+    do [105] e o hook nunca ver o `text`. Sintoma em aberto: por que [12] e
+    [70] (prosa curta de processo) ficaram `text` — o critério do servidor
+    não é observável daqui.
+  - efeito colateral do hook: com narração ativa ele trava o registro do nó
+    e o modelo para (hk-1). NÃO mergear o hook como está.
+  - ESCALADA ao humano: a correção muda critério (/7, /10) ou fora-de-escopo.
 
 ### Decisões tomadas pela IA
 
