@@ -69,6 +69,26 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
   - achado de produto: sequência real = Skill porta → texto "Usando audora-commander…" → Skill memory → Bash/Read → Read `registrar-no.md` e `no-template.md` → Write do nó → Edit do `MEMORY.md` → Skill scope. NENHUM texto entre a classificação e o Write: o passo 4 endurecido não bastou neste run. Vai para debug com a rodada da T4 (3+3 runs) como evidência.
   - custo real por run ~US$ 0,17 (não 0,4–0,6): completo do porta ≈ US$ 1.
 
+- T4 (2026-10-12): `bash tests/evals.sh --completo --caso porta` →
+  `REPROVOU · porta · com 0/3 · sem 0/3 · Δ +0 pp · US$ 0.8051 · tokens 732378 · motivo: categoria: pattern not found in trace`, exit 1.
+  Asserção /4 escrita em `tests/test-porta-anuncio.sh` (RED, não commitada).
+- DEBUG (modo sintoma), ESCALADO — 3 hipóteses refutadas, cada uma numa
+  cópia do plugin no scratchpad (repo intocado), 3 runs `sonnet`:
+  - evidência: em TODO run o modelo compõe o anúncio num bloco `thinking`
+    cuja assinatura decodifica `narration` ("Classifiquei a demanda como
+    MEDIUM: … — me avise se discordar. Vou registrar esse nó") e vai direto
+    para a ferramenta. Texto visível só sai como processo ("Usando …",
+    "Nó registrado. … scope").
+  - H1 "em texto visível — classificar no raciocínio não é anunciar" no
+    passo 4 → 0/3 (refutada).
+  - H2 lembrete no topo de `registrar-no.md` (lido logo antes do Write em
+    todos os runs) → 0/3 (refutada).
+  - H3 anúncio na abertura ("Anuncie ao começar" com a categoria, classificar
+    antes do contexto) → 0/3; o modelo carrega o contexto antes mesmo assim
+    e narra a classificação no thinking (refutada).
+  - gasto do debug: US$ 0,17 + 0,50 + 0,49 + 0,46; da demanda até aqui ≈ US$ 2,6.
+  - estado: T1, T2, T3 commitadas; T4 RED; T5, T6 não rodadas. Decisão humana pendente.
+
 ### Decisões tomadas pela IA
 
 - 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
