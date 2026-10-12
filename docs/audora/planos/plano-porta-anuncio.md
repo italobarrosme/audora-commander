@@ -88,6 +88,13 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
     e narra a classificação no thinking (refutada).
   - gasto do debug: US$ 0,17 + 0,50 + 0,49 + 0,46; da demanda até aqui ≈ US$ 2,6.
   - estado: T1, T2, T3 commitadas; T4 RED; T5, T6 não rodadas. Decisão humana pendente.
+  - humano escolheu o diagnóstico (opção 1): texto da T1, `--model opus`, 3
+    runs (`claude-opus-5-5` confirmado no trace), US$ 0,86 → categoria 0/3;
+    mesmo padrão: anúncio narrado no thinking ("Classifico essa demanda como
+    MEDIUM: … Me avise se discordar — agora vou registrar o nó"), texto
+    visível só de processo. Não é do sonnet: é da família atual neste
+    harness. Gasto da demanda ≈ US$ 3,5. Próxima decisão: hook (2), aceitar
+    a narração (3) ou parar (4).
 
 ### Decisões tomadas pela IA
 
