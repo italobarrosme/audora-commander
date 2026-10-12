@@ -35,6 +35,9 @@ mu="$(flat "$SP/porta.md")"
 for s in 'classificada como' 'me corrija' 'frase própria' 'ANTES do passo 5'; do
   assert_not_contains "$mu" "$s" "porta-anuncio/1 a mutação corta a regra inteira"
 done
+# delta (debug T4): a 1ª fase entra pela ferramenta Skill, fora do trecho da mutação
+assert_contains "$fl" 'pela ferramenta Skill, nunca lendo o SKILL.md' "porta-anuncio/4 passo 6 entra na fase pela ferramenta Skill"
+assert_contains "$mu" 'pela ferramenta Skill, nunca lendo o SKILL.md' "porta-anuncio/4 a mutação não corta o passo 6"
 
 # --- /2 /3 — grader categoria: anúncio do assistente, antes do 1º registro ---
 GC="$EV/porta/graders/categoria.md"

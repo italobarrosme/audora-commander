@@ -32,3 +32,5 @@ demanda; parar e reverter o hook; descartar a demanda).
 - MODIFICADO (2026-10-12): /2, /7, /8 e /10 — "bloco de texto do assistente"
   → "bloco de texto ou de narração do assistente" (debug T9: o servidor troca
   a prosa entre ferramentas por narração; o modelo escreve o anúncio)
+- MODIFICADO (2026-10-12): /2, /7, /8 — narração com contrato próprio, por
+  sentido (plan: a narração parafraseia)

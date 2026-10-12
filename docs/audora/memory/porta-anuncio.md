@@ -91,8 +91,8 @@ IA, plan: `classific…` = radical `classifi(c|qu)` ("Classifiquei" em 6/12).
 
 ## delta
 
-- MODIFICADO (2026-10-12): /2, /7, /8 — narração com contrato próprio, por
-  sentido (plan: a narração parafraseia)
+- ADICIONADO (2026-10-12, humano, debug T4): passo 6 entra na 1ª fase pela ferramenta
+  Skill, nunca lendo o SKILL.md (Read em ~1/12 runs derrubou a /4; anterior: histórico)
 
 ## e2e
 pendente

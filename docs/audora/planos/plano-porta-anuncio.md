@@ -198,6 +198,25 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
   - núcleos conferidos com `encode_base64(("x" x k)."\x42\x09narration…")`, k = 0, 1, 2; o real é k = 1 (`IJbmFycmF0aW9u`).
   - cópia do candidato: `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\196ed9d6-e517-40f3-a84c-d3dc1e401be2\scratchpad\categoria.md` (+ `js-traces.js <grader> <trace>…`).
 
+- T4 2ª rodada (2026-10-12, depois de T10/T11): `bash tests/evals.sh
+  --completo --caso porta` → `REPROVOU · porta · com 2/3 · sem 0/3 · Δ +67
+  pp · US$ 0.7482 · tokens 609648 · motivo: fase-seguinte: pattern not found
+  in trace`, exit 1. `categoria` passou nos 3 com o plugin. Asserção /4 RED
+  escrita, não commitada.
+- DEBUG T4 (modo sintoma, US$ 0,549): reprodução com `exp.sh` na cópia `p6`
+  (3 runs `sonnet`, traces `fs-1..3` no scratchpad `2da9e288-…`): `fs-2` com
+  `categoria=ok fase-seguinte=X`, mesmo perfil.
+  - evidência: `fs-2` não chama `Skill scope`; faz Read de
+    `skills/scope/SKILL.md` [76] depois do registro e segue o scope de fato
+    (texto final [85]: "Estou na fase de escopo…" + perguntas). Nos 13 traces
+    guardados, `fase-seguinte` reprova só sem `Skill scope`: `fs-2` (Read) e
+    `hk-1` (hook antigo travou); os outros 11 chamam a ferramenta.
+  - CAUSA RAIZ: o modelo às vezes (1/12 runs sem hook) entra na fase por
+    Read do SKILL.md; o passo 6 da porta diz "Rotear pela tabela" sem dizer
+    como entrar na fase. Não é regressão do anúncio nem do hook.
+  - correção possível muda texto da porta fora do passo 4 (requisito novo)
+    ou o critério /4 → decisão humana.
+
 ### Decisões tomadas pela IA
 
 - 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
@@ -486,9 +505,22 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
 - [x] **green** — hook e READMEs; `bash tests/test-porta-anuncio.sh && bash tests/test-docs.sh` passam; conferência no `hk-1`; `bash hooks/gate porta-anuncio` → `GATE: passou`
 - [x] **commit** — `git add hooks/anuncio-guard README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,10): anuncio-guard aceita narracao por sentido com a marca do servidor"`
 
+## Tarefa 12: passo 6 da porta entra na fase pela ferramenta Skill
+
+- **depende-de**: [11]
+- **requisito**: delta ADICIONADO do nó (humano, debug T4) — o passo 6 manda entrar na 1ª fase chamando a ferramenta Skill, nunca lendo o SKILL.md
+- **decisões relevantes**: fora do trecho da mutação `porta-anuncio` (passo 4); frase mínima por causa da carga BASE; guardas pinadas `leitura-por-secao/11` e `parada-revisao/9` (53879) sobem para a medição nova no mesmo commit, nota de medição no `test-carga.sh:7`
+- **ponto de mudança**: `skills/audora-commander/SKILL.md:49`; `tests/test-porta-anuncio.sh` seção /1; `tests/test-carga.sh:7`; `tests/test-leitura-por-secao.sh:129`; `tests/test-parada-revisao.sh:59`
+- **asserções**: `flat` da seção `## Fluxo` contém `pela ferramenta Skill, nunca lendo o SKILL.md`; a mutação `porta-anuncio` NÃO corta a frase (fica fora do passo 4)
+- **done quando**: asserções verdes; `bash tests/test-carga.sh` verde; `bash hooks/gate porta-anuncio` → `GATE: passou`
+
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `pela ferramenta Skill`
+- [x] **green** — passo 6, guardas; testes e gate verdes
+- [x] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh tests/test-carga.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md docs/audora/aprendizados.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "feat(porta-anuncio/4): porta entra na 1a fase pela ferramenta Skill"`
+
 ## Tarefa 4: rodada completa do `porta` e calibração
 
-- **depende-de**: [1, 3, 9, 10, 11]
+- **depende-de**: [1, 3, 9, 10, 11, 12]
 - **requisito**: `porta-anuncio/4` — QUANDO `bash tests/evals.sh --completo --caso porta` roda O SISTEMA DEVE aprovar o caso com 3/3 com o plugin e 0/3 sem, e a linha do `porta` na calibração do `tests/evals/README.md` DEVE registrar essa rodada
 - **decisões relevantes**: prova = completo 3/3 com e 0/3 sem (humano, 2026-10-12). Com o plugin < 3/3 → skill debug (texto da porta insuficiente), nunca afrouxar o grader. Nada editado no repo durante a rodada.
 - **interfaces**: produz a linha `| porta | braço sem plugin (\`--completo\`) | <AAAA-MM-DD da rodada> | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |`

@@ -46,7 +46,8 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
    para o escopo. LIGHT/HOTFIX (sem escopo): incluir já ≥1 critério EARS
    numerado (`<id>/1`...) derivado da demanda — execute e validate citam
    esses endereços.
-6. **Rotear** pela tabela:
+6. **Rotear** pela tabela, entrando na 1ª fase pela ferramenta Skill, nunca
+   lendo o SKILL.md:
 
 | Categoria | Fases (skills, em ordem) | Portões humanos |
 |---|---|---|
