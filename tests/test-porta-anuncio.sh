@@ -75,4 +75,70 @@ printf '{"type":"assistant","message":{"content":[{"type":"tool_use","id":"w","n
 printf '{"type":"assistant","message":{"content":[{"type":"text","text":"%s"},{"type":"tool_use","id":"w","name":"Write","input":{"file_path":"/w/MEMORY.md","content":"x"}}]}}\n' "$A" > "$SP/em.jsonl"; ga passou "texto antes no mesmo evento"
 { for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_text "$A"; } > "$SP/em.jsonl"; ga passou "trace grande"
 
+# --- /7–/11 — hook anuncio-guard ---
+# linhas do transcript real do Claude Code (parentUuid antes de type)
+js() { T="$1" perl -MJSON::PP -e 'print JSON::PP->new->allow_nonref->encode($ENV{T})'; }
+tr_user() { printf '{"parentUuid":"p","type":"user","message":{"role":"user","content":%s}}\n' "$(js "$1")"; }
+tr_meta() { printf '{"parentUuid":"p","type":"user","message":{"role":"user","content":[{"type":"text","text":%s}]},"isMeta":true}\n' "$(js "$1")"; }
+tr_result() { printf '{"parentUuid":"p","type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"t","content":"x"}]}}\n'; }
+tr_text() { printf '{"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":%s}]}}\n' "$(js "$1")"; }
+tr_thinking() { printf '{"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"thinking","thinking":%s,"signature":"s"}]}}\n' "$(js "$1")"; }
+tr_tool() { printf '{"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t","name":"%s","input":{"args":%s}}]}}\n' "$1" "$(js "$2")"; }
+# pre <transcript> <file_path> <conteúdo> [tool] → code e out (stderr)
+pre() {
+  out="$(TP="$1" FP="$2" CT="$3" TN="${4:-Write}" perl -MJSON::PP -e 'print JSON::PP->new->encode({tool_name => $ENV{TN}, tool_input => {file_path => $ENV{FP}, content => $ENV{CT}}, transcript_path => $ENV{TP}})' | bash "$ROOT/hooks/anuncio-guard" 2>&1 >/dev/null)"; code=$?
+}
+PJ="$SP/pj"; mkdir -p "$PJ/docs/audora/memory"; printf 'memory-schema: 1\n# MEMORY\n' > "$PJ/MEMORY.md"
+N="$PJ/docs/audora/memory/novo.md"; T="$SP/tr.jsonl"
+CI=$'---\nid: novo\nestado: in-progress\n---\n'
+MSG='anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <respostas às perguntas de risco> — me corrija se discordar." Depois repita esta escrita.'
+SEM="$(tr_user 'Quero media'; tr_text 'Usando audora-commander para classificar.')"
+printf '%s\n' "$SEM" > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 2 "$code" "porta-anuncio/7 nó novo in-progress sem anúncio → 2"; assert_eq "$MSG" "$out" "porta-anuncio/7 mensagem"
+pre "$T" "$N" "${CI/in-progress/hotfix-pending-record}"; assert_eq 2 "$code" "porta-anuncio/7 hotfix-pending-record → 2"
+pre "$T" "$(cygpath -w "$N")" "$CI";         assert_eq 2 "$code" "porta-anuncio/7 caminho Windows → 2"
+pre "$T" "$N" "${CI//$'\n'/$'\r\n'}";        assert_eq 2 "$code" "porta-anuncio/7 conteúdo CRLF → 2"
+{ tr_user 'Quero media'; tr_text 'Demanda classificada como MEDIUM.'; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 2 "$code" "porta-anuncio/7 só a categoria → 2"
+# /8 — anúncio completo em texto do assistente desde a última mensagem do humano
+{ tr_user 'Quero media'; tr_text "$A"; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/8 anúncio → 0"; assert_empty "$out" "porta-anuncio/8 calado"
+pre "$(cygpath -w "$T")" "$(cygpath -w "$N")" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 transcript e nó em caminho Windows → 0"
+{ tr_user 'Quero media'; tr_text "${A/MEDIUM/LIGHT}"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 LIGHT → 0"
+{ tr_user 'Quero media'; tr_text "${A/MEDIUM/HOTFIX}"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 HOTFIX → 0"
+{ tr_user 'Quero media'; tr_text "$A"; tr_tool Read x; tr_result; tr_meta 'Base directory for this skill: x'; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/8 tool_result e skill não fecham a janela → 0"
+# /9 — fora do alvo passa calado (transcript sem anúncio)
+printf '%s\n' "$SEM" > "$T"
+pre "$T" "$N" "$CI" Edit;                    assert_eq 0 "$code" "porta-anuncio/9 Edit → 0"; assert_empty "$out" "porta-anuncio/9 Edit calado"
+printf 'x\n' > "$N"; pre "$T" "$N" "$CI";   assert_eq 0 "$code" "porta-anuncio/9 nó já existe → 0"; assert_empty "$out" "porta-anuncio/9 existente calado"; rm -f "$N"
+pre "$T" "$N" "${CI/in-progress/planned}";   assert_eq 0 "$code" "porta-anuncio/9 estado planned → 0"; assert_empty "$out" "porta-anuncio/9 planned calado"
+pre "$T" "$PJ/docs/outro.md" "$CI";          assert_eq 0 "$code" "porta-anuncio/9 fora de docs/audora/memory → 0"; assert_empty "$out" "porta-anuncio/9 fora calado"
+P2="$SP/p2"; mkdir -p "$P2/docs/audora/memory"; printf '# MEMORY de outra ferramenta\nmemory-schema: 1\n' > "$P2/MEMORY.md"
+pre "$T" "$P2/docs/audora/memory/novo.md" "$CI"; assert_eq 0 "$code" "porta-anuncio/9 sem schema na 1ª linha → 0"; assert_empty "$out" "porta-anuncio/9 sem schema calado"
+P3="$SP/p3"; mkdir -p "$P3/docs/audora/memory"
+pre "$T" "$P3/docs/audora/memory/novo.md" "$CI"; assert_eq 0 "$code" "porta-anuncio/9 sem MEMORY.md → 0"; assert_empty "$out" "porta-anuncio/9 sem MEMORY calado"
+# /10 — anúncio fora de texto do assistente, ou antes da última mensagem do humano
+{ tr_user 'Quero media'; tr_thinking "$A"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 só no raciocínio → 2"
+{ tr_user 'Quero media'; tr_tool Skill "$A"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 só em input de ferramenta → 2"
+{ tr_user 'Quero media'; tr_meta "$A"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 só na skill carregada → 2"
+{ tr_user 'demanda 1'; tr_text "$A"; tr_user 'demanda 2'; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 antes da última mensagem do humano → 2"
+tr_user "$A" > "$T"; pre "$T" "$N" "$CI";   assert_eq 2 "$code" "porta-anuncio/10 frase escrita pelo humano → 2"
+# /11 — transcript ausente/ilegível ou falha do hook deixa passar
+pre "$SP/nao-existe.jsonl" "$N" "$CI";       assert_eq 0 "$code" "porta-anuncio/11 transcript inexistente → 0"; assert_empty "$out" "porta-anuncio/11 inexistente calado"
+out="$(printf '{"tool_name":"Write","tool_input":{"file_path":"%s","content":"estado: in-progress"}}' "$N" | bash "$ROOT/hooks/anuncio-guard" 2>&1 >/dev/null)"; code=$?
+assert_eq 0 "$code" "porta-anuncio/11 sem transcript_path → 0"; assert_empty "$out" "porta-anuncio/11 sem transcript_path calado"
+pre "$PJ" "$N" "$CI";                        assert_eq 0 "$code" "porta-anuncio/11 transcript é diretório → 0"; assert_empty "$out" "porta-anuncio/11 diretório calado"
+out="$(printf 'não é json' | bash "$ROOT/hooks/anuncio-guard" 2>&1 >/dev/null)"; code=$?
+assert_eq 0 "$code" "porta-anuncio/11 stdin não JSON → 0"; assert_empty "$out" "porta-anuncio/11 stdin calado"
+{ echo 'lixo {'; tr_user 'Quero media'; echo '{"type":'; tr_text "$A"; echo 'mais lixo'; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/11 linhas não JSON puladas → 0"
+printf 'lixo {\nmais lixo\n' > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/11 transcript só com lixo → 0"; assert_empty "$out" "porta-anuncio/11 lixo calado"
+: > "$T"; pre "$T" "$N" "$CI";               assert_eq 0 "$code" "porta-anuncio/11 transcript vazio → 0"
+# escala: transcript longo sem anúncio
+{ tr_user 'Quero media'; perl -e 'for (1..10000) { print qq({"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t$_","name":"Read","input":{"file_path":"/w/lib.sh"}}]}}\n{"parentUuid":"p","type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"t$_","content":"x"}]}}\n) }'; } > "$T"
+SECONDS=0; pre "$T" "$N" "$CI"; dur=$SECONDS
+assert_eq 2 "$code" "porta-anuncio/7 transcript de 20001 linhas sem anúncio → 2"
+[ "$dur" -lt 10 ] && ok || ko "porta-anuncio/7 transcript de 20001 linhas em ${dur}s (teto 10)"
+
 report

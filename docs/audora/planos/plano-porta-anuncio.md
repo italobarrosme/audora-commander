@@ -122,6 +122,14 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
   passo 5, frase própria, sempre, bloco não substitui) — a 1ª versão (+255
   bytes) furava a guarda de carga; a final soma +127 e a guarda sobe para
   53879 (ver T1).
+- 2026-10-12 (T7): transcript sem NENHUMA linha JSON legível (vazio ou só
+  lixo) conta como ilegível (/11) e passa — sem isso, lixo puro recusaria.
+  Asserções além do mapa: transcript e nó em caminho Windows (o real chega
+  `C:\…`), transcript vazio e só com lixo. Armadilha: `perl -0777` deixa
+  `$/` indefinido e `<$h>` lê o transcript como 1 linha — ler com
+  `local $/ = "\n"`.
+- 2026-10-12 (T7): `GATE: passou` (suíte 183 s, `test-porta-anuncio.sh`
+  PASS=84) rodado antes do commit.
 
 ---
 
@@ -263,10 +271,10 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 - **ler**: `hooks/memory-guard:1-47`, `tests/lib.sh:1-21`, `tests/test-memory-guard.sh:1-16`
 - **done quando**: as asserções passam; `bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **preparo** — `git checkout -- tests/test-porta-anuncio.sh` (descarta a asserção RED da T4, que a T4 reescreve no passo red dela)
-- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha com `esperado '2', obtido '127'` ou equivalente (hook ausente) nos casos /7 e /10
-- [ ] **green** — `hooks/anuncio-guard`; `bash tests/test-porta-anuncio.sh` passa; `bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,9,10,11): hook anuncio-guard recusa registro do no sem anuncio em texto"`
+- [x] **preparo** — `git checkout -- tests/test-porta-anuncio.sh` (descarta a asserção RED da T4, que a T4 reescreve no passo red dela)
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha com `esperado '2', obtido '127'` ou equivalente (hook ausente) nos casos /7 e /10
+- [x] **green** — `hooks/anuncio-guard`; `bash tests/test-porta-anuncio.sh` passa; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,9,10,11): hook anuncio-guard recusa registro do no sem anuncio em texto"`
 
 ## Tarefa 8: registro do hook e READMEs
 

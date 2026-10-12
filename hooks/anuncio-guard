@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Hook PreToolUse (Write): anúncio da porta antes do registro do nó.
+# Write de nó NOVO em docs/audora/memory/ com estado in-progress ou
+# hotfix-pending-record, em projeto com MEMORY.md em memory-schema: 1, sem
+# "classificada como <CATEGORIA> … porque … me corrija" num bloco de texto do
+# assistente desde a última mensagem do humano → exit 2 + stderr (o modelo
+# anuncia e repete a escrita). Raciocínio, input de ferramenta e skill
+# carregada não contam; resultado de ferramenta e skill não fecham a janela.
+# Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
+set -uo pipefail
+
+veredito="$(perl -MJSON::PP -0777 -ne '
+  my $d = eval { decode_json($_) } or exit 0;
+  ref $d eq "HASH" && ($d->{tool_name} // "") eq "Write" or exit 0;
+  my $f = $d->{tool_input}{file_path} // ""; $f =~ s{\\}{/}g;
+  $f =~ m{^(.*)/docs/audora/memory/[^/]+\.md$} or exit 0;
+  my $raiz = $1;
+  exit 0 if -e $f;
+  open(my $m, "<", "$raiz/MEMORY.md") or exit 0;
+  my $l1 = <$m> // ""; close $m;
+  $l1 =~ /^memory-schema: 1\b/ or exit 0;
+  ($d->{tool_input}{content} // "") =~ /^estado:[ \t]*(?:in-progress|hotfix-pending-record)[ \t]*\r?$/m or exit 0;
+  my $t = $d->{transcript_path} // ""; $t =~ s{\\}{/}g;
+  -f $t or exit 0;
+  open(my $h, "<", $t) or exit 0;
+  my @l = do { local $/ = "\n"; <$h> }; close $h;
+  my $lidas = 0;
+  for my $ln (reverse @l) {
+    my $e = eval { decode_json($ln) };
+    next unless ref $e eq "HASH";
+    $lidas++;
+    my $ty = $e->{type} // "";
+    my $c = ref $e->{message} eq "HASH" ? $e->{message}{content} : undef;
+    if ($ty eq "assistant") {
+      next unless ref $c eq "ARRAY";
+      for my $b (@$c) {
+        next unless ref $b eq "HASH" && ($b->{type} // "") eq "text";
+        exit 0 if ($b->{text} // "") =~ /classificada como \**(?:LIGHT|MEDIUM|HIGH|HOTFIX)\b.*?porque.*?me corrija/is;
+      }
+    } elsif ($ty eq "user") {
+      next if $e->{isMeta};
+      next if ref $c eq "ARRAY" && grep { ref $_ eq "HASH" && ($_->{type} // "") eq "tool_result" } @$c;
+      last;
+    }
+  }
+  print "recusa" if $lidas;
+' 2>/dev/null)" || exit 0
+[ "$veredito" = recusa ] || exit 0
+echo 'anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <respostas às perguntas de risco> — me corrija se discordar." Depois repita esta escrita.' >&2
+exit 2
