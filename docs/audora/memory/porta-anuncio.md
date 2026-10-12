@@ -16,9 +16,9 @@ atualizado-em: 2026-10-12
 Fazer a porta de entrada sempre anunciar "Demanda classificada como [X]
 porque … — me corrija se discordar" antes de rotear, até o eval `porta`
 passar com o plugin e reprovar sem ele. Origem: e2e do
-`evals-comportamento` (2026-10-10/11), porta 0/3 com o plugin. Reaberto em
-2026-10-12: texto não basta (o modelo narra o anúncio no thinking); um hook
-recusa o registro do nó da porta sem o anúncio em texto.
+`evals-comportamento` (2026-10-10/11), porta 0/3 com o plugin. Reaberturas
+(2026-10-12): hook recusa o registro sem anúncio; a narração (resumo da
+prosa que o servidor põe no lugar dela) conta, por sentido.
 
 ## criterios-aceite
 
@@ -27,9 +27,10 @@ recusa o registro do nó da porta sem o anúncio em texto.
   `Demanda classificada como <CATEGORIA> porque <respostas às perguntas de
   risco> — me corrija se discordar`
 - **porta-anuncio/2** — QUANDO o caso `porta` roda O SISTEMA DEVE reprovar se
-  o texto do assistente não tiver o anúncio com `classificada como MEDIUM`,
-  `porque` e `me corrija`, ou se o anúncio vier depois da primeira escrita no
-  `MEMORY.md` ou no arquivo do nó
+  nenhum bloco do assistente tiver o anúncio MEDIUM — em texto: `classificada
+  como MEDIUM`, `porque` e `me corrija`; em narração: `classific…` seguido de
+  `como MEDIUM`, depois `me corrija` ou `me avise` e `discordar` —, ou se o
+  anúncio vier depois da primeira escrita no `MEMORY.md` ou no arquivo do nó
 - **porta-anuncio/3** — QUANDO o trace do caso `porta` tem o modelo do
   anúncio só no texto da skill carregada (`[X]`, `[respostas às perguntas]`)
   e não numa resposta do assistente O SISTEMA DEVE reprovar o caso
@@ -45,18 +46,21 @@ recusa o registro do nó da porta sem o anúncio em texto.
   (a porta endurecida não quebra o resto do fluxo)
 - **porta-anuncio/7** — QUANDO o modelo cria (Write) arquivo de nó novo em
   `docs/audora/memory/` com `estado: in-progress` ou `hotfix-pending-record`,
-  num projeto com `MEMORY.md` em `memory-schema: 1`, e nenhum bloco de texto
-  do assistente desde a última mensagem do humano tem `classificada como
-  <LIGHT|MEDIUM|HIGH|HOTFIX>`, `porque` e `me corrija` O SISTEMA DEVE recusar
-  a escrita (exit 2) com mensagem ao modelo que manda escrever o anúncio em
-  texto ao humano antes de registrar o nó, citando a frase-modelo
-- **porta-anuncio/8** — QUANDO esse anúncio completo está num bloco de texto
-  do assistente desde a última mensagem do humano O SISTEMA DEVE deixar a
-  criação do nó passar (exit 0, sem saída)
+  num projeto com `MEMORY.md` em `memory-schema: 1`, e nenhum bloco do
+  assistente desde a última mensagem do humano tem o anúncio — em texto:
+  `classificada como <LIGHT|MEDIUM|HIGH|HOTFIX>`, `porque` e `me corrija`; em
+  narração: `classific…` seguido de `como <CATEGORIA>`, depois `me corrija`
+  ou `me avise` e `discordar` — O SISTEMA DEVE recusar a escrita (exit 2) com mensagem ao modelo que manda
+  escrever o anúncio em texto ao humano antes de registrar o nó, citando a
+  frase-modelo
+- **porta-anuncio/8** — QUANDO esse anúncio, no contrato do tipo do bloco
+  (texto ou narração), está num bloco do assistente desde a última mensagem
+  do humano O SISTEMA DEVE deixar a criação do nó passar (exit 0, sem saída)
 - **porta-anuncio/9** — QUANDO a escrita é Edit, Write de nó já existente, de
   nó com outro estado, fora de `docs/audora/memory/` ou em projeto sem
   `memory-schema: 1` O SISTEMA DEVE deixar passar sem saída
-- **porta-anuncio/10** — QUANDO o anúncio está só no raciocínio, em input de
+- **porta-anuncio/10** — QUANDO o anúncio está só em raciocínio que não é
+  narração (sem a marca do servidor ou com marca ilegível), em input de
   ferramenta, em skill carregada ou antes da última mensagem do humano (que
   não é resultado de ferramenta nem skill) O SISTEMA DEVE recusar como em /7
 - **porta-anuncio/11** — QUANDO o transcript está ausente ou ilegível, ou o
@@ -66,32 +70,29 @@ recusa o registro do nó da porta sem o anúncio em texto.
 
 Casos de eval para LIGHT e HIGH; pausar e esperar confirmação depois do
 anúncio (porta → 1ª fase segue sem parada); mudar as perguntas de risco ou as
-regras de categoria; afrouxar qualquer grader; anúncio em outras fases;
+regras de categoria; afrouxar qualquer grader (exceto o ramo narração,
+3ª reabertura); anúncio em outras fases;
 retomada por comando (`retomada-execute`); juiz LLM no grader; hook julgar
-se a categoria está certa; mutação que desligue o hook (a /5 mede o passo 4).
+se a categoria está certa; mutação que desligue o hook (a /5 mede o passo 4);
+garantir que o humano veja a narração (exibição é do harness).
 
 ## decisoes
 
-2026-10-12, todas do humano (alternativa descartada entre parênteses):
-- anúncio como frase própria antes do 1º registro (só no bloco de
-  fechamento: tarde demais para corrigir barato; nos dois: redundante);
-- eval exige categoria + porquê + convite (só a categoria: aceita anúncio
-  sem justificativa);
-- cobertura só MEDIUM, caso existente (MEDIUM+LIGHT+HIGH: ~3x o custo);
-- prova = completo 3/3 com e 0/3 sem (rápido 1/1: não distingue sorte de regra).
+Decisões do 1º escopo, da carga BASE, da 1ª reabertura (hook, alvo, janela,
+falha deixa passar, frase completa), da 2ª (narração conta) e o delta
+anterior: `porta-anuncio-historico.md`.
 
-2026-10-12 (IA, execute): carga BASE 53752 → 53879 (+127 bytes do passo 4,
-já enxuto); guardas `parada-revisao/9` e `leitura-por-secao/11` sobem junto.
-
-2026-10-12, reabertura, do humano: hook que recusa o registro (aceitar a
-narração no thinking / parar em /3); alvo só nó novo in-progress ou
-hotfix-pending-record (qualquer nó novo: falso bloqueio); janela desde a
-última mensagem do humano (sessão inteira); falha deixa passar (recusar);
-anúncio = frase completa, como o grader (só a categoria).
+2026-10-12, 3ª reabertura (plan), do humano: na narração o anúncio vale por
+sentido — `classific…` + `como <CAT>` + convite (`me corrija`/`me avise`) +
+`discordar`, sem exigir `porque` (anunciar e pausar; parar e reverter o
+hook; só a categoria). Motivo: a narração é resumo do servidor e parafraseia
+(0/6 `classificada como`, 0/6 `porque`, 1/6 `me corrija`; plano, Notas).
+IA, plan: `classific…` = radical `classifi(c|qu)` ("Classifiquei" em 6/12).
 
 ## delta
 
-- ADICIONADO (2026-10-12): /7–/11, hook (debug: texto não basta, sonnet e opus)
+- MODIFICADO (2026-10-12): /2, /7, /8 — narração com contrato próprio, por
+  sentido (plan: a narração parafraseia)
 
 ## e2e
 pendente

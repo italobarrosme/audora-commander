@@ -31,6 +31,16 @@ o `memory-guard`), lendo o transcript do fim para o começo e parando na
 última mensagem do humano. T7 hook + testes, T8 registro + READMEs, T9 1 run
 real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 
+**Replanejamento (2026-10-12, 3ª reabertura — narração por sentido):** o
+servidor troca a prosa entre ferramentas por resumo em bloco `thinking` com
+a marca `\x42\x09narration` na assinatura (debug T9). Grader e hook ganham
+um 2º ramo, sem tocar no ramo texto: bloco `thinking` cuja assinatura tem a
+marca e cujo texto tem `classifi(c|qu)…` → `como <CAT>` → `me corrija`/`me
+avise` → `discordar`. Grader: regex JS, marca pelos 3 núcleos base64
+(`QgluYXJyYXRp`, `IJbmFycmF0aW9u`, `CCW5hcnJhdGlv`), ordem real de chaves
+`type, thinking, signature`. Hook: `MIME::Base64` decodifica a assinatura e
+procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
+
 **Arquivos lidos antes de planejar:**
 - `hooks/hooks.json:1-36` — SessionStart + PostToolUse (Edit|Write: memory-guard, memory-validate) via `"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" <nome>`, `shell: bash`; sem PreToolUse.
 - `hooks/memory-guard:1-47` — padrão: stdin JSON por `perl -MJSON::PP`, `file_path` com `\`→`/`, exit 2 + stderr de 1 linha, "falha do hook NUNCA quebra o fluxo".
@@ -61,6 +71,13 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 - `tests/evals.sh:80-110,191,233-234` — invocação real do `claude plugin eval` (`--keep-temp`, `--ablation none|with-without`), `--mutar` e completo.
 - `hooks/gate:15-52` — anti-fraude: contagem de linhas `assert_*|ok|ko` não pode cair sem `gate-asserts:` no nó.
 - `templates/no-template.md:1-60` — seções do nó (sem campo novo).
+- (3ª reabertura) `hooks/anuncio-guard:1-50` — laço `for my $b (@$c)` em 36-39 só olha `type: text`; comentário de cabeçalho 2-9; `perl -MJSON::PP -0777` em 12.
+- (3ª reabertura) `tests/evals/porta/graders/categoria.md:1-13` — pattern 6 = prefixo tempered (sem Write/Edit no MEMORY/nó) + `"type":"assistant"` + tempered na linha + ramo texto; descrição 9-13.
+- (3ª reabertura) `tests/test-porta-anuncio.sh:36-156` — `ev_text`/`ev_meta`/`ga` (44-48), casos do grader (52-76), `js`/`tr_*` (80-86), `pre` (88-91), `A`, `MSG`, `N`, `T`, `CI`, casos /7–/11 (97-142), registro e READMEs (144-154), `report` (156).
+- (3ª reabertura) `tests/evals-lib.sh:183-245` — `emula_grader` lê o trace inteiro, CRLF→LF, `qr/(?i)…/`.
+- (3ª reabertura) `tests/evals-testlib.sh:95-97` — `jesc`, `ev_tool`, `ev_result`.
+- (3ª reabertura) `README.md:114-124`, `README.pt-BR.md:114-124` — "in visible text — the `anuncio-guard` hook (PreToolUse) refuses…" / "em texto visível — o hook `anuncio-guard` (PreToolUse) recusa…" (119-121).
+- (3ª reabertura) 10 traces do debug (`h2-1..3`, `h3-1..3`, `hk-1`, `op-1..3` no scratchpad `2da9e288-…`) e `js-check.js` de lá.
 
 **Conflitos MEMORY vs código encontrados:** nenhum.
 
@@ -156,6 +173,30 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
   - efeito colateral do hook: com narração ativa ele trava o registro do nó
     e o modelo para (hk-1). NÃO mergear o hook como está.
   - ESCALADA ao humano: a correção muda critério (/7, /10) ou fora-de-escopo.
+- PLAN da 2ª reabertura (2026-10-12, sem custo — só leitura dos 10 traces
+  do debug e de transcripts de sessão):
+  - ✓ marca: assinatura = base64 de protobuf; `block_kind` no campo 8
+    (`\x42\x09narration` / `\x42\x08thinking`), byte 13 em todos os 57
+    blocos thinking dos traces (12 narration com texto, 45 thinking vazios);
+    mesmo formato no transcript de sessão que o hook lê. Núcleos base64 de
+    `\x42\x09narration` nos 3 alinhamentos: `QgluYXJyYXRp`,
+    `IJbmFycmF0aW9u` (o real), `CCW5hcnJhdGlv`.
+  - ✗ texto: a narração é RESUMO do servidor, não a frase do modelo. Nas 6
+    narrações de classificação: 0/6 com `classificada como` (vem
+    "Classifico a demanda como MEDIUM"), 0/6 com `porque` (vem ":" ou "já
+    que"), 1/6 com `me corrija` (5/6 "me avise se discordar"). Grader
+    candidato (texto OU narração com o contrato atual) sobre os 10 traces →
+    10/10 reprovou.
+  - → /2, /7 e /8 com "narração" e o contrato de frase literal não são
+    satisfazíveis. Gatilho (c): reabre escopo. Plano NÃO reescrito.
+- PLAN da 3ª reabertura (2026-10-12, sem custo — só leitura):
+  - bloco real: `{"type":"thinking","thinking":"Classifico a demanda como MEDIUM: … — me avise se discordar. Agora vou registrar o nó no MEMORY.\n\n","signature":"CAQS7AgKEQgSGAI4AUIJbmFycmF0aW9u…"}` (texto ANTES da assinatura); thinking puro = `…KEAgSGAI4AUII…` e vem vazio.
+  - `classific` literal NÃO casa "Classifiquei" (6 das 12 narrações): radical `classifi(?:c|qu)`.
+  - contrato por sentido nas 12 narrações: anúncio em 10 blocos / 8 runs; sem convite: `h3-1:54`, `op-3:50` (e `h2-1:93`, pós-registro).
+  - grader candidato = `(?:<ramo texto de hoje>|<ramo narração>)` depois do mesmo prefixo; ramo narração: `"type"\s*:\s*"thinking"\s*,\s*"thinking"\s*:\s*"(?:[^"\\\n]|\\.)*?classifi(?:c|qu)(?:[^"\\\n]|\\.)*?como \**MEDIUM\b(?:[^"\\\n]|\\.)*?(?:me corrija|me avise)(?:[^"\\\n]|\\.)*?discordar(?:[^"\\\n]|\\.)*"\s*,\s*"signature"\s*:\s*"[^"]*?(?:QgluYXJyYXRp|IJbmFycmF0aW9u|CCW5hcnJhdGlv)`.
+    Nos 10 traces, `emula_grader` (perl) e `RegExp` (node) iguais: 8 passou, `h3-1` e `op-3` reprovou (o de hoje: 10/10 reprovou); ≤ 1 ms por trace. Marca trocada por `IIdGhpbmtpbmc` em `h2-2`, `hk-1`, `op-1` → reprovou. Os 7 casos do `js-check.js` seguem verdes.
+  - núcleos conferidos com `encode_base64(("x" x k)."\x42\x09narration…")`, k = 0, 1, 2; o real é k = 1 (`IJbmFycmF0aW9u`).
+  - cópia do candidato: `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\196ed9d6-e517-40f3-a84c-d3dc1e401be2\scratchpad\categoria.md` (+ `js-traces.js <grader> <trace>…`).
 
 ### Decisões tomadas pela IA
 
@@ -174,6 +215,13 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 - 2026-10-12 (T8): `GATE: passou` (suíte 216 s, PASS=91) antes do commit;
   leitura do `hooks.json` no teste separa campos por `\x1f` (aprendizado do
   `IFS=$'\t'`, que funde campos vazios).
+- 2026-10-12 (plan, 3ª reabertura): `classific…` do critério lido como o
+  radical do verbo, `classifi(c|qu)` — o literal deixa "Classifiquei" (metade
+  das narrações reais) de fora. Marca no grader por 3 núcleos base64 (a
+  regex JS não decodifica); no hook, `decode_base64` + `index` (qualquer
+  alinhamento, ilegível = sem marca). Mensagem do hook inalterada: o modelo
+  continua mandado a escrever em texto. READMEs trocam "texto visível" por
+  texto ou a narração dele.
 
 ---
 
@@ -359,9 +407,79 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 - [x] **rodar** — `S` = scratchpad da sessão do debug, que fica em disco: `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\2da9e288-7935-4f47-b511-9b5b845c06f0\scratchpad` (`exp.sh <cópia> <nome> [runs] [modelo]` roda o caso porta numa cópia, imprime os graders e as linhas de classificação/Write, guarda `<nome>-<n>.jsonl` e apaga o `claude-eval-*`; `fluxo.pl <trace>` lista thinking/text/tool_use). Sumiu? Usar o comando do `plugin eval` da T2 sobre a cópia e ler o trace à mão. Da raiz do repo: `. tests/evals-lib.sh; rm -rf "$S/p5"; copia_plugin "$PWD" "$S/p5"; bash "$S/exp.sh" "$S/p5" hk 1 sonnet`; depois `grep -c 'anuncio-guard:' "$S/hk-1.jsonl"` e `perl "$S/fluxo.pl" "$S/hk-1.jsonl"`
 - [x] **anotar** — Notas de sessão + commit `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/4): hook roda no plugin eval"`
 
+## Tarefa 10: grader `categoria` ganha o ramo narração
+
+- **depende-de**: [3]
+- **requisito**:
+  - `porta-anuncio/2` — QUANDO o caso `porta` roda O SISTEMA DEVE reprovar se nenhum bloco do assistente tiver o anúncio MEDIUM — em texto: `classificada como MEDIUM`, `porque` e `me corrija`; em narração: `classific…` seguido de `como MEDIUM`, depois `me corrija` ou `me avise` e `discordar` —, ou se o anúncio vier depois da primeira escrita no `MEMORY.md` ou no arquivo do nó
+  - `porta-anuncio/3` — QUANDO o trace do caso `porta` tem o modelo do anúncio só no texto da skill carregada (`[X]`, `[respostas às perguntas]`) e não numa resposta do assistente O SISTEMA DEVE reprovar o caso
+- **decisões relevantes**: narração vale por sentido, sem `porque` (humano, 3ª reabertura); ramo texto INTACTO (nenhum `ga` atual muda de resultado); afrouxar só o ramo narração; radical `classifi(c|qu)` e marca pelos 3 núcleos base64 (Decisões tomadas pela IA); sem juiz LLM; `type: regex`, `arm: both`, `target: trace`, `flags: i` mantidos. O grader e o teste vão ao disco pelo Write (barras invertidas).
+- **interfaces**:
+  - consome `emula_grader`, `ga`, `ev_text`, `ev_meta`, `ev_tool`, `jesc` (já no teste/libs)
+  - produz em `tests/test-porta-anuncio.sh`, na seção `/2 /3`:
+    - `sig <k> <tipo>` → stdout = `encode_base64("\x08\x04\x12" . ("\x01" x k) . "\x42" . chr(length tipo) . tipo . "\x12\x0c" . ("z" x 12), "")` (perl `-MMIME::Base64`, `k` e `tipo` via env) — k = 10, 11, 12 cobre os 3 alinhamentos; `sig 10 narration` tem `IJbmFycmF0aW9u` como o real
+    - `ev_narr <texto> <assinatura>` → `{"type":"assistant","message":{"content":[{"type":"thinking","thinking":"<texto>","signature":"<assinatura>"}]}}`
+- **ponto de mudança**: `tests/evals/porta/graders/categoria.md:6` (pattern = prefixo de hoje + `"type":"assistant"` + tempered na linha + `(?:<ramo texto de hoje>|<ramo narração das Notas de sessão>)`), `:9-13` (descrição: texto OU narração por sentido); `tests/evals/README.md:42` coluna "como": `anúncio MEDIUM com porquê e convite (ou narração com categoria e convite) antes do 1º registro`; `tests/test-porta-anuncio.sh` depois da linha 76 (último `ga` atual)
+- **teste**: `tests/test-porta-anuncio.sh` — caso "porta-anuncio/2,3 grader categoria, ramo narração"
+- **asserções** (`NA` = `Classifiquei a demanda como MEDIUM: não envolve migração, mas toca vários arquivos e lógica nova — me avise se discordar. Agora vou registrar o nó.`; `SN` = `$(sig 10 narration)`; `ST` = `$(sig 10 thinking)`; cada linha = trace → resultado):
+  - `ev_narr "$NA" "$SN"` → `passou`; com `$(sig 11 narration)` → `passou`; com `$(sig 12 narration)` → `passou`
+  - `ev_narr 'Classifico essa demanda como **MEDIUM**, já que há lógica nova. Me corrija se discordar.' "$SN"` → `passou`
+  - `ev_narr` de `NA` com `\"x\"` no meio e `\n\n` no fim → `passou`
+  - `ev_narr "$NA" "$ST"` → `reprovou`; com assinatura `s` → `reprovou`; com assinatura vazia → `reprovou`
+  - `ev_narr 'Classifiquei a demanda como MEDIUM: toca vários arquivos. Agora vou registrar o nó.' "$SN"` → `reprovou` (sem convite)
+  - `ev_narr 'Classifiquei a demanda como MEDIUM — me avise.' "$SN"` → `reprovou` (sem `discordar`)
+  - `ev_narr` de `NA` com LIGHT → `reprovou`; com HIGH → `reprovou`
+  - `ev_narr 'Fica como MEDIUM — me avise se discordar.' "$SN"` → `reprovou` (sem `classifi…`)
+  - `{ ev_narr 'Classifiquei a demanda como MEDIUM.' "$SN"; ev_narr 'Me avise se discordar.' "$SN"; }` → `reprovou` (partes em blocos separados)
+  - `ev_text "$NA"` → `reprovou` (bloco de texto segue o contrato literal)
+  - `ev_meta "$NA"` → `reprovou`
+  - `printf '{"type":"assistant","message":{"content":[{"type":"thinking","signature":"%s","thinking":"%s"}]}}\n' "$SN" "$NA"` → `reprovou` (assinatura antes do texto)
+  - `{ ev_tool w Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; ev_narr "$NA" "$SN"; }` → `reprovou`; idem com Edit `$WM` → `reprovou`
+  - `{ ev_narr "$NA" "$SN"; ev_tool w Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; }` → `passou`
+  - `{ for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_narr "$NA" "$SN"; }` → `passou`
+  - todos os `ga` de hoje (linhas 52-76) inalterados e verdes
+- **ler**: `tests/evals/porta/graders/categoria.md:1-13`, `tests/test-porta-anuncio.sh:36-76`, `tests/evals/README.md:38-45`
+- **done quando**: asserções verdes; `bash tests/test-evals-graders.sh` passa; conferência fora da suíte (se o scratchpad `2da9e288-…` ainda existir): `emula_grader` e `node js-traces.js` (cópia nas Notas) sobre os 10 traces → 8 `passou`, `h3-1` e `op-3` `reprovou`; `bash hooks/gate porta-anuncio` → `GATE: passou`.
+
+- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha nos `passou` da narração (o grader de hoje só tem o ramo texto)
+- [ ] **green** — `categoria.md` com o 2º ramo e descrição; README dos evals; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` passam; conferência nos traces reais; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [ ] **commit** — `git add tests/evals/porta/graders/categoria.md tests/evals/README.md tests/test-porta-anuncio.sh && git commit -m "test(porta-anuncio/2,3): grader categoria aceita narracao por sentido com a marca do servidor"`
+
+## Tarefa 11: hook `anuncio-guard` aceita a narração e READMEs
+
+- **depende-de**: [10]
+- **requisito**:
+  - `porta-anuncio/7` — QUANDO o modelo cria (Write) arquivo de nó novo em `docs/audora/memory/` com `estado: in-progress` ou `hotfix-pending-record`, num projeto com `MEMORY.md` em `memory-schema: 1`, e nenhum bloco do assistente desde a última mensagem do humano tem o anúncio — em texto: `classificada como <LIGHT|MEDIUM|HIGH|HOTFIX>`, `porque` e `me corrija`; em narração: `classific…` seguido de `como <CATEGORIA>`, depois `me corrija` ou `me avise` e `discordar` — O SISTEMA DEVE recusar a escrita (exit 2) com mensagem ao modelo que manda escrever o anúncio em texto ao humano antes de registrar o nó, citando a frase-modelo
+  - `porta-anuncio/8` — QUANDO esse anúncio, no contrato do tipo do bloco (texto ou narração), está num bloco do assistente desde a última mensagem do humano O SISTEMA DEVE deixar a criação do nó passar (exit 0, sem saída)
+  - `porta-anuncio/10` — QUANDO o anúncio está só em raciocínio que não é narração (sem a marca do servidor ou com marca ilegível), em input de ferramenta, em skill carregada ou antes da última mensagem do humano (que não é resultado de ferramenta nem skill) O SISTEMA DEVE recusar como em /7
+- **decisões relevantes**: mesmo contrato por sentido do grader, qualquer categoria; marca = `index(decode_base64($b->{signature} // ""), "\x42\x09narration") >= 0` (`MIME::Base64` é core do perl); ramo texto e mensagem `MSG` inalterados; falha → exit 0 (contrato do hook). Hook e teste vão ao disco pelo Write.
+- **interfaces**:
+  - consome `sig` (T10), `pre`, `tr_user`, `tr_text`, `tr_tool`, `tr_result`, `tr_meta`, `tr_thinking`, `js` (teste)
+  - produz em `tests/test-porta-anuncio.sh`: `tr_narr <texto> <assinatura>` → `{"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"thinking","thinking":<js texto>,"signature":<js assinatura>}]}}`
+- **ponto de mudança**: `hooks/anuncio-guard:2-9` (comentário: texto OU narração por sentido), `:12` (`-MMIME::Base64`), `:36-39` (no laço de blocos, ramo `thinking` com marca e o contrato por sentido, ao lado do `text`); `README.md:118-121` — "in visible text" → `in text (or in the server's narration of it)`; `README.pt-BR.md:118-121` — "em texto visível" → `em texto (ou na narração que o servidor faz dele)`; `tests/test-porta-anuncio.sh` antes de `# /11` (linha 127) e na seção de registro (antes do `report`)
+- **teste**: `tests/test-porta-anuncio.sh` — caso "porta-anuncio/7,8,10 hook, ramo narração"
+- **asserções** (`NA`, `SN`, `ST` da T10; transcript → `code`, `out`):
+  - /8: `[tr_user 'Quero media', tr_narr "$NA" "$SN"]` → `0`, `out` vazio; com `$(sig 11 narration)` → `0`; com `$(sig 12 narration)` → `0`
+  - /8: `tr_narr` de `NA` com LIGHT → `0`; com HOTFIX → `0`
+  - /8: `[tr_user, tr_narr "$NA" "$SN", tr_tool Read x, tr_result, tr_meta 'Base directory for this skill: x']` → `0`
+  - /8: transcript e nó em caminho Windows (`cygpath -w`) com `[tr_user, tr_narr "$NA" "$SN"]` → `0`
+  - /7: `[tr_user, tr_narr 'Classifiquei a demanda como MEDIUM: toca vários arquivos. Agora vou registrar o nó.' "$SN"]` → `2`, `out` = `MSG` exato
+  - /7: `[tr_user, tr_narr 'Classifiquei a demanda como MEDIUM — me avise.' "$SN"]` → `2`
+  - /7: `[tr_user, tr_text "$NA"]` → `2` (texto segue o contrato literal)
+  - /10: `[tr_user, tr_narr "$NA" "$ST"]` → `2`; assinatura `!!!` → `2`; assinatura vazia → `2`; `[tr_user, tr_thinking "$NA"]` (assinatura `s`) → `2`
+  - /10: `[tr_user 'demanda 1', tr_narr "$NA" "$SN", tr_user 'demanda 2']` → `2`
+  - READMEs: `flat README.md` contém `in text (or in the server's narration of it)`; `flat README.pt-BR.md` contém `em texto (ou na narração que o servidor faz dele)`; os 2 asserts de hoje (`` `anuncio-guard` hook (PreToolUse) `` / `` hook `anuncio-guard` (PreToolUse) ``) seguem
+  - todas as asserções /7–/11 de hoje inalteradas e verdes (inclusive escala 20001 linhas < 10 s)
+- **ler**: `hooks/anuncio-guard:1-50`, `tests/test-porta-anuncio.sh:78-156`, `README.md:114-124`, `README.pt-BR.md:114-124`
+- **done quando**: asserções verdes; `bash tests/test-docs.sh` passa; `bash hooks/gate porta-anuncio` → `GATE: passou`; conferência fora da suíte: o hook sobre o `hk-1.jsonl` real (transcript cortado antes da linha 55, Write de nó novo) → `0`; cortado antes da 54 → `2`.
+
+- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha nos `0` da narração (o hook de hoje recusa)
+- [ ] **green** — hook e READMEs; `bash tests/test-porta-anuncio.sh && bash tests/test-docs.sh` passam; conferência no `hk-1`; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [ ] **commit** — `git add hooks/anuncio-guard README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,10): anuncio-guard aceita narracao por sentido com a marca do servidor"`
+
 ## Tarefa 4: rodada completa do `porta` e calibração
 
-- **depende-de**: [1, 3, 9]
+- **depende-de**: [1, 3, 9, 10, 11]
 - **requisito**: `porta-anuncio/4` — QUANDO `bash tests/evals.sh --completo --caso porta` roda O SISTEMA DEVE aprovar o caso com 3/3 com o plugin e 0/3 sem, e a linha do `porta` na calibração do `tests/evals/README.md` DEVE registrar essa rodada
 - **decisões relevantes**: prova = completo 3/3 com e 0/3 sem (humano, 2026-10-12). Com o plugin < 3/3 → skill debug (texto da porta insuficiente), nunca afrouxar o grader. Nada editado no repo durante a rodada.
 - **interfaces**: produz a linha `| porta | braço sem plugin (\`--completo\`) | <AAAA-MM-DD da rodada> | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |`
