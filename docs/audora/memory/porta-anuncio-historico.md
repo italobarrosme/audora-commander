@@ -41,3 +41,25 @@ IA, plan: `classific…` = radical `classifi(c|qu)` ("Classifiquei" em 6/12).
   a prosa entre ferramentas por narração; o modelo escreve o anúncio)
 - MODIFICADO (2026-10-12): /2, /7, /8 — narração com contrato próprio, por
   sentido (plan: a narração parafraseia)
+- ADICIONADO (2026-10-12, humano, debug T4): passo 6 entra na 1ª fase pela ferramenta
+  Skill, nunca lendo o SKILL.md (Read em ~1/12 runs derrubou a /4; anterior: histórico)
+
+## decisoes (movidas na 4ª reabertura)
+
+- 2026-10-12 (medição, porta-anuncio/5, execute): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 0/3 · efeito -100 pp
+  (US$ 1.0441, hook ativo nos dois braços); manter ou cortar a regra é decisão do humano.
+  Revalidada na validate 2026-10-12: 3/3 · 0/3 · -100 pp, US$ 0.9826.
+
+## decisoes (4ª reabertura)
+
+2026-10-12, 4ª reabertura, do humano (descartada entre parênteses), causa no
+debug (aprendizado da narração: prosa ≥ 200 chars no meio do turno vira
+narração em ~98%):
+- anúncio curto (antes da 1ª ferramenta: sem contexto do MEMORY; no fim do
+  turno: parada nova; afrouxar: anúncio sem convite);
+- teto 150 chars (120: motivo telegráfico; sem número: não testável);
+- hook não recusa anúncio longo em texto, só a mensagem pede o teto (recusar:
+  recusa a mais sem ganho — texto chegou ao humano);
+- /4 com 6 runs por braço (3: passou por sorte na execute, 1/3 na validate);
+- /6 mantém o `tdd` com 1 rerun no perfil `retomada-execute` (estrito: falha
+  alheia à demanda; tirar o tdd: perde a guarda).
