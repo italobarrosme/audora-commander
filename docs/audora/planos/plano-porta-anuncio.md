@@ -116,6 +116,23 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
     harness. Gasto da demanda ≈ US$ 3,5. Próxima decisão: hook (2), aceitar
     a narração (3) ou parar (4).
 
+- T9 (2026-10-12, 1 run `sonnet`, US$ 0,158, cópia `p5` no scratchpad do
+  debug, trace `hk-1.jsonl` de 105 linhas): `categoria=X fase-seguinte=X
+  primeira-skill=ok`.
+  - ✓ o `plugin eval` roda o hook: 2 `tool_result` `PreToolUse:Write hook
+    error: [… run-hook.cmd" anuncio-guard]: anuncio-guard: antes de registrar
+    o nó, …` (linhas 72 e 100).
+  - ✗ o modelo não anuncia depois: antes de cada Write ([54] e [98]) narra
+    no thinking "Classifico essa demanda como MEDIUM: … — me avise se
+    discordar"; texto visível só de processo ([12] "Usando audora-commander…",
+    [70] "Escrevo primeiro o arquivo do nó…").
+  - fim [105], texto: "O hook `anuncio-guard` … rejeitou a escrita … duas
+    vezes. … Eu já escrevi esse anúncio nas duas vezes, na forma pedida. O
+    hook não o reconheceu, e não sei dizer por quê. Não vou tentar contornar
+    o hook." + `**Classificação:** MEDIUM …` (sem convite) e para: nó não
+    criado, `MEMORY.md` intocado. O modelo crê que a narração é visível.
+  - → debug (gatilho da T9). Gasto da demanda ≈ US$ 3,7.
+
 ### Decisões tomadas pela IA
 
 - 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
@@ -130,7 +147,9 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
   `local $/ = "\n"`.
 - 2026-10-12 (T7): `GATE: passou` (suíte 183 s, `test-porta-anuncio.sh`
   PASS=84) rodado antes do commit.
-- 2026-10-12 (T8): `GATE: passou` (suíte 216 s, PASS=91) antes do commit; leitura do `hooks.json` no teste separa campos por `` (aprendizado do `IFS=$'	'`).
+- 2026-10-12 (T8): `GATE: passou` (suíte 216 s, PASS=91) antes do commit;
+  leitura do `hooks.json` no teste separa campos por `\x1f` (aprendizado do
+  `IFS=$'\t'`, que funde campos vazios).
 
 ---
 
@@ -313,8 +332,8 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 - **ler**: n/a
 - **done quando**: resultado anotado. Se o hook não aparece no trace → PARAR e levar ao humano (o eval não carrega hooks de plugin: a prova /4 precisa de outro caminho). Se o hook recusa e o modelo NÃO anuncia depois → debug.
 
-- [ ] **rodar** — `S` = scratchpad da sessão do debug, que fica em disco: `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\2da9e288-7935-4f47-b511-9b5b845c06f0\scratchpad` (`exp.sh <cópia> <nome> [runs] [modelo]` roda o caso porta numa cópia, imprime os graders e as linhas de classificação/Write, guarda `<nome>-<n>.jsonl` e apaga o `claude-eval-*`; `fluxo.pl <trace>` lista thinking/text/tool_use). Sumiu? Usar o comando do `plugin eval` da T2 sobre a cópia e ler o trace à mão. Da raiz do repo: `. tests/evals-lib.sh; rm -rf "$S/p5"; copia_plugin "$PWD" "$S/p5"; bash "$S/exp.sh" "$S/p5" hk 1 sonnet`; depois `grep -c 'anuncio-guard:' "$S/hk-1.jsonl"` e `perl "$S/fluxo.pl" "$S/hk-1.jsonl"`
-- [ ] **anotar** — Notas de sessão + commit `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/4): hook roda no plugin eval"`
+- [x] **rodar** — `S` = scratchpad da sessão do debug, que fica em disco: `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\2da9e288-7935-4f47-b511-9b5b845c06f0\scratchpad` (`exp.sh <cópia> <nome> [runs] [modelo]` roda o caso porta numa cópia, imprime os graders e as linhas de classificação/Write, guarda `<nome>-<n>.jsonl` e apaga o `claude-eval-*`; `fluxo.pl <trace>` lista thinking/text/tool_use). Sumiu? Usar o comando do `plugin eval` da T2 sobre a cópia e ler o trace à mão. Da raiz do repo: `. tests/evals-lib.sh; rm -rf "$S/p5"; copia_plugin "$PWD" "$S/p5"; bash "$S/exp.sh" "$S/p5" hk 1 sonnet`; depois `grep -c 'anuncio-guard:' "$S/hk-1.jsonl"` e `perl "$S/fluxo.pl" "$S/hk-1.jsonl"`
+- [x] **anotar** — Notas de sessão + commit `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/4): hook roda no plugin eval"`
 
 ## Tarefa 4: rodada completa do `porta` e calibração
 
