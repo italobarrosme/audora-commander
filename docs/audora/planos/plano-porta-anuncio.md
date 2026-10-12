@@ -227,6 +227,10 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
   retranscrever barras); 10 traces reais, perl e JS iguais: 8 passou,
   `h3-1` e `op-3` reprovou. Asserção além do mapa: `sig 10 narration`
   contém o núcleo real `IJbmFycmF0aW9u`.
+- 2026-10-12 (T11): `GATE: passou` (suíte 199 s, PASS=132) antes do commit;
+  `hk-1` real: linhas 1-54 → 0, 1-53 → 2. Asserção além do mapa: narração
+  com caminho Windows (transcript e nó). README EN/PT quebram a frase nova em
+  2 linhas (o teste usa `flat`).
 
 ---
 
@@ -478,9 +482,9 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
 - **ler**: `hooks/anuncio-guard:1-50`, `tests/test-porta-anuncio.sh:78-156`, `README.md:114-124`, `README.pt-BR.md:114-124`
 - **done quando**: asserções verdes; `bash tests/test-docs.sh` passa; `bash hooks/gate porta-anuncio` → `GATE: passou`; conferência fora da suíte: o hook sobre o `hk-1.jsonl` real (transcript cortado antes da linha 55, Write de nó novo) → `0`; cortado antes da 54 → `2`.
 
-- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha nos `0` da narração (o hook de hoje recusa)
-- [ ] **green** — hook e READMEs; `bash tests/test-porta-anuncio.sh && bash tests/test-docs.sh` passam; conferência no `hk-1`; `bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add hooks/anuncio-guard README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,10): anuncio-guard aceita narracao por sentido com a marca do servidor"`
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha nos `0` da narração (o hook de hoje recusa)
+- [x] **green** — hook e READMEs; `bash tests/test-porta-anuncio.sh && bash tests/test-docs.sh` passam; conferência no `hk-1`; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add hooks/anuncio-guard README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,10): anuncio-guard aceita narracao por sentido com a marca do servidor"`
 
 ## Tarefa 4: rodada completa do `porta` e calibração
 

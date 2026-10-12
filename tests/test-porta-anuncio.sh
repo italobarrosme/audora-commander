@@ -152,6 +152,26 @@ pre "$T" "$P3/docs/audora/memory/novo.md" "$CI"; assert_eq 0 "$code" "porta-anun
 { tr_user 'Quero media'; tr_meta "$A"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 só na skill carregada → 2"
 { tr_user 'demanda 1'; tr_text "$A"; tr_user 'demanda 2'; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 antes da última mensagem do humano → 2"
 tr_user "$A" > "$T"; pre "$T" "$N" "$CI";   assert_eq 2 "$code" "porta-anuncio/10 frase escrita pelo humano → 2"
+# ramo narração (NA, SN, ST da seção /2 /3): resumo do servidor vale por sentido
+tr_narr() { printf '{"parentUuid":"p","type":"assistant","message":{"role":"assistant","content":[{"type":"thinking","thinking":%s,"signature":%s}]}}\n' "$(js "$1")" "$(js "$2")"; }
+{ tr_user 'Quero media'; tr_narr "$NA" "$SN"; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/8 narração → 0"; assert_empty "$out" "porta-anuncio/8 narração calado"
+pre "$(cygpath -w "$T")" "$(cygpath -w "$N")" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 narração, caminho Windows → 0"
+{ tr_user 'Quero media'; tr_narr "$NA" "$(sig 11 narration)"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 narração, 2º alinhamento → 0"
+{ tr_user 'Quero media'; tr_narr "$NA" "$(sig 12 narration)"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 narração, 3º alinhamento → 0"
+{ tr_user 'Quero media'; tr_narr "${NA/MEDIUM/LIGHT}" "$SN"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 narração LIGHT → 0"
+{ tr_user 'Quero media'; tr_narr "${NA/MEDIUM/HOTFIX}" "$SN"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 narração HOTFIX → 0"
+{ tr_user 'Quero media'; tr_narr "$NA" "$SN"; tr_tool Read x; tr_result; tr_meta 'Base directory for this skill: x'; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/8 narração, tool_result e skill não fecham a janela → 0"
+{ tr_user 'Quero media'; tr_narr 'Classifiquei a demanda como MEDIUM: toca vários arquivos. Agora vou registrar o nó.' "$SN"; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 2 "$code" "porta-anuncio/7 narração sem convite → 2"; assert_eq "$MSG" "$out" "porta-anuncio/7 narração sem convite, mensagem"
+{ tr_user 'Quero media'; tr_narr 'Classifiquei a demanda como MEDIUM — me avise.' "$SN"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/7 narração sem discordar → 2"
+{ tr_user 'Quero media'; tr_text "$NA"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/7 frase da narração em texto → 2"
+{ tr_user 'Quero media'; tr_narr "$NA" "$ST"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 thinking com marca thinking → 2"
+{ tr_user 'Quero media'; tr_narr "$NA" '!!!'; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 assinatura ilegível → 2"
+{ tr_user 'Quero media'; tr_narr "$NA" ''; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 assinatura vazia → 2"
+{ tr_user 'Quero media'; tr_thinking "$NA"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 frase da narração em raciocínio (assinatura s) → 2"
+{ tr_user 'demanda 1'; tr_narr "$NA" "$SN"; tr_user 'demanda 2'; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 2 "$code" "porta-anuncio/10 narração antes da última mensagem do humano → 2"
 # /11 — transcript ausente/ilegível ou falha do hook deixa passar
 pre "$SP/nao-existe.jsonl" "$N" "$CI";       assert_eq 0 "$code" "porta-anuncio/11 transcript inexistente → 0"; assert_empty "$out" "porta-anuncio/11 inexistente calado"
 out="$(printf '{"tool_name":"Write","tool_input":{"file_path":"%s","content":"estado: in-progress"}}' "$N" | bash "$ROOT/hooks/anuncio-guard" 2>&1 >/dev/null)"; code=$?
@@ -180,5 +200,7 @@ out="$(TP="$T" FP="$N" CT="$CI" perl -MJSON::PP -e 'print JSON::PP->new->encode(
 assert_eq 2 "$code" "porta-anuncio/7 pelo wrapper run-hook.cmd → 2"; assert_eq "$MSG" "$out" "porta-anuncio/7 mensagem pelo wrapper"
 assert_contains "$(flat README.md)" '`anuncio-guard` hook (PreToolUse)' "porta-anuncio/7 README EN cita o hook"
 assert_contains "$(flat README.pt-BR.md)" 'hook `anuncio-guard` (PreToolUse)' "porta-anuncio/7 README PT cita o hook"
+assert_contains "$(flat README.md)" "in text (or in the server's narration of it)" "porta-anuncio/8 README EN aceita a narração"
+assert_contains "$(flat README.pt-BR.md)" 'em texto (ou na narração que o servidor faz dele)' "porta-anuncio/8 README PT aceita a narração"
 
 report

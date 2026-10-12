@@ -3,13 +3,16 @@
 # Write de nó NOVO em docs/audora/memory/ com estado in-progress ou
 # hotfix-pending-record, em projeto com MEMORY.md em memory-schema: 1, sem
 # "classificada como <CATEGORIA> … porque … me corrija" num bloco de texto do
-# assistente desde a última mensagem do humano → exit 2 + stderr (o modelo
-# anuncia e repete a escrita). Raciocínio, input de ferramenta e skill
+# assistente — ou, por sentido, "classifi… como <CATEGORIA> … me corrija|me
+# avise … discordar" na narração (bloco thinking com block_kind narration na
+# assinatura: resumo que o servidor põe no lugar da prosa entre ferramentas)
+# — desde a última mensagem do humano → exit 2 + stderr (o modelo anuncia e
+# repete a escrita). Raciocínio sem a marca, input de ferramenta e skill
 # carregada não contam; resultado de ferramenta e skill não fecham a janela.
 # Contrato: falha do hook NUNCA quebra o fluxo — na dúvida, exit 0.
 set -uo pipefail
 
-veredito="$(perl -MJSON::PP -0777 -ne '
+veredito="$(perl -MJSON::PP -MMIME::Base64 -0777 -ne '
   my $d = eval { decode_json($_) } or exit 0;
   ref $d eq "HASH" && ($d->{tool_name} // "") eq "Write" or exit 0;
   my $f = $d->{tool_input}{file_path} // ""; $f =~ s{\\}{/}g;
@@ -34,8 +37,13 @@ veredito="$(perl -MJSON::PP -0777 -ne '
     if ($ty eq "assistant") {
       next unless ref $c eq "ARRAY";
       for my $b (@$c) {
-        next unless ref $b eq "HASH" && ($b->{type} // "") eq "text";
-        exit 0 if ($b->{text} // "") =~ /classificada como \**(?:LIGHT|MEDIUM|HIGH|HOTFIX)\b.*?porque.*?me corrija/is;
+        next unless ref $b eq "HASH";
+        my $bt = $b->{type} // "";
+        if ($bt eq "text") {
+          exit 0 if ($b->{text} // "") =~ /classificada como \**(?:LIGHT|MEDIUM|HIGH|HOTFIX)\b.*?porque.*?me corrija/is;
+        } elsif ($bt eq "thinking" && index(decode_base64($b->{signature} // ""), "\x42\x09narration") >= 0) {
+          exit 0 if ($b->{thinking} // "") =~ /classifi(?:c|qu).*?como \**(?:LIGHT|MEDIUM|HIGH|HOTFIX)\b.*?(?:me corrija|me avise).*?discordar/is;
+        }
       }
     } elsif ($ty eq "user") {
       next if $e->{isMeta};
