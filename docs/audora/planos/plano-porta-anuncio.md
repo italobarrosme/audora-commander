@@ -225,6 +225,14 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
   - green: suíte com 300 s deu `TIMEOUT` (sem `FAIL`) em
     `test-skill-cleanup.sh`/`test-evals.sh` com a máquina carregada; sozinhos
     140/181 s verdes; `SUITE_TIMEOUT=600 bash tests/run.sh` → exit 0 (262 s).
+- T5 (2026-10-12): `bash tests/evals.sh --mutar porta-anuncio --runs 3` →
+  `com a regra 3/3 · sem a regra 0/3 · efeito -100 pp`, `custo: US$ 1.0441 ·
+  tokens 1276740`, exit 0 (linhas 40-43 da porta; hook ativo nos 2 braços).
+- T6 (2026-10-12): `bash tests/evals.sh --caso escopo-antes --caso memoria
+  --caso tdd` → `PASSOU · escopo-antes · com 1/1 · US$ 0.1495`, `PASSOU ·
+  memoria · com 1/1 · US$ 0.1777`, `PASSOU · tdd · com 1/1 · US$ 0.1123`,
+  `total: 3 caso(s) · 3 passou · 0 reprovou · 0 erro de infra · 0 não
+  rodado · US$ 0.4395 · tokens 605800`, exit 0. Gasto da demanda ≈ US$ 7,3.
 
 ### Decisões tomadas pela IA
 
@@ -572,6 +580,6 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
 - **ler**: `tests/evals/README.md:8-36`
 - **done quando**: as 3 linhas `PASSOU` e o total acima, coladas nas Notas de sessão.
 
-- [ ] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd; echo "exit=$?"`
-- [ ] **registrar** — saída nas Notas de sessão
-- [ ] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): rodada rapida escopo-antes, memoria e tdd"`
+- [x] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd; echo "exit=$?"`
+- [x] **registrar** — saída nas Notas de sessão
+- [x] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): rodada rapida escopo-antes, memoria e tdd"`
