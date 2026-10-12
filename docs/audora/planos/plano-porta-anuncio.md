@@ -130,6 +130,7 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
   `local $/ = "\n"`.
 - 2026-10-12 (T7): `GATE: passou` (suíte 183 s, `test-porta-anuncio.sh`
   PASS=84) rodado antes do commit.
+- 2026-10-12 (T8): `GATE: passou` (suíte 216 s, PASS=91) antes do commit; leitura do `hooks.json` no teste separa campos por `` (aprendizado do `IFS=$'	'`).
 
 ---
 
@@ -294,9 +295,9 @@ real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
 - **ler**: `hooks/hooks.json:1-36`, `README.md:107-128`, `README.pt-BR.md:107-128`, `tests/test-session-start.sh:1-12`
 - **done quando**: asserções passam; `bash tests/test-docs.sh`, `bash tests/test-session-start.sh` passam; `bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `PreToolUse` e nos READMEs
-- [ ] **green** — `hooks.json` e READMEs; testes acima e gate verdes
-- [ ] **commit** — `git add hooks/hooks.json README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7): registra o hook anuncio-guard e documenta nos READMEs"`
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `PreToolUse` e nos READMEs
+- [x] **green** — `hooks.json` e READMEs; testes acima e gate verdes
+- [x] **commit** — `git add hooks/hooks.json README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7): registra o hook anuncio-guard e documenta nos READMEs"`
 
 ## Tarefa 9: o `plugin eval` roda o hook? (1 run real)
 

@@ -116,7 +116,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   pública/contrato? auth, segurança ou pagamento? efeito irreversível fora
   do repo? Qualquer sim → HIGH; vários arquivos ou lógica nova → MEDIUM; o
   resto → LIGHT. HOTFIX só quando você declara. Anuncia a categoria (você
-  pode corrigir), registra o nó e roteia. Catraca de mão única: sobe a
+  pode corrigir) em texto visível — o hook `anuncio-guard` (PreToolUse)
+  recusa o registro do nó até ele aparecer —, registra o nó e roteia. Catraca de mão única: sobe a
   categoria sozinha no meio do caminho, desce só com a sua aprovação.
   Demanda gigante é quebrada em menores.
 - **O que deixa no disco**: o nó `docs/audora/memory/<id>.md`

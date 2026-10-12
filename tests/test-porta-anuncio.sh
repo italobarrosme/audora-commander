@@ -141,4 +141,16 @@ SECONDS=0; pre "$T" "$N" "$CI"; dur=$SECONDS
 assert_eq 2 "$code" "porta-anuncio/7 transcript de 20001 linhas sem anúncio → 2"
 [ "$dur" -lt 10 ] && ok || ko "porta-anuncio/7 transcript de 20001 linhas em ${dur}s (teto 10)"
 
+# --- /7 — hook registrado no plugin e documentado ---
+reg="$(perl -MJSON::PP -0777 -ne 'my $d = eval { decode_json($_) } or next; my $p = $d->{hooks}{PreToolUse}[0] // {}; print join "\x1f", $p->{matcher} // "", $p->{hooks}[0]{command} // "", $p->{hooks}[0]{shell} // ""' "$ROOT/hooks/hooks.json" 2>/dev/null)"
+IFS=$'\x1f' read -r rm rc rs <<< "$reg"
+assert_eq Write "${rm:-}" "porta-anuncio/7 hooks.json PreToolUse matcher Write"
+assert_contains "${rc:-}" 'run-hook.cmd" anuncio-guard' "porta-anuncio/7 hooks.json PreToolUse comando"
+assert_eq bash "${rs:-}" "porta-anuncio/7 hooks.json PreToolUse shell bash"
+{ tr_user 'Quero media'; tr_text 'Usando audora-commander.'; } > "$T"
+out="$(TP="$T" FP="$N" CT="$CI" perl -MJSON::PP -e 'print JSON::PP->new->encode({tool_name => "Write", tool_input => {file_path => $ENV{FP}, content => $ENV{CT}}, transcript_path => $ENV{TP}})' | bash "$ROOT/hooks/run-hook.cmd" anuncio-guard 2>&1 >/dev/null)"; code=$?
+assert_eq 2 "$code" "porta-anuncio/7 pelo wrapper run-hook.cmd → 2"; assert_eq "$MSG" "$out" "porta-anuncio/7 mensagem pelo wrapper"
+assert_contains "$(flat README.md)" '`anuncio-guard` hook (PreToolUse)' "porta-anuncio/7 README EN cita o hook"
+assert_contains "$(flat README.pt-BR.md)" 'hook `anuncio-guard` (PreToolUse)' "porta-anuncio/7 README PT cita o hook"
+
 report

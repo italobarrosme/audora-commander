@@ -116,7 +116,9 @@ Details per skill: [Skills in detail](#skills-in-detail).
   data or migration? public API/contract? auth, security or payment?
   irreversible effect outside the repo? Any yes → HIGH; several files or new
   logic → MEDIUM; otherwise LIGHT. HOTFIX only when you declare it. Announces
-  the category (you can correct it), registers the node and routes.
+  the category (you can correct it) in visible text — the `anuncio-guard`
+  hook (PreToolUse) refuses the node's registration until it is there —,
+  registers the node and routes.
   One-way ratchet: raises the category on its own mid-way, lowers it only
   with your approval. Oversized demands are split into smaller ones.
 - **What it leaves on disk**: the node `docs/audora/memory/<id>.md`
