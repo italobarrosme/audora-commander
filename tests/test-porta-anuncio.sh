@@ -74,6 +74,34 @@ ev_tool s Skill "{\"skill\":\"audora-commander:scope\",\"args\":\"$A\"}" > "$SP/
 printf '{"type":"assistant","message":{"content":[{"type":"tool_use","id":"w","name":"Write","input":{"file_path":"/w/MEMORY.md","content":"x"}},{"type":"text","text":"%s"}]}}\n' "$A" > "$SP/em.jsonl"; ga reprovou "Write antes no mesmo evento"
 printf '{"type":"assistant","message":{"content":[{"type":"text","text":"%s"},{"type":"tool_use","id":"w","name":"Write","input":{"file_path":"/w/MEMORY.md","content":"x"}}]}}\n' "$A" > "$SP/em.jsonl"; ga passou "texto antes no mesmo evento"
 { for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_text "$A"; } > "$SP/em.jsonl"; ga passou "trace grande"
+# ramo narração: resumo do servidor em bloco thinking, marca block_kind na assinatura
+# sig <k> <tipo> → assinatura base64 (protobuf) com \x42<len><tipo> no byte 3+k
+sig() { K="$1" TIPO="$2" perl -MMIME::Base64 -e 'print encode_base64("\x08\x04\x12" . ("\x01" x $ENV{K}) . "\x42" . chr(length $ENV{TIPO}) . $ENV{TIPO} . "\x12\x0c" . ("z" x 12), "")'; }
+ev_narr() { printf '{"type":"assistant","message":{"content":[{"type":"thinking","thinking":"%s","signature":"%s"}]}}\n' "$1" "$2"; }
+NA='Classifiquei a demanda como MEDIUM: não envolve migração, mas toca vários arquivos e lógica nova — me avise se discordar. Agora vou registrar o nó.'
+SN="$(sig 10 narration)"; ST="$(sig 10 thinking)"
+assert_contains "$SN" 'IJbmFycmF0aW9u' "porta-anuncio/2 sig 10 narration tem o núcleo real"
+ev_narr "$NA" "$SN" > "$SP/em.jsonl"; ga passou "narração com convite"
+ev_narr "$NA" "$(sig 11 narration)" > "$SP/em.jsonl"; ga passou "narração, 2º alinhamento da marca"
+ev_narr "$NA" "$(sig 12 narration)" > "$SP/em.jsonl"; ga passou "narração, 3º alinhamento da marca"
+ev_narr 'Classifico essa demanda como **MEDIUM**, já que há lógica nova. Me corrija se discordar.' "$SN" > "$SP/em.jsonl"; ga passou "narração com me corrija"
+ev_narr 'Classifiquei a demanda como MEDIUM: toca \"x\" e vários arquivos — me avise se discordar. Agora vou registrar o nó.\n\n' "$SN" > "$SP/em.jsonl"; ga passou "narração com escapes JSON"
+ev_narr "$NA" "$ST" > "$SP/em.jsonl"; ga reprovou "thinking com marca thinking"
+ev_narr "$NA" s > "$SP/em.jsonl"; ga reprovou "thinking com assinatura s"
+ev_narr "$NA" '' > "$SP/em.jsonl"; ga reprovou "thinking com assinatura vazia"
+ev_narr 'Classifiquei a demanda como MEDIUM: toca vários arquivos. Agora vou registrar o nó.' "$SN" > "$SP/em.jsonl"; ga reprovou "narração sem convite"
+ev_narr 'Classifiquei a demanda como MEDIUM — me avise.' "$SN" > "$SP/em.jsonl"; ga reprovou "narração sem discordar"
+ev_narr "${NA/MEDIUM/LIGHT}" "$SN" > "$SP/em.jsonl"; ga reprovou "narração LIGHT"
+ev_narr "${NA/MEDIUM/HIGH}" "$SN" > "$SP/em.jsonl"; ga reprovou "narração HIGH"
+ev_narr 'Fica como MEDIUM — me avise se discordar.' "$SN" > "$SP/em.jsonl"; ga reprovou "narração sem classifi…"
+{ ev_narr 'Classifiquei a demanda como MEDIUM.' "$SN"; ev_narr 'Me avise se discordar.' "$SN"; } > "$SP/em.jsonl"; ga reprovou "narração em blocos separados"
+ev_text "$NA" > "$SP/em.jsonl"; ga reprovou "frase da narração em bloco de texto"
+ev_meta "$NA" > "$SP/em.jsonl"; ga reprovou "frase da narração só na skill carregada"
+printf '{"type":"assistant","message":{"content":[{"type":"thinking","signature":"%s","thinking":"%s"}]}}\n' "$SN" "$NA" > "$SP/em.jsonl"; ga reprovou "assinatura antes do texto"
+{ ev_tool w Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; ev_narr "$NA" "$SN"; } > "$SP/em.jsonl"; ga reprovou "Write no nó antes da narração"
+{ ev_tool w Edit "{\"file_path\":\"$WM\",\"old_string\":\"a\",\"new_string\":\"b\"}"; ev_narr "$NA" "$SN"; } > "$SP/em.jsonl"; ga reprovou "Edit no MEMORY antes da narração"
+{ ev_narr "$NA" "$SN"; ev_tool w Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; } > "$SP/em.jsonl"; ga passou "narração antes do Write no nó"
+{ for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_narr "$NA" "$SN"; } > "$SP/em.jsonl"; ga passou "trace grande, narração"
 
 # --- /7–/11 — hook anuncio-guard ---
 # linhas do transcript real do Claude Code (parentUuid antes de type)

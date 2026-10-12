@@ -222,6 +222,11 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
   alinhamento, ilegível = sem marca). Mensagem do hook inalterada: o modelo
   continua mandado a escrever em texto. READMEs trocam "texto visível" por
   texto ou a narração dele.
+- 2026-10-12 (T10): `GATE: passou` (suíte 216 s, `test-porta-anuncio.sh`
+  PASS=113) antes do commit; grader copiado do candidato do plan (sem
+  retranscrever barras); 10 traces reais, perl e JS iguais: 8 passou,
+  `h3-1` e `op-3` reprovou. Asserção além do mapa: `sig 10 narration`
+  contém o núcleo real `IJbmFycmF0aW9u`.
 
 ---
 
@@ -441,9 +446,9 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
 - **ler**: `tests/evals/porta/graders/categoria.md:1-13`, `tests/test-porta-anuncio.sh:36-76`, `tests/evals/README.md:38-45`
 - **done quando**: asserções verdes; `bash tests/test-evals-graders.sh` passa; conferência fora da suíte (se o scratchpad `2da9e288-…` ainda existir): `emula_grader` e `node js-traces.js` (cópia nas Notas) sobre os 10 traces → 8 `passou`, `h3-1` e `op-3` `reprovou`; `bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha nos `passou` da narração (o grader de hoje só tem o ramo texto)
-- [ ] **green** — `categoria.md` com o 2º ramo e descrição; README dos evals; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` passam; conferência nos traces reais; `bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add tests/evals/porta/graders/categoria.md tests/evals/README.md tests/test-porta-anuncio.sh && git commit -m "test(porta-anuncio/2,3): grader categoria aceita narracao por sentido com a marca do servidor"`
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha nos `passou` da narração (o grader de hoje só tem o ramo texto)
+- [x] **green** — `categoria.md` com o 2º ramo e descrição; README dos evals; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` passam; conferência nos traces reais; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add tests/evals/porta/graders/categoria.md tests/evals/README.md tests/test-porta-anuncio.sh && git commit -m "test(porta-anuncio/2,3): grader categoria aceita narracao por sentido com a marca do servidor"`
 
 ## Tarefa 11: hook `anuncio-guard` aceita a narração e READMEs
 
