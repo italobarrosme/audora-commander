@@ -216,6 +216,15 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
     como entrar na fase. Não é regressão do anúncio nem do hook.
   - correção possível muda texto da porta fora do passo 4 (requisito novo)
     ou o critério /4 → decisão humana.
+  - humano escolheu o passo 6 explícito → Tarefa 12 (commit `efc9a2e`).
+- T4 3ª rodada (2026-10-12, depois da T12): `bash tests/evals.sh --completo
+  --caso porta` → `PASSOU · porta · com 3/3 · sem 0/3 · Δ +100 pp · US$
+  0.8232 · tokens 725070`, `total: 1 caso(s) · 1 passou · 0 reprovou · 0
+  erro de infra · 0 não rodado`, exit 0, sem `ISOLAMENTO VIOLADO`. Com taxa
+  de Read ~1/12, 3 runs não provam sozinhos a T12. Gasto da demanda ≈ US$ 5,8.
+  - green: suíte com 300 s deu `TIMEOUT` (sem `FAIL`) em
+    `test-skill-cleanup.sh`/`test-evals.sh` com a máquina carregada; sozinhos
+    140/181 s verdes; `SUITE_TIMEOUT=600 bash tests/run.sh` → exit 0 (262 s).
 
 ### Decisões tomadas pela IA
 
@@ -530,10 +539,10 @@ procura a marca. T10 grader, T11 hook + READMEs; T4–T6 depois.
 - **ler**: `tests/evals/README.md:84-102`
 - **done quando**: saída real `PASSOU · porta · com 3/3 · sem 0/3 · Δ +100 pp · US$ … · tokens …`, exit `0`, sem `ISOLAMENTO VIOLADO`; a saída colada em Notas de sessão; teste verde.
 
-- [ ] **red** — asserção escrita; `bash tests/test-porta-anuncio.sh` falha com `não contém 'REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp)'`
-- [ ] **rodar** — `bash tests/evals.sh --completo --caso porta; echo "exit=$?"` → `PASSOU · porta · com 3/3 · sem 0/3 · Δ +100 pp …` e `exit=0`
-- [ ] **green** — README atualizado; `bash tests/test-porta-anuncio.sh` passa; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
-- [ ] **commit** — `git add tests/evals/README.md tests/test-porta-anuncio.sh docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): rodada completa do porta 3/3 com e 0/3 sem, calibracao"`
+- [x] **red** — asserção escrita; `bash tests/test-porta-anuncio.sh` falha com `não contém 'REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp)'`
+- [x] **rodar** — `bash tests/evals.sh --completo --caso porta; echo "exit=$?"` → `PASSOU · porta · com 3/3 · sem 0/3 · Δ +100 pp …` e `exit=0`
+- [x] **green** — README atualizado; `bash tests/test-porta-anuncio.sh` passa; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
+- [x] **commit** — `git add tests/evals/README.md tests/test-porta-anuncio.sh docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): rodada completa do porta 3/3 com e 0/3 sem, calibracao"`
 
 ## Tarefa 5: mutação da regra `porta-anuncio`
 

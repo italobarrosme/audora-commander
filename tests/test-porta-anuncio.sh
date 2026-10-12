@@ -106,6 +106,11 @@ printf '{"type":"assistant","message":{"content":[{"type":"thinking","signature"
 { ev_narr "$NA" "$SN"; ev_tool w Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; } > "$SP/em.jsonl"; ga passou "narração antes do Write no nó"
 { for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_narr "$NA" "$SN"; } > "$SP/em.jsonl"; ga passou "trace grande, narração"
 
+# --- /4 — calibração do porta registra a rodada completa ---
+cal="$(flat "$EV/README.md" '## Calibração' | grep -o '| porta |[^|]*|[^|]*|[^|]*|')"
+assert_contains "$cal" 'REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp)' "porta-anuncio/4 calibração do porta registra a rodada"
+assert_not_contains "$cal" 'com o plugin também 0/3' "porta-anuncio/4 calibração sem o achado antigo"
+
 # --- /7–/11 — hook anuncio-guard ---
 # linhas do transcript real do Claude Code (parentUuid antes de type)
 js() { T="$1" perl -MJSON::PP -e 'print JSON::PP->new->allow_nonref->encode($ENV{T})'; }

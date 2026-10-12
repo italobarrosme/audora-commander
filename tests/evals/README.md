@@ -90,13 +90,13 @@ tem uma rodada registrada em que REPROVA numa condição sabidamente ruim.
 |---|---|---|---|
 | escopo-antes | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
 | memoria | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
-| porta | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin também 0/3: achado `porta-anuncio`) |
+| porta | braço sem plugin (`--completo`) | 2026-10-12 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
 | tdd | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 2/3: achado `retomada-execute`) |
 
 Achados da 1ª rodada real (2026-10-10, `sonnet`, ~US$ 6 com a depuração):
 - **porta** — com o plugin o modelo classifica MEDIUM e vai para scope, mas
   pula o anúncio "Demanda classificada como … — me corrija se discordar"
-  (5/5 runs). Nó `porta-anuncio`.
+  (5/5 runs). Nó `porta-anuncio`. Resolvido em 2026-10-12 (`porta-anuncio`).
 - **tdd** — em ~1 de 3 runs o modelo não reconhece `execute de dobro` (o
   comando de retomada que o bloco de fechamento manda colar), não invoca skill
   e pergunta o que fazer. Nó `retomada-execute`.
