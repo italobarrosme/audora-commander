@@ -21,7 +21,27 @@ em `docs/audora/memory/`. Antes do grader, 1 run real confirma o formato do
 trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
 `porta`, mutação e rápida dos outros 3 casos.
 
+**Replanejamento (2026-10-12, escopo reaberto /7–/11):** o texto não basta
+(debug: sonnet e opus narram o anúncio no thinking). Novo hook
+`hooks/anuncio-guard` (PreToolUse, matcher `Write`) recusa com exit 2 a
+criação de nó novo `in-progress`/`hotfix-pending-record` quando o transcript,
+desde a última mensagem do humano, não tem o anúncio completo num bloco de
+texto do assistente; qualquer falha → exit 0. Tudo em perl (`JSON::PP`, como
+o `memory-guard`), lendo o transcript do fim para o começo e parando na
+última mensagem do humano. T7 hook + testes, T8 registro + READMEs, T9 1 run
+real confirmando que o `plugin eval` roda o hook; depois T4–T6 como antes.
+
 **Arquivos lidos antes de planejar:**
+- `hooks/hooks.json:1-36` — SessionStart + PostToolUse (Edit|Write: memory-guard, memory-validate) via `"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" <nome>`, `shell: bash`; sem PreToolUse.
+- `hooks/memory-guard:1-47` — padrão: stdin JSON por `perl -MJSON::PP`, `file_path` com `\`→`/`, exit 2 + stderr de 1 linha, "falha do hook NUNCA quebra o fluxo".
+- `hooks/run-hook.cmd:1-44` — wrapper polyglot; Unix: `exec bash hooks/<nome>`; exit do hook atravessa.
+- `.gitattributes:1-6` — `hooks/*` e `tests/*` em LF.
+- `tests/lib.sh:17-21` — `run_hook <hook> <caminho>` só manda `{"tool_name":"Edit","tool_input":{"file_path":…}}` (sem `transcript_path`): o hook novo precisa de helper próprio.
+- `tests/test-memory-guard.sh:1-16` — fixture em `$SP`, asserção de exit e de trecho da mensagem.
+- `tests/test-session-start.sh:1-12` — asserta `memory-guard`/`memory-validate` em `hooks.json`.
+- `tests/test-docs.sh:9-44` (grep) — blocos de código idênticos EN/PT; subseção por skill com 5 rótulos.
+- `README.md:107-128,140-148`, `README.pt-BR.md:107-128,140-150` — porta "Announces the category (you can correct it), registers the node" / "Anuncia a categoria (você pode corrigir), registra o nó"; hooks citados na seção da memory.
+- transcript real desta sessão (`~/.claude/projects/…/2da9e288-….jsonl`, 860 linhas, 2,1 MB): linha = 1 evento JSON; `"type"` NÃO é a 1ª chave (vem `parentUuid` antes) → decodificar, não casar regex; mensagem do humano = `type: user`, sem `isMeta`, conteúdo string ou blocos sem `tool_result` (ex.: `execute de porta-anuncio`, `/clear`); skill carregada = `type: user` + `isMeta: true` ("Base directory for this skill"); resposta do AskUserQuestion = `tool_result`; assistente = `type: assistant`, 1 bloco por linha (`thinking`, `text`, `tool_use`), o `text` gravado antes do `tool_use` da mesma mensagem.
 - `docs/audora/memory/porta-anuncio.md:1-68` — critérios /1–/6, fora-de-escopo, 4 decisões do humano.
 - `skills/audora-commander/SKILL.md:1-96` — passo 4 (40-41) é o anúncio; passo 5 (42-46) registra o nó; bloco de fechamento (82-91) cita a categoria em "Produzido".
 - `tests/evals/mutacoes.tsv:1-7` — regra `porta-anuncio` corta de `4. **Anunciar**:` até `Correção do humano vale na hora.`
@@ -132,9 +152,9 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
 - **ler**: `skills/audora-commander/SKILL.md:21-56`, `tests/test-plano-mapa.sh:1-13`, `tests/evals-lib.sh:400-421`
 - **done quando**: `bash tests/test-porta-anuncio.sh` passa, `bash tests/test-carga.sh` e `bash tests/test-skills.sh` passam, `bash tests/test-evals-graders.sh` passa (âncoras do `mutacoes.tsv`).
 
-- [ ] **red** — `bash tests/test-porta-anuncio.sh` falha com `FAIL: porta-anuncio/1 … não contém 'ANTES do passo 5'` (e as outras frases novas)
-- [ ] **green** — `bash tests/test-porta-anuncio.sh && bash tests/test-carga.sh && bash tests/test-skills.sh && bash tests/test-evals-graders.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
-- [ ] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/1): porta anuncia categoria, porque e convite antes do registro"`
+- [x] **red** — `bash tests/test-porta-anuncio.sh` falha com `FAIL: porta-anuncio/1 … não contém 'ANTES do passo 5'` (e as outras frases novas)
+- [x] **green** — `bash tests/test-porta-anuncio.sh && bash tests/test-carga.sh && bash tests/test-skills.sh && bash tests/test-evals-graders.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
+- [x] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/1): porta anuncia categoria, porque e convite antes do registro"`
 
 ## Tarefa 2: spike do formato do trace real
 
@@ -151,9 +171,9 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
 - **ler**: `tests/evals.sh:88-110`, `tests/evals-lib.sh:105-111` (`limpa_temp_eval`)
 - **done quando**: (a), (b), (c) conferidos e anotados; diretório `claude-eval-*` e saída do spike apagados; `git status --porcelain` igual ao de antes. Forma divergente → replanejar só a Tarefa 3 (gatilho a), ajustando a estrutura da regex e as asserções.
 
-- [ ] **rodar** — da raiz do repo: `~/.local/bin/claude.exe plugin eval . --eval-dir tests/evals --case porta --runs 1 --ablation none --threshold 0 --trust-plugin --scaffold --allow-tools Write Edit --model sonnet --keep-temp --no-publish --max-cost-usd 1 --json "$S/spike.json" --output-dir "$S/out" </dev/null` com `S` = scratchpad da sessão
-- [ ] **inspecionar** — `grep -o '"tracePath":"[^"]*"' "$S/spike.json"`; no trace, `grep -n 'LEI DE FERRO: NA DÚVIDA'`, `grep -n '"type":"text"' | grep '"type":"assistant"' | head -3`, `grep -o '"name":"\(Write\|Edit\)","input":{"[a-z_]*"' | sort -u`
-- [ ] **anotar e limpar** — Notas de sessão atualizadas; `rm -rf` do `claude-eval-*` (2 níveis acima do trace) e de `"$S/out" "$S/spike.json"`
+- [x] **rodar** — da raiz do repo: `~/.local/bin/claude.exe plugin eval . --eval-dir tests/evals --case porta --runs 1 --ablation none --threshold 0 --trust-plugin --scaffold --allow-tools Write Edit --model sonnet --keep-temp --no-publish --max-cost-usd 1 --json "$S/spike.json" --output-dir "$S/out" </dev/null` com `S` = scratchpad da sessão
+- [x] **inspecionar** — `grep -o '"tracePath":"[^"]*"' "$S/spike.json"`; no trace, `grep -n 'LEI DE FERRO: NA DÚVIDA'`, `grep -n '"type":"text"' | grep '"type":"assistant"' | head -3`, `grep -o '"name":"\(Write\|Edit\)","input":{"[a-z_]*"' | sort -u`
+- [x] **anotar e limpar** — Notas de sessão atualizadas; `rm -rf` do `claude-eval-*` (2 níveis acima do trace) e de `"$S/out" "$S/spike.json"`
 
 ## Tarefa 3: grader `categoria` exige anúncio do assistente antes do 1º registro
 
@@ -185,13 +205,111 @@ trace do `claude plugin eval`. Depois, 3 rodadas reais em série: completo do
 - **ler**: `tests/evals/porta/graders/categoria.md:1-9`, `tests/test-evals-graders.sh:163-205`, `tests/evals-lib.sh:183-245`, `tests/evals-testlib.sh:95-97`, `tests/evals/README.md:38-45`
 - **done quando**: as asserções passam, `bash tests/test-evals-graders.sh` passa (sem as linhas 198-202, `arm: both` mantido), `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`; `bash hooks/gate porta-anuncio` sem queda de asserts.
 
-- [ ] **red** — asserções escritas em `tests/test-porta-anuncio.sh`; `bash tests/test-porta-anuncio.sh` falha nos casos `reprovou` de `porque`/`me corrija`, `ev_meta`, Write/Skill e ordem (o grader de hoje passa neles)
-- [ ] **green** — `categoria.md` novo; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
-- [ ] **commit** — `git add tests/evals/porta/graders/categoria.md tests/test-porta-anuncio.sh tests/test-evals-graders.sh tests/evals/README.md && git commit -m "test(porta-anuncio/2,3): grader do anuncio so em texto do assistente e antes do 1o registro"`
+- [x] **red** — asserções escritas em `tests/test-porta-anuncio.sh`; `bash tests/test-porta-anuncio.sh` falha nos casos `reprovou` de `porque`/`me corrija`, `ev_meta`, Write/Skill e ordem (o grader de hoje passa neles)
+- [x] **green** — `categoria.md` novo; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` passam; `bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
+- [x] **commit** — `git add tests/evals/porta/graders/categoria.md tests/test-porta-anuncio.sh tests/test-evals-graders.sh tests/evals/README.md && git commit -m "test(porta-anuncio/2,3): grader do anuncio so em texto do assistente e antes do 1o registro"`
+
+## Tarefa 7: hook `anuncio-guard` recusa o registro sem anúncio
+
+- **depende-de**: [3]
+- **requisito**:
+  - `porta-anuncio/7` — QUANDO o modelo cria (Write) arquivo de nó novo em `docs/audora/memory/` com `estado: in-progress` ou `hotfix-pending-record`, num projeto com `MEMORY.md` em `memory-schema: 1`, e nenhum bloco de texto do assistente desde a última mensagem do humano tem `classificada como <LIGHT|MEDIUM|HIGH|HOTFIX>`, `porque` e `me corrija` O SISTEMA DEVE recusar a escrita (exit 2) com mensagem ao modelo que manda escrever o anúncio em texto ao humano antes de registrar o nó, citando a frase-modelo
+  - `porta-anuncio/8` — QUANDO esse anúncio completo está num bloco de texto do assistente desde a última mensagem do humano O SISTEMA DEVE deixar a criação do nó passar (exit 0, sem saída)
+  - `porta-anuncio/9` — QUANDO a escrita é Edit, Write de nó já existente, de nó com outro estado, fora de `docs/audora/memory/` ou em projeto sem `memory-schema: 1` O SISTEMA DEVE deixar passar sem saída
+  - `porta-anuncio/10` — QUANDO o anúncio está só no raciocínio, em input de ferramenta, em skill carregada ou antes da última mensagem do humano (que não é resultado de ferramenta nem skill) O SISTEMA DEVE recusar como em /7
+  - `porta-anuncio/11` — QUANDO o transcript está ausente ou ilegível, ou o próprio hook falha O SISTEMA DEVE deixar a escrita passar (exit 0)
+- **decisões relevantes**: as 5 da reabertura no nó (alvo, janela, falha deixa passar, frase completa, hook). Mesmo contrato de anúncio do grader `categoria`, mas qualquer categoria. O hook não julga se a categoria está certa. Código executável só em `hooks/` (Constituição); sem jq, perl `JSON::PP`. O hook e o teste vão ao disco pelo Write (barras invertidas).
+- **interfaces**:
+  - produz `hooks/anuncio-guard` (bash + perl; stdin = JSON do PreToolUse `{"tool_name","tool_input":{"file_path","content"},"transcript_path"}`; exit 0 calado ou exit 2 + 1 linha no stderr)
+  - produz, em `tests/test-porta-anuncio.sh`:
+    - `tr_user <texto>`, `tr_meta <texto>`, `tr_result`, `tr_text <texto>`, `tr_thinking <texto>`, `tr_tool <nome> <texto-no-input>` — 1 linha de transcript cada (JSON por `perl -MJSON::PP` com o texto via env; chaves `parentUuid` antes de `type`, como no real)
+    - `pre <transcript> <file_path> <conteúdo> [tool]` → define `code` e `out` (stderr), como o `run_hook` de `tests/lib.sh`
+- **ponto de mudança**: `hooks/anuncio-guard` (novo); `tests/test-porta-anuncio.sh` (seção nova `# --- /7–/11 — hook anuncio-guard ---` antes do `report`)
+- **teste**: `tests/test-porta-anuncio.sh` — caso "porta-anuncio/7–/11 hook anuncio-guard"
+- **asserções**:
+  - Fixture: projeto `$SP/pj` com `MEMORY.md` (1ª linha `memory-schema: 1`) e `docs/audora/memory/`. `N=$SP/pj/docs/audora/memory/novo.md` não existe. `CI` = `---\nid: novo\nestado: in-progress\n---\n`.
+  - `A` = `Demanda classificada como **MEDIUM** porque nenhuma pergunta de risco deu SIM e há lógica nova — me corrija se discordar.`
+  - `MSG` = `anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <respostas às perguntas de risco> — me corrija se discordar." Depois repita esta escrita.`
+  - /7, transcript → `code`, `out`:
+    - `[tr_user 'Quero media', tr_text 'Usando audora-commander para classificar.']` + Write N CI → `2`, `out` = `MSG` exato
+    - idem com `estado: hotfix-pending-record` → `2`
+    - idem com N em forma Windows (`cygpath -w`) → `2`
+    - idem com CI em CRLF → `2`
+    - `[tr_user, tr_text 'Demanda classificada como MEDIUM.']` → `2`
+  - /8, transcript → `code`, `out`:
+    - `[tr_user, tr_text A]` → `0`, `out` vazio
+    - `[tr_user, tr_text` A com LIGHT`]` → `0`; com HOTFIX → `0`
+    - `[tr_user, tr_text A, tr_tool Read x, tr_result, tr_meta 'Base directory for this skill: …']` → `0` (resultado de ferramenta e skill carregada não fecham a janela)
+  - /9, tudo com transcript sem anúncio → `0`, `out` vazio:
+    - tool `Edit` em N
+    - Write em N já existente (criado antes)
+    - Write N com `estado: planned`
+    - Write `$SP/pj/docs/outro.md` com CI
+    - projeto com `MEMORY.md` sem schema na 1ª linha
+    - projeto sem `MEMORY.md`
+  - /10, transcript → `code`:
+    - `[tr_user, tr_thinking A]` → `2`
+    - `[tr_user, tr_tool Skill A]` → `2`
+    - `[tr_user, tr_meta A]` → `2`
+    - `[tr_user 'demanda 1', tr_text A, tr_user 'demanda 2']` → `2`
+    - `[tr_user A]` (o humano escreveu a frase) → `2`
+  - /11, tudo → `0`, `out` vazio:
+    - `transcript_path` inexistente
+    - `transcript_path` ausente do JSON
+    - `transcript_path` = diretório
+    - stdin que não é JSON
+    - transcript com linhas que não são JSON + `[tr_user, tr_text A]` válidas
+  - escala: 20000 linhas `tr_tool Read`/`tr_result` depois de `tr_user` e sem anúncio → `2` em menos de 10 s (`SECONDS`)
+- **ler**: `hooks/memory-guard:1-47`, `tests/lib.sh:1-21`, `tests/test-memory-guard.sh:1-16`
+- **done quando**: as asserções passam; `bash hooks/gate porta-anuncio` → `GATE: passou`.
+
+- [ ] **preparo** — `git checkout -- tests/test-porta-anuncio.sh` (descarta a asserção RED da T4, que a T4 reescreve no passo red dela)
+- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha com `esperado '2', obtido '127'` ou equivalente (hook ausente) nos casos /7 e /10
+- [ ] **green** — `hooks/anuncio-guard`; `bash tests/test-porta-anuncio.sh` passa; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [ ] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,8,9,10,11): hook anuncio-guard recusa registro do no sem anuncio em texto"`
+
+## Tarefa 8: registro do hook e READMEs
+
+- **depende-de**: [7]
+- **requisito**: `porta-anuncio/7` (o hook só vale registrado no plugin)
+- **decisões relevantes**: PreToolUse com matcher `Write` (Edit passa por /9); mesmo formato de entrada dos hooks atuais. READMEs EN/PT com o mesmo conteúdo, sem bloco de código novo (guarda de blocos idênticos).
+- **interfaces**: consome `hooks/anuncio-guard` (T7)
+- **ponto de mudança**:
+  - `hooks/hooks.json:15` — chave `"PreToolUse"` nova, com `matcher: "Write"` e `"command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" anuncio-guard"`, `shell: bash`, `async: false`
+  - `README.md:118-119` — depois de "Announces the category (you can correct it)": `in visible text — the \`anuncio-guard\` hook (PreToolUse) refuses the node's registration until it is there`
+  - `README.pt-BR.md:118-119` — depois de "Anuncia a categoria (você pode corrigir)": `em texto visível — o hook \`anuncio-guard\` (PreToolUse) recusa o registro do nó até ele aparecer`
+- **teste**: `tests/test-porta-anuncio.sh` — caso "porta-anuncio/7 hook registrado"
+- **asserções**:
+  - `perl -MJSON::PP` em `hooks/hooks.json` → JSON válido; `PreToolUse[0].matcher` = `Write`; `PreToolUse[0].hooks[0].command` contém `run-hook.cmd\" anuncio-guard`
+  - pelo wrapper: JSON do 1º caso /7 → `bash hooks/run-hook.cmd anuncio-guard` → exit `2`
+  - `README.md` contém `` `anuncio-guard` hook (PreToolUse) `` e `README.pt-BR.md` contém `` hook `anuncio-guard` (PreToolUse) ``
+- **ler**: `hooks/hooks.json:1-36`, `README.md:107-128`, `README.pt-BR.md:107-128`, `tests/test-session-start.sh:1-12`
+- **done quando**: asserções passam; `bash tests/test-docs.sh`, `bash tests/test-session-start.sh` passam; `bash hooks/gate porta-anuncio` → `GATE: passou`.
+
+- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `PreToolUse` e nos READMEs
+- [ ] **green** — `hooks.json` e READMEs; testes acima e gate verdes
+- [ ] **commit** — `git add hooks/hooks.json README.md README.pt-BR.md tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7): registra o hook anuncio-guard e documenta nos READMEs"`
+
+## Tarefa 9: o `plugin eval` roda o hook? (1 run real)
+
+- **depende-de**: [8]
+- **requisito**: `porta-anuncio/4` (pré-condição: sem o hook no eval, a rodada da T4 não mede nada novo)
+- **decisões relevantes**: 1 run `sonnet`, teto US$ 1, com o `exp.sh`/`fluxo.pl` do scratchpad (os mesmos do debug). Não mexer no repo enquanto roda.
+- **interfaces**: nenhuma
+- **ponto de mudança**: `docs/audora/planos/plano-porta-anuncio.md` — Notas de sessão
+- **teste**: n/a (spike)
+- **asserções**:
+  - no trace há `tool_result` com `anuncio-guard:` (o hook rodou e recusou) OU texto do assistente com o anúncio antes do Write do nó
+  - o grader `categoria` passou nesse run
+- **ler**: n/a
+- **done quando**: resultado anotado. Se o hook não aparece no trace → PARAR e levar ao humano (o eval não carrega hooks de plugin: a prova /4 precisa de outro caminho). Se o hook recusa e o modelo NÃO anuncia depois → debug.
+
+- [ ] **rodar** — `S` = scratchpad da sessão do debug, que fica em disco: `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\2da9e288-7935-4f47-b511-9b5b845c06f0\scratchpad` (`exp.sh <cópia> <nome> [runs] [modelo]` roda o caso porta numa cópia, imprime os graders e as linhas de classificação/Write, guarda `<nome>-<n>.jsonl` e apaga o `claude-eval-*`; `fluxo.pl <trace>` lista thinking/text/tool_use). Sumiu? Usar o comando do `plugin eval` da T2 sobre a cópia e ler o trace à mão. Da raiz do repo: `. tests/evals-lib.sh; rm -rf "$S/p5"; copia_plugin "$PWD" "$S/p5"; bash "$S/exp.sh" "$S/p5" hk 1 sonnet`; depois `grep -c 'anuncio-guard:' "$S/hk-1.jsonl"` e `perl "$S/fluxo.pl" "$S/hk-1.jsonl"`
+- [ ] **anotar** — Notas de sessão + commit `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/4): hook roda no plugin eval"`
 
 ## Tarefa 4: rodada completa do `porta` e calibração
 
-- **depende-de**: [1, 3]
+- **depende-de**: [1, 3, 9]
 - **requisito**: `porta-anuncio/4` — QUANDO `bash tests/evals.sh --completo --caso porta` roda O SISTEMA DEVE aprovar o caso com 3/3 com o plugin e 0/3 sem, e a linha do `porta` na calibração do `tests/evals/README.md` DEVE registrar essa rodada
 - **decisões relevantes**: prova = completo 3/3 com e 0/3 sem (humano, 2026-10-12). Com o plugin < 3/3 → skill debug (texto da porta insuficiente), nunca afrouxar o grader. Nada editado no repo durante a rodada.
 - **interfaces**: produz a linha `| porta | braço sem plugin (\`--completo\`) | <AAAA-MM-DD da rodada> | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |`
