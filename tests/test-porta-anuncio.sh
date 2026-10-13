@@ -109,7 +109,7 @@ printf '{"type":"assistant","message":{"content":[{"type":"thinking","signature"
 
 # --- /4 — calibração do porta registra a rodada completa ---
 cal="$(flat "$EV/README.md" '## Calibração' | grep -o '| porta |[^|]*|[^|]*|[^|]*|')"
-assert_contains "$cal" 'REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp)' "porta-anuncio/4 calibração do porta registra a rodada"
+assert_contains "$cal" 'REPROVOU 0/6 (com o plugin 6/6, Δ +100 pp)' "porta-anuncio/4 calibração do porta registra a rodada"
 assert_not_contains "$cal" 'com o plugin também 0/3' "porta-anuncio/4 calibração sem o achado antigo"
 
 # --- /7–/11 — hook anuncio-guard ---

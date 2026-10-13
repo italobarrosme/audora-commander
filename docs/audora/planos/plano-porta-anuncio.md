@@ -269,6 +269,21 @@ como histórico da 1ª rodada.
   1ª ferramenta chega `text`), modelo não escreve literal. Armadilha:
   `perl -CSD` descarta linha com acento no `decode_json`.
 
+- EXECUTE da 4ª reabertura (2026-10-12): T13 `e40f372`, T14 `5fd7666`, T15
+  `0596403`, T16 `29bb2e0` — cada uma com `GATE: passou` (suíte 175–191 s,
+  `SUITE_TIMEOUT=600`) antes do commit.
+- T17 (2026-10-12): `bash tests/evals.sh --completo --runs 6 --caso porta
+  --traces "$T"` → `PASSOU · porta · com 6/6 · sem 0/6 · Δ +100 pp · US$
+  1.7096 · tokens 1602874`, `total: 1 caso(s) · 1 passou · 0 reprovou · 0
+  erro de infra · 0 não rodado`, exit 0, sem `ISOLAMENTO VIOLADO`; traces em
+  `/tmp/tmp.lrEttflzgB/t17` (6 `porta-com-*`, 6 `porta-sem-*`).
+  - nos 6 com o plugin: 0 recusa do `anuncio-guard`; anúncio em narração em
+    5/6 ("Classifiquei/Classifico a demanda como MEDIUM, já que … — me avise
+    se discordar") e em texto em 1/6 ("Demanda classificada como MEDIUM
+    porque … Me corrija se discordar.", ~165 chars, acima do teto). O teto
+    não tirou o anúncio da narração; o ramo narração do grader e do hook é o
+    que segura o fluxo.
+
 ### Decisões tomadas pela IA
 
 - 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
@@ -644,9 +659,9 @@ como histórico da 1ª rodada.
 - **ler**: `skills/audora-commander/SKILL.md:38-46`, `tests/test-porta-anuncio.sh:18-37`, `tests/test-carga.sh:1-15`
 - **done quando**: asserções verdes; `bash tests/test-carga.sh`, `bash tests/test-leitura-por-secao.sh`, `bash tests/test-parada-revisao.sh` verdes; `bash hooks/gate porta-anuncio` → `GATE: passou` antes do commit.
 
-- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `<motivo curto>` e `em até 150 caracteres`
-- [ ] **green** — passo 4, nota de carga e guardas; os 4 testes acima verdes; `bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh tests/test-carga.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh && git commit -m "feat(porta-anuncio/1): anuncio da porta em ate 150 caracteres com motivo curto"`
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `<motivo curto>` e `em até 150 caracteres`
+- [x] **green** — passo 4, nota de carga e guardas; os 4 testes acima verdes; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh tests/test-carga.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh && git commit -m "feat(porta-anuncio/1): anuncio da porta em ate 150 caracteres com motivo curto"`
 
 ## Tarefa 14: mensagem do `anuncio-guard` cita o teto; anúncio longo em texto passa
 
@@ -667,9 +682,9 @@ como histórico da 1ª rodada.
 - **ler**: `hooks/anuncio-guard:52-58`, `tests/test-porta-anuncio.sh:126-146,200-212`
 - **done quando**: asserções verdes; `bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — `MSG` novo e asserções /12; `bash tests/test-porta-anuncio.sh` falha nos 3 `assert_eq "$MSG"` (mensagem antiga)
-- [ ] **green** — linha 57 do hook; teste verde; `bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,12): anuncio-guard pede o anuncio em ate 150 caracteres"`
+- [x] **red** — `MSG` novo e asserções /12; `bash tests/test-porta-anuncio.sh` falha nos 3 `assert_eq "$MSG"` (mensagem antiga)
+- [x] **green** — linha 57 do hook; teste verde; `bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,12): anuncio-guard pede o anuncio em ate 150 caracteres"`
 
 ## Tarefa 15: `--runs` vale com `--completo`
 
@@ -688,9 +703,9 @@ como histórico da 1ª rodada.
 - **ler**: `tests/evals.sh:1-40,228-240`, `tests/test-evals.sh:1-30,176-206`, `tests/test-evals-harness.sh:1-20,94-99`
 - **done quando**: asserções verdes; `bash tests/test-evals.sh && bash tests/test-evals-harness.sh && bash tests/test-evals-graders.sh` verdes; `bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — asserções escritas; os 2 testes falham (`--completo --runs 6` sai 4 hoje)
-- [ ] **green** — `evals.sh` e README; testes verdes; gate
-- [ ] **commit** — `git add tests/evals.sh tests/evals/README.md tests/test-evals.sh tests/test-evals-harness.sh && git commit -m "feat(porta-anuncio/13): evals --completo aceita --runs"`
+- [x] **red** — asserções escritas; os 2 testes falham (`--completo --runs 6` sai 4 hoje)
+- [x] **green** — `evals.sh` e README; testes verdes; gate
+- [x] **commit** — `git add tests/evals.sh tests/evals/README.md tests/test-evals.sh tests/test-evals-harness.sh && git commit -m "feat(porta-anuncio/13): evals --completo aceita --runs"`
 
 ## Tarefa 16: `--traces <dir>` guarda o trace de cada run
 
@@ -712,9 +727,9 @@ como histórico da 1ª rodada.
 - **ler**: `tests/evals.sh:88-150`, `tests/evals-lib.sh:100-111,302-330`, `tests/evals-testlib.sh:13-50,81-93`
 - **done quando**: asserções verdes; os 3 testes de evals verdes; `bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — asserções escritas; falham (`--traces` é opção desconhecida, sai 4)
-- [ ] **green** — lib, orquestrador e README; testes verdes; gate
-- [ ] **commit** — `git add tests/evals.sh tests/evals-lib.sh tests/evals/README.md tests/test-evals.sh tests/test-evals-harness.sh && git commit -m "feat(porta-anuncio/6): evals --traces guarda o trace de cada run"`
+- [x] **red** — asserções escritas; falham (`--traces` é opção desconhecida, sai 4)
+- [x] **green** — lib, orquestrador e README; testes verdes; gate
+- [x] **commit** — `git add tests/evals.sh tests/evals-lib.sh tests/evals/README.md tests/test-evals.sh tests/test-evals-harness.sh && git commit -m "feat(porta-anuncio/6): evals --traces guarda o trace de cada run"`
 
 ## Tarefa 17: rodada completa do `porta` com 6 runs e calibração
 
@@ -728,10 +743,10 @@ como histórico da 1ª rodada.
 - **ler**: `tests/evals/README.md:84-102`
 - **done quando**: saída real `PASSOU · porta · com 6/6 · sem 0/6 · Δ +100 pp · …`, `exit=0`, sem `ISOLAMENTO VIOLADO`; saída nas Notas de sessão; teste verde.
 
-- [ ] **red** — asserção nova; `bash tests/test-porta-anuncio.sh` falha
-- [ ] **rodar** — `T="$(mktemp -d)/t17"; bash tests/evals.sh --completo --runs 6 --caso porta --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **green** — README; teste verde; `SUITE_TIMEOUT=600 bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
-- [ ] **commit** — `git add tests/evals/README.md tests/test-porta-anuncio.sh docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): rodada completa do porta 6/6 com e 0/6 sem, calibracao"`
+- [x] **red** — asserção nova; `bash tests/test-porta-anuncio.sh` falha
+- [x] **rodar** — `T="$(mktemp -d)/t17"; bash tests/evals.sh --completo --runs 6 --caso porta --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **green** — README; teste verde; `SUITE_TIMEOUT=600 bash tests/run.sh > /dev/null 2>&1; echo $?` → `0`
+- [x] **commit** — `git add tests/evals/README.md tests/test-porta-anuncio.sh docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): rodada completa do porta 6/6 com e 0/6 sem, calibracao"`
 
 ## Tarefa 18: mutação da regra `porta-anuncio` (2ª medição)
 
