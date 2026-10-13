@@ -128,7 +128,7 @@ pre() {
 PJ="$SP/pj"; mkdir -p "$PJ/docs/audora/memory"; printf 'memory-schema: 1\n# MEMORY\n' > "$PJ/MEMORY.md"
 N="$PJ/docs/audora/memory/novo.md"; T="$SP/tr.jsonl"
 CI=$'---\nid: novo\nestado: in-progress\n---\n'
-MSG='anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <respostas às perguntas de risco> — me corrija se discordar." Depois repita esta escrita.'
+MSG='anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), em até 150 caracteres, o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <motivo curto> — me corrija se discordar." Depois repita esta escrita.'
 SEM="$(tr_user 'Quero media'; tr_text 'Usando audora-commander para classificar.')"
 printf '%s\n' "$SEM" > "$T"
 pre "$T" "$N" "$CI";                         assert_eq 2 "$code" "porta-anuncio/7 nó novo in-progress sem anúncio → 2"; assert_eq "$MSG" "$out" "porta-anuncio/7 mensagem"
@@ -145,6 +145,12 @@ pre "$(cygpath -w "$T")" "$(cygpath -w "$N")" "$CI"; assert_eq 0 "$code" "porta-
 { tr_user 'Quero media'; tr_text "${A/MEDIUM/HOTFIX}"; } > "$T"; pre "$T" "$N" "$CI"; assert_eq 0 "$code" "porta-anuncio/8 HOTFIX → 0"
 { tr_user 'Quero media'; tr_text "$A"; tr_tool Read x; tr_result; tr_meta 'Base directory for this skill: x'; } > "$T"
 pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/8 tool_result e skill não fecham a janela → 0"
+# /12 — anúncio em texto acima do teto passa: o hook não mede
+AL='Demanda classificada como MEDIUM porque nenhuma pergunta de risco deu SIM: não há migração nem dado persistido, nenhum contrato existente muda e não toca auth — me corrija se discordar.'
+nl="$(perl -CSA -e 'print length $ARGV[0]' "$AL")"
+[ "$nl" -gt 150 ] && ok || ko "porta-anuncio/12 anúncio de teste passa do teto ($nl)"
+{ tr_user 'Quero media'; tr_text "$AL"; } > "$T"
+pre "$T" "$N" "$CI";                         assert_eq 0 "$code" "porta-anuncio/12 anúncio longo → 0"; assert_empty "$out" "porta-anuncio/12 calado"
 # /9 — fora do alvo passa calado (transcript sem anúncio)
 printf '%s\n' "$SEM" > "$T"
 pre "$T" "$N" "$CI" Edit;                    assert_eq 0 "$code" "porta-anuncio/9 Edit → 0"; assert_empty "$out" "porta-anuncio/9 Edit calado"
