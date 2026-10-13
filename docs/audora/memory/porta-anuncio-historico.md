@@ -91,3 +91,17 @@ narração em ~98%):
 
 ## e2e (2ª rodada)
 2026-10-13 (2ª): /1 (1/9 ≤ 150) e /4 (5/6) falharam: `docs/audora/e2e/e2e-porta-anuncio.md`.
+
+## medição /5 e e2e (3ª rodada, 5ª reabertura)
+- 2026-10-13 (T24): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 3/3 · sem efeito
+  (US$ 0.9705; o hook recupera o anúncio sem o passo 4).
+- 2026-10-13 (e2e 3ª): mesma mutação → 3/3 · 1/3 · −67 pp (US$ 0.9519). /1 falhou
+  (motivo único 1/9); demais passaram: `docs/audora/e2e/e2e-porta-anuncio.md`.
+
+## movido no scope da 6ª reabertura (2026-10-13)
+- decisões da 5ª (humano; descartada entre parênteses): motivo único + ≤ 200
+  (≤ 150: falha de novo; só ≤ 200: 5/9 fora; sem número: não testável); grader
+  ignora Write recusado (estrito: recuperação pelo hook sempre reprova); convite
+  da narração inalterado (aceitar `avise` sem `me`).
+- delta da 5ª: MODIFICADO /1 ≤ 150 → ≤ 200 e motivo único; /7 mensagem cita
+  motivo único e 200; /12 200 ou enumera. ADICIONADO: /14.

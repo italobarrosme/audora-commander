@@ -22,9 +22,9 @@ sentido, anúncio curto com motivo único (≤ 200), Write recusado não conta.
 
 - **porta-anuncio/1** — QUANDO a porta de entrada classifica uma demanda O
   SISTEMA DEVE escrever ao humano, antes de registrar o nó, uma frase própria
-  de até 200 caracteres `Demanda classificada como <CATEGORIA> porque <motivo>
-  — me corrija se discordar`, com um motivo só — o que decidiu a categoria —,
-  sem enumerar as respostas às perguntas de risco
+  com a categoria, o motivo e o convite à correção (`Demanda classificada como
+  <CATEGORIA> porque <motivo> — me corrija se discordar`, em texto ou narração);
+  motivo único e teto de 200 caracteres são orientação, não critério
 - **porta-anuncio/2** — QUANDO o caso `porta` roda O SISTEMA DEVE reprovar se
   nenhum bloco do assistente tiver o anúncio MEDIUM — em texto: `classificada
   como MEDIUM`, `porque` e `me corrija`; em narração: `classific…` seguido de
@@ -84,17 +84,17 @@ regras de categoria; afrouxar qualquer grader (exceto ramo narração, 3ª, e
 Write recusado, 5ª); aceitar `avise` sem `me` no convite da narração; anúncio
 em outras fases; retomada por comando (`retomada-execute`); juiz LLM no
 grader; hook julgar a categoria ou medir o anúncio; mutação que desligue o
-hook (a /5 mede o passo 4); garantir que o humano veja a narração (harness).
+hook (a /5 mede o passo 4); garantir que o humano veja a narração (harness);
+impor motivo único ou tamanho do anúncio (6ª: só orientação).
 
 ## decisoes
-1º escopo, reaberturas 1-4, medição /5, deltas e feedbacks: histórico.
-5ª (2026-10-13, humano; descartada entre parênteses): motivo único + ≤ 200
-(≤ 150: falha de novo; só ≤ 200: 5/9 fora; sem número: não testável); grader
-ignora Write recusado (estrito: recuperação pelo hook sempre reprova); convite
-da narração inalterado (aceitar `avise` sem `me`).
-- 2026-10-13 (medição, porta-anuncio/5, 5ª reabertura): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 3/3 · sem efeito
-  (US$ 0.9705; o hook recupera o anúncio sem o passo 4); manter ou cortar a regra é decisão do humano.
+1º escopo, reaberturas 1-5, medição /5, deltas e feedbacks: histórico.
+6ª (2026-10-13, humano): /1 sem motivo único nem teto, orientação mantida no passo 4 e no hook
+(tirar: replano e rodada paga; hook medir o motivo: falso bloqueio; reescrever: 0–1/9 em 3).
+- 2026-10-13 (medição /5, 5ª): `--mutar porta-anuncio --runs 3` → T24 3/3 · 3/3; e2e 3ª 3/3 · 1/3, −67 pp (histórico); manter ou cortar a regra é decisão do humano.
+
+## feedback-reprovacao
+2026-10-13 (validate, escopo): /1 motivo único 1/9, 3ª rodada; /2–/14 ok (e2e 3ª) → 6ª.
 
 ## delta
-- MODIFICADO (5ª, 2026-10-13): /1 ≤ 150 → ≤ 200 e motivo único; /7 mensagem
-  cita motivo único e 200; /12 200 ou enumera. ADICIONADO: /14
+- MODIFICADO (6ª, 2026-10-13): /1 ≤ 200 e motivo único → categoria, motivo e convite; 5ª: histórico.
