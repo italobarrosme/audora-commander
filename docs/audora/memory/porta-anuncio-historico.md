@@ -88,3 +88,6 @@ narração em ~98%):
   em 1/9 — o motivo lista as respostas de risco; >~200 vira narração. /4 5/6:
   o grader conta o Write recusado pelo hook como 1ª escrita (recusa → texto →
   nó reprova). Resposta: 5ª reabertura.
+
+## e2e (2ª rodada)
+2026-10-13 (2ª): /1 (1/9 ≤ 150) e /4 (5/6) falharam: `docs/audora/e2e/e2e-porta-anuncio.md`.

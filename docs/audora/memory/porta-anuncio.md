@@ -92,9 +92,9 @@ hook (a /5 mede o passo 4); garantir que o humano veja a narração (harness).
 (≤ 150: falha de novo; só ≤ 200: 5/9 fora; sem número: não testável); grader
 ignora Write recusado (estrito: recuperação pelo hook sempre reprova); convite
 da narração inalterado (aceitar `avise` sem `me`).
+- 2026-10-13 (medição, porta-anuncio/5, 5ª reabertura): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 3/3 · sem efeito
+  (US$ 0.9705; o hook recupera o anúncio sem o passo 4); manter ou cortar a regra é decisão do humano.
 
 ## delta
 - MODIFICADO (5ª, 2026-10-13): /1 ≤ 150 → ≤ 200 e motivo único; /7 mensagem
   cita motivo único e 200; /12 200 ou enumera. ADICIONADO: /14
-## e2e
-2026-10-13 (2ª): /1 (1/9 ≤ 150) e /4 (5/6) falharam: `docs/audora/e2e/e2e-porta-anuncio.md`.
