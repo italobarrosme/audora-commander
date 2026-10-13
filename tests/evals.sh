@@ -2,7 +2,7 @@
 # Evals de comportamento do plugin. MANUAL e PAGO — fica fora do tests/run.sh.
 # Uso: bash tests/evals.sh [--completo [--runs <n>]] [--caso <nome>]... [--teto <usd>] [--modelo <m>]
 #                          [--mutar <regra-id> [--runs <n>]]   (--runs: runs por braço no --completo ou na mutação)
-#                          [--claude <bin>] [--raiz <dir>] [--timeout-run <s>]
+#                          [--traces <dir>] [--claude <bin>] [--raiz <dir>] [--timeout-run <s>]
 # Exit: 0 tudo passou · 1 reprovou · 2 teto · 3 erro de infra/recusado/isolamento · 4 uso.
 set -uo pipefail
 . "$(dirname "$0")/evals-lib.sh"
@@ -10,11 +10,11 @@ set -uo pipefail
 uso() { echo "evals: $1" >&2; exit 4; }
 
 completo=0; pedidos=(); teto=10; modelo=sonnet; mutar=""; runs=""
-claude=""; raiz=""; timeout_run=900
+claude=""; raiz=""; timeout_run=900; traces=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --completo) completo=1; shift; continue ;;
-    --caso|--teto|--modelo|--mutar|--runs|--claude|--raiz|--timeout-run)
+    --caso|--teto|--modelo|--mutar|--runs|--traces|--claude|--raiz|--timeout-run)
       [ $# -ge 2 ] || uso "$1 sem valor" ;;
     *) uso "opção desconhecida: $1" ;;
   esac
@@ -24,6 +24,7 @@ while [ $# -gt 0 ]; do
     --modelo) modelo="$2" ;;
     --mutar) mutar="$2" ;;
     --runs) runs="$2" ;;
+    --traces) traces="$2" ;;
     --claude) claude="$2" ;;
     --raiz) raiz="$2" ;;
     --timeout-run) timeout_run="$2" ;;
@@ -36,6 +37,10 @@ done
 [ -z "$runs" ] || [ -n "$mutar" ] || [ "$completo" -eq 1 ] || uso "--runs só vale com --mutar ou --completo"
 [ -z "$runs" ] || [[ "$runs" =~ ^[1-9][0-9]*$ ]] || uso "--runs inválido ('$runs')"
 [[ "$timeout_run" =~ ^[1-9][0-9]*$ ]] || uso "--timeout-run inválido ('$timeout_run')"
+if [ -n "$traces" ]; then
+  mkdir -p "$traces" 2>/dev/null || uso "--traces inválido ('$traces')"
+  TRACES="$(cd "$traces" && pwd)"
+fi
 [ -n "$raiz" ] || raiz="$(cd "$(dirname "$0")/.." && pwd)"
 [ -d "$raiz" ] || uso "--raiz inexistente ('$raiz')"
 
@@ -102,7 +107,7 @@ roda_plugin_eval() {
     pr="$(motivo_parcial "$tmp/r.json")"
     ps="$(plugins_suite "$tmp/r.json")"
     [ "$ps" = "$PLUGIN" ] || printf -- '-\trecusado\t0\t0\tplugins carregados %s\n' "${ps:-(nenhum)}"
-    registros_plugin_eval "$tmp/r.json"
+    registros_plugin_eval "$tmp/r.json" "$caso"
     case "$pr" in
       "") [ "$rc" -eq 0 ] || printf -- '-\tinfra\t0\t0\tplugin eval saiu %s: %s\n' "$rc" "$linha" ;;
       auth_failed) printf -- '-\tinfra\t0\t0\tsem autenticação\n' ;;
@@ -146,6 +151,7 @@ roda_harness() {
   ) </dev/null >"$ws/stream.jsonl" 2>"$ws/err"
   rc=$?
   analisa_stream "$ws/stream.jsonl" "$b" "$rc" "$timeout_run"
+  guarda_trace "$ws/stream.jsonl" "$caso" "$b"
   rm -rf "$ws"
 }
 

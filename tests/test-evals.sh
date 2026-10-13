@@ -220,6 +220,25 @@ assert_eq 0 "$code" "porta-anuncio/13 --completo --runs 6 sai 0"
 assert_contains "$(grep '^plugin eval' "$SP/stub.log")" "--runs 6 --ablation with-without" "porta-anuncio/13 invoca 6 runs com e sem"
 assert_contains "$out" "PASSOU · porta · com 6/6 · sem 0/6 · Δ +100 pp · US\$ 1.2000 · tokens 120" "porta-anuncio/13 taxa com 6 runs por braço"
 
+# --- porta-anuncio/6: --traces <dir> guarda o trace de cada run antes da limpeza ---
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 0 0 0)"
+out="$(roda_evals --completo --traces "$SP/trp" 2>/dev/null)"; code=$?
+assert_eq 0 "$code" "porta-anuncio/6 --traces sai 0"
+assert_eq 3 "$(ls "$SP/trp"/porta-com-*.jsonl 2>/dev/null | wc -l)" "porta-anuncio/6 --traces guarda os 3 traces com o plugin"
+assert_eq 3 "$(ls "$SP/trp"/porta-sem-*.jsonl 2>/dev/null | wc -l)" "porta-anuncio/6 --traces guarda os 3 traces sem o plugin"
+assert_eq 0 "$(ls -d "$SP"/claude-eval-* 2>/dev/null | wc -l)" "porta-anuncio/6 --traces não impede a limpeza do temporário"
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 0 0 0)"
+roda_evals --completo >/dev/null 2>&1
+assert_no_file "$SP/trp2" "porta-anuncio/6 sem --traces nada é guardado"
+assert_eq 0 "$(ls -d "$SP"/claude-eval-* 2>/dev/null | wc -l)" "porta-anuncio/6 sem --traces o temporário é apagado"
+: > "$SP/arq"
+err="$(roda_evals --traces "$SP/arq/sub" 2>&1 >/dev/null)"; code=$?
+assert_eq 4 "$code" "porta-anuncio/6 --traces em caminho impossível sai 4"
+assert_contains "$err" "evals: --traces inválido ('$SP/arq/sub')" "porta-anuncio/6 --traces em caminho impossível explica"
+err="$(roda_evals --traces 2>&1 >/dev/null)"; code=$?
+assert_eq 4 "$code" "porta-anuncio/6 --traces sem valor sai 4"
+assert_contains "$err" "evals: --traces sem valor" "porta-anuncio/6 --traces sem valor explica"
+
 reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 1 T 0)"
 out="$(roda_evals --completo 2>/dev/null)"; code=$?
 assert_eq 3 "$code" "evals-comportamento/2 infra no braço sem sai 3"

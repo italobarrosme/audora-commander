@@ -105,6 +105,12 @@ assert_eq 2 "$(grep '^-p ' "$SP/stub.log" | grep -c -- '--plugin-dir')" "porta-a
 assert_contains "$out" "PASSOU · tdd · com 2/2 · sem 2/2 · Δ +0 pp · US\$ 1.2000 · tokens 40" "porta-anuncio/13 harness completo --runs 2: taxa"
 
 reseta_hs
+out="$(roda_evals --traces "$SP/trh" 2>/dev/null)"; code=$?
+th="$(ls "$SP/trh"/tdd-com-*.jsonl 2>/dev/null)"
+assert_eq 1 "$(printf '%s' "$th" | grep -c .)" "porta-anuncio/6 --traces guarda o trace do run harness"
+assert_contains "$(cat "$th" 2>/dev/null)" '"subtype":"init"' "porta-anuncio/6 trace harness guardado é o stream do run"
+
+reseta_hs
 out="$(roda_evals --teto 0.5 --completo 2>/dev/null)"; code=$?
 assert_eq 2 "$code" "evals-comportamento/8 harness para no teto entre runs"
 assert_eq 2 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/8 harness: nenhum run depois do teto"

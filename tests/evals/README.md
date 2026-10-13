@@ -23,6 +23,7 @@ bash tests/evals.sh --mutar execute-apague [--runs 3]   # mutação de uma regra
 | `--mutar <regra>` | — | roda o caso da regra com a skill original e com uma cópia sem a regra |
 | `--runs <n>` | `3` | runs por braço na mutação ou no `--completo` (só com `--mutar` ou `--completo`) |
 | `--timeout-run <s>` | `900` | limite por run do caso harness (`tdd`) |
+| `--traces <dir>` | — | guarda o trace de cada run em `<dir>` (`<caso>-<braço>-*.jsonl`); use um diretório fora do repo |
 | `--claude <bin>` / `--raiz <dir>` | PATH / repo | ganchos de teste (o `tests/test-evals.sh` usa um claude falso) |
 
 Pré-requisitos: Claude Code ≥ 2.1.269 (`claude` no PATH ou em

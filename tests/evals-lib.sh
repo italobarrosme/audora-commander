@@ -102,6 +102,16 @@ motivo_parcial() {
     print $d->{partialReason} // "desconhecido" if $d->{partial};' "$1" 2>/dev/null
 }
 
+# TRACES — diretório onde guardar o trace de cada run (--traces); vazio = não guarda
+TRACES=""
+# guarda_trace <origem> <caso> <braço> — copia o trace para $TRACES antes da
+# limpeza (<caso>-<braço>-XXXXXX.jsonl); sem TRACES ou sem origem, nada
+guarda_trace() {
+  [ -n "$TRACES" ] && [ -f "$1" ] || return 0
+  cp "$1" "$(mktemp --suffix=.jsonl "$TRACES/$2-$3-XXXXXX")" 2>/dev/null
+  return 0
+}
+
 # limpa_temp_eval <tracePath> — apaga o diretório 2 níveis acima do trace só se
 # ele é um claude-eval-* (o --keep-temp o deixa para trás no Windows)
 limpa_temp_eval() {
@@ -300,8 +310,9 @@ confere_git() {
   return 1
 }
 
-# registros_plugin_eval <json> — registros de run a partir do JSON do host
-# (lê os tokens do trace, confere o isolamento e apaga o temporário de cada run)
+# registros_plugin_eval <json> [caso] — registros de run a partir do JSON do host
+# (lê os tokens do trace, confere o isolamento, guarda o trace se --traces e
+# apaga o temporário de cada run)
 registros_plugin_eval() {
   local l braco score erro custo tr mot t tok cls iso
   # TAB é whitespace de IFS (campos vazios se fundiriam): separa por \x1f
@@ -324,6 +335,7 @@ registros_plugin_eval() {
       [ -n "$mot" ] || mot="score $score"
       printf '%s\treprovou\t%s\t%s\t%s\n' "$braco" "$custo" "$tok" "$mot"
     fi
+    guarda_trace "$t" "${2:-caso}" "$braco"
     limpa_temp_eval "$tr"
   done < <(le_resultado "$1")
 }
