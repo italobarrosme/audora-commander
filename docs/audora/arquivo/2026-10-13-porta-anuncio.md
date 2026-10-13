@@ -1,9 +1,9 @@
 ---
 id: porta-anuncio
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/aprendizados.md, docs/audora/e2e/e2e-porta-anuncio.md, docs/audora/planos/arquivo/plano-porta-anuncio.md, hooks/anuncio-guard, hooks/hooks.json, skills/audora-commander/SKILL.md, tests/evals-lib.sh, tests/evals.sh, tests/evals/README.md, tests/evals/porta/graders/categoria.md, tests/test-carga.sh, tests/test-evals-graders.sh, tests/test-evals-harness.sh, tests/test-evals.sh, tests/test-leitura-por-secao.sh, tests/test-parada-revisao.sh, tests/test-porta-anuncio.sh]
 keywords: [porta, anuncio, categoria, eval]
 resumo: Porta de entrada sempre anuncia a categoria com o porquê e o convite à correção, provado pelo eval porta.
 atualizado-em: 2026-10-13
@@ -88,7 +88,7 @@ hook (a /5 mede o passo 4); garantir que o humano veja a narração (harness);
 impor motivo único ou tamanho do anúncio (6ª: só orientação).
 
 ## decisoes
-1º escopo, reaberturas 1-5, medição /5, deltas e feedbacks: histórico.
+1º escopo, reaberturas 1-5, medição /5, deltas e feedbacks: [histórico](2026-10-13-porta-anuncio-historico.md).
 6ª (2026-10-13, humano): /1 sem motivo único nem teto, orientação mantida no passo 4 e no hook
 (tirar: replano e rodada paga; hook medir o motivo: falso bloqueio; reescrever: 0–1/9 em 3).
 - 2026-10-13 (medição /5, 5ª): `--mutar porta-anuncio --runs 3` → T24 3/3 · 3/3; e2e 3ª 3/3 · 1/3, −67 pp (histórico); manter ou cortar a regra é decisão do humano.
@@ -97,4 +97,6 @@ impor motivo único ou tamanho do anúncio (6ª: só orientação).
 2026-10-13 (validate, escopo): /1 motivo único 1/9, 3ª rodada; /2–/14 ok (e2e 3ª) → 6ª.
 
 ## delta
-- MODIFICADO (6ª, 2026-10-13): /1 ≤ 200 e motivo único → categoria, motivo e convite; 5ª: histórico.
+
+## e2e
+2026-10-13 (3ª): 14/14 com o /1 da 6ª — [e2e-porta-anuncio.md](../e2e/e2e-porta-anuncio.md) (rodada real, ≈ US$ 3,1).

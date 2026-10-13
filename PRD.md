@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-11
+> Última atualização: 2026-10-13
 
 ## O que é e para que serve
 
@@ -26,7 +26,7 @@ Code.
   desliga) e imprime em blocos na ordem do glob, com o tempo no resumo.
 - Evals de comportamento (manuais, pagos, fora do `run.sh`): `bash tests/evals.sh`
   roda 4 casos com o `claude` real em fixture isolada, teto de custo, modo
-  completo com/sem plugin e mutação de regra; casos em `tests/evals/`.
+  completo com/sem plugin (`--runs`), mutação e `--traces`; em `tests/evals/`.
 - Localização de código pela busca do símbolo do harness, com leitura por
   trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
@@ -38,8 +38,9 @@ Code.
 (`cleanup`):
 
 - `audora-commander` — porta de entrada: classifica demanda (LIGHT / MEDIUM /
-  HIGH / HOTFIX) por perguntas binárias de risco e roteia pelas fases.
-  Projeto sem `MEMORY.md` → oferece bootstrap.
+  HIGH / HOTFIX) por perguntas binárias de risco, anuncia a categoria com
+  motivo e convite à correção antes de registrar o nó e roteia pelas fases
+  (1ª fase pela ferramenta Skill). Sem `MEMORY.md` → oferece bootstrap.
 - `memory` — dona do MEMORY (memória externa do produto, `memory-schema: 1`):
   `MEMORY.md` é índice mestre (Propósito, Constituição, ponteiro de
   Aprendizados, linha rica por nó); corpo de cada nó em
@@ -163,17 +164,17 @@ EN no índice E no frontmatter de cada nó, nó sem `estado:`, e — só na
 escrita do índice — arquivo de nó sem linha e estado índice ≠ nó: arquivo
 do nó primeiro, linha do índice logo depois, sem erro transitório) — erro
 volta ao modelo via exit 2; `docs/audora/aprendizados.md` não tem teto;
-arquivo sem
-`memory-schema: 1` na linha 1 é ignorado; sem bash, as skills seguem sendo a
-fonte normativa.
+arquivo sem `memory-schema: 1` na linha 1 é ignorado; sem bash, as skills
+seguem sendo a fonte normativa. Hook PreToolUse (Write) `anuncio-guard`
+recusa criar nó novo `in-progress`/`hotfix-pending-record` sem o anúncio da
+porta (texto ou narração) desde a última mensagem do humano; falha passa.
 
 Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios)
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Metas futuras de implementação
 
-1. Futuro: porte para outros harnesses, marketplace público,
-   agentes dedicados.
+1. Futuro: porte multi-harness, marketplace público, agentes dedicados.
 2. Candidato a nó: acabamento da PARADA (`contexto-por-fase`, observações do
    e2e aceitas no portão) — unificar a pontuação (template com vírgula,
    skills com dois-pontos), recusa de retomada imprimindo o bloco de fase
@@ -192,8 +193,8 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
      header por trecho.
    - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
      novo numa demanda maior.
-5. Candidato a nó: observações do `evals-comportamento` (2026-10-11; achados
-   de produto já são `porta-anuncio` e `retomada-execute`).
+5. Candidato a nó: observações do `evals-comportamento` (2026-10-11; achado
+   de produto restante: `retomada-execute`).
    - Mutação `scope-lei-de-ferro` "sem efeito" em 1 run — rodar `--runs 3`.
    - `test-evals.sh`/`test-evals-harness.sh` ~400 s com a máquina carregada,
      acima do `SUITE_TIMEOUT` padrão (300 s).

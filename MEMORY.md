@@ -93,7 +93,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - e2e-playwright-docker | delivered | e2e Playwright + compose → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - skill-depurar | delivered | Skill de debug → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - evals-comportamento | delivered | Evals de comportamento → docs/audora/arquivo/2026-10-11-evals-comportamento.md
-- porta-anuncio | in-progress | Anúncio da porta obrigatório | Porta de entrada sempre anuncia a categoria com o porquê e o convite à correção, provado pelo eval porta. | porta, anuncio, categoria, eval | skills/audora-commander/SKILL.md
+- porta-anuncio | delivered | Anúncio da porta obrigatório → docs/audora/arquivo/2026-10-13-porta-anuncio.md
 - retomada-execute | planned | Retomada por comando | O eval tdd mostrou o plugin ignorando "execute de <id>" em ~1/3 dos runs (2026-10-10): sem skill, pergunta o que fazer; a porta deve reconhecer "<fase> de <id>" sempre. | retomada, execute, porta, session-start, eval | skills/audora-commander/SKILL.md, hooks/session-start
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
