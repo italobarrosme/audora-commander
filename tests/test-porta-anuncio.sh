@@ -18,11 +18,15 @@ flat() {
 # --- /1 — passo 4 da porta é regra dura e cabe inteiro na mutação ---
 P=skills/audora-commander/SKILL.md
 fl="$(flat "$P" '## Fluxo')"
-for s in 'Demanda classificada como <CATEGORIA> porque <motivo curto> — me corrija se discordar.' \
-         'ANTES do passo 5' 'frase própria' 'o bloco de fechamento não substitui' 'em até 150 caracteres'; do
+for s in 'Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se discordar.' \
+         'ANTES do passo 5' 'frase própria' 'o bloco de fechamento não substitui' 'em até 200 caracteres' \
+         'Um motivo só, o que decidiu a categoria, sem enumerar as respostas de risco.'; do
   assert_contains "$fl" "$s" "porta-anuncio/1"
 done
 assert_not_contains "$fl" '<respostas às perguntas de risco>' "porta-anuncio/1 sem o motivo longo"
+for s in '<motivo curto>' 'em até 150 caracteres'; do
+  assert_not_contains "$fl" "$s" "porta-anuncio/1 sem o teto e o motivo antigos"
+done
 for s in '[X]' '[respostas às perguntas]'; do
   assert_not_contains "$fl" "$s" "porta-anuncio/1 sem o modelo antigo"
 done
@@ -33,7 +37,7 @@ assert_eq 1 "$(grep -cF '4. **Anunciar**:' "$P")" "porta-anuncio/1 âncora da mu
 cp "$P" "$SP/porta.md"
 aplica_mutacao "$SP/porta.md" '4. **Anunciar**:' 'Correção do humano vale na hora.' >/dev/null
 mu="$(flat "$SP/porta.md")"
-for s in 'classificada como' 'me corrija' 'frase própria' 'ANTES do passo 5' 'em até 150 caracteres'; do
+for s in 'classificada como' 'me corrija' 'frase própria' 'ANTES do passo 5' 'em até 200 caracteres' 'Um motivo só'; do
   assert_not_contains "$mu" "$s" "porta-anuncio/1 a mutação corta a regra inteira"
 done
 # delta (debug T4): a 1ª fase entra pela ferramenta Skill, fora do trecho da mutação

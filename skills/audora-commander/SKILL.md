@@ -38,9 +38,10 @@ skill decide quanto processo a demanda paga — e nada além dela decide isso.
    - **HOTFIX**: SOMENTE se o humano declarar emergência ("produção caiu",
      "hotfix"). Você NUNCA seleciona HOTFIX sozinho.
 4. **Anunciar**: ANTES do passo 5, escreva ao humano esta frase própria,
-   sempre, em até 150 caracteres (o bloco de fechamento não substitui):
-   "Demanda classificada como <CATEGORIA> porque <motivo curto> — me corrija
-   se discordar." Correção do humano vale na hora.
+   sempre, em até 200 caracteres (o bloco de fechamento não substitui):
+   "Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se
+   discordar." Um motivo só, o que decidiu a categoria, sem enumerar as
+   respostas de risco. Correção do humano vale na hora.
 5. **Registrar o nó** da demanda no MEMORY (skill `memory`, registrar-no):
    estado `in-progress`, objetivo em 1 frase. MEDIUM/HIGH: critérios ficam
    para o escopo. LIGHT/HOTFIX (sem escopo): incluir já ≥1 critério EARS
