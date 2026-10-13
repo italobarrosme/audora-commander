@@ -54,5 +54,5 @@ veredito="$(perl -MJSON::PP -MMIME::Base64 -0777 -ne '
   print "recusa" if $lidas;
 ' 2>/dev/null)" || exit 0
 [ "$veredito" = recusa ] || exit 0
-echo 'anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), em até 150 caracteres, o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <motivo curto> — me corrija se discordar." Depois repita esta escrita.' >&2
+echo 'anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), em até 200 caracteres e com um motivo só (o que decidiu a categoria), o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se discordar." Depois repita esta escrita.' >&2
 exit 2
