@@ -363,6 +363,20 @@ dependem entre si no código, mas T21 cita a frase da T20.
     "envolve lógica nova em vários arquivos (lib, bin, testes), sem migração,
     API pública, auth nem efeito irreversível". O motivo único do passo 4 não
     segurou o modelo.
+- T24 (2026-10-13): `bash tests/evals.sh --mutar porta-anuncio --runs 3
+  --traces "$T"` → `com a regra 3/3 · sem a regra 3/3 · sem efeito`, `custo:
+  US$ 0.9705 · tokens 1221081`, exit 0 (linhas 40-44 da porta); traces no
+  scratchpad `6ff8884a-…/t24` (os 2 braços saem `porta-com-*`). Recusas do
+  `anuncio-guard` por run: 1, 1, 0, 1, 2, 0 — o hook recupera o anúncio
+  quando o passo 4 some, e a /14 conta a recuperação (previsto no plan).
+  Linha no nó; `## e2e` da 2ª rodada movido para o histórico. Commit abaixo.
+- T25 (2026-10-13): `bash tests/evals.sh --caso escopo-antes --caso memoria
+  --caso tdd --traces "$T"` → `PASSOU · escopo-antes · com 1/1 · US$
+  0.1535`, `PASSOU · memoria · com 1/1 · US$ 0.2015`, `PASSOU · tdd · com
+  1/1 · US$ 0.1095`, `total: 3 caso(s) · 3 passou · 0 reprovou · 0 erro de
+  infra · 0 não rodado · US$ 0.4644 · tokens 644749`, exit 0. Sem rerun (o
+  `tdd` passou: trace `6ff8884a-…/t25/tdd-com-C2jkWA.jsonl` com 1 `Skill`
+  `audora-commander:execute`). Gasto da 5ª reabertura ≈ US$ 3,1.
 
 ### Decisões tomadas pela IA
 
@@ -999,9 +1013,9 @@ dependem entre si no código, mas T21 cita a frase da T20.
 - **ler**: `docs/audora/memory/porta-anuncio.md:89-100`, `docs/audora/memory/porta-anuncio-historico.md` (fim)
 - **done quando**: rodada real com `exit=0`, linha no nó, `memory-guard`/`memory-validate` calados.
 
-- [ ] **rodar** — `T="$(mktemp -d)/t24"; bash tests/evals.sh --mutar porta-anuncio --runs 3 --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **registrar** — linha no nó, `## e2e` para o histórico; greps das asserções
-- [ ] **commit** — `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md && git commit -m "docs(porta-anuncio/5): 3a medicao da mutacao porta-anuncio"`
+- [x] **rodar** — `T="$(mktemp -d)/t24"; bash tests/evals.sh --mutar porta-anuncio --runs 3 --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **registrar** — linha no nó, `## e2e` para o histórico; greps das asserções
+- [x] **commit** — `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md && git commit -m "docs(porta-anuncio/5): 3a medicao da mutacao porta-anuncio"`
 
 ## Tarefa 25: rodada rápida dos outros casos, com traces (3ª)
 
@@ -1015,7 +1029,7 @@ dependem entre si no código, mas T21 cita a frase da T20.
 - **ler**: `tests/evals/README.md:96-102`
 - **done quando**: saídas e, se houve rerun, o caminho do trace e a conferência do perfil nas Notas de sessão.
 
-- [ ] **rodar** — `T="$(mktemp -d)/t25"; bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **rerun (só se o tdd reprovou no perfil)** — `T="$(mktemp -d)/t25b"; bash tests/evals.sh --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **registrar** — saídas e perfil nas Notas de sessão
-- [ ] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): 3a rodada rapida escopo-antes, memoria e tdd"`
+- [x] **rodar** — `T="$(mktemp -d)/t25"; bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **rerun (só se o tdd reprovou no perfil)** — n/a: o tdd passou na 1ª rodada; `T="$(mktemp -d)/t25b"; bash tests/evals.sh --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **registrar** — saídas e perfil nas Notas de sessão
+- [x] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): 3a rodada rapida escopo-antes, memoria e tdd"`
