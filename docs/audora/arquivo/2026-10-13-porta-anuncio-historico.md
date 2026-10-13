@@ -78,7 +78,7 @@ narração em ~98%):
 ## e2e (1ª rodada)
 
 2026-10-12: /1, /4, /6 falharam (relatório no `git log` de
-`docs/audora/e2e/e2e-porta-anuncio.md`); resposta: 4ª reabertura.
+`docs/audora/e2e/e2e-porta-anuncio.md` removido em 2026-10-13 pela cleanup — recuperável no git); resposta: 4ª reabertura.
 
 ## movido no scope da 5ª reabertura (2026-10-13)
 
@@ -90,13 +90,13 @@ narração em ~98%):
   nó reprova). Resposta: 5ª reabertura.
 
 ## e2e (2ª rodada)
-2026-10-13 (2ª): /1 (1/9 ≤ 150) e /4 (5/6) falharam: `docs/audora/e2e/e2e-porta-anuncio.md`.
+2026-10-13 (2ª): /1 (1/9 ≤ 150) e /4 (5/6) falharam: `docs/audora/e2e/e2e-porta-anuncio.md` removido em 2026-10-13 pela cleanup — recuperável no git.
 
 ## medição /5 e e2e (3ª rodada, 5ª reabertura)
 - 2026-10-13 (T24): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 3/3 · sem efeito
   (US$ 0.9705; o hook recupera o anúncio sem o passo 4).
 - 2026-10-13 (e2e 3ª): mesma mutação → 3/3 · 1/3 · −67 pp (US$ 0.9519). /1 falhou
-  (motivo único 1/9); demais passaram: `docs/audora/e2e/e2e-porta-anuncio.md`.
+  (motivo único 1/9); demais passaram: `docs/audora/e2e/e2e-porta-anuncio.md` removido em 2026-10-13 pela cleanup — recuperável no git.
 
 ## movido no scope da 6ª reabertura (2026-10-13)
 - decisões da 5ª (humano; descartada entre parênteses): motivo único + ≤ 200

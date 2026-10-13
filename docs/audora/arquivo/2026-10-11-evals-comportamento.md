@@ -95,6 +95,6 @@ transcript e arquivos nesta versão); WSL2.
 ## delta
 
 ## e2e
-2026-10-11: 13/13 passou — [e2e-evals-comportamento.md](../e2e/e2e-evals-comportamento.md) (rodada real, US$ 2.29; porta segue reprovando: `porta-anuncio`).
+2026-10-11: 13/13 passou — `docs/audora/e2e/e2e-evals-comportamento.md` removido em 2026-10-13 pela cleanup — recuperável no git (rodada real, US$ 2.29; porta segue reprovando: `porta-anuncio`).
 
 ## feedback-reprovacao

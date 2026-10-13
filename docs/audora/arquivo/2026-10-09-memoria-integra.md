@@ -83,6 +83,6 @@ Nenhum critério ou aprendizado some da memória ao entregar ou limpar, e as reg
 
 ## e2e
 
-passou (17/17, 2026-10-08; rodada 2 das T14–T15: 4/4, 2026-10-09) — [relatório](../e2e/e2e-memoria-integra.md)
+passou (17/17, 2026-10-08; rodada 2 das T14–T15: 4/4, 2026-10-09) — `docs/audora/e2e/e2e-memoria-integra.md` removido em 2026-10-13 pela cleanup — recuperável no git
 
 ## feedback-reprovacao

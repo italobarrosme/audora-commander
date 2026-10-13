@@ -99,4 +99,4 @@ impor motivo único ou tamanho do anúncio (6ª: só orientação).
 ## delta
 
 ## e2e
-2026-10-13 (3ª): 14/14 com o /1 da 6ª — [e2e-porta-anuncio.md](../e2e/e2e-porta-anuncio.md) (rodada real, ≈ US$ 3,1).
+2026-10-13 (3ª): 14/14 com o /1 da 6ª — `docs/audora/e2e/e2e-porta-anuncio.md` removido em 2026-10-13 pela cleanup — recuperável no git (rodada real, ≈ US$ 3,1).
