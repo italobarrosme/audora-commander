@@ -6,7 +6,7 @@ depende-de: []
 arquivos: []
 keywords: [porta, anuncio, categoria, eval]
 resumo: Porta de entrada sempre anuncia a categoria com o porquê e o convite à correção, provado pelo eval porta.
-atualizado-em: 2026-10-12
+atualizado-em: 2026-10-13
 ---
 
 # porta-anuncio
@@ -16,14 +16,15 @@ atualizado-em: 2026-10-12
 Fazer a porta de entrada sempre anunciar "Demanda classificada como [X]
 porque … — me corrija se discordar" antes de rotear, até o eval `porta`
 passar com o plugin e reprovar sem ele. Reaberturas: hook, narração por
-sentido, anúncio ≤ 150 chars (chega como texto no meio do turno).
+sentido, anúncio curto com motivo único (≤ 200), Write recusado não conta.
 
 ## criterios-aceite
 
 - **porta-anuncio/1** — QUANDO a porta de entrada classifica uma demanda O
   SISTEMA DEVE escrever ao humano, antes de registrar o nó, uma frase própria
-  de até 150 caracteres `Demanda classificada como <CATEGORIA> porque <motivo
-  curto> — me corrija se discordar`
+  de até 200 caracteres `Demanda classificada como <CATEGORIA> porque <motivo>
+  — me corrija se discordar`, com um motivo só — o que decidiu a categoria —,
+  sem enumerar as respostas às perguntas de risco
 - **porta-anuncio/2** — QUANDO o caso `porta` roda O SISTEMA DEVE reprovar se
   nenhum bloco do assistente tiver o anúncio MEDIUM — em texto: `classificada
   como MEDIUM`, `porque` e `me corrija`; em narração: `classific…` seguido de
@@ -51,7 +52,8 @@ sentido, anúncio ≤ 150 chars (chega como texto no meio do turno).
   narração: `classific…` seguido de `como <CATEGORIA>`, depois `me corrija`
   ou `me avise` e `discordar` — O SISTEMA DEVE recusar a escrita (exit 2) com
   mensagem ao modelo que manda escrever o anúncio em texto ao humano antes de
-  registrar o nó, citando a frase-modelo e o teto de 150 caracteres
+  registrar o nó, citando a frase-modelo, o motivo único e o teto de 200
+  caracteres
 - **porta-anuncio/8** — QUANDO esse anúncio, no contrato do tipo do bloco
   (texto ou narração), está num bloco do assistente desde a última mensagem
   do humano O SISTEMA DEVE deixar a criação do nó passar (exit 0, sem saída)
@@ -64,37 +66,35 @@ sentido, anúncio ≤ 150 chars (chega como texto no meio do turno).
   não é resultado de ferramenta nem skill) O SISTEMA DEVE recusar como em /7
 - **porta-anuncio/11** — QUANDO o transcript está ausente ou ilegível, ou o
   próprio hook falha O SISTEMA DEVE deixar a escrita passar (exit 0)
-- **porta-anuncio/12** — QUANDO o anúncio em texto passa de 150 caracteres
-  O SISTEMA DEVE deixar a criação do nó passar como em /8 (o hook não mede)
+- **porta-anuncio/12** — QUANDO o anúncio em texto passa de 200 caracteres
+  ou enumera as respostas de risco O SISTEMA DEVE deixar a criação do nó
+  passar como em /8 (o hook não mede)
 - **porta-anuncio/13** — QUANDO `--runs <n>` acompanha `--completo` O SISTEMA
   DEVE rodar n runs por braço em cada caso; `--runs` sem `--completo` nem
   `--mutar` continua recusado com a mensagem de uso
+- **porta-anuncio/14** — QUANDO uma Write ou Edit no `MEMORY.md` ou no
+  arquivo do nó volta recusada por hook O SISTEMA DEVE, no grader do caso
+  `porta`, não contá-la como primeira escrita: passa o anúncio que vem antes
+  da 1ª escrita que gravou; sem anúncio, ou só depois dela, segue reprovando
 
 ## fora-de-escopo
-
 Casos de eval para LIGHT e HIGH; pausar e esperar confirmação depois do
 anúncio (porta → 1ª fase segue sem parada); mudar as perguntas de risco ou as
-regras de categoria; afrouxar qualquer grader (exceto o ramo narração,
-3ª reabertura); anúncio em outras fases; retomada por comando
-(`retomada-execute`); juiz LLM no grader; hook julgar se a categoria está
-certa ou medir o tamanho do anúncio; mutação que desligue o hook (a /5 mede o
-passo 4); garantir que o humano veja a narração ou zerá-la (harness; ramo narração cobre).
+regras de categoria; afrouxar qualquer grader (exceto ramo narração, 3ª, e
+Write recusado, 5ª); aceitar `avise` sem `me` no convite da narração; anúncio
+em outras fases; retomada por comando (`retomada-execute`); juiz LLM no
+grader; hook julgar a categoria ou medir o anúncio; mutação que desligue o
+hook (a /5 mede o passo 4); garantir que o humano veja a narração (harness).
 
 ## decisoes
-
-Decisões do 1º escopo, da carga BASE, das reaberturas 1-4 (4ª: anúncio curto,
-teto 150, hook não mede, /4 com 6 runs, /6 com rerun) e a medição /5:
-`porta-anuncio-historico.md`.
-- 2026-10-12 (medição, porta-anuncio/5, 4ª reabertura):
-  `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 0/3 · efeito -100 pp;
-  manter ou cortar a regra é decisão do humano.
+1º escopo, reaberturas 1-4, medição /5, deltas e feedbacks: histórico.
+5ª (2026-10-13, humano; descartada entre parênteses): motivo único + ≤ 200
+(≤ 150: falha de novo; só ≤ 200: 5/9 fora; sem número: não testável); grader
+ignora Write recusado (estrito: recuperação pelo hook sempre reprova); convite
+da narração inalterado (aceitar `avise` sem `me`).
 
 ## delta
-
-- MODIFICADO (2026-10-12, 4ª reabertura): /1 frase sem teto → ≤ 150 chars e
-  `<motivo curto>`; /4 3/3·0/3 → `--runs 6` 6/6·0/6; /6 + rerun no perfil
-  retomada; /7 mensagem cita o teto. ADICIONADO: /12, /13
-
+- MODIFICADO (5ª, 2026-10-13): /1 ≤ 150 → ≤ 200 e motivo único; /7 mensagem
+  cita motivo único e 200; /12 200 ou enumera. ADICIONADO: /14
 ## e2e
-2026-10-12: /1, /4, /6 falharam (`docs/audora/e2e/e2e-porta-anuncio.md`).
-Reprovação da validate e a resposta: `porta-anuncio-historico.md`.
+2026-10-13 (2ª): /1 (1/9 ≤ 150) e /4 (5/6) falharam: `docs/audora/e2e/e2e-porta-anuncio.md`.

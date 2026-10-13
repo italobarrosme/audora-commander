@@ -51,6 +51,17 @@ perde as palavras do contrato. Grader e contrato do hook não mudam. T13 passo
 /6); T17–T19 rodadas reais (/4 com 6 runs, /5, /6 com traces). T4–T6 ficam
 como histórico da 1ª rodada.
 
+**Replanejamento (2026-10-13, 5ª reabertura — motivo único e Write
+recusado):** a validate reprovou /1 (teto 150 cumprido em 1/9: o motivo
+enumera as respostas de risco) e /4 (5/6: o grader conta o Write recusado
+pelo hook como 1ª escrita, e o caminho recusa → texto → nó reprova sempre).
+Contrato de anúncio (texto e narração) do grader e do hook NÃO muda. T20
+passo 4 com teto 200 e motivo único (/1); T21 mensagem do hook cita os dois
+(/7) e prova que anúncio > 200 ou que enumera passa (/12); T22 o grader
+pula o Write/Edit cujo `tool_result` é recusa de hook PreToolUse com o mesmo
+id (/14); T23–T25 rodadas reais (/4 6 runs, /5, /6). T20, T21 e T22 não
+dependem entre si no código, mas T21 cita a frase da T20.
+
 **Arquivos lidos antes de planejar:**
 - `hooks/hooks.json:1-36` — SessionStart + PostToolUse (Edit|Write: memory-guard, memory-validate) via `"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" <nome>`, `shell: bash`; sem PreToolUse.
 - `hooks/memory-guard:1-47` — padrão: stdin JSON por `perl -MJSON::PP`, `file_path` com `\`→`/`, exit 2 + stderr de 1 linha, "falha do hook NUNCA quebra o fluxo".
@@ -99,6 +110,19 @@ como histórico da 1ª rodada.
 - (4ª reabertura) `tests/test-evals.sh:1-30` (uso inválido: `--runs 2` → 4, linha 22-24), `:176-206` (`runs <c|s> <score>…` — custo 0.1, tokens 10, trace em `$SP/claude-eval-<b><i>/out/trace.jsonl`; completo 3/3 em 195-201); `tests/test-evals-harness.sh:17-20` (`reseta_hs`: run de custo 0.3, 10 tokens), `:94-99` (harness completo: 6 `-p`, 3 com `--plugin-dir`, `PASSOU · tdd · com 3/3 · sem 3/3 · Δ +0 pp · US$ 1.8000 · tokens 60`).
 - (4ª reabertura) `tests/evals/README.md:8-36` (uso; tabela de opções: `--completo` na 19, `--runs` na 24), `:84-102` (calibração, porta na 93; achados 96-102).
 - (4ª reabertura) transcripts reais do e2e/debug no scratchpad `f7b5d4b7-…` (`e2e/s1.jsonl`, `repro/`, `repro/scan3.tsv`).
+
+- (5ª reabertura) `docs/audora/memory/porta-anuncio.md:1-100` — /1 (≤ 200, motivo único, sem enumerar), /7 (mensagem cita motivo único e 200), /12 (> 200 ou enumera passa), /14 (Write/Edit recusado por hook não conta); nó com 100 linhas (teto do `memory-guard`).
+- (5ª reabertura) `docs/audora/e2e/e2e-porta-anuncio.md:1-76` — /1 1/9 dentro do teto; /4 `com 5/6`, run `uuKwjh` reprovado pela recusa.
+- (5ª reabertura) `skills/audora-commander/SKILL.md:36-52` — passo 4 em 40-43 (279 bytes); texto novo da T20 = 354 bytes (+75): BASE 53954 → 54029, FULL 62782 → 62857 (tetos 54900 / 63000); SKILL com 99 linhas.
+- (5ª reabertura) `tests/evals/porta/graders/categoria.md:1-15` — pattern na linha 6 = `^(?:(?!W)[\s\S])*?"type"\s*:\s*"assistant"(?:(?!W)[^\n])*?(?:<texto>|<narração>)`, W = Write/Edit no `MEMORY.md`/`docs/audora/memory/` (começa em `"name"`), sem grupo de captura; descrição 9-15.
+- (5ª reabertura) `hooks/anuncio-guard:50-58` — mensagem só no `echo` da linha 57.
+- (5ª reabertura) `tests/test-porta-anuncio.sh:1-221` — /1: lista de frases 21-22, `assert_not_contains` 25, lista da mutação 36; /2 /3: `ev_text`/`ev_meta`/`ga` 48-52, `A`/`WN`/`WM` 54-55, `sig`/`ev_narr`/`NA`/`SN` 83-86, último `ga` na 108; /4 calibração 111-113; `MSG` 131; /12 149-153 (`AL` 185 chars, `-gt 150` na 151); registro e READMEs 207-219; `report` 221.
+- (5ª reabertura) `tests/evals-testlib.sh:90-97` — `ev_tool` = `{"type":"tool_use","id":…,"name":…,"input":…}` (id antes de name, como o real); `ev_result` = `tool_use_id, is_error, content:"x"` (ordem diferente da real — não serve para a recusa).
+- (5ª reabertura) `tests/evals-lib.sh:183-200` — `emula_grader` (perl, backreference `\1` suportada).
+- (5ª reabertura) `tests/test-carga.sh:1-15` (nota na 7, `TETO_BASE=54900`), `tests/test-leitura-por-secao.sh:129` e `tests/test-parada-revisao.sh:59` (`53954` duas vezes em cada).
+- (5ª reabertura) `tests/evals/README.md:43` (linha do `porta` na tabela de casos), `:88-100` (calibração; `porta` na 94 com `2026-10-12`).
+- (5ª reabertura) `hooks/memory-guard:2-42` (nó > 100 linhas acusa), `hooks/memory-validate:3,44` (só valida seções do `MEMORY.md`), `templates/no-template.md:60-63` (`## e2e`).
+- (5ª reabertura) trace real `…/eadda169-…/scratchpad/ev/t4/porta-com-uuKwjh.jsonl:60-68` — Write recusado [60] `{"type":"tool_use","id":"toolu_01Kt…","name":"Write","input":{"file_path":"…\\docs\\audora\\memory\\…"`; recusa [61] `{"type":"tool_result","content":"PreToolUse:Write hook error: [\"…run-hook.cmd\" anuncio-guard]: anuncio-guard: … \n\nThis hook comes from the audora-commander@inline plugin.","is_error":true,"tool_use_id":"toolu_01Kt…"}`; Write que gravou [66]; Edit do `MEMORY.md` [68].
 
 **Conflitos MEMORY vs código encontrados:** nenhum.
 
@@ -297,6 +321,31 @@ como histórico da 1ª rodada.
   passou: trace `/tmp/tmp.tLlcc9mUZ7/t19/tdd-com-*.jsonl` com 1 `Skill`
   `audora-commander:execute`). Gasto da 4ª reabertura ≈ US$ 3,2.
 
+- PLAN da 5ª reabertura (2026-10-13, sem custo — só leitura e spike offline).
+  `M` = scratchpad desta sessão:
+  `C:\Users\ITALOB~1\AppData\Local\Temp\claude\c--Users-Italo-Barros-workspace-audora-commander\df308d74-2e17-49c6-8fb7-9a8ae7dfbf44\scratchpad`
+  (`monta.pl`, `categoria.md` candidato, `spike14.sh`, `js-traces.js`).
+  - `perl "$M/monta.pl" tests/evals/porta/graders/categoria.md "$M/categoria.md"`
+    gera o candidato da T22 a partir do grader atual (só troca o prefixo).
+  - candidato sobre os 12 traces do e2e (`…/eadda169-…/scratchpad/ev/t4`):
+    perl (`emula_grader`) e JS (`node js-traces.js`) iguais, com 6/6 (o
+    `uuKwjh` passa) e sem 0/6; ≤ 1 ms por trace. Grader atual: com 5/6.
+  - mutação (`ev/t5`, 3+3, os 2 braços `porta-com-*`): o braço sem a regra
+    `3lw1hz` (2 recusas → anúncio em texto → nó) passa com o candidato →
+    `com a regra 3/3 · sem a regra 1/3` nesses traces. Efeito esperado da
+    T24 cai de −100 pp: o hook recupera o anúncio sem o passo 4. A /5 só
+    exige o registro, caia a taxa ou não.
+  - `spike14.sh "$M/categoria.md"` → PASS=15 FAIL=0 (as 15 asserções da
+    T22); com o grader atual → FAIL nos 5 `passou` (red pelo motivo certo).
+    Trace de 3000 pares + recusa em ≤ 1 s.
+  - `tests/test-porta-anuncio.sh` com `GC` apontando para o candidato →
+    PASS=142 FAIL=0: nenhum `ga` atual muda.
+  - medidor de tamanho da T23 sobre `ev/t4` → `thinking:211`…`250` e
+    `uuKwjh` `thinking:226 text:104` (bate com o e2e).
+  - limite conhecido (decisão da IA): o miolo do salto não atravessa outra
+    escrita no MEMORY/nó; 2 Writes recusados EM PARALELO (mesma mensagem)
+    reprovam. Preferido ao contrário (pular uma escrita que gravou).
+
 ### Decisões tomadas pela IA
 
 - 2026-10-12 (T1): passo 4 enxuto ao mínimo que segura a regra (ANTES do
@@ -330,6 +379,15 @@ como histórico da 1ª rodada.
   `hk-1` real: linhas 1-54 → 0, 1-53 → 2. Asserção além do mapa: narração
   com caminho Windows (transcript e nó). README EN/PT quebram a frase nova em
   2 linhas (o teste usa `flat`).
+- 2026-10-13 (plan, 5ª reabertura): "recusada por hook" lido como recusa de
+  hook **PreToolUse** (`PreToolUse:<Write|Edit> hook error:` + `is_error:
+  true` + mesmo `tool_use_id`): recusa de PostToolUse acontece depois da
+  escrita e erro que não é de hook (ex.: arquivo não lido) segue contando.
+  Ordem de chaves do `tool_result` = a real (`type, content, is_error,
+  tool_use_id`), como o ramo narração fixou `type, thinking, signature`.
+  Placeholder da frase: `<motivo>` + frase "Um motivo só, o que decidiu a
+  categoria, sem enumerar as respostas de risco." (o critério pede motivo
+  único; `<motivo curto>` não disse isso e falhou).
 
 ---
 
@@ -793,3 +851,153 @@ como histórico da 1ª rodada.
 - [x] **rerun (só se o tdd reprovou no perfil)** — `T="$(mktemp -d)/t19b"; bash tests/evals.sh --caso tdd --traces "$T"; echo "exit=$? traces=$T"` — n/a: o tdd passou na 1ª rodada
 - [x] **registrar** — saídas e perfil nas Notas de sessão
 - [x] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): rodada rapida escopo-antes, memoria e tdd com traces"`
+
+## Tarefa 20: passo 4 da porta com motivo único e teto de 200
+
+- **depende-de**: []
+- **requisito**: `porta-anuncio/1` — QUANDO a porta de entrada classifica uma demanda O SISTEMA DEVE escrever ao humano, antes de registrar o nó, uma frase própria de até 200 caracteres `Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se discordar`, com um motivo só — o que decidiu a categoria —, sem enumerar as respostas às perguntas de risco
+- **decisões relevantes**: motivo único + ≤ 200 (humano, 5ª reabertura; ≤ 150 descartado); o texto inteiro fica dentro do trecho da mutação (`4. **Anunciar**:` … `Correção do humano vale na hora.`); +75 bytes → BASE 53954 → 54029, guardas pinadas sobem no mesmo commit com nota no `test-carga.sh:7` (precedente T1/T12/T13); fora-de-escopo: pausar depois do anúncio, mexer nas perguntas de risco.
+- **interfaces**: nenhuma
+- **ponto de mudança**: `skills/audora-commander/SKILL.md:40-43` — texto exato do passo 4 (5 linhas):
+  ```
+  4. **Anunciar**: ANTES do passo 5, escreva ao humano esta frase própria,
+     sempre, em até 200 caracteres (o bloco de fechamento não substitui):
+     "Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se
+     discordar." Um motivo só, o que decidiu a categoria, sem enumerar as
+     respostas de risco. Correção do humano vale na hora.
+  ```
+  `tests/test-porta-anuncio.sh:21-22` e `:25` (/1), `:36` (mutação); `tests/test-carga.sh:7` (acrescentar ` porta-anuncio/1 (motivo único, ≤ 200 chars): BASE 53954 → 54029.`); `tests/test-leitura-por-secao.sh:129` e `tests/test-parada-revisao.sh:59` (`53954` → `54029`, nas duas ocorrências de cada linha)
+- **teste**: `tests/test-porta-anuncio.sh` — seção "/1 — passo 4 da porta é regra dura e cabe inteiro na mutação"
+- **asserções** (`fl` = `flat` da seção `## Fluxo`; `mu` = `flat` da cópia mutada):
+  - `fl` contém `Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se discordar.` (substitui a frase com `<motivo curto>` na lista da linha 21)
+  - `fl` contém `em até 200 caracteres` (substitui `em até 150 caracteres` na lista da linha 22)
+  - `fl` contém `Um motivo só, o que decidiu a categoria, sem enumerar as respostas de risco.` (item novo da lista)
+  - `fl` não contém `<motivo curto>` nem `em até 150 caracteres` (2 `assert_not_contains` novos, rótulo `porta-anuncio/1 sem o teto e o motivo antigos`); a da linha 25 (`<respostas às perguntas de risco>`) segue
+  - `mu` não contém `em até 200 caracteres` nem `Um motivo só` (lista da linha 36: `em até 150 caracteres` → `em até 200 caracteres`, mais `Um motivo só`)
+  - asserções de hoje seguem: `ANTES do passo 5`, `frase própria`, `o bloco de fechamento não substitui`, sem `[X]`, âncora única, passo 4 antes do 5, passo 6 pela ferramenta Skill fora da mutação
+  - `bash tests/test-carga.sh` imprime `carga MEDIUM (bytes): base=54029`
+- **ler**: `skills/audora-commander/SKILL.md:38-46`, `tests/test-porta-anuncio.sh:18-41`, `tests/test-carga.sh:1-15`
+- **done quando**: asserções verdes; `bash tests/test-carga.sh`, `bash tests/test-leitura-por-secao.sh`, `bash tests/test-parada-revisao.sh`, `bash tests/test-skills.sh`, `bash tests/test-evals-graders.sh` verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou` antes do commit.
+
+- [ ] **preparo** — commit dos artefatos do scope e do plano (o diff do `MEMORY.md` é de outros nós e fica fora): `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md docs/audora/e2e/e2e-porta-anuncio.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio): 5a reabertura, escopo e plano"`
+- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `<motivo>`, `em até 200 caracteres` e `Um motivo só`
+- [ ] **green** — passo 4, nota de carga e guardas; os testes acima verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`
+- [ ] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh tests/test-carga.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh && git commit -m "feat(porta-anuncio/1): anuncio da porta com motivo unico em ate 200 caracteres"`
+
+## Tarefa 21: mensagem do `anuncio-guard` cita motivo único e 200; > 200 ou enumerando passa
+
+- **depende-de**: [20]
+- **requisito**:
+  - `porta-anuncio/7` — QUANDO o modelo cria (Write) arquivo de nó novo em `docs/audora/memory/` com `estado: in-progress` ou `hotfix-pending-record`, num projeto com `MEMORY.md` em `memory-schema: 1`, e nenhum bloco do assistente desde a última mensagem do humano tem o anúncio — em texto: `classificada como <LIGHT|MEDIUM|HIGH|HOTFIX>`, `porque` e `me corrija`; em narração: `classific…` seguido de `como <CATEGORIA>`, depois `me corrija` ou `me avise` e `discordar` — O SISTEMA DEVE recusar a escrita (exit 2) com mensagem ao modelo que manda escrever o anúncio em texto ao humano antes de registrar o nó, citando a frase-modelo, o motivo único e o teto de 200 caracteres
+  - `porta-anuncio/12` — QUANDO o anúncio em texto passa de 200 caracteres ou enumera as respostas de risco O SISTEMA DEVE deixar a criação do nó passar como em /8 (o hook não mede)
+- **decisões relevantes**: hook não mede tamanho nem conta motivos (humano); só a linha do `echo` muda; ramo texto, ramo narração e falha → exit 0 intactos. A /12 já passa no hook de hoje (caracterização, sem red próprio — o red da tarefa é a mensagem).
+- **interfaces**: nenhuma nova (usa `pre`, `tr_user`, `tr_text`, `MSG` do teste)
+- **ponto de mudança**: `hooks/anuncio-guard:57` — mensagem exata:
+  `anuncio-guard: antes de registrar o nó, escreva ao humano, em texto (não no raciocínio), em até 200 caracteres e com um motivo só (o que decidiu a categoria), o anúncio da porta: "Demanda classificada como <CATEGORIA> porque <motivo> — me corrija se discordar." Depois repita esta escrita.`
+  `tests/test-porta-anuncio.sh:131` (`MSG` = a mensagem acima), `:148-153` (/12)
+- **teste**: `tests/test-porta-anuncio.sh` — seções /7, /12 e registro
+- **asserções**:
+  - `MSG` novo: os 3 `assert_eq "$MSG" "$out"` de hoje (linha 134 sem anúncio, 182 narração sem convite, 215 pelo wrapper) comparam com a mensagem nova
+  - /12 enumera: `AL` (linha 149) inalterado; a linha 151 vira `assert_contains "$AL" 'nenhuma pergunta de risco deu SIM:' "porta-anuncio/12 anúncio de teste enumera as respostas de risco"`; a 153 segue (`code` `0`, `out` vazio), rótulos `porta-anuncio/12 anúncio que enumera → 0` / `porta-anuncio/12 enumera calado`
+  - /12 longo: `AL2='Demanda classificada como MEDIUM porque a demanda cria lógica nova de cálculo de média e mediana, com funções novas, testes novos e uma opção nova na linha de comando do bin/estat — me corrija se discordar.'`; `perl -CSA -e 'print length $ARGV[0]' "$AL2"` → `206` (`[ "$nl2" -gt 200 ] && ok || ko "porta-anuncio/12 anúncio de teste passa de 200 ($nl2)"`)
+  - /12 longo: `{ tr_user 'Quero media'; tr_text "$AL2"; } > "$T"; pre "$T" "$N" "$CI"` → `code` `0` (`porta-anuncio/12 anúncio > 200 → 0`), `out` vazio (`porta-anuncio/12 > 200 calado`)
+- **ler**: `hooks/anuncio-guard:52-58`, `tests/test-porta-anuncio.sh:129-153,213-215`
+- **done quando**: asserções verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`.
+
+- [ ] **red** — `MSG` novo e asserções /12; `bash tests/test-porta-anuncio.sh` falha nos 3 `assert_eq "$MSG"` (mensagem antiga)
+- [ ] **green** — linha 57 do hook; teste verde; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`
+- [ ] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,12): anuncio-guard pede motivo unico em ate 200 caracteres"`
+
+## Tarefa 22: grader `categoria` não conta Write/Edit recusado por hook
+
+- **depende-de**: []
+- **requisito**: `porta-anuncio/14` — QUANDO uma Write ou Edit no `MEMORY.md` ou no arquivo do nó volta recusada por hook O SISTEMA DEVE, no grader do caso `porta`, não contá-la como primeira escrita: passa o anúncio que vem antes da 1ª escrita que gravou; sem anúncio, ou só depois dela, segue reprovando
+- **decisões relevantes**: grader ignora Write recusado (humano, 5ª; estrito descartado); afrouxar só isso — ramos texto e narração intactos, nenhum `ga` atual muda (spike: PASS=142 com o candidato); recusa = PreToolUse, `is_error: true`, mesmo id, ordem real de chaves (Decisões tomadas pela IA); salto não atravessa outra escrita no MEMORY/nó (limite nas Notas); `type: regex`, `arm: both`, `target: trace`, `flags: i` mantidos; sem juiz LLM. Grader e teste vão ao disco pelo Write ou pelo `monta.pl` (barras invertidas).
+- **interfaces**:
+  - consome `emula_grader`, `ev_tool`, `ev_result`, `jesc`, `ev_text`, `ev_narr`, `NA`, `SN`, `A`, `WN`, `WM` (teste/libs)
+  - produz em `tests/test-porta-anuncio.sh`, depois do `ev_narr` (linha 84):
+    - `ev_recusa <id> [Write|Edit] [PreToolUse|PostToolUse]` → `printf '{"type":"user","message":{"role":"user","content":[{"type":"tool_result","content":"%s:%s hook error: [\\"C:\\\\p\\\\hooks/run-hook.cmd\\" anuncio-guard]: anuncio-guard: antes de registrar o nó.\\n\\nThis hook comes from the audora-commander@inline plugin.","is_error":true,"tool_use_id":"%s"}]}}\n' "${3:-PreToolUse}" "${2:-Write}" "$1"` (formato do trace `uuKwjh:61`)
+    - `g14 <esperado> <descrição>` → `assert_eq "$1" "$(emula_grader "$GC" "$SP/em.jsonl" "$SP/emws")" "porta-anuncio/14 categoria: $2"`
+    - `wn <id>` → `ev_tool "$1" Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"`; `em <id>` → `ev_tool "$1" Edit "{\"replace_all\":false,\"file_path\":\"$WM\",\"old_string\":\"a\",\"new_string\":\"b\"}"`
+- **ponto de mudança**: `tests/evals/porta/graders/categoria.md:6` — pattern novo, com W = o lookahead de escrita de hoje (de `"name"` até `memory(?:\\\\|/)))`):
+  ```
+  R       = "id"\s*:\s*"([^"\\]+)"\s*,\s*W(?:(?!W)[\s\S])*?"type"\s*:\s*"tool_result"\s*,\s*"content"\s*:\s*"PreToolUse:(?:Write|Edit) hook error:(?:[^"\\]|\\.)*"\s*,\s*"is_error"\s*:\s*true\s*,\s*"tool_use_id"\s*:\s*"\1"
+  pattern = ^(?:R|(?!W)[\s\S])*?"type"\s*:\s*"assistant"   + o resto de hoje, sem mudança
+  ```
+  (gerar com `perl "$M/monta.pl" tests/evals/porta/graders/categoria.md "$M/categoria.md"` e copiar; `M` nas Notas de sessão. Sem o scratchpad: montar à mão pelo bloco acima.) `:9-15` (descrição) — acrescentar `Write/Edit recusado por hook PreToolUse (tool_result com "PreToolUse:… hook error:", is_error true e o mesmo id) não conta como 1ª escrita (porta-anuncio/14).`; `tests/evals/README.md:43` — `antes do 1º registro` → `antes do 1º registro (Write recusado por hook não conta)`; `tests/test-porta-anuncio.sh` depois da linha 108 (último `ga` da seção /2 /3)
+- **teste**: `tests/test-porta-anuncio.sh` — caso "porta-anuncio/14 grader categoria pula Write recusado"
+- **asserções** (cada linha = trace → resultado):
+  - `{ wn w1; ev_recusa w1; ev_text "$A"; wn w2; }` → `passou` (recusa → texto → Write)
+  - `{ wn w1; ev_recusa w1; wn w2; ev_recusa w2; ev_text "$A"; wn w3; }` → `passou` (2 recusas)
+  - `{ em e1; ev_recusa e1 Edit; ev_text "$A"; em e2; }` → `passou` (Edit no MEMORY recusado)
+  - `{ wn w1; ev_recusa w1; ev_narr "$NA" "$SN"; wn w2; }` → `passou` (recusa → narração)
+  - `{ ev_text "$A"; wn w1; ev_recusa w1; wn w2; }` → `passou` (anúncio antes da recusa)
+  - `{ wn w1; ev_recusa w1; wn w2; ev_result w2 false; ev_text "$A"; }` → `reprovou` (Write que gravou antes do anúncio)
+  - `{ wn w1; ev_recusa w1; em e1; ev_result e1 false; ev_text "$A"; }` → `reprovou` (Edit do MEMORY que gravou)
+  - `{ wn w1; em e1; ev_recusa w1; ev_result e1 false; ev_text "$A"; }` → `reprovou` (escrita que gravou entre o Write recusado e a recusa)
+  - `{ wn w1; ev_recusa w1; ev_text 'Usando audora-commander.'; }` → `reprovou` (recusa sem anúncio)
+  - `{ wn w1; ev_result w1 true; ev_text "$A"; }` → `reprovou` (erro que não é de hook)
+  - `{ wn w1; ev_recusa w1 Write PostToolUse; ev_text "$A"; }` → `reprovou` (PostToolUse: gravou)
+  - `{ wn w1; ev_recusa w9; ev_text "$A"; }` → `reprovou` (recusa de outro id)
+  - `{ wn w1; ev_recusa w1; }` → `reprovou` (só a recusa)
+  - `{ 3000 pares ev_tool "r$i" Read + ev_result "r$i" false; wn w1; ev_recusa w1; ev_text "$A"; }` → `passou`
+  - `{ wn w1; 3000 pares Read; ev_text "$A"; }` → `reprovou`
+  - `cat "$GC"` contém `porta-anuncio/14`; `grep '^| \`porta\` |' tests/evals/README.md` contém `Write recusado por hook não conta`
+  - todos os `ga` de hoje (linhas 56-108) inalterados e verdes
+- **ler**: `tests/evals/porta/graders/categoria.md:1-15`, `tests/test-porta-anuncio.sh:43-108`, `tests/evals-testlib.sh:94-97`, `tests/evals/README.md:40-46`
+- **done quando**: asserções verdes; `bash tests/test-evals-graders.sh` verde; conferência fora da suíte (se `…/eadda169-…/scratchpad/ev/t4` existir): `emula_grader` e `node "$M/js-traces.js"` sobre os 12 traces → `porta-com-*` 6 `passou`, `porta-sem-*` 6 `reprovou`; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`.
+
+- [ ] **red** — `ev_recusa`, `g14`, `wn`, `em` e asserções; `bash tests/test-porta-anuncio.sh` falha nos 5 `passou` que têm recusa antes do anúncio (o grader de hoje conta a recusa; "anúncio antes da recusa" já passa)
+- [ ] **green** — `categoria.md` (pattern + descrição) e README dos evals; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` verdes; conferência nos 12 traces; gate
+- [ ] **commit** — `git add tests/evals/porta/graders/categoria.md tests/evals/README.md tests/test-porta-anuncio.sh && git commit -m "test(porta-anuncio/14): grader categoria nao conta Write recusado por hook"`
+
+## Tarefa 23: rodada completa do `porta` com 6 runs (3ª) e calibração
+
+- **depende-de**: [20, 21, 22]
+- **requisito**: `porta-anuncio/4` — QUANDO `bash tests/evals.sh --completo --runs 6 --caso porta` roda O SISTEMA DEVE aprovar o caso com 6/6 com o plugin e 0/6 sem, e a linha do `porta` na calibração do `tests/evals/README.md` DEVE registrar essa rodada
+- **decisões relevantes**: 6 runs por braço (humano). Com o plugin < 6/6 → skill debug com os traces guardados, nunca afrouxar o grader. Nada editado no repo durante a rodada. Traces fora do repo. A medição de tamanho é evidência para o /1 no e2e, não critério desta tarefa.
+- **interfaces**: nenhuma (a asserção da calibração de hoje já cobre o texto)
+- **ponto de mudança**: `tests/evals/README.md:94` — data `2026-10-12` → data da rodada (`| porta | braço sem plugin (\`--completo --runs 6\`) | <AAAA-MM-DD> | REPROVOU 0/6 (com o plugin 6/6, Δ +100 pp) |`); Notas de sessão
+- **teste**: n/a (rodada real); `tests/test-porta-anuncio.sh` (asserção /4 de hoje, linha 112)
+- **asserções**: saída `PASSOU · porta · com 6/6 · sem 0/6 · Δ +100 pp · …`, `exit=0`, sem `ISOLAMENTO VIOLADO`; `grep '^| porta |' tests/evals/README.md` contém a data da rodada
+- **ler**: `tests/evals/README.md:88-100`
+- **done quando**: saída real e a tabela de tamanhos nas Notas de sessão; README com a data; `bash tests/test-porta-anuncio.sh` verde.
+
+- [ ] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `T="$(mktemp -d)/t23"; bash tests/evals.sh --completo --runs 6 --caso porta --traces "$T"; echo "exit=$? traces=$T"`
+- [ ] **medir** — tamanho dos blocos com o anúncio, por run (`text:<n>` / `thinking:<n>`):
+  `for f in "$T"/porta-com-*.jsonl; do printf '%s ' "$(basename "$f")"; perl -MJSON::PP -ne 'my $e = eval { decode_json($_) } or next; next unless ($e->{type} // "") eq "assistant"; my $c = $e->{message}{content}; next unless ref $c eq "ARRAY"; for my $b (@$c) { my $s = $b->{text} // $b->{thinking} // ""; print "$b->{type}:", length($s), " " if $s =~ /classifi.{0,40}?como \**MEDIUM/i } END { print "\n" }' "$f"; done`; e `grep -c 'PreToolUse:Write hook error' "$T"/porta-com-*.jsonl`
+- [ ] **registrar** — README (data); saída, tamanhos e recusas nas Notas de sessão; `bash tests/test-porta-anuncio.sh` verde
+- [ ] **commit** — `git add tests/evals/README.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): 3a rodada completa do porta 6/6 com e 0/6 sem, calibracao"`
+
+## Tarefa 24: mutação da regra `porta-anuncio` (3ª medição)
+
+- **depende-de**: [23]
+- **requisito**: `porta-anuncio/5` — QUANDO `bash tests/evals.sh --mutar porta-anuncio --runs 3` roda O SISTEMA DEVE ter o resultado (taxa com e sem a regra) registrado no nó, caia a taxa ou não
+- **decisões relevantes**: o efeito pode cair de −100 pp (o hook recupera o anúncio sem o passo 4 e a /14 passa a contar essa recuperação — Notas de sessão); registrar mesmo assim, sem mexer na mutação (fora-de-escopo: mutação que desligue o hook). Nó em 100 linhas: a linha nova entra e o `## e2e` (cabeçalho + linha da 2ª rodada) vai, literal, para `porta-anuncio-historico.md` sob `## e2e (2ª rodada)` — a fase e2e reescreve a seção no nó.
+- **interfaces**: linha `- <AAAA-MM-DD> (medição, porta-anuncio/5, 5ª reabertura): \`--mutar porta-anuncio --runs 3\` → <linha do relatório verbatim>; manter ou cortar a regra é decisão do humano.`
+- **ponto de mudança**: `docs/audora/memory/porta-anuncio.md` — fim de `## decisoes` (depois da linha 94), `## e2e` (linhas 99-100) removido, `atualizado-em:`; `docs/audora/memory/porta-anuncio-historico.md` — fim do arquivo
+- **teste**: n/a (medição real)
+- **asserções**: `grep -c -- '--mutar porta-anuncio --runs 3' docs/audora/memory/porta-anuncio.md` → `1`, com `com a regra ` e `sem a regra ` na mesma linha; `tr -d '\r' < docs/audora/memory/porta-anuncio.md | wc -l` ≤ `100`; `grep -c '^## e2e (2ª rodada)' docs/audora/memory/porta-anuncio-historico.md` → `1`
+- **ler**: `docs/audora/memory/porta-anuncio.md:89-100`, `docs/audora/memory/porta-anuncio-historico.md` (fim)
+- **done quando**: rodada real com `exit=0`, linha no nó, `memory-guard`/`memory-validate` calados.
+
+- [ ] **rodar** — `T="$(mktemp -d)/t24"; bash tests/evals.sh --mutar porta-anuncio --runs 3 --traces "$T"; echo "exit=$? traces=$T"`
+- [ ] **registrar** — linha no nó, `## e2e` para o histórico; greps das asserções
+- [ ] **commit** — `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md && git commit -m "docs(porta-anuncio/5): 3a medicao da mutacao porta-anuncio"`
+
+## Tarefa 25: rodada rápida dos outros casos, com traces (3ª)
+
+- **depende-de**: [24]
+- **requisito**: `porta-anuncio/6` — QUANDO a rodada rápida roda os casos `escopo-antes`, `memoria` e `tdd` depois da mudança O SISTEMA DEVE manter os três `PASSOU`; reprovação do `tdd` com o perfil `retomada-execute` (run curto, sem a skill execute) roda de novo uma vez, com o trace guardado como prova
+- **decisões relevantes**: perfil `retomada-execute` no trace do `tdd` = nenhuma linha com `"name":"Skill"` e `execute` no input E custo do run < US$ 0,10. Fora do perfil, ou reprovou de novo → skill debug.
+- **interfaces**: nenhuma
+- **ponto de mudança**: Notas de sessão do plano
+- **teste**: n/a (rodada real)
+- **asserções**: saída com `PASSOU · escopo-antes · com 1/1`, `PASSOU · memoria · com 1/1`, `PASSOU · tdd · com 1/1` (na 1ª rodada, ou o `tdd` no rerun com o trace da reprovação mostrando o perfil: `grep -c '"name":"Skill"' <trace>` e o `execute`), `exit=0` na rodada que fecha
+- **ler**: `tests/evals/README.md:96-102`
+- **done quando**: saídas e, se houve rerun, o caminho do trace e a conferência do perfil nas Notas de sessão.
+
+- [ ] **rodar** — `T="$(mktemp -d)/t25"; bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
+- [ ] **rerun (só se o tdd reprovou no perfil)** — `T="$(mktemp -d)/t25b"; bash tests/evals.sh --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
+- [ ] **registrar** — saídas e perfil nas Notas de sessão
+- [ ] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): 3a rodada rapida escopo-antes, memoria e tdd"`

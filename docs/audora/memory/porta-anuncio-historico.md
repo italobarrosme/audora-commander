@@ -68,3 +68,23 @@ narração em ~98%):
 
 2026-10-12 (validate): /1 (narração parafraseada, hook recusa 2×), /4 (1/3),
 /6 (`tdd` 0/1) → debug (prosa longa no meio do turno) → 4ª reabertura.
+
+## delta (4ª reabertura; movido na validate de 2026-10-13)
+
+- MODIFICADO (2026-10-12, 4ª reabertura): /1 frase sem teto → ≤ 150 chars e
+  `<motivo curto>`; /4 3/3·0/3 → `--runs 6` 6/6·0/6; /6 + rerun no perfil
+  retomada; /7 mensagem cita o teto. ADICIONADO: /12, /13
+
+## e2e (1ª rodada)
+
+2026-10-12: /1, /4, /6 falharam (relatório no `git log` de
+`docs/audora/e2e/e2e-porta-anuncio.md`); resposta: 4ª reabertura.
+
+## movido no scope da 5ª reabertura (2026-10-13)
+
+- 2026-10-12 (medição, porta-anuncio/5, 4ª reabertura): `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 0/3 · efeito -100 pp
+  (de novo na validate de 10-13: 3/3 · 0/3, US$ 0.9885); manter ou cortar a regra é decisão do humano.
+- feedback-reprovacao 2026-10-13 (validate, por escopo): /1 teto 150 cumprido
+  em 1/9 — o motivo lista as respostas de risco; >~200 vira narração. /4 5/6:
+  o grader conta o Write recusado pelo hook como 1ª escrita (recusa → texto →
+  nó reprova). Resposta: 5ª reabertura.
