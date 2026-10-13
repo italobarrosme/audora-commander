@@ -16,12 +16,12 @@ bash tests/evals.sh --mutar execute-apague [--runs 3]   # mutação de uma regra
 
 | flag | padrão | o que faz |
 |---|---|---|
-| `--completo` | rápido | 3 runs com e 3 sem o plugin; mostra a taxa sem e a diferença (Δ) |
+| `--completo` | rápido | 3 runs com e 3 sem o plugin (ou `--runs <n>`); mostra a taxa sem e a diferença (Δ) |
 | `--caso <nome>` | todos | roda só esse caso (repetível) |
 | `--teto <usd>` | `10` | para antes do próximo run quando o gasto da rodada chega ao teto |
 | `--modelo <m>` | `sonnet` | modelo do agente sob teste |
 | `--mutar <regra>` | — | roda o caso da regra com a skill original e com uma cópia sem a regra |
-| `--runs <n>` | `3` | runs por braço na mutação (só com `--mutar`) |
+| `--runs <n>` | `3` | runs por braço na mutação ou no `--completo` (só com `--mutar` ou `--completo`) |
 | `--timeout-run <s>` | `900` | limite por run do caso harness (`tdd`) |
 | `--claude <bin>` / `--raiz <dir>` | PATH / repo | ganchos de teste (o `tests/test-evals.sh` usa um claude falso) |
 

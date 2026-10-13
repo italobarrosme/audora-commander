@@ -99,6 +99,12 @@ assert_eq 3 "$(grep '^-p ' "$SP/stub.log" | grep -c -- '--plugin-dir')" "evals-c
 assert_contains "$out" "PASSOU · tdd · com 3/3 · sem 3/3 · Δ +0 pp · US\$ 1.8000 · tokens 60" "evals-comportamento/2 harness completo: taxa e diferença"
 
 reseta_hs
+out="$(roda_evals --completo --runs 2 2>/dev/null)"; code=$?
+assert_eq 4 "$(grep -c '^-p ' "$SP/stub.log")" "porta-anuncio/13 harness completo --runs 2: 4 runs"
+assert_eq 2 "$(grep '^-p ' "$SP/stub.log" | grep -c -- '--plugin-dir')" "porta-anuncio/13 harness completo --runs 2: 2 com o plugin"
+assert_contains "$out" "PASSOU · tdd · com 2/2 · sem 2/2 · Δ +0 pp · US\$ 1.2000 · tokens 40" "porta-anuncio/13 harness completo --runs 2: taxa"
+
+reseta_hs
 out="$(roda_evals --teto 0.5 --completo 2>/dev/null)"; code=$?
 assert_eq 2 "$code" "evals-comportamento/8 harness para no teto entre runs"
 assert_eq 2 "$(grep -c '^-p ' "$SP/stub.log")" "evals-comportamento/8 harness: nenhum run depois do teto"

@@ -22,6 +22,10 @@ assert_contains "$err" "evals: caso desconhecido: nada" "evals-comportamento/11 
 err="$(roda_evals --runs 2 2>&1 >/dev/null)"; code=$?
 assert_eq 4 "$code" "evals-comportamento/11 --runs sem --mutar sai 4"
 assert_contains "$err" "evals: --runs só vale com --mutar" "evals-comportamento/11 --runs sem --mutar explica"
+assert_contains "$err" "evals: --runs só vale com --mutar ou --completo" "porta-anuncio/13 --runs sozinho recusado"
+err="$(roda_evals --completo --runs 0 2>&1 >/dev/null)"; code=$?
+assert_eq 4 "$code" "porta-anuncio/13 --completo --runs 0 sai 4"
+assert_contains "$err" "evals: --runs inválido ('0')" "porta-anuncio/13 --completo --runs 0 explica"
 err="$(roda_evals --xpto 2>&1 >/dev/null)"; code=$?
 assert_eq 4 "$code" "evals-comportamento/11 opção desconhecida sai 4"
 assert_contains "$err" "evals: opção desconhecida: --xpto" "evals-comportamento/11 opção desconhecida explica"
@@ -208,6 +212,13 @@ assert_contains "$out" "REPROVOU · porta · com 2/3 · sem 0/3 · Δ +67 pp · 
 reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 1 1 1)"
 out="$(roda_evals --completo 2>/dev/null)"
 assert_contains "$out" "PASSOU · porta · com 3/3 · sem 3/3 · Δ +0 pp" "evals-comportamento/2 diferença zero com sinal"
+
+# --- porta-anuncio/13: --runs <n> no modo completo ---
+reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1 1 1 1)" "$(runs s 0 0 0 0 0 0)"
+out="$(roda_evals --completo --runs 6 2>/dev/null)"; code=$?
+assert_eq 0 "$code" "porta-anuncio/13 --completo --runs 6 sai 0"
+assert_contains "$(grep '^plugin eval' "$SP/stub.log")" "--runs 6 --ablation with-without" "porta-anuncio/13 invoca 6 runs com e sem"
+assert_contains "$out" "PASSOU · porta · com 6/6 · sem 0/6 · Δ +100 pp · US\$ 1.2000 · tokens 120" "porta-anuncio/13 taxa com 6 runs por braço"
 
 reseta_pe; resultado "$SP/pe/r.json" "$(runs c 1 1 1)" "$(runs s 1 T 0)"
 out="$(roda_evals --completo 2>/dev/null)"; code=$?

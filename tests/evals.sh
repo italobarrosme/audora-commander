@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Evals de comportamento do plugin. MANUAL e PAGO — fica fora do tests/run.sh.
-# Uso: bash tests/evals.sh [--completo] [--caso <nome>]... [--teto <usd>] [--modelo <m>]
-#                          [--mutar <regra-id> [--runs <n>]]
+# Uso: bash tests/evals.sh [--completo [--runs <n>]] [--caso <nome>]... [--teto <usd>] [--modelo <m>]
+#                          [--mutar <regra-id> [--runs <n>]]   (--runs: runs por braço no --completo ou na mutação)
 #                          [--claude <bin>] [--raiz <dir>] [--timeout-run <s>]
 # Exit: 0 tudo passou · 1 reprovou · 2 teto · 3 erro de infra/recusado/isolamento · 4 uso.
 set -uo pipefail
@@ -33,7 +33,7 @@ done
 
 [[ "$teto" =~ ^[0-9]+(\.[0-9]+)?$ ]] && awk -v t="$teto" 'BEGIN{exit !(t > 0)}' \
   || uso "--teto inválido ('$teto')"
-[ -z "$runs" ] || [ -n "$mutar" ] || uso "--runs só vale com --mutar"
+[ -z "$runs" ] || [ -n "$mutar" ] || [ "$completo" -eq 1 ] || uso "--runs só vale com --mutar ou --completo"
 [ -z "$runs" ] || [[ "$runs" =~ ^[1-9][0-9]*$ ]] || uso "--runs inválido ('$runs')"
 [[ "$timeout_run" =~ ^[1-9][0-9]*$ ]] || uso "--timeout-run inválido ('$timeout_run')"
 [ -n "$raiz" ] || raiz="$(cd "$(dirname "$0")/.." && pwd)"
@@ -230,9 +230,9 @@ for caso in "${casos[@]}"; do
   fi
   restante="$(awk -v t="$teto" -v g="$GASTO" 'BEGIN { printf "%.4f", t - g }')"
   case "${tipo_de[$caso]}:$completo" in
-    plugin-eval:1) roda_plugin_eval "$caso" "$raiz" 3 with-without "$restante" ;;
+    plugin-eval:1) roda_plugin_eval "$caso" "$raiz" "${runs:-3}" with-without "$restante" ;;
     plugin-eval:0) roda_plugin_eval "$caso" "$raiz" 1 none "$restante" ;;
-    harness:1) roda_caso_harness "$caso" "$raiz" "com sem" 3 ;;
+    harness:1) roda_caso_harness "$caso" "$raiz" "com sem" "${runs:-3}" ;;
     harness:0) roda_caso_harness "$caso" "$raiz" com 1 ;;
   esac > "$reg"
   agrega_caso "$caso" "$reg" "$completo"
