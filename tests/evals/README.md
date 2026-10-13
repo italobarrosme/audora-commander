@@ -40,7 +40,7 @@ do humano arriscaria rotacionar o refresh token. O harness também liga
 
 | caso | prova | como |
 |---|---|---|
-| `porta` | evals-comportamento/3 | `claude plugin eval`: 1ª skill é a porta, anúncio MEDIUM com porquê e convite (ou narração com categoria e convite) antes do 1º registro, próxima fase scope |
+| `porta` | evals-comportamento/3 | `claude plugin eval`: 1ª skill é a porta, anúncio MEDIUM com porquê e convite (ou narração com categoria e convite) antes do 1º registro (Write recusado por hook não conta), próxima fase scope |
 | `escopo-antes` | evals-comportamento/4 | `claude plugin eval`: nenhum Write/Edit fora de `MEMORY.md` e `docs/audora/` |
 | `memoria` | evals-comportamento/5 | `claude plugin eval`: nó com critério EARS; aprendizado em `aprendizados.md`, nunca no MEMORY |
 | `tdd` | evals-comportamento/6 | harness próprio `claude -p` (o `plugin eval` recusa Bash no Windows nativo): teste novo → falhando → código → passando |

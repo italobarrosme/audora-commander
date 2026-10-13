@@ -86,6 +86,8 @@ printf '{"type":"assistant","message":{"content":[{"type":"text","text":"%s"},{"
 # sig <k> <tipo> → assinatura base64 (protobuf) com \x42<len><tipo> no byte 3+k
 sig() { K="$1" TIPO="$2" perl -MMIME::Base64 -e 'print encode_base64("\x08\x04\x12" . ("\x01" x $ENV{K}) . "\x42" . chr(length $ENV{TIPO}) . $ENV{TIPO} . "\x12\x0c" . ("z" x 12), "")'; }
 ev_narr() { printf '{"type":"assistant","message":{"content":[{"type":"thinking","thinking":"%s","signature":"%s"}]}}\n' "$1" "$2"; }
+# ev_recusa <id> [Write|Edit] [PreToolUse|PostToolUse] — tool_result de hook que recusou (formato real, trace uuKwjh:61)
+ev_recusa() { printf '{"type":"user","message":{"role":"user","content":[{"type":"tool_result","content":"%s:%s hook error: [\\"C:\\\\p\\\\hooks/run-hook.cmd\\" anuncio-guard]: anuncio-guard: antes de registrar o nó.\\n\\nThis hook comes from the audora-commander@inline plugin.","is_error":true,"tool_use_id":"%s"}]}}\n' "${3:-PreToolUse}" "${2:-Write}" "$1"; }
 NA='Classifiquei a demanda como MEDIUM: não envolve migração, mas toca vários arquivos e lógica nova — me avise se discordar. Agora vou registrar o nó.'
 SN="$(sig 10 narration)"; ST="$(sig 10 thinking)"
 assert_contains "$SN" 'IJbmFycmF0aW9u' "porta-anuncio/2 sig 10 narration tem o núcleo real"
@@ -110,6 +112,28 @@ printf '{"type":"assistant","message":{"content":[{"type":"thinking","signature"
 { ev_tool w Edit "{\"file_path\":\"$WM\",\"old_string\":\"a\",\"new_string\":\"b\"}"; ev_narr "$NA" "$SN"; } > "$SP/em.jsonl"; ga reprovou "Edit no MEMORY antes da narração"
 { ev_narr "$NA" "$SN"; ev_tool w Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; } > "$SP/em.jsonl"; ga passou "narração antes do Write no nó"
 { for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_narr "$NA" "$SN"; } > "$SP/em.jsonl"; ga passou "trace grande, narração"
+
+# --- /14 — grader categoria pula Write/Edit recusado por hook PreToolUse ---
+g14() { assert_eq "$1" "$(emula_grader "$GC" "$SP/em.jsonl" "$SP/emws")" "porta-anuncio/14 categoria: $2"; }
+wn() { ev_tool "$1" Write "{\"file_path\":\"$WN\",\"content\":\"x\"}"; }
+em() { ev_tool "$1" Edit "{\"replace_all\":false,\"file_path\":\"$WM\",\"old_string\":\"a\",\"new_string\":\"b\"}"; }
+{ wn w1; ev_recusa w1; ev_text "$A"; wn w2; } > "$SP/em.jsonl"; g14 passou "recusa → texto → Write"
+{ wn w1; ev_recusa w1; wn w2; ev_recusa w2; ev_text "$A"; wn w3; } > "$SP/em.jsonl"; g14 passou "2 recusas → texto → Write"
+{ em e1; ev_recusa e1 Edit; ev_text "$A"; em e2; } > "$SP/em.jsonl"; g14 passou "Edit no MEMORY recusado"
+{ wn w1; ev_recusa w1; ev_narr "$NA" "$SN"; wn w2; } > "$SP/em.jsonl"; g14 passou "recusa → narração → Write"
+{ ev_text "$A"; wn w1; ev_recusa w1; wn w2; } > "$SP/em.jsonl"; g14 passou "anúncio antes da recusa"
+{ wn w1; ev_recusa w1; wn w2; ev_result w2 false; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "Write que gravou antes do anúncio"
+{ wn w1; ev_recusa w1; em e1; ev_result e1 false; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "Edit do MEMORY que gravou"
+{ wn w1; em e1; ev_recusa w1; ev_result e1 false; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "escrita que gravou entre o Write recusado e a recusa"
+{ wn w1; ev_recusa w1; ev_text 'Usando audora-commander.'; } > "$SP/em.jsonl"; g14 reprovou "recusa sem anúncio"
+{ wn w1; ev_result w1 true; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "erro que não é de hook"
+{ wn w1; ev_recusa w1 Write PostToolUse; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "PostToolUse: gravou"
+{ wn w1; ev_recusa w9; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "recusa de outro id"
+{ wn w1; ev_recusa w1; } > "$SP/em.jsonl"; g14 reprovou "só a recusa"
+{ for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; wn w1; ev_recusa w1; ev_text "$A"; } > "$SP/em.jsonl"; g14 passou "trace grande com recusa"
+{ wn w1; for i in $(seq 3000); do ev_tool "r$i" Read '{"file_path":"/w/lib.sh"}'; ev_result "r$i" false; done; ev_text "$A"; } > "$SP/em.jsonl"; g14 reprovou "trace grande, Write sem recusa antes do anúncio"
+assert_contains "$(cat "$GC")" 'porta-anuncio/14' "porta-anuncio/14 categoria.md descreve a recusa"
+assert_contains "$(grep '^| `porta` |' "$EV/README.md")" 'Write recusado por hook não conta' "porta-anuncio/14 README dos evals cita a recusa"
 
 # --- /4 — calibração do porta registra a rodada completa ---
 cal="$(flat "$EV/README.md" '## Calibração' | grep -o '| porta |[^|]*|[^|]*|[^|]*|')"
