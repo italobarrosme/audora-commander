@@ -63,3 +63,8 @@ narração em ~98%):
 - /4 com 6 runs por braço (3: passou por sorte na execute, 1/3 na validate);
 - /6 mantém o `tdd` com 1 rerun no perfil `retomada-execute` (estrito: falha
   alheia à demanda; tirar o tdd: perde a guarda).
+
+## feedback-reprovacao (movido na execute da 4ª reabertura)
+
+2026-10-12 (validate): /1 (narração parafraseada, hook recusa 2×), /4 (1/3),
+/6 (`tdd` 0/1) → debug (prosa longa no meio do turno) → 4ª reabertura.

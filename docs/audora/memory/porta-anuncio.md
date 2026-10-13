@@ -85,6 +85,9 @@ passo 4); garantir que o humano veja a narração ou zerá-la (harness; ramo nar
 Decisões do 1º escopo, da carga BASE, das reaberturas 1-4 (4ª: anúncio curto,
 teto 150, hook não mede, /4 com 6 runs, /6 com rerun) e a medição /5:
 `porta-anuncio-historico.md`.
+- 2026-10-12 (medição, porta-anuncio/5, 4ª reabertura):
+  `--mutar porta-anuncio --runs 3` → com a regra 3/3 · sem a regra 0/3 · efeito -100 pp;
+  manter ou cortar a regra é decisão do humano.
 
 ## delta
 
@@ -94,7 +97,4 @@ teto 150, hook não mede, /4 com 6 runs, /6 com rerun) e a medição /5:
 
 ## e2e
 2026-10-12: /1, /4, /6 falharam (`docs/audora/e2e/e2e-porta-anuncio.md`).
-
-## feedback-reprovacao
-2026-10-12 (validate): /1 (narração parafraseada, hook recusa 2×), /4 (1/3),
-/6 (`tdd` 0/1) → debug (prosa longa no meio do turno) → 4ª reabertura.
+Reprovação da validate e a resposta: `porta-anuncio-historico.md`.
