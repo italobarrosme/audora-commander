@@ -88,13 +88,17 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
 - marketplace-publico | planned | Marketplace público | Publicação em marketplace público | marketplace, publicacao | —
-- agentes-dedicados | planned | Agentes dedicados | Subagent types customizados por fase | agentes, subagent | —
+- agentes-dedicados | planned | Agentes dedicados | Agentes read-only no plugin (explorador, revisor-diff, refutador) e memory-guard em PreToolUse. | agentes, subagent, revisor, refutador, explorador, pretooluse, plataforma | agents/, hooks/hooks.json, hooks/memory-guard
 - docs-bilingues | delivered | README bilíngue → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - e2e-playwright-docker | delivered | e2e Playwright + compose → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - skill-depurar | delivered | Skill de debug → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - evals-comportamento | delivered | Evals de comportamento → docs/audora/arquivo/2026-10-11-evals-comportamento.md
 - porta-anuncio | delivered | Anúncio da porta obrigatório → docs/audora/arquivo/2026-10-13-porta-anuncio.md
 - retomada-execute | planned | Retomada por comando | O eval tdd mostrou o plugin ignorando "execute de <id>" em ~1/3 dos runs (2026-10-10): sem skill, pergunta o que fazer; a porta deve reconhecer "<fase> de <id>" sempre. | retomada, execute, porta, session-start, eval | skills/audora-commander/SKILL.md, hooks/session-start
+- cerimonia-enxuta | planned | Cerimônia enxuta | Encolher o processo: LIGHT sem nó, plano e e2e efêmeros, bloco de fechamento curto, guardas com folga. | light, cerimonia, plano, e2e, cleanup, bloco-fechamento, carga, guardas | skills/audora-commander/SKILL.md, skills/validate/, skills/cleanup/SKILL.md, hooks/cleanup, templates/bloco-fechamento-template.md, tests/test-carga.sh
+- gate-anti-edicao | planned | Gate anti-edição | Gate compara contra a base da demanda, reprova assert editado e exige suíte completa; bug lista comportamento inalterado. | gate, anti-fraude, assert, base, suite-completa, regressao, hotfix | hooks/gate, templates/gate-template.md, skills/execute/SKILL.md
+- status-retomada | planned | Status e retomada | Ver o que está em aberto e retomar sem lembrar o comando; versão sobe a cada entrega com nota de migração. | status, retomada, session-start, versao, release, migracao, brownfield | hooks/session-start, skills/audora-commander/SKILL.md, .claude-plugin/
+- aprendizados-escopo | planned | Aprendizados com escopo | Aprendizado com escopo de arquivo, varredura de obsoleto e promoção do reincidente a hook ou Constituição. | aprendizados, escopo, obsoleto, invalidacao, promocao, erro-repetido | skills/memory/SKILL.md, templates/aprendizados-template.md, hooks/cleanup
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
      Nós entregues até 2026-08-24 vivem no legado
