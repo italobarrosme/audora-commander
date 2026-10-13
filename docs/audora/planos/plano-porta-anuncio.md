@@ -345,6 +345,24 @@ dependem entre si no código, mas T21 cita a frase da T20.
   - limite conhecido (decisão da IA): o miolo do salto não atravessa outra
     escrita no MEMORY/nó; 2 Writes recusados EM PARALELO (mesma mensagem)
     reprovam. Preferido ao contrário (pular uma escrita que gravou).
+- EXECUTE da 5ª reabertura (2026-10-13). T20 `e7b48ad`, T21 `cee741e`, T22
+  `c44000c`: cada um com `GATE: passou` antes do commit (suíte 321 s, 401 s,
+  372 s). T22: grader novo sobre os 12 traces do e2e (`…/eadda169-…/ev/t4`),
+  perl e JS iguais: `porta-com-*` 6 `passou` (`uuKwjh` incluso), `porta-sem-*`
+  6 `reprovou`.
+- T23 (2026-10-13): `bash tests/evals.sh --completo --runs 6 --caso porta
+  --traces "$T"` → `PASSOU · porta · com 6/6 · sem 0/6 · Δ +100 pp · US$
+  1.6612 · tokens 1573914`, `total: 1 caso(s) · 1 passou · 0 reprovou · 0
+  erro de infra · 0 não rodado`, exit 0, sem `ISOLAMENTO VIOLADO`; traces no
+  scratchpad `6ff8884a-…/t23` (6 `porta-com-*`, 6 `porta-sem-*`).
+  - tamanhos: `8mk6yS text:181`; `9iJ9xy thinking:245`, `DRTXc8
+    thinking:233`, `HCJ3LG thinking:231`, `efRDf7 thinking:226`, `pgWMWI
+    thinking:227`. 0 recusa do `anuncio-guard` nos 6.
+  - evidência para o /1 (e2e): o único anúncio em texto cabe em 200 (181),
+    mas os 6 (texto e narração) ainda listam as respostas de risco negativas:
+    "envolve lógica nova em vários arquivos (lib, bin, testes), sem migração,
+    API pública, auth nem efeito irreversível". O motivo único do passo 4 não
+    segurou o modelo.
 
 ### Decisões tomadas pela IA
 
@@ -879,10 +897,10 @@ dependem entre si no código, mas T21 cita a frase da T20.
 - **ler**: `skills/audora-commander/SKILL.md:38-46`, `tests/test-porta-anuncio.sh:18-41`, `tests/test-carga.sh:1-15`
 - **done quando**: asserções verdes; `bash tests/test-carga.sh`, `bash tests/test-leitura-por-secao.sh`, `bash tests/test-parada-revisao.sh`, `bash tests/test-skills.sh`, `bash tests/test-evals-graders.sh` verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou` antes do commit.
 
-- [ ] **preparo** — commit dos artefatos do scope e do plano (o diff do `MEMORY.md` é de outros nós e fica fora): `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md docs/audora/e2e/e2e-porta-anuncio.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio): 5a reabertura, escopo e plano"`
-- [ ] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `<motivo>`, `em até 200 caracteres` e `Um motivo só`
-- [ ] **green** — passo 4, nota de carga e guardas; os testes acima verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh tests/test-carga.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh && git commit -m "feat(porta-anuncio/1): anuncio da porta com motivo unico em ate 200 caracteres"`
+- [x] **preparo** — commit dos artefatos do scope e do plano (o diff do `MEMORY.md` é de outros nós e fica fora): `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md docs/audora/e2e/e2e-porta-anuncio.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio): 5a reabertura, escopo e plano"`
+- [x] **red** — asserções escritas; `bash tests/test-porta-anuncio.sh` falha em `<motivo>`, `em até 200 caracteres` e `Um motivo só`
+- [x] **green** — passo 4, nota de carga e guardas; os testes acima verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add skills/audora-commander/SKILL.md tests/test-porta-anuncio.sh tests/test-carga.sh tests/test-leitura-por-secao.sh tests/test-parada-revisao.sh && git commit -m "feat(porta-anuncio/1): anuncio da porta com motivo unico em ate 200 caracteres"`
 
 ## Tarefa 21: mensagem do `anuncio-guard` cita motivo único e 200; > 200 ou enumerando passa
 
@@ -904,9 +922,9 @@ dependem entre si no código, mas T21 cita a frase da T20.
 - **ler**: `hooks/anuncio-guard:52-58`, `tests/test-porta-anuncio.sh:129-153,213-215`
 - **done quando**: asserções verdes; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — `MSG` novo e asserções /12; `bash tests/test-porta-anuncio.sh` falha nos 3 `assert_eq "$MSG"` (mensagem antiga)
-- [ ] **green** — linha 57 do hook; teste verde; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`
-- [ ] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,12): anuncio-guard pede motivo unico em ate 200 caracteres"`
+- [x] **red** — `MSG` novo e asserções /12; `bash tests/test-porta-anuncio.sh` falha nos 3 `assert_eq "$MSG"` (mensagem antiga)
+- [x] **green** — linha 57 do hook; teste verde; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`
+- [x] **commit** — `git add hooks/anuncio-guard tests/test-porta-anuncio.sh && git commit -m "feat(porta-anuncio/7,12): anuncio-guard pede motivo unico em ate 200 caracteres"`
 
 ## Tarefa 22: grader `categoria` não conta Write/Edit recusado por hook
 
@@ -947,9 +965,9 @@ dependem entre si no código, mas T21 cita a frase da T20.
 - **ler**: `tests/evals/porta/graders/categoria.md:1-15`, `tests/test-porta-anuncio.sh:43-108`, `tests/evals-testlib.sh:94-97`, `tests/evals/README.md:40-46`
 - **done quando**: asserções verdes; `bash tests/test-evals-graders.sh` verde; conferência fora da suíte (se `…/eadda169-…/scratchpad/ev/t4` existir): `emula_grader` e `node "$M/js-traces.js"` sobre os 12 traces → `porta-com-*` 6 `passou`, `porta-sem-*` 6 `reprovou`; `SUITE_TIMEOUT=600 bash hooks/gate porta-anuncio` → `GATE: passou`.
 
-- [ ] **red** — `ev_recusa`, `g14`, `wn`, `em` e asserções; `bash tests/test-porta-anuncio.sh` falha nos 5 `passou` que têm recusa antes do anúncio (o grader de hoje conta a recusa; "anúncio antes da recusa" já passa)
-- [ ] **green** — `categoria.md` (pattern + descrição) e README dos evals; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` verdes; conferência nos 12 traces; gate
-- [ ] **commit** — `git add tests/evals/porta/graders/categoria.md tests/evals/README.md tests/test-porta-anuncio.sh && git commit -m "test(porta-anuncio/14): grader categoria nao conta Write recusado por hook"`
+- [x] **red** — `ev_recusa`, `g14`, `wn`, `em` e asserções; `bash tests/test-porta-anuncio.sh` falha nos 5 `passou` que têm recusa antes do anúncio (o grader de hoje conta a recusa; "anúncio antes da recusa" já passa)
+- [x] **green** — `categoria.md` (pattern + descrição) e README dos evals; `bash tests/test-porta-anuncio.sh && bash tests/test-evals-graders.sh` verdes; conferência nos 12 traces; gate
+- [x] **commit** — `git add tests/evals/porta/graders/categoria.md tests/evals/README.md tests/test-porta-anuncio.sh && git commit -m "test(porta-anuncio/14): grader categoria nao conta Write recusado por hook"`
 
 ## Tarefa 23: rodada completa do `porta` com 6 runs (3ª) e calibração
 
@@ -963,11 +981,11 @@ dependem entre si no código, mas T21 cita a frase da T20.
 - **ler**: `tests/evals/README.md:88-100`
 - **done quando**: saída real e a tabela de tamanhos nas Notas de sessão; README com a data; `bash tests/test-porta-anuncio.sh` verde.
 
-- [ ] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `T="$(mktemp -d)/t23"; bash tests/evals.sh --completo --runs 6 --caso porta --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **medir** — tamanho dos blocos com o anúncio, por run (`text:<n>` / `thinking:<n>`):
+- [x] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `T="$(mktemp -d)/t23"; bash tests/evals.sh --completo --runs 6 --caso porta --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **medir** — tamanho dos blocos com o anúncio, por run (`text:<n>` / `thinking:<n>`):
   `for f in "$T"/porta-com-*.jsonl; do printf '%s ' "$(basename "$f")"; perl -MJSON::PP -ne 'my $e = eval { decode_json($_) } or next; next unless ($e->{type} // "") eq "assistant"; my $c = $e->{message}{content}; next unless ref $c eq "ARRAY"; for my $b (@$c) { my $s = $b->{text} // $b->{thinking} // ""; print "$b->{type}:", length($s), " " if $s =~ /classifi.{0,40}?como \**MEDIUM/i } END { print "\n" }' "$f"; done`; e `grep -c 'PreToolUse:Write hook error' "$T"/porta-com-*.jsonl`
-- [ ] **registrar** — README (data); saída, tamanhos e recusas nas Notas de sessão; `bash tests/test-porta-anuncio.sh` verde
-- [ ] **commit** — `git add tests/evals/README.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): 3a rodada completa do porta 6/6 com e 0/6 sem, calibracao"`
+- [x] **registrar** — README (data); saída, tamanhos e recusas nas Notas de sessão; `bash tests/test-porta-anuncio.sh` verde
+- [x] **commit** — `git add tests/evals/README.md docs/audora/planos/plano-porta-anuncio.md && git commit -m "test(porta-anuncio/4): 3a rodada completa do porta 6/6 com e 0/6 sem, calibracao"`
 
 ## Tarefa 24: mutação da regra `porta-anuncio` (3ª medição)
 

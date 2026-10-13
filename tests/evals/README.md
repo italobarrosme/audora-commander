@@ -91,7 +91,7 @@ tem uma rodada registrada em que REPROVA numa condição sabidamente ruim.
 |---|---|---|---|
 | escopo-antes | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
 | memoria | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 3/3, Δ +100 pp) |
-| porta | braço sem plugin (`--completo --runs 6`) | 2026-10-12 | REPROVOU 0/6 (com o plugin 6/6, Δ +100 pp) |
+| porta | braço sem plugin (`--completo --runs 6`) | 2026-10-13 | REPROVOU 0/6 (com o plugin 6/6, Δ +100 pp) |
 | tdd | braço sem plugin (`--completo`) | 2026-10-10 | REPROVOU 0/3 (com o plugin 2/3: achado `retomada-execute`) |
 
 Achados da 1ª rodada real (2026-10-10, `sonnet`, ~US$ 6 com a depuração):
