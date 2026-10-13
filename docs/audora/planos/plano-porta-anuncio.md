@@ -283,6 +283,19 @@ como histórico da 1ª rodada.
     porque … Me corrija se discordar.", ~165 chars, acima do teto). O teto
     não tirou o anúncio da narração; o ramo narração do grader e do hook é o
     que segura o fluxo.
+- T18 (2026-10-12): `bash tests/evals.sh --mutar porta-anuncio --runs 3
+  --traces "$T"` → `com a regra 3/3 · sem a regra 0/3 · efeito -100 pp`,
+  `custo: US$ 1.0369 · tokens 1350197`, exit 0 (linhas 40-43 da porta);
+  traces em `/tmp/tmp.BcIPLJK01f/t18` (os 2 braços saem `porta-com-*`: a
+  mutação roda os dois com o plugin). Nó com 100 linhas: `feedback-reprovacao`
+  movido para o histórico. Commit `bf7ef18`.
+- T19 (2026-10-12): `bash tests/evals.sh --caso escopo-antes --caso memoria
+  --caso tdd --traces "$T"` → `PASSOU · escopo-antes · com 1/1 · US$ 0.1436`,
+  `PASSOU · memoria · com 1/1 · US$ 0.2251`, `PASSOU · tdd · com 1/1 · US$
+  0.1117`, `total: 3 caso(s) · 3 passou · 0 reprovou · 0 erro de infra · 0
+  não rodado · US$ 0.4805 · tokens 593842`, exit 0. Sem rerun (o `tdd`
+  passou: trace `/tmp/tmp.tLlcc9mUZ7/t19/tdd-com-*.jsonl` com 1 `Skill`
+  `audora-commander:execute`). Gasto da 4ª reabertura ≈ US$ 3,2.
 
 ### Decisões tomadas pela IA
 
@@ -760,9 +773,9 @@ como histórico da 1ª rodada.
 - **ler**: `docs/audora/memory/porta-anuncio.md:70-100`
 - **done quando**: rodada real com `exit=0`, linha no nó, `memory-guard`/`memory-validate` aceitam.
 
-- [ ] **rodar** — `T="$(mktemp -d)/t18"; bash tests/evals.sh --mutar porta-anuncio --runs 3 --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **registrar** — linha no nó; grep
-- [ ] **commit** — `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md && git commit -m "docs(porta-anuncio/5): 2a medicao da mutacao porta-anuncio"`
+- [x] **rodar** — `T="$(mktemp -d)/t18"; bash tests/evals.sh --mutar porta-anuncio --runs 3 --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **registrar** — linha no nó; grep
+- [x] **commit** — `git add docs/audora/memory/porta-anuncio.md docs/audora/memory/porta-anuncio-historico.md && git commit -m "docs(porta-anuncio/5): 2a medicao da mutacao porta-anuncio"`
 
 ## Tarefa 19: rodada rápida dos outros casos, com traces
 
@@ -776,7 +789,7 @@ como histórico da 1ª rodada.
 - **ler**: `tests/evals/README.md:96-102`
 - **done quando**: saídas e, se houve rerun, o caminho do trace e a conferência do perfil nas Notas de sessão.
 
-- [ ] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `T="$(mktemp -d)/t19"; bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **rerun (só se o tdd reprovou no perfil)** — `T="$(mktemp -d)/t19b"; bash tests/evals.sh --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
-- [ ] **registrar** — saídas e perfil nas Notas de sessão
-- [ ] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): rodada rapida escopo-antes, memoria e tdd com traces"`
+- [x] **rodar** — `grep -c '^CLAUDE_CODE_OAUTH_TOKEN=..' .env` → `1`; `T="$(mktemp -d)/t19"; bash tests/evals.sh --caso escopo-antes --caso memoria --caso tdd --traces "$T"; echo "exit=$? traces=$T"`
+- [x] **rerun (só se o tdd reprovou no perfil)** — `T="$(mktemp -d)/t19b"; bash tests/evals.sh --caso tdd --traces "$T"; echo "exit=$? traces=$T"` — n/a: o tdd passou na 1ª rodada
+- [x] **registrar** — saídas e perfil nas Notas de sessão
+- [x] **commit** — `git add docs/audora/planos/plano-porta-anuncio.md && git commit -m "docs(porta-anuncio/6): rodada rapida escopo-antes, memoria e tdd com traces"`
