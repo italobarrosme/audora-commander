@@ -99,7 +99,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - gate-anti-edicao | planned | Gate anti-edição | Gate compara contra a base da demanda, reprova assert editado e exige suíte completa; bug lista comportamento inalterado. | gate, anti-fraude, assert, base, suite-completa, regressao, hotfix | hooks/gate, templates/gate-template.md, skills/execute/SKILL.md
 - status-retomada | planned | Status e retomada | Ver o que está em aberto e retomar sem lembrar o comando; versão sobe a cada entrega com nota de migração. | status, retomada, session-start, versao, release, migracao, brownfield | hooks/session-start, skills/audora-commander/SKILL.md, .claude-plugin/
 - aprendizados-escopo | planned | Aprendizados com escopo | Aprendizado com escopo de arquivo, varredura de obsoleto e promoção do reincidente a hook ou Constituição. | aprendizados, escopo, obsoleto, invalidacao, promocao, erro-repetido | skills/memory/SKILL.md, templates/aprendizados-template.md, hooks/cleanup
-- relatorio-entrega | in-progress | Relatório de entrega | Relatório de entrega estruturado no chat, deixando claro a demanda pedida e o que foi entregue. | relatorio, entrega, bloco-fechamento, validate, chat, markdown | templates/bloco-fechamento-template.md, skills/validate/, tests/test-templates.sh
+- relatorio-entrega | delivered | Relatório de entrega → docs/audora/arquivo/2026-10-15-relatorio-entrega.md
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
      Nós entregues até 2026-08-24 vivem no legado

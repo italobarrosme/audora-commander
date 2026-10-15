@@ -1,9 +1,9 @@
 ---
 id: relatorio-entrega
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, docs/audora/aprendizados.md, docs/audora/planos/arquivo/plano-relatorio-entrega.md, skills/validate/SKILL.md, skills/validate/references/fechamento-light.md, templates/bloco-fechamento-template.md, tests/test-carga.sh, tests/test-leitura-por-secao.sh, tests/test-parada-revisao.sh, tests/test-plano-mapa.sh, tests/test-relatorio-entrega.sh, tests/test-skills.sh, tests/test-templates.sh]
 keywords: [relatorio, entrega, bloco-fechamento, validate, chat, markdown]
 resumo: Relatório de entrega estruturado no chat, deixando claro a demanda pedida e o que foi entregue.
 atualizado-em: 2026-10-15
@@ -89,6 +89,6 @@ contratos-de-texto); encolher o template (cerimonia-enxuta).
 
 ## e2e
 
-pendente
+2026-10-15: pulado-pelo-humano — portão aprovado só com a suíte (gate 2001 asserts, 0 falhas); /9, /10 e /11 sem prova de comportamento.
 
 ## feedback-reprovacao

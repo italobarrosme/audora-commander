@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-13
+> Última atualização: 2026-10-15
 
 ## O que é e para que serve
 
@@ -94,24 +94,24 @@ Code.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
   fortemente recomendada).
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
-  MEMORY → PRD no merge (consolida delta e decisões vivas, move literal as
-  linhas de aprendizado legadas do `MEMORY.md` para o fim de
-  `docs/audora/aprendizados.md`, completando a quebra de linha que faltar;
-  nó sem linha de critério copia os da spec antes do `git mv`, e sem
-  nenhum para sem arquivar; arquiva o nó por movimento, atualiza a foto do
-  `PRD.md` e acrescenta 1 linha ao `CHANGELOG.md` da raiz, em toda
-  categoria). O `PRD.md` é foto
-  (o que é, stack, arquitetura, metas futuras) com até 200 linhas; o
-  histórico de entregas mora no `CHANGELOG.md` (formato em
-  `templates/changelog-template.md`), e PRD com histórico é convertido
-  on-touch, no próximo sync. Roteador: fluxo até o portão inline; sync,
-  filtro de decisões vivas, revisão adversarial e Fechamento LIGHT em
-  `skills/validate/references/`; reference ausente mantém o portão e não
-  roda o sync. A revisão adversarial (só HIGH, `revisao-adversarial.md`)
-  bloqueia só achado provado de 3 classes (alheio, critério, formato real);
-  o resto vira ressalva de 1 linha. Para em 1 passagem completa mais a
-  reverificação dos bloqueantes corrigidos. Ressalva aceita no portão vai
-  ao nó e, no sync, às metas futuras como candidato a nó.
+  MEMORY → PRD no merge (consolida delta e decisões vivas, move os
+  aprendizados legados do `MEMORY.md` para `docs/audora/aprendizados.md`;
+  nó sem critério numerado copia os da spec antes do `git mv`, sem nenhum
+  para sem arquivar; arquiva o nó por movimento, atualiza a foto do `PRD.md`
+  e acrescenta 1 linha ao `CHANGELOG.md`, em toda categoria). Decidido o
+  portão, em toda categoria e decisão, fecha o turno com o relatório de
+  entrega — Demanda · Mudanças no caminho · Entregue · Evidência · Como
+  conferir · Decisões tomadas pela IA · Arquivos tocados do numstat real —,
+  `[SEM FONTE]` em dado sem fonte lida na sessão; formato em
+  `templates/bloco-fechamento-template.md`. O `PRD.md` é foto com até 200
+  linhas; histórico de entregas no `CHANGELOG.md`, PRD com histórico
+  convertido on-touch no próximo sync. Roteador: fluxo até o portão inline;
+  sync, decisões vivas, revisão adversarial e LIGHT em
+  `skills/validate/references/` (ausente: mantém o portão, não roda o sync).
+  A revisão adversarial (só HIGH) bloqueia só achado provado de 3 classes
+  (alheio, critério, formato real); o resto vira ressalva de 1 linha. Para
+  em 1 passagem completa mais a reverificação dos bloqueantes corrigidos;
+  ressalva aceita vira candidato a nó nas metas futuras.
 - `debug` — debug com causa raiz demonstrada (modo sintoma, que localiza
   código como a `execute`) ou caçada de defeitos por classes com
   verificação de cada achado (modo caçada).
