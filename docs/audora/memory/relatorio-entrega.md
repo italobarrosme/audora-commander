@@ -83,6 +83,7 @@ contratos-de-texto); encolher o template (cerimonia-enxuta).
 - 2026-10-15 (humano): parcial e reprovação também imprimem, veredito por critério. Descartado: só com tudo aprovado.
 - 2026-10-15 (IA, escopo): seções condicionais (Mudanças, Decisões) omitidas quando vazias; Como conferir sempre.
 - 2026-10-15 (IA, escopo): onde o formato vive (template vs reference da validate) é do plan; restrição: carga BASE pinada em `tests/test-carga.sh`.
+- 2026-10-15 (IA, plan): guardas de carga pinadas (BASE/FULL em tests/test-carga.sh e test-parada-revisao.sh; validate 6139 → 6300) sobem no commit que as cresce — o relatório entra no template da BASE por decisão humana de layout em seções.
 
 ## delta
 

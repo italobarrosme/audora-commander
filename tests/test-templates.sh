@@ -20,8 +20,8 @@ b="$(cat templates/bloco-fechamento-template.md 2>/dev/null)"
 for parte in '### ✅ <id> · <fase> → ⏳ <próxima>' '| ✅  | **<fase concluída>** |' '| ⏳  | <fase pendente>      |' '**Produzido**' '**Arquivos**' '> ▶️ **Próximo**'; do
   assert_contains "$b" "$parte" "/1 template tem a parte '$parte'"
 done
-assert_contains "$b" '#### 🚀 Entrega — <id>' "/4 template define o bloco de entrega"
-assert_contains "$b" '| critério | veredito  | evidência' "/4 tabela criterio-veredito"
+assert_contains "$b" '#### Relatório de entrega — <id>' "relatorio-entrega/1 template define o relatório de entrega (substitui resumo-de-fase/4)"
+assert_contains "$b" '| critério | evidência' "relatorio-entrega/4 tabela de evidência (substitui resumo-de-fase/4)"
 assert_contains "$b" 'LIGHT' "/5 template trata LIGHT/HOTFIX"
 assert_contains "$b" 'caminho real' "/6 template proibe caminho inventado"
 assert_contains "$b" 'reprovada' "/7 template trata fase interrompida ou reprovada"

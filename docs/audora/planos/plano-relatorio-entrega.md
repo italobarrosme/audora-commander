@@ -93,6 +93,11 @@ o scope escreveu à mão. Tratado na decisão D4 e como ressalva para o portão.
   plano (item 4 do fluxo da validate) e as linhas `(IA` do `## decisoes` do
   nó (LIGHT não tem plano). Onde elas são armazenadas segue sendo do nó
   `contratos-de-texto`.
+- **D8** (execute, Tarefa 1) — Os tetos e o pino BASE são literais também em
+  `tests/test-leitura-por-secao.sh:124-125,129` e `tests/test-plano-mapa.sh:76-77`
+  (fora do mapa; o gate da Tarefa 1 reprovou 5 asserts): sobem no mesmo
+  commit, pela regra da D5. Na Tarefa 2 o pino BASE de
+  `tests/test-leitura-por-secao.sh:129` acompanha o de `test-parada-revisao.sh:59`.
 
 ## Notas de sessão
 
@@ -145,10 +150,10 @@ Tarefa 1 commita escopo + plano juntos (convenção `8218c4d`).
 - **ler**: `templates/bloco-fechamento-template.md:103-125,186-223`, `tests/test-porta-anuncio.sh:1-16`, `tests/test-contexto-por-fase.sh:1-9`, `tests/test-templates.sh:17-27`, `tests/test-carga.sh:1-23`, `tests/test-parada-revisao.sh:56-60`, `docs/audora/memory/relatorio-entrega.md:78-87`
 - **done quando**: `bash tests/test-relatorio-entrega.sh` sai `PASS=<n> FAIL=0`; `bash tests/test-templates.sh`, `bash tests/test-carga.sh` e `bash tests/test-parada-revisao.sh` saem `FAIL=0`; `bash tests/run.sh` sai 0; `tr -d '\r' < templates/bloco-fechamento-template.md | wc -c` ≈ 12457.
 
-- [ ] **passo 0 (escopo + plano)** — `git add MEMORY.md docs/audora/memory/relatorio-entrega.md docs/audora/planos/plano-relatorio-entrega.md && git commit -m "docs(relatorio-entrega): escopo e plano"`
-- [ ] **red** — criar `tests/test-relatorio-entrega.sh` com os casos /1-/11 e a regressão; editar `tests/test-templates.sh:23-24`; `bash tests/test-relatorio-entrega.sh` sai `PASS=0 FAIL=<n>` com `FAIL: relatorio-entrega/1 …` (seção ausente) e `bash tests/test-templates.sh` falha em `relatorio-entrega/1 template define o relatório de entrega` — motivo certo: o template ainda tem a seção antiga
-- [ ] **green** — substituir `templates/bloco-fechamento-template.md:188-223`; `bash tests/test-relatorio-entrega.sh` e `bash tests/test-templates.sh` saem `FAIL=0`; `bash tests/test-carga.sh` imprime o novo `base=<B> full=<F>` → subir `TETO_BASE`/`TETO_FULL`, nota da linha 7 e o pino de `tests/test-parada-revisao.sh:59`; acrescentar a linha de decisão ao nó; `bash tests/run.sh` sai 0 (somar os asserts de `grep PASS=`)
-- [ ] **commit** — `git add templates/bloco-fechamento-template.md tests/test-relatorio-entrega.sh tests/test-templates.sh tests/test-carga.sh tests/test-parada-revisao.sh docs/audora/memory/relatorio-entrega.md && git commit -m "feat(relatorio-entrega/1): relatorio de entrega no template - 7 secoes, regras e guardas de carga"`
+- [x] **passo 0 (escopo + plano)** — `git add MEMORY.md docs/audora/memory/relatorio-entrega.md docs/audora/planos/plano-relatorio-entrega.md && git commit -m "docs(relatorio-entrega): escopo e plano"`
+- [x] **red** — criar `tests/test-relatorio-entrega.sh` com os casos /1-/11 e a regressão; editar `tests/test-templates.sh:23-24`; `bash tests/test-relatorio-entrega.sh` sai `PASS=0 FAIL=<n>` com `FAIL: relatorio-entrega/1 …` (seção ausente) e `bash tests/test-templates.sh` falha em `relatorio-entrega/1 template define o relatório de entrega` — motivo certo: o template ainda tem a seção antiga
+- [x] **green** — substituir `templates/bloco-fechamento-template.md:188-223`; `bash tests/test-relatorio-entrega.sh` e `bash tests/test-templates.sh` saem `FAIL=0`; `bash tests/test-carga.sh` imprime o novo `base=<B> full=<F>` → subir `TETO_BASE`/`TETO_FULL`, nota da linha 7 e o pino de `tests/test-parada-revisao.sh:59`; acrescentar a linha de decisão ao nó; `bash tests/run.sh` sai 0 (somar os asserts de `grep PASS=`)
+- [ ] **commit** — `git add templates/bloco-fechamento-template.md tests/test-relatorio-entrega.sh tests/test-templates.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh tests/test-plano-mapa.sh docs/audora/memory/relatorio-entrega.md && git commit -m "feat(relatorio-entrega/1): relatorio de entrega no template - 7 secoes, regras e guardas de carga"`
 
 ## Tarefa 2: validate aponta o relatório após qualquer decisão do portão
 
@@ -170,7 +175,7 @@ Tarefa 1 commita escopo + plano juntos (convenção `8218c4d`).
   - regressão → `$v` NÃO contém `Aprovada, o bloco de fase é seguido do bloco **Entrega**` nem `git diff --name-only`; `$v` contém `` `PRD.md` atualizado e `CHANGELOG.md` com a linha da entrega `` (mantido)
   - `tests/test-skills.sh:93` → `assert_contains "$v" 'git diff --numstat' "relatorio-entrega/8 validate tira arquivos tocados do diff real (substitui resumo-de-fase/4 name-only)"`; `:94` fica
   - bytes → `tr -d '\r' < skills/validate/SKILL.md | wc -c` = 6258 (± o que a redação mudar), ≤ 6300 e < 7700; `tests/test-parada-revisao.sh:54` → `[ "$bytes" -le 6300 ] … "parada-revisao/9 roteador cresceu: $bytes > 6300 bytes (relatorio-entrega/9,/11 subiu de 6139)"`; `tests/test-leitura-por-secao.sh:111` → `[ "$bv" -le 6300 ] … "> 6300 (guarda de parada-revisao/9; relatorio-entrega/9,/11 subiu de 6139)"`
-  - carga → `bash tests/test-carga.sh` imprime `base=<B2>` com B2 = B + 134 (± redação), abaixo de `TETO_BASE`; `tests/test-parada-revisao.sh:59` → pino `<B2>`; `tests/test-carga.sh:7` ganha ` relatorio-entrega/9,/11 (validate aponta o relatório): BASE <B> → <B2> / FULL <F> → <F2>.`
+  - carga → `bash tests/test-carga.sh` imprime `base=<B2>` com B2 = B + 134 (± redação), abaixo de `TETO_BASE`; `tests/test-parada-revisao.sh:59` e `tests/test-leitura-por-secao.sh:129` → pino `<B2>` (D8); `tests/test-carga.sh:7` ganha ` relatorio-entrega/9,/11 (validate aponta o relatório): BASE <B> → <B2> / FULL <F> → <F2>.`
 - **ler**: `skills/validate/SKILL.md:98-115`, `tests/test-skills.sh:92-94,180`, `tests/test-parada-revisao.sh:53-59`, `tests/test-leitura-por-secao.sh:110-111`, `tests/test-prd-foto.sh:79-82`, `tests/test-gate.sh:87-89`
 - **done quando**: `bash tests/test-relatorio-entrega.sh`, `bash tests/test-skills.sh`, `bash tests/test-parada-revisao.sh`, `bash tests/test-leitura-por-secao.sh`, `bash tests/test-prd-foto.sh`, `bash tests/test-gate.sh` e `bash tests/test-carga.sh` saem `FAIL=0`; `bash tests/run.sh` sai 0.
 

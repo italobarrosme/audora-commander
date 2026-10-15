@@ -185,39 +185,92 @@ refutadas (❌ `REPROVADO: 3 hipóteses refutadas`) — e falha irrecuperável d
 execute (⛔ `BLOQUEADO:`). Quando a decisão humana tem opções, elas vão em
 lista numerada dentro da citação, para o humano responder só com o número.
 
-## Bloco de entrega (só a validate, após aprovação)
+## Relatório de entrega (só a validate, decidido o portão)
 
-Soma ao bloco de fase, entre **Arquivos** e **Próximo**. Três partes:
+Sai em TODA categoria (LIGHT, MEDIUM, HIGH, HOTFIX) e em TODA decisão do
+portão — aprovado, parcial ou reprovado —, depois do bloco de fase, como a
+última parte da resposta do turno: nenhuma chamada de ferramenta depois dele
+(prosa no meio do turno vira narração e some). Seções nesta ordem; as
+marcadas (opcional) são omitidas quando vazias, as outras saem sempre.
 
-```markdown
-#### 🚀 Entrega — <id>
+````markdown
+#### Relatório de entrega — <id>
 
-<o que a demanda passou a fazer, 1-2 linhas>
+**Demanda** — <categoria> · <n> critérios
 
-| critério | veredito  | evidência                                         |
-| -------- | :-------: | ------------------------------------------------- |
-| `<id>/1` | ✅ passou | `<comando>` → <resultado, 1 linha>                |
-| `<id>/2` | ✅ passou | [teste.ts:88](caminho/teste.ts#L88) → <resultado> |
+> <objetivo copiado do campo `objetivo` do nó, 1-2 frases>
+
+**Mudanças no caminho** (opcional — só com entrada em `## delta` do nó)
+
+- ADICIONADO (<data>): <o que entrou>
+- MODIFICADO (<data>): <antes> → <depois>
+- REMOVIDO (<data>): <o que saiu> — <motivo>
+
+**Entregue**
+
+- `<id>/1` ✅ entregue — o sistema agora <comportamento como o usuário o vê>
+- `<id>/2` ⏳ pendente — o sistema <comportamento prometido>
+- `<id>/3` ❌ reprovado — o sistema <comportamento prometido>
+
+**Evidência**
+
+| critério | evidência                                              |
+| -------- | ------------------------------------------------------ |
+| `<id>/1` | `<comando rodado nesta sessão>` → <resultado, 1 linha> |
+| `<id>/2` | ⏳ <motivo: o que falta>                               |
+| `<id>/3` | ❌ <motivo: o que reprovou>                            |
+
+**Como conferir**
+
+`<id>/1`:
+
+```text
+<comando>
+```
+
+`<id>/2` — abrir <tela ou rota>
+
+**Decisões tomadas pela IA** (opcional — só quando a demanda tiver alguma)
+
+- <decisão de implementação, 1 linha>
 
 **Arquivos tocados** — `git diff --numstat <base>..HEAD`
 
-| arquivo                         |      + |     − |
-| ------------------------------- | -----: | ----: |
-| [um.ts](caminho/real/um.ts)     |     42 |     7 |
-| [dois.ts](caminho/real/dois.ts) |      3 |     0 |
-| **total: 2 arquivos**           | **45** | **7** |
-```
+| arquivo                     |      + |      − |
+| --------------------------- | -----: | -----: |
+| [um.ts](caminho/real/um.ts) |     42 |      7 |
+| ~~caminho/antigo.ts~~       |      0 |     31 |
+| **total: 2 arquivos**       | **42** | **38** |
+````
 
 Regras:
 
-1. A tabela cobre **todos** os critérios do nó, um por linha, todos ✅.
-   Critério sem evidência não vira linha bonita — ele reprova o portão antes
-   de chegar aqui (o bloco vira ❌ e esta seção não é impressa).
-2. Evidência é comando em `inline code` + resultado, ou link para o teste
-   com âncora de linha. Uma linha por critério.
-3. A tabela de arquivos sai do `git diff --numstat` real da demanda — nomes,
-   adições e remoções copiados da saída, total somado dela. Lista ou número
-   escrito de memória é falha do bloco. Arquivo removido entra sem link
-   (`~~caminho/antigo.ts~~`), porque o link quebraria.
-4. Não entra medição antes/depois nem "o que ficou de fora": a medição vive
-   no corpo do nó quando a demanda tiver, e o fora-de-escopo é campo do nó.
+1. **Demanda**: categoria (do nó ou do anúncio da porta nesta sessão) e
+   total de critérios do nó; o objetivo é cópia literal do campo `objetivo`,
+   nunca reescrito de memória.
+2. **Entregue**: TODOS os critérios do nó, um por linha, pelo endereço
+   `<id>/<n>`, com ícone e palavra (✅ entregue, ⏳ pendente, ❌ reprovado)
+   e o comportamento em linguagem de usuário ("o sistema agora ...").
+3. **Evidência**: uma linha por critério — comando executado nesta sessão +
+   resultado em 1 linha, ou link para o teste com âncora de linha. Critério
+   ⏳ ou ❌ leva o motivo no lugar da evidência.
+4. **Mudanças no caminho**: uma linha por entrada de `## delta` do nó
+   (ADICIONADO / MODIFICADO antes → depois / REMOVIDO + motivo). Sem delta,
+   a seção não é impressa.
+5. **Como conferir**: ≥ 1 item, cada um ligado ao critério que confere —
+   comando em code block ` ```text ` (botão de copiar) ou tela/rota a abrir.
+6. **Decisões tomadas pela IA**: uma linha por decisão — a lista do plano
+   (item 4 do fluxo) e as linhas `(IA` do `## decisoes` do nó. Sem nenhuma,
+   a seção não é impressa.
+7. **Arquivos tocados**: nomes, adições e remoções copiados da saída do
+   `git diff --numstat` real, total somado dela; arquivo existente com link
+   clicável, arquivo removido sem link (`~~caminho/antigo.ts~~`). Lista ou
+   número de memória é falha do bloco.
+8. Dado sem fonte lida nesta sessão (nó, saída de comando, diff) → a célula
+   recebe `[SEM FONTE]` e o critério ligado fica ⏳; nunca preencher de
+   memória.
+9. Portão reprovado ou parcial imprime o relatório do mesmo jeito, veredito
+   por critério; o bloco de fase leva ❌ e o Próximo aponta a decisão humana
+   ou a fase de retorno (scope ou plan). Nunca omitir o relatório.
+10. Não entra medição antes/depois nem "o que ficou de fora": a medição vive
+    no corpo do nó quando a demanda tiver, e o fora-de-escopo é campo do nó.
