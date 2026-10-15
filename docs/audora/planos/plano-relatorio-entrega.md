@@ -181,7 +181,7 @@ Tarefa 1 commita escopo + plano juntos (convenção `8218c4d`).
 
 - [x] **red** — acrescentar os casos da validate a `tests/test-relatorio-entrega.sh` e editar `tests/test-skills.sh:93`; `bash tests/test-relatorio-entrega.sh` falha em `relatorio-entrega/9 validate` (Próximo antigo) e `bash tests/test-skills.sh` falha em `relatorio-entrega/8 validate` — motivo certo: validate ainda diz `name-only` e "Aprovada"
 - [x] **green** — editar `skills/validate/SKILL.md:104-111`; medir `tr -d '\r' < skills/validate/SKILL.md | wc -c`; subir as duas guardas 6139 → 6300; `bash tests/test-carga.sh` → pino de `test-parada-revisao.sh:59` e nota da linha 7; `bash tests/run.sh` sai 0
-- [ ] **commit** — `git add skills/validate/SKILL.md tests/test-relatorio-entrega.sh tests/test-skills.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh tests/test-carga.sh && git commit -m "feat(relatorio-entrega/9): validate imprime o relatorio apos qualquer decisao do portao, ultima parte do turno"`
+- [x] **commit** — `git add skills/validate/SKILL.md tests/test-relatorio-entrega.sh tests/test-skills.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh tests/test-carga.sh && git commit -m "feat(relatorio-entrega/9): validate imprime o relatorio apos qualquer decisao do portao, ultima parte do turno"`
 
 ## Tarefa 3: fechamento LIGHT imprime o relatório
 
@@ -201,6 +201,6 @@ Tarefa 1 commita escopo + plano juntos (convenção `8218c4d`).
 - **ler**: `skills/validate/references/fechamento-light.md:26-32`, `tests/test-skills.sh:102-110`, `tests/test-prd-foto.sh:85-89`
 - **done quando**: `bash tests/test-relatorio-entrega.sh` sai `FAIL=0`; `bash tests/test-skills.sh`, `bash tests/test-prd-foto.sh` e `bash tests/test-gate.sh` saem `FAIL=0`; `bash tests/run.sh` sai 0; `bash hooks/gate relatorio-entrega` sai `GATE: passou`.
 
-- [ ] **red** — acrescentar os 2 casos a `tests/test-relatorio-entrega.sh`; `bash tests/test-relatorio-entrega.sh` falha em `relatorio-entrega/1 LIGHT` — motivo certo: a reference não cita o relatório
-- [ ] **green** — inserir o bullet em `skills/validate/references/fechamento-light.md:30`; `bash tests/test-relatorio-entrega.sh` sai `FAIL=0`; `bash tests/run.sh` sai 0; `bash hooks/gate relatorio-entrega` sai `GATE: passou`
-- [ ] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-relatorio-entrega.sh && git commit -m "feat(relatorio-entrega/1): fechamento LIGHT imprime o relatorio de entrega"`
+- [x] **red** — acrescentar os 2 casos a `tests/test-relatorio-entrega.sh`; `bash tests/test-relatorio-entrega.sh` falha em `relatorio-entrega/1 LIGHT` — motivo certo: a reference não cita o relatório
+- [x] **green** — inserir o bullet em `skills/validate/references/fechamento-light.md:30`; `bash tests/test-relatorio-entrega.sh` sai `FAIL=0`; `bash tests/run.sh` sai 0; `bash hooks/gate relatorio-entrega` sai `GATE: passou`
+- [x] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-relatorio-entrega.sh && git commit -m "feat(relatorio-entrega/1): fechamento LIGHT imprime o relatorio de entrega"`

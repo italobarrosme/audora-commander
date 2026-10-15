@@ -28,5 +28,8 @@ revisão, nunca tirar a revisão.
 - **PRD**: o `PRD.md` é foto — atualize a foto só se o ajuste mudar o que ela
   descreve. Não mudando, registre no nó e diga em 1 linha que o PRD não
   mudou e por quê — silêncio sobre o PRD é proibido.
+- **Relatório de entrega** (bloco de fechamento): sai igual, com todas as
+  seções, em LIGHT; sem plano, as Decisões tomadas pela IA vêm só das linhas
+  `(IA` do `## decisoes` do nó.
 
 HOTFIX não usa este caminho: tem o dele, com registro retroativo.

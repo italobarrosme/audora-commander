@@ -97,4 +97,15 @@ for s in 'Aprovada, o bloco de fase é seguido do bloco **Entrega**' 'git diff -
   assert_not_contains "$v" "$s" "relatorio-entrega/1 regressão: texto antigo da validate"
 done
 assert_contains "$v" '`PRD.md` atualizado e `CHANGELOG.md` com a linha da entrega' "relatorio-entrega/1 regressão: bloco Arquivos da validate mantido"
+
+# --- fechamento LIGHT — relatório sai igual; decisões da IA só do nó (sem plano) ---
+L=skills/validate/references/fechamento-light.md
+l="$(flat "$L")"
+for s in '**Relatório de entrega**' 'sai igual, com todas as seções, em LIGHT'; do
+  assert_contains "$l" "$s" "relatorio-entrega/1 LIGHT imprime o relatório"
+done
+assert_contains "$l" 'vêm só das linhas `(IA` do `## decisoes` do nó' "relatorio-entrega/6 LIGHT: decisões da IA só do nó"
+for s in 'HOTFIX não usa este caminho' 'silêncio sobre o PRD é proibido'; do
+  assert_contains "$l" "$s" "relatorio-entrega/1 regressão: LIGHT mantém '$s'"
+done
 report
