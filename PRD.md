@@ -29,8 +29,9 @@ Code.
   completo com/sem plugin (`--runs`), mutação e `--traces`; em `tests/evals/`.
 - Localização de código pela busca do símbolo do harness, com leitura por
   trecho.
-- Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`.
-  Versão 0.16.0.
+- Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`
+  + `agents/` (`revisor`: só Read/Grep/Glob/Bash, `model: inherit`, trava do
+  shell na própria definição). Versão 0.16.0.
 
 ## Arquitetura
 
@@ -108,13 +109,12 @@ Code.
   convertido on-touch no próximo sync. Roteador: fluxo até o portão inline;
   sync, decisões vivas, revisão adversarial e LIGHT em
   `skills/validate/references/` (ausente: mantém o portão, não roda o sync).
-  A revisão adversarial (só HIGH) bloqueia só achado provado de 3 classes
-  (alheio, critério, formato real); o resto vira ressalva de 1 linha. Para
-  em 1 passagem completa mais a reverificação dos bloqueantes corrigidos;
-  ressalva aceita vira candidato a nó nas metas futuras.
-- `debug` — debug com causa raiz demonstrada (modo sintoma, que localiza
-  código como a `execute`) ou caçada de defeitos por classes com
-  verificação de cada achado (modo caçada).
+  A revisão adversarial (só HIGH), pelo agente `revisor`, bloqueia só achado
+  provado de 3 classes (alheio, critério, formato real); o resto vira
+  ressalva de 1 linha. Para em 1 passagem completa mais a reverificação dos
+  bloqueantes corrigidos; ressalva aceita vira candidato a nó nas metas futuras.
+- `debug` — causa raiz demonstrada (modo sintoma, localiza como a `execute`)
+  ou caçada por classes, cada achado verificado e refutado pelo `revisor`.
 - `cleanup` — skill-ferramenta, invocada pelo humano em projeto com
   `MEMORY.md`: varre as sobras do processo (planned órfão, spec, plano
   arquivado e e2e de nó delivered, depuração sem nó vivo, arquivo de
@@ -174,7 +174,7 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 
 ## Metas futuras de implementação
 
-1. Futuro: porte multi-harness, marketplace público, agentes dedicados.
+1. Futuro: porte multi-harness, marketplace público.
 2. Candidato a nó: acabamento da PARADA (`contexto-por-fase`, observações do
    e2e aceitas no portão) — unificar a pontuação (template com vírgula,
    skills com dois-pontos), recusa de retomada imprimindo o bloco de fase

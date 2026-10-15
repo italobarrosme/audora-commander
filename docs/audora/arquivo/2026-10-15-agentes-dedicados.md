@@ -1,9 +1,9 @@
 ---
 id: agentes-dedicados
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, agents/revisor.md, docs/audora/aprendizados.md, docs/audora/decisoes-vivas.md, docs/audora/planos/arquivo/plano-agentes-dedicados.md, skills/debug/SKILL.md, skills/validate/references/revisao-adversarial.md, tests/test-agentes-dedicados.sh]
 keywords: [agentes, subagent, revisor, read-only, revisao-adversarial, validate, debug, cacada, plataforma]
 resumo: Um agente revisor sem escrita no plugin, despachado pela revisão adversarial da validate e pela caçada do debug.
 atualizado-em: 2026-10-15
@@ -88,11 +88,12 @@ Régua de corte: 5 demandas reais sem uso ou sem achado aceito → corta.
   aviso — descartado "pula com ressalva" e "bloqueia o portão".
 - 2026-10-15 (humano): modelo herdado da sessão — descartado fixo forte
   (custo) e fixo barato (perde achado sutil).
+- 2026-10-15 (humano): portão aprovado; 2 decisões vivas promovidas.
 
 ## delta
 
 ## e2e
 
-pendente
+2026-10-15: pulado-pelo-humano — portão aprovado só com a suíte (gate passou, 0 falhas; `test-agentes-dedicados` 44 asserts); /1 sem listagem em sessão real, /5–/10 sem prova de comportamento do modelo.
 
 ## feedback-reprovacao

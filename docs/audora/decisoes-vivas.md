@@ -36,6 +36,8 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 - 2026-10-05 | suite-paralela | Variável de ambiente que só ajusta ferramenta de dev do repo (runner, gate) e tem default fica documentada no README e no `como-rodar` da Constituição, sem `.env`/`.env.example`.
 - 2026-10-11 | evals-comportamento | Eval que reprova COM o plugin é achado de produto: vira nó e o grader segue estrito — nunca afrouxar o grader para o caso passar.
 - 2026-10-11 | evals-comportamento | Regra de skill só é cortada por decisão humana sobre relatório de mutação (`bash tests/evals.sh --mutar`, idealmente `--runs 3`); a mutação nunca corta sozinha.
+- 2026-10-15 | agentes-dedicados | Todo ponto novo que despachar o agente `revisor` (skill futura, ex.: `review-avulsa`) o usa para atacar ou refutar o trabalho da sessão — nunca para produzir os achados que ele mesmo verifica: autor e verificador separados.
+- 2026-10-15 | agentes-dedicados | Todo despacho do `revisor` tem fallback: despacho pelo nome falhou → subagente genérico com a trava do shell no prompt e 1 linha de aviso "read-only não garantido"; nenhum dos dois → o comportamento de antes, com 1 linha de motivo.
 
 <!-- Regras (skill memory/validate):
 1. Só entra decisão que segue VALENDO para demandas futuras — histórico puro

@@ -88,7 +88,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
 - marketplace-publico | planned | Marketplace público | Publicação em marketplace público | marketplace, publicacao | —
-- agentes-dedicados | in-progress | Agentes dedicados | Um agente revisor sem escrita no plugin, despachado pela revisão adversarial da validate e pela caçada do debug. | agentes, subagent, revisor, read-only, revisao-adversarial, validate, debug, cacada, plataforma | agents/, skills/validate/, skills/debug/
+- agentes-dedicados | delivered | Agentes dedicados → docs/audora/arquivo/2026-10-15-agentes-dedicados.md
 - docs-bilingues | delivered | README bilíngue → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - e2e-playwright-docker | delivered | e2e Playwright + compose → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - skill-depurar | delivered | Skill de debug → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
