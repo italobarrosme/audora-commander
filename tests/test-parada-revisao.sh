@@ -51,12 +51,12 @@ for s in 'rebaixado a ressalva' '3 classes' 'ATACAR'; do
   assert_not_contains "$v" "$s" "parada-revisao/9 texto da revisão fora do roteador"
 done
 bytes="$(tr -d '\r' < "$V" | wc -c)"
-[ "$bytes" -le 6139 ] && ok || ko "parada-revisao/9 roteador cresceu: $bytes > 6139 bytes"
+[ "$bytes" -le 6300 ] && ok || ko "parada-revisao/9 roteador cresceu: $bytes > 6300 bytes (relatorio-entrega/9,/11 subiu de 6139)"
 assert_not_contains "$(cat tests/test-carga.sh)" 'revisao-adversarial' "parada-revisao/9 reference fora da carga BASE/FULL"
 carga_out="$(bash tests/test-carga.sh 2>&1)"; carga_code=$?
 assert_eq 0 "$carga_code" "parada-revisao/9 test-carga.sh sai 0"
 base="$(printf '%s' "$carga_out" | grep -o 'base=[0-9]*' | cut -d= -f2)"
-[ -n "$base" ] && [ "$base" -le 56272 ] && ok || ko "parada-revisao/9 carga BASE '$base' > 56272"
+[ -n "$base" ] && [ "$base" -le 56406 ] && ok || ko "parada-revisao/9 carga BASE '$base' > 56406"
 
 # --- /4 /5 — 1 passagem completa + reverificação restrita; nunca 3ª ---
 p="$(flat "$R" '## Parada')"

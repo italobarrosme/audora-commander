@@ -108,7 +108,7 @@ sub="$(flat templates/fase-subagente-template.md)"
 assert_contains "$sub" 'o recorte do MEMORY.md (carregar-contexto)' "leitura-por-secao/1 subagente reancora pelo recorte"
 assert_contains "$sub" 'reancore só pelos artefatos em disco' "leitura-por-secao/1 subagente segue reancorando só pelo disco"
 bv="$(tr -d '\r' 2>/dev/null < skills/validate/SKILL.md | wc -c)"
-[ "$bv" -le 6139 ] && ok || ko "leitura-por-secao/1 validate $bv B > 6139 (guarda de parada-revisao/9)"
+[ "$bv" -le 6300 ] && ok || ko "leitura-por-secao/1 validate $bv B > 6300 (guarda de parada-revisao/9; relatorio-entrega/9,/11 subiu de 6139)"
 
 # --- /1 docs ---
 en="$(flat README.md)"; pt="$(flat README.pt-BR.md)"; fu="$(flat docs/fundamentos.md)"
@@ -126,7 +126,7 @@ assert_contains "$tc" 'TETO_FULL=67100' "leitura-por-secao/11 teto FULL vigente"
 co="$(bash tests/test-carga.sh 2>&1)"; cc_code=$?
 assert_eq 0 "$cc_code" "leitura-por-secao/11 test-carga dentro dos tetos"
 base="$(printf '%s' "$co" | sed -nE 's/.*base=([0-9]+).*/\1/p')"
-[ -n "$base" ] && [ "$base" -le 56272 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 56272 (guarda de parada-revisao/9)"
+[ -n "$base" ] && [ "$base" -le 56406 ] && ok || ko "leitura-por-secao/11 BASE '$base' > 56406 (guarda de parada-revisao/9)"
 for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
   mj="$(tr -d '\r' < "$j")"
   assert_contains "$mj" '"version": "0.16.0"' "skill-cleanup $j declara 0.16.0 (substitui leitura-por-secao/12)"

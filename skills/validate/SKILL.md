@@ -104,11 +104,13 @@ de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sess
 - **Produzido**: o veredito do portão e o que o sync consolidou.
 - **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado e
   `CHANGELOG.md` com a linha da entrega.
-- **Próximo**: nenhum — o fluxo da demanda encerra aqui.
+- **Próximo**: aprovada, nenhum — o fluxo encerra; reprovada ou parcial, a
+  decisão humana ou a fase de retorno (scope ou plan).
 
-Aprovada, o bloco de fase é seguido do bloco **Entrega**: tabela
-critério → veredito com a evidência em 1 linha, e a lista de arquivos tocados
-tirada de `git diff --name-only` real. Formato no mesmo template.
+Decidido o portão — aprovado, parcial ou reprovado, em toda categoria —, o
+bloco de fase é seguido do relatório de **Entrega** (seções e regras no
+mesmo template; arquivos tocados do `git diff --numstat`), última parte da
+resposta: nenhuma ferramenta depois dele.
 
 ## PRÓXIMA SKILL
 

@@ -85,4 +85,16 @@ for s in 'só a validate, após aprovação' 'entre **Arquivos** e **Próximo**'
 done
 assert_contains "$b" '## Parada entre fases' "relatorio-entrega/1 regressão: seção vizinha intocada"
 
+
+# --- validate — aponta o relatório após qualquer decisão do portão, última parte do turno ---
+V=skills/validate/SKILL.md
+v="$(flat "$V" '## Bloco de fechamento')"
+assert_contains "$v" '**Próximo**: aprovada, nenhum — o fluxo encerra; reprovada ou parcial, a decisão humana ou a fase de retorno (scope ou plan).' "relatorio-entrega/9 validate: Próximo cobre reprovação e parcial"
+assert_contains "$v" 'Decidido o portão — aprovado, parcial ou reprovado, em toda categoria —, o bloco de fase é seguido do relatório de **Entrega**' "relatorio-entrega/1 validate aponta o relatório em toda decisão e categoria"
+assert_contains "$v" 'última parte da resposta: nenhuma ferramenta depois dele' "relatorio-entrega/11 validate: relatório fecha o turno"
+assert_contains "$v" 'arquivos tocados do `git diff --numstat`' "relatorio-entrega/8 validate: arquivos tocados do numstat"
+for s in 'Aprovada, o bloco de fase é seguido do bloco **Entrega**' 'git diff --name-only'; do
+  assert_not_contains "$v" "$s" "relatorio-entrega/1 regressão: texto antigo da validate"
+done
+assert_contains "$v" '`PRD.md` atualizado e `CHANGELOG.md` com a linha da entrega' "relatorio-entrega/1 regressão: bloco Arquivos da validate mantido"
 report
