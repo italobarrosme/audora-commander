@@ -245,8 +245,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   rodado agora com a saída, ou item explícito para conferência humana; monta
   o roteiro de validação: comportamento, diff de teste separado, decisões vivas
   propostas (filtro de entrada em `references/decisoes-vivas.md`) e, em
-  HIGH, sumário por arquivo mais revisão adversarial por subagente de
-  contexto limpo (`references/revisao-adversarial.md`). A revisão bloqueia
+  HIGH, sumário por arquivo mais revisão adversarial pelo agente `revisor`
+  do plugin (read-only, contexto limpo, `references/revisao-adversarial.md`). A revisão bloqueia
   só achado provado de 3 classes — mexe em coisa fora da demanda, viola
   critério de aceite, falha com entrada real; o resto vira ressalva de 1
   linha — e para depois de 1 passagem completa mais a reverificação dos
@@ -283,7 +283,8 @@ Detalhe por skill: [As skills em detalhe](#as-skills-em-detalhe).
   por trecho, busca do símbolo e ligações. Três hipóteses refutadas → para e escala para você.
   Modo caçada — varre classes de defeito (referências cruzadas, contratos e
   schemas, documentação viva e contagens, bordas de erro, configuração e
-  execução) e verifica cada achado antes de reportar.
+  execução) e verifica cada achado antes de reportar; depois o agente
+  `revisor`, read-only, tenta refutar cada achado uma vez antes do relatório.
 - **O que deixa no disco**: teste de reprodução permanente; relatório de
   caçada em `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas no nó e
   aprendizados em `docs/audora/aprendizados.md`.
@@ -372,6 +373,8 @@ Rode na sessão interativa após instalar:
 - [ ] 5. QUANDO uma demanda LIGHT e uma MEDIUM forem simuladas num projeto de
   exemplo, o fluxo DEVE produzir os artefatos esperados (nó no MEMORY;
   plano-arquivo na MEDIUM; roteiro de validação).
+- [ ] 6. QUANDO o plugin estiver instalado, o Claude Code DEVE listar o agente
+  `audora-commander:revisor` (verifique na listagem de agentes da sessão).
 
 ## Desenvolvimento
 

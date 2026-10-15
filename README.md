@@ -245,8 +245,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   builds the validation script: behavior, test diff shown separately,
   proposed durable decisions (entry filter in
   `references/decisoes-vivas.md`), and for HIGH a per-file summary plus an
-  adversarial review by a clean-context subagent
-  (`references/revisao-adversarial.md`). The review blocks only on proven
+  adversarial review by the plugin's read-only `revisor` agent (clean
+  context, `references/revisao-adversarial.md`). The review blocks only on proven
   findings of three classes — touches something outside the demand, breaks
   an acceptance criterion, fails on real input; the rest becomes a one-line
   caveat — and stops after one full pass plus a re-check of the fixed
@@ -282,7 +282,8 @@ Details per skill: [Skills in detail](#skills-in-detail).
   search and links. Three refuted hypotheses → stops and escalates to you. Hunt mode
   — sweeps defect classes (cross references, contracts and schemas, living
   docs and counts, error edges, configuration and execution) and verifies
-  every finding before reporting it.
+  every finding before reporting it; the read-only `revisor` agent then tries
+  to refute each finding once before the report.
 - **What it leaves on disk**: a permanent reproduction test; hunt reports in
   `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`; deltas in the node and
   learnings in `docs/audora/aprendizados.md`.
@@ -374,6 +375,8 @@ Run in the interactive session after installing:
 - [ ] 5. WHEN a LIGHT and a MEDIUM demand are simulated in a sample project,
   the flow MUST produce the expected artifacts (node in the MEMORY; plan file
   for the MEDIUM; validation script).
+- [ ] 6. WHEN the plugin is installed, Claude Code MUST list the agent
+  `audora-commander:revisor` (check the session's agent listing).
 
 ## Development
 

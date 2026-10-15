@@ -117,4 +117,16 @@ bash tests/test-plano-mapa.sh > /dev/null 2>&1 && ok || ko "agentes-dedicados/6 
 linhas="$(tr -d '\r' 2>/dev/null < "$D" | wc -l)"
 [ "$linhas" -le 250 ] && ok || ko "agentes-dedicados/6 $D com $linhas linhas > 250"
 
+# --- /1 docs — READMEs citam o revisor e o checklist confere a listagem ---
+en="$(flat README.md)"
+for s in "adversarial review by the plugin's read-only \`revisor\` agent" \
+  'the read-only `revisor` agent then tries to refute each finding once' 'MUST list the agent `audora-commander:revisor`'; do
+  assert_contains "$en" "$s" "agentes-dedicados/1 docs EN"
+done
+pt="$(flat README.pt-BR.md)"
+for s in 'revisão adversarial pelo agente `revisor` do plugin' 'o agente `revisor`, read-only, tenta refutar cada achado uma vez' \
+  'DEVE listar o agente `audora-commander:revisor`'; do
+  assert_contains "$pt" "$s" "agentes-dedicados/1 docs PT"
+done
+
 report
