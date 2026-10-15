@@ -88,7 +88,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - skill-poc | planned | Skill POC | ≥3 POCs por demanda exploratória, usuário escolhe 1 para desenvolver | poc, estudo, prototipo | skills/
 - porte-multi-harness | planned | Porte multi-harness | Porte para outros harnesses (Codex, Cursor) | porte, harness | —
 - marketplace-publico | planned | Marketplace público | Publicação em marketplace público | marketplace, publicacao | —
-- agentes-dedicados | planned | Agentes dedicados | Agentes read-only no plugin (explorador, revisor-diff, refutador) e memory-guard em PreToolUse. | agentes, subagent, revisor, refutador, explorador, pretooluse, plataforma | agents/, hooks/hooks.json, hooks/memory-guard
+- agentes-dedicados | in-progress | Agentes dedicados | Um agente revisor sem escrita no plugin, despachado pela revisão adversarial da validate e pela caçada do debug. | agentes, subagent, revisor, read-only, revisao-adversarial, validate, debug, cacada, plataforma | agents/, skills/validate/, skills/debug/
 - docs-bilingues | delivered | README bilíngue → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - e2e-playwright-docker | delivered | e2e Playwright + compose → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
 - skill-depurar | delivered | Skill de debug → docs/audora/arquivo/2026-08-24-legado-GRAFO-ARQUIVO.md
@@ -100,6 +100,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - status-retomada | planned | Status e retomada | Ver o que está em aberto e retomar sem lembrar o comando; versão sobe a cada entrega com nota de migração. | status, retomada, session-start, versao, release, migracao, brownfield | hooks/session-start, skills/audora-commander/SKILL.md, .claude-plugin/
 - aprendizados-escopo | planned | Aprendizados com escopo | Aprendizado com escopo de arquivo, varredura de obsoleto e promoção do reincidente a hook ou Constituição. | aprendizados, escopo, obsoleto, invalidacao, promocao, erro-repetido | skills/memory/SKILL.md, templates/aprendizados-template.md, hooks/cleanup
 - relatorio-entrega | delivered | Relatório de entrega → docs/audora/arquivo/2026-10-15-relatorio-entrega.md
+- review-avulsa | planned | Review avulsa | Skill de review chamável fora do fluxo (pedir e receber review), que usa o revisor e lê os critérios do nó quando há MEMORY. | review, code-review, revisor, avulsa, criterios, disciplina | skills/, agents/revisor.md
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
      Nós entregues até 2026-08-24 vivem no legado
