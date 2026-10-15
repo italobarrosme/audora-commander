@@ -5,14 +5,23 @@
 
 ## Despacho
 
-Despache um subagente de contexto limpo com o diff da demanda, os critérios
-de aceite do nó (`<id>/<n>`) e as regras deste arquivo, instruído a ATACAR:
-refutar que cada critério foi atendido e procurar o que quebra. Autor não
-revisa a si mesmo.
+Despache o agente `revisor` do plugin
+(`subagent_type: audora-commander:revisor`) — subagente de contexto limpo,
+read-only — com o diff da demanda, os critérios de aceite do nó (`<id>/<n>`)
+e as regras deste arquivo, instruído a ATACAR: refutar que cada critério foi
+atendido e procurar o que quebra. Autor não revisa a si mesmo. A passagem
+completa e a reverificação usam o mesmo despacho.
 
 Demanda com script ou comando de efeito fora do repo (desinstalar pacote,
 mexer na máquina): o revisor só o roda com executáveis falsos no PATH e sem
 os reais — e o prompt do subagente diz isso.
+
+Despacho do `revisor` falhou (agente ausente ou não carregado) → despache
+subagente genérico com o mesmo pedido e, no prompt, a trava: "Trava do
+shell: não escreva, apague nem mova arquivo no repo; não cause efeito fora
+dele; script ou comando de efeito externo só roda com executáveis falsos no
+PATH, sem os reais." — e escreva 1 linha no roteiro: "revisão adversarial
+por subagente genérico — read-only não garantido".
 
 ## Bloqueante: só 3 classes, com prova
 
@@ -60,8 +69,8 @@ Ao terminar, a revisão entra no roteiro com o nº de passagens (1, ou 1 +
 reverificação), cada bloqueante com classe, prova e estado (corrigido ou
 aberto) e as ressalvas, 1 linha cada.
 
-Subagente revisor que não pôde ser despachado ou falhou → 1 linha no
-roteiro: "revisão adversarial não rodou — <motivo>"; o portão segue com o
+Nem o `revisor` nem o subagente genérico puderam ser despachados, ou
+falharam → 1 linha no roteiro: "revisão adversarial não rodou — <motivo>"; o portão segue com o
 humano revisando o diff.
 
 ## Ressalva aceita no portão

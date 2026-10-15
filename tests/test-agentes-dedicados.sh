@@ -81,4 +81,17 @@ assert_contains "$(checar_revisor "$m")" 'trava ausente' "agentes-dedicados/11 m
 m="$(mutar bash-restrito 's/^tools: .*/tools: Read, Grep, Glob, Bash(git status)/')"
 assert_empty "$(checar_revisor "$m")" "agentes-dedicados/11 Bash restrito continua permitido"
 
+# --- /5 /9 /10 — validate: revisão adversarial despacha o revisor pelo nome ---
+R=skills/validate/references/revisao-adversarial.md
+d="$(flat "$R" '## Despacho')"
+assert_contains "$d" 'subagent_type: audora-commander:revisor' "agentes-dedicados/5 validate despacha o revisor pelo nome"
+assert_contains "$d" 'A passagem completa e a reverificação usam o mesmo despacho.' "agentes-dedicados/5 mesmo despacho nas 2 passagens"
+bash tests/test-parada-revisao.sh > /dev/null 2>&1 && ok || ko "agentes-dedicados/5 regras da revisão intactas (test-parada-revisao reprovou)"
+assert_contains "$d" 'Despacho do `revisor` falhou (agente ausente ou não carregado)' "agentes-dedicados/9 validate fallback"
+assert_contains "$d" "$TRAVA" "agentes-dedicados/9 validate genérico leva a trava no prompt"
+assert_contains "$d" 'revisão adversarial por subagente genérico — read-only não garantido' "agentes-dedicados/9 validate aviso"
+q="$(flat "$R" '## No roteiro')"
+assert_contains "$q" 'Nem o `revisor` nem o subagente genérico puderam ser despachados' "agentes-dedicados/10 validate nenhum rodou"
+assert_contains "$q" 'revisão adversarial não rodou — <motivo>' "agentes-dedicados/10 validate linha de hoje"
+
 report
