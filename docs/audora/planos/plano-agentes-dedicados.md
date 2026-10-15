@@ -69,6 +69,8 @@ inclusive por mutação do agente.
   - prova por mutação permitida só em cópia fora do repo (`mktemp -d`);
   - vereditos do revisor: `sustentado`, `refutado`, `inconclusivo`; coluna nova `Revisor` na tabela da caçada;
   - docs EN/PT ganham a menção ao revisor e um item 6 no checklist de instalação.
+  - (execute) gate único depois das 4 tarefas, não 1 por tarefa: o 1º gate (Tarefa 1) reprovou só porque o teste foi editado (RED da Tarefa 2) com ele rodando; cada tarefa teve red/green do próprio teste + teste de regressão do plano; gate final `SUITE_TIMEOUT=600` passou (0 falhas, 424 s). Os 4 commits são checkpoints com o teste fatiado até a seção da tarefa, cada um conferido isolado em worktree.
+  - (execute) corpo do agente: parágrafo de papel (contexto limpo, não conserta nem alarga o pedido) e "comando que você não sabe se tem efeito externo não roda — leia o código dele".
 
 ---
 
@@ -113,9 +115,9 @@ inclusive por mutação do agente.
 - **ler**: `tests/test-parada-revisao.sh:6-15`, `tests/lib.sh:1-21`
 - **done quando**: `bash tests/test-agentes-dedicados.sh` sai 0 com os casos acima e `bash hooks/gate agentes-dedicados` passa.
 
-- [ ] **red** — `bash tests/test-agentes-dedicados.sh` (com `agents/revisor.md` ainda inexistente) sai ≠ 0 com `FAIL: agentes-dedicados/1 … arquivo ausente: agents/revisor.md`; as mutações reprovam por arquivo-base ausente, não por erro de sintaxe do teste
-- [ ] **green** — criar `agents/revisor.md`; `bash tests/test-agentes-dedicados.sh` sai 0; `bash hooks/gate agentes-dedicados` passa (suíte toda verde)
-- [ ] **commit** — `git add agents/revisor.md tests/test-agentes-dedicados.sh && git commit -m "feat(agentes-dedicados/1): agente revisor read-only com trava do shell e guarda por mutação"`
+- [x] **red** — `bash tests/test-agentes-dedicados.sh` (com `agents/revisor.md` ainda inexistente) sai ≠ 0 com `FAIL: agentes-dedicados/1 … arquivo ausente: agents/revisor.md`; as mutações reprovam por arquivo-base ausente, não por erro de sintaxe do teste
+- [x] **green** — criar `agents/revisor.md`; `bash tests/test-agentes-dedicados.sh` sai 0; `bash hooks/gate agentes-dedicados` passa (suíte toda verde)
+- [x] **commit** — `git add agents/revisor.md tests/test-agentes-dedicados.sh && git commit -m "feat(agentes-dedicados/1): agente revisor read-only com trava do shell e guarda por mutação"`
 
 ## Tarefa 2: validate despacha o `revisor` pelo nome
 
@@ -136,9 +138,9 @@ inclusive por mutação do agente.
 - **ler**: `skills/validate/references/revisao-adversarial.md:1-71` (reler — pode ter mudado), `tests/test-parada-revisao.sh:18-26,71-78`
 - **done quando**: casos acima verdes, `bash tests/test-parada-revisao.sh` sai 0, reference ≤ 250 linhas e `bash hooks/gate agentes-dedicados` passa.
 
-- [ ] **red** — `bash tests/test-agentes-dedicados.sh` sai ≠ 0 com `FAIL: agentes-dedicados/5 … não contém 'subagent_type: audora-commander:revisor'`
-- [ ] **green** — editar a reference; `bash tests/test-agentes-dedicados.sh` e `bash tests/test-parada-revisao.sh` saem 0; `bash hooks/gate agentes-dedicados` passa
-- [ ] **commit** — `git add skills/validate/references/revisao-adversarial.md tests/test-agentes-dedicados.sh && git commit -m "feat(agentes-dedicados/5): revisão adversarial despacha o revisor pelo nome, com fallback travado"`
+- [x] **red** — `bash tests/test-agentes-dedicados.sh` sai ≠ 0 com `FAIL: agentes-dedicados/5 … não contém 'subagent_type: audora-commander:revisor'`
+- [x] **green** — editar a reference; `bash tests/test-agentes-dedicados.sh` e `bash tests/test-parada-revisao.sh` saem 0; `bash hooks/gate agentes-dedicados` passa
+- [x] **commit** — `git add skills/validate/references/revisao-adversarial.md tests/test-agentes-dedicados.sh && git commit -m "feat(agentes-dedicados/5): revisão adversarial despacha o revisor pelo nome, com fallback travado"`
 
 ## Tarefa 3: caçada despacha o `revisor` para refutar os achados
 
@@ -164,9 +166,9 @@ inclusive por mutação do agente.
 - **ler**: `skills/debug/SKILL.md:55-120` (reler), `tests/test-plano-mapa.sh:50-60`
 - **done quando**: casos acima verdes, `bash tests/test-plano-mapa.sh` sai 0 e `bash hooks/gate agentes-dedicados` passa.
 
-- [ ] **red** — `bash tests/test-agentes-dedicados.sh` sai ≠ 0 com `FAIL: agentes-dedicados/6 … não contém 'Varredura terminou com ≥1 achado`
-- [ ] **green** — editar `skills/debug/SKILL.md`; `bash tests/test-agentes-dedicados.sh` e `bash tests/test-plano-mapa.sh` saem 0; `bash hooks/gate agentes-dedicados` passa
-- [ ] **commit** — `git add skills/debug/SKILL.md tests/test-agentes-dedicados.sh && git commit -m "feat(agentes-dedicados/6): caçada despacha o revisor para refutar os achados"`
+- [x] **red** — `bash tests/test-agentes-dedicados.sh` sai ≠ 0 com `FAIL: agentes-dedicados/6 … não contém 'Varredura terminou com ≥1 achado`
+- [x] **green** — editar `skills/debug/SKILL.md`; `bash tests/test-agentes-dedicados.sh` e `bash tests/test-plano-mapa.sh` saem 0; `bash hooks/gate agentes-dedicados` passa
+- [x] **commit** — `git add skills/debug/SKILL.md tests/test-agentes-dedicados.sh && git commit -m "feat(agentes-dedicados/6): caçada despacha o revisor para refutar os achados"`
 
 ## Tarefa 4: READMEs e checklist citam o revisor
 
@@ -186,6 +188,6 @@ inclusive por mutação do agente.
 - **ler**: `README.md:240-292,359-378`, `README.pt-BR.md:241-286,358-375` (reler — linhas podem ter andado), `tests/test-parada-revisao.sh:90-104`
 - **done quando**: casos acima verdes e `bash hooks/gate agentes-dedicados` passa.
 
-- [ ] **red** — `bash tests/test-agentes-dedicados.sh` sai ≠ 0 com `FAIL: agentes-dedicados/1 docs EN … não contém 'adversarial review by the plugin's read-only`
-- [ ] **green** — editar os dois READMEs; `bash tests/test-agentes-dedicados.sh`, `bash tests/test-parada-revisao.sh` e `bash tests/test-docs.sh` saem 0; `bash hooks/gate agentes-dedicados` passa
-- [ ] **commit** — `git add README.md README.pt-BR.md tests/test-agentes-dedicados.sh && git commit -m "docs(agentes-dedicados/1): READMEs e checklist citam o agente revisor"`
+- [x] **red** — `bash tests/test-agentes-dedicados.sh` sai ≠ 0 com `FAIL: agentes-dedicados/1 docs EN … não contém 'adversarial review by the plugin's read-only`
+- [x] **green** — editar os dois READMEs; `bash tests/test-agentes-dedicados.sh`, `bash tests/test-parada-revisao.sh` e `bash tests/test-docs.sh` saem 0; `bash hooks/gate agentes-dedicados` passa
+- [x] **commit** — `git add README.md README.pt-BR.md tests/test-agentes-dedicados.sh && git commit -m "docs(agentes-dedicados/1): READMEs e checklist citam o agente revisor"`
