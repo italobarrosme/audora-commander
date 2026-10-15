@@ -79,12 +79,27 @@ Classes (adaptar ao tipo de projeto):
 5. **Configuração e execução**: o que é executável roda de verdade? (JSONs
    válidos, scripts executam, comandos documentados funcionam).
 
+**Refutação pelo revisor.** Varredura terminou com ≥1 achado → despache o
+agente `revisor` do plugin (`subagent_type: audora-commander:revisor`) UMA
+vez, com a lista de achados, para tentar refutar cada um — antes de escrever
+o relatório. Zero achados → não despache o revisor. Resposta do revisor é
+pista: o veredito sai só depois de você conferir a prova dele contra o
+artefato real. Despacho do `revisor` falhou (agente ausente ou não
+carregado) → despache subagente genérico com a mesma lista e, no prompt, a
+trava: "Trava do shell: não escreva, apague nem mova arquivo no repo; não
+cause efeito fora dele; script ou comando de efeito externo só roda com
+executáveis falsos no PATH, sem os reais." — e escreva 1 linha no relatório:
+"refutação por subagente genérico — read-only não garantido". Nenhum dos
+dois pôde ser despachado → verifique pela própria sessão e escreva 1 linha
+no relatório: "refutação do revisor não rodou — <motivo>".
+
 Relatório em `docs/audora/depuracao/cacada-<AAAA-MM-DD>.md`:
 
-| # | Classe | Achado | Verificação (comando/leitura) | Veredito | Ação |
-|---|---|---|---|---|---|
+| # | Classe | Achado | Verificação (comando/leitura) | Revisor | Veredito | Ação |
+|---|---|---|---|---|---|---|
 
-Veredito: `confirmado` / `falso-positivo` / `melhoria` (não é defeito — vira
+Revisor = o que ele disse do achado (`sustentado`, `refutado` ou
+`inconclusivo`) e a prova dele, 1 linha. Veredito: `confirmado` / `falso-positivo` / `melhoria` (não é defeito — vira
 nó `planned` se o humano quiser). Confirmados → corrigir via modo sintoma
 (passos 4-6; a verificação da caçada já é a reprodução) — um commit por
 correção. Caçada limpa = relatório com as classes varridas e zero confirmados,
@@ -100,6 +115,7 @@ provando O QUE foi checado.
 | "O bug sumiu sozinho, seguimos" | Sumiu = reprodução perdida. A causa continua lá, agora escondida. |
 | "Trato o sintoma, a causa fica pra depois" | Sintoma tratado volta com outra roupa. Causa raiz ou nada. |
 | "Na caçada, reporto tudo que parece estranho" | Achado sem verificação é ruído que queima confiança. Verifique antes. |
+| "O revisor refutou, marco falso-positivo" | Refutação é pista. Confira a prova dele no artefato antes do veredito. |
 
 ## Bloco de fechamento
 

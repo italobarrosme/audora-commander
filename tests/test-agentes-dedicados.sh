@@ -94,4 +94,27 @@ q="$(flat "$R" '## No roteiro')"
 assert_contains "$q" 'Nem o `revisor` nem o subagente genérico puderam ser despachados' "agentes-dedicados/10 validate nenhum rodou"
 assert_contains "$q" 'revisão adversarial não rodou — <motivo>' "agentes-dedicados/10 validate linha de hoje"
 
+# --- /6 a /10 — caçada do debug: revisor refuta os achados uma vez ---
+D=skills/debug/SKILL.md
+h="$(flat "$D" '## Modo caçada (sem sintoma)')"
+assert_contains "$h" 'Varredura terminou com ≥1 achado → despache o agente `revisor` do plugin (`subagent_type: audora-commander:revisor`) UMA vez, com a lista de achados, para tentar refutar cada um — antes de escrever o relatório.' \
+  "agentes-dedicados/6 caçada despacha o revisor uma vez antes do relatório"
+assert_contains "$h" 'Resposta do revisor é pista: o veredito sai só depois de você conferir a prova dele contra o artefato real.' \
+  "agentes-dedicados/7 veredito só após conferir a prova"
+assert_contains "$h" '| # | Classe | Achado | Verificação (comando/leitura) | Revisor | Veredito | Ação |' "agentes-dedicados/7 tabela tem coluna Revisor"
+assert_contains "$h" 'Revisor = o que ele disse do achado (`sustentado`, `refutado` ou `inconclusivo`) e a prova dele, 1 linha.' \
+  "agentes-dedicados/7 relatório registra o que o revisor disse"
+assert_contains "$h" 'Zero achados → não despache o revisor.' "agentes-dedicados/8 zero achados não despacha"
+assert_contains "$h" 'Despacho do `revisor` falhou (agente ausente ou não carregado)' "agentes-dedicados/9 caçada fallback"
+assert_contains "$h" "$TRAVA" "agentes-dedicados/9 caçada genérico leva a trava no prompt"
+assert_contains "$h" 'refutação por subagente genérico — read-only não garantido' "agentes-dedicados/9 caçada aviso"
+assert_contains "$h" 'verifique pela própria sessão' "agentes-dedicados/10 caçada nenhum rodou verifica pela sessão"
+assert_contains "$h" 'refutação do revisor não rodou — <motivo>' "agentes-dedicados/10 caçada linha no relatório"
+assert_contains "$(flat "$D" '## Red flags — pare e volte ao fluxo')" \
+  '| "O revisor refutou, marco falso-positivo" | Refutação é pista. Confira a prova dele no artefato antes do veredito. |' \
+  "agentes-dedicados/7 red flag da refutação"
+bash tests/test-plano-mapa.sh > /dev/null 2>&1 && ok || ko "agentes-dedicados/6 caçada continua varredura (test-plano-mapa reprovou)"
+linhas="$(tr -d '\r' 2>/dev/null < "$D" | wc -l)"
+[ "$linhas" -le 250 ] && ok || ko "agentes-dedicados/6 $D com $linhas linhas > 250"
+
 report
