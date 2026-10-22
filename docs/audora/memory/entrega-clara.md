@@ -87,6 +87,7 @@ formato do cartão; encolher o template em geral (cerimonia-enxuta).
 - 2026-10-22 (humano): aprovado em branch já é DONE, e o cartão pergunta se faz o merge. Descartado: "APROVADO · aguarda merge".
 - 2026-10-22 (IA, escopo): Ressalvas sempre impressa ("nenhuma" explícito); após merge pedido no cartão, sync confirma em 1 linha sem segundo cartão.
 - 2026-10-22 (IA, escopo): substitui relatorio-entrega/1 (ordem de seções), /4 (tabela de evidência) e /8 (tabela de arquivos); /2, /3, /5, /7, /9, /10, /11 seguem em nova forma.
+- 2026-10-22 (IA, execute): gate-asserts: queda aprovada no escopo (substitui relatorio-entrega/1, /4, /8) — asserts do relatório velho saem com a seção; comportamento novo guardado por tests/test-entrega-clara.sh.
 
 ## delta
 

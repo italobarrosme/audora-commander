@@ -47,6 +47,10 @@ comando de arquivos num repo fixture com commits de duas demandas.
 - Carga: só 1594 B de folga na BASE. O cartão tem de caber na troca da seção (≤ ~5500 B) — skeleton enxuto, regras de 1-2 linhas. Estourou 58000 → PARAR e levar ao humano (subir teto só com motivo no nó), nunca subir sozinho.
 - Risco conhecido (aprendizado 2026-10-13): formato da saída do modelo não se garante só por texto de skill — a prova de comportamento é o e2e (`claude -p` rodando um portão real em fixture). Recomendar o e2e na validate.
 - Arquivos CRLF no checkout? `tr -cd '\r' < f | wc -c` antes de editar; editar com Edit/Write, nunca `sed -i` (aprendizado 2026-10-15).
+- Decisões tomadas pela IA:
+  - (execute) `sec` do teste novo ignora `## ` dentro de fence de 4 crases: o título `## 🏁 DONE — <id>` do esqueleto fecharia a seção no awk do teste velho.
+  - (execute) header do template ganha 1 linha "Exceção: a validate, decidido o portão, imprime o cartão de entrega no lugar do bloco." — frase numa linha só para casar no flat (citação `> ` quebraria).
+  - (execute) T1 derruba a contagem de asserts (23 → 16 nos arquivos tocados): válvula `gate-asserts:` em `## decisoes` do nó, troca aprovada no escopo (substitui relatorio-entrega/1, /4, /8).
 
 ---
 

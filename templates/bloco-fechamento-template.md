@@ -2,6 +2,7 @@
 
 > Formato canônico do bloco que TODA skill de fase imprime ao terminar
 > (`audora-commander`, `scope`, `plan`, `execute`, `e2e`, `validate`, `debug`).
+> Exceção: a validate, decidido o portão, imprime o cartão de entrega no lugar do bloco.
 > Skill-ferramenta (`memory`) NÃO imprime bloco próprio: devolve à fase
 > chamadora e quem imprime é ela.
 >
@@ -185,92 +186,64 @@ refutadas (❌ `REPROVADO: 3 hipóteses refutadas`) — e falha irrecuperável d
 execute (⛔ `BLOQUEADO:`). Quando a decisão humana tem opções, elas vão em
 lista numerada dentro da citação, para o humano responder só com o número.
 
-## Relatório de entrega (só a validate, decidido o portão)
+## Cartão de entrega (só a validate, decidido o portão)
 
-Sai em TODA categoria (LIGHT, MEDIUM, HIGH, HOTFIX) e em TODA decisão do
-portão — aprovado, parcial ou reprovado —, depois do bloco de fase, como a
-última parte da resposta do turno: nenhuma chamada de ferramenta depois dele
-(prosa no meio do turno vira narração e some). Seções nesta ordem; as
-marcadas (opcional) são omitidas quando vazias, as outras saem sempre.
+Decidido o portão, a validate fecha o turno com este cartão, no lugar do
+bloco de fase, em TODA categoria (LIGHT, MEDIUM, HIGH, HOTFIX). É a última
+parte da resposta do turno: nenhuma chamada de ferramenta depois dele (prosa
+no meio do turno vira narração e some). Régua, link e ícone com palavra
+seguem as regras do bloco de fase.
 
 ````markdown
-#### Relatório de entrega — <id>
+---
 
-**Demanda** — <categoria> · <n> critérios
+## 🏁 DONE — <id>
 
-> <objetivo copiado do campo `objetivo` do nó, 1-2 frases>
+<categoria> · <entregues>/<total> critérios · na main
 
-**Mudanças no caminho** (opcional — só com entrada em `## delta` do nó)
+**O que mudou**
 
-- ADICIONADO (<data>): <o que entrou>
+- o sistema agora <comportamento como o usuário o vê>
+
+**Como foi**
+
+1. scope — <até 8 palavras>
+2. plan — <até 8 palavras>
+3. execute — <até 8 palavras>
+4. e2e — rodado: <até 8 palavras>
+5. validate — <até 8 palavras>
+
+**Ressalvas** — nenhuma
+
+**Mudanças no caminho**
+
 - MODIFICADO (<data>): <antes> → <depois>
-- REMOVIDO (<data>): <o que saiu> — <motivo>
 
-**Entregue**
+**Por critério**
 
-- `<id>/1` ✅ entregue — o sistema agora <comportamento como o usuário o vê>
-- `<id>/2` ⏳ pendente — o sistema <comportamento prometido>
-- `<id>/3` ❌ reprovado — o sistema <comportamento prometido>
+- `<id>/1` ✅ entregue — o sistema agora <comportamento>
 
-**Evidência**
+**Evidência** — <c>/<total> critérios · `<suíte ou gate>` nesta sessão → <resultado> · detalhe no roteiro do portão
 
-| critério | evidência                                              |
-| -------- | ------------------------------------------------------ |
-| `<id>/1` | `<comando rodado nesta sessão>` → <resultado, 1 linha> |
-| `<id>/2` | ⏳ <motivo: o que falta>                               |
-| `<id>/3` | ❌ <motivo: o que reprovou>                            |
+**Decisões da IA** — <n>, revisadas no portão
 
 **Como conferir**
 
-`<id>/1`:
+- `<id>/1`:
 
 ```text
 <comando>
 ```
 
-`<id>/2` — abrir <tela ou rota>
+**Arquivos** — <n> arquivos · +<a> −<r>
 
-**Decisões tomadas pela IA** (opcional — só quando a demanda tiver alguma)
+**Memória** — nó arquivado · PRD atualizado · CHANGELOG +1 · decisões vivas +<k> · Sobras do processo: <N> — rode a skill cleanup quando quiser.
 
-- <decisão de implementação, 1 linha>
-
-**Arquivos tocados** — `git diff --numstat <base>..HEAD`
-
-| arquivo                     |      + |      − |
-| --------------------------- | -----: | -----: |
-| [um.ts](caminho/real/um.ts) |     42 |      7 |
-| ~~caminho/antigo.ts~~       |      0 |     31 |
-| **total: 2 arquivos**       | **42** | **38** |
+> ▶️ **Próximo** — nenhum: demanda entregue.
 ````
 
 Regras:
 
-1. **Demanda**: categoria (do nó ou do anúncio da porta nesta sessão) e
-   total de critérios do nó; o objetivo é cópia literal do campo `objetivo`,
-   nunca reescrito de memória.
-2. **Entregue**: TODOS os critérios do nó, um por linha, pelo endereço
-   `<id>/<n>`, com ícone e palavra (✅ entregue, ⏳ pendente, ❌ reprovado)
-   e o comportamento em linguagem de usuário ("o sistema agora ...").
-3. **Evidência**: uma linha por critério — comando executado nesta sessão +
-   resultado em 1 linha, ou link para o teste com âncora de linha. Critério
-   ⏳ ou ❌ leva o motivo no lugar da evidência.
-4. **Mudanças no caminho**: uma linha por entrada de `## delta` do nó
-   (ADICIONADO / MODIFICADO antes → depois / REMOVIDO + motivo). Sem delta,
-   a seção não é impressa.
-5. **Como conferir**: ≥ 1 item, cada um ligado ao critério que confere —
-   comando em code block ` ```text ` (botão de copiar) ou tela/rota a abrir.
-6. **Decisões tomadas pela IA**: uma linha por decisão — a lista do plano
-   (item 4 do fluxo) e as linhas `(IA` do `## decisoes` do nó. Sem nenhuma,
-   a seção não é impressa.
-7. **Arquivos tocados**: nomes, adições e remoções copiados da saída do
-   `git diff --numstat` real, total somado dela; arquivo existente com link
-   clicável, arquivo removido sem link (`~~caminho/antigo.ts~~`). Lista ou
-   número de memória é falha do bloco.
-8. Dado sem fonte lida nesta sessão (nó, saída de comando, diff) → a célula
-   recebe `[SEM FONTE]` e o critério ligado fica ⏳; nunca preencher de
-   memória.
-9. Portão reprovado ou parcial imprime o relatório do mesmo jeito, veredito
-   por critério; o bloco de fase leva ❌ e o Próximo aponta a decisão humana
-   ou a fase de retorno (scope ou plan). Nunca omitir o relatório.
-10. Não entra medição antes/depois nem "o que ficou de fora": a medição vive
-    no corpo do nó quando a demanda tiver, e o fora-de-escopo é campo do nó.
+1. **Título e estado**: `## 🏁 DONE — <id>` com o portão aprovado; logo
+   abaixo, 1 linha: categoria (do nó ou do anúncio da porta) · critérios
+   entregues/total do nó · `na main` ou `na branch <nome>`.
