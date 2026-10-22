@@ -131,4 +131,18 @@ for s in '[SEM FONTE]' 'o critério ligado fica ⏳' 'nunca preencher de memóri
   assert_contains "$f" "$s" "entrega-clara/14 sem fonte"
 done
 
+# --- validate — fecha o turno com o cartão, no lugar do bloco de fase; merge em branch ---
+V=skills/validate/SKILL.md
+v="$(flat "$V" '## Bloco de fechamento')"
+for s in 'fecha o turno com o **cartão de entrega**' '— `🏁 DONE`, `❌ NÃO ENTREGUE` ou `⚠️ PARCIAL` —' 'no lugar do bloco de fase' 'bloco-fechamento-template.md'; do
+  assert_contains "$v" "$s" "entrega-clara/1 validate fecha com o cartão"
+done
+assert_contains "$v" 'nenhuma ferramenta depois dele' "entrega-clara/15 validate: cartão fecha o turno"
+for s in 'seguido do relatório de **Entrega**' '**Produzido**: o veredito do portão'; do
+  assert_not_contains "$v" "$s" "entrega-clara/1 regressão: bloco de fase + relatório saíram da validate"
+done
+assert_contains "$(flat "$V")" 'branch fora da main → o cartão pergunta o merge' "entrega-clara/12 validate: merge perguntado no cartão"
+vb="$(tr -d '\r' < "$V" | wc -c)"
+[ "$vb" -le 6300 ] && ok || ko "entrega-clara/1 validate '$vb' B > 6300"
+
 report

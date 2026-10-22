@@ -90,8 +90,7 @@ done
 e="$(cat skills/execute/SKILL.md)"
 assert_contains "$e" 'só no fim da fase' "/3 execute imprime tarefas so no fim"
 v="$(cat skills/validate/SKILL.md)"
-assert_contains "$v" 'git diff --numstat' "relatorio-entrega/8 validate tira arquivos tocados do diff real (substitui resumo-de-fase/4 name-only)"
-assert_contains "$v" '**Entrega**' "/4 validate imprime o bloco de entrega"
+assert_contains "$v" '**cartão de entrega**' "entrega-clara/1 validate fecha com o cartão (substitui relatorio-entrega/8 e /4 do bloco de entrega)"
 # scope-batch/7,/8 — perguntas em lote, com teste de dependencia declarado
 sc="$(cat skills/scope/SKILL.md)"
 assert_not_contains "$sc" 'Nunca duas perguntas na mesma mensagem' "/7 scope sem a regra antiga"

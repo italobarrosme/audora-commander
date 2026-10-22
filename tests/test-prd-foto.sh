@@ -78,7 +78,7 @@ assert_not_contains "$cp" 'promoção do resumo' "prd-foto/1 compactar: sem a pr
 assert_contains "$cp" 'foto do `PRD.md` e a linha do `CHANGELOG.md` são da skill validate' "prd-foto/1,2 compactar aponta a validate"
 vf="$(flat skills/validate/SKILL.md)"
 assert_contains "$vf" '`arquivos:` do diff real, PRD + CHANGELOG, HOTFIX' "prd-foto/2 validate: item 6 cita o CHANGELOG"
-assert_contains "$vf" '`PRD.md` atualizado e `CHANGELOG.md` com a linha da entrega' "prd-foto/2 validate: bloco Arquivos cita o CHANGELOG"
+assert_contains "$(flat templates/bloco-fechamento-template.md)" '· PRD atualizado · CHANGELOG +1 ·' "prd-foto/2 cartão de entrega: rodapé Memória cita PRD e CHANGELOG (entrega-clara/11 substitui o bloco Arquivos da validate)"
 [ "$(tr -d '\r' < skills/validate/SKILL.md | wc -c)" -lt 7700 ] && ok || ko "prd-foto/2 validate < 7700 bytes"
 
 # --- /2 /1 — LIGHT também ganha a linha do CHANGELOG; foto só se mudar ---

@@ -77,7 +77,8 @@ Contexto: carregar-contexto (skill memory) antes de qualquer Read;
      novas no plano, demanda continua `in-progress`.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
    direto): seguir `references/sync.md`, NA ORDEM — julgamento, estado e
-   movimento, `arquivos:` do diff real, PRD + CHANGELOG, HOTFIX.
+   movimento, `arquivos:` do diff real, PRD + CHANGELOG, HOTFIX. Aprovado
+   em branch fora da main → o cartão pergunta o merge (aceito → merge e sync).
 7. **Efeito irreversível fora do repo** (migração em ambiente compartilhado,
    deploy, e-mail, cobrança) — em QUALQUER categoria: preparar o comando
    exato + rollback, apresentar, e o HUMANO executa ou autoriza aquele
@@ -97,20 +98,12 @@ Contexto: carregar-contexto (skill memory) antes de qualquer Read;
 
 ## Bloco de fechamento
 
-Ao terminar, imprima no terminal o bloco de fechamento pelo formato canônico
-de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sessão
-→ não reler). Nesta fase:
-
-- **Produzido**: o veredito do portão e o que o sync consolidou.
-- **Arquivos**: nó arquivado, plano arquivado, `PRD.md` atualizado e
-  `CHANGELOG.md` com a linha da entrega.
-- **Próximo**: aprovada, nenhum — o fluxo encerra; reprovada ou parcial, a
-  decisão humana ou a fase de retorno (scope ou plan).
-
-Decidido o portão — aprovado, parcial ou reprovado, em toda categoria —, o
-bloco de fase é seguido do relatório de **Entrega** (seções e regras no
-mesmo template; arquivos tocados do `git diff --numstat`), última parte da
-resposta: nenhuma ferramenta depois dele.
+Decidido o portão, em toda categoria, a validate fecha o turno com o
+**cartão de entrega** — `🏁 DONE`, `❌ NÃO ENTREGUE` ou `⚠️ PARCIAL` — no
+lugar do bloco de fase, pela seção do cartão em
+`templates/bloco-fechamento-template.md` (raiz do plugin;
+já lido nesta sessão → não reler). Última parte da resposta: nenhuma
+ferramenta depois dele.
 
 ## PRÓXIMA SKILL
 
