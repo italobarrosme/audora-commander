@@ -94,6 +94,6 @@ formato do cartão; encolher o template em geral (cerimonia-enxuta).
 
 ## e2e
 
-relatorio: ../e2e/e2e-entrega-clara.md — 2026-10-22: 13/15 passou; falharam /10 (reprovado MEDIUM não roda o comando de arquivos) e /13 (reprovado LIGHT emenda o scope, sem cartão).
+relatorio: ../e2e/e2e-entrega-clara.md — 2026-10-22: rodada 1 13/15 (/10 e /13 falharam no caminho reprovado); debug + fix fc1a001; rodada 2 E ×3 e C ×3 passaram — 15/15. Desvio: título com ":" em 2/13 cartões.
 
 ## feedback-reprovacao
