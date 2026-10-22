@@ -53,6 +53,8 @@ comando de arquivos num repo fixture com commits de duas demandas.
   - (execute) T1 derruba a contagem de asserts (23 → 16 nos arquivos tocados): válvula `gate-asserts:` em `## decisoes` do nó, troca aprovada no escopo (substitui relatorio-entrega/1, /4, /8).
   - (execute) T4 passou do pino BASE 56406 (`test-parada-revisao.sh:59`, `test-leitura-por-secao.sh:129`; o plano só mapeou o teto 58000): pino sobe para a medição real na tarefa que cresce a BASE, com a nota em `test-carga.sh:7` no mesmo commit (padrão das demandas anteriores). T4: 56406 → 57229.
   - (execute, replanejo da T5) gate reprovou `tests/test-prd-foto.sh:81` (fora do mapa): exigia o bloco Arquivos da validate citar `PRD.md` + `CHANGELOG.md`; o bloco saiu e o comportamento vive no rodapé **Memória** do cartão — assert reapontado para `· PRD atualizado · CHANGELOG +1 ·` no template; item 6 da validate segue guardado pela linha 80.
+  - (execute) T6: no LIGHT, a linha "PRD não mudou e por quê" vai para o rodapé **Memória** do cartão (coerente com /11: nenhum resumo do sync fora do cartão). Pino BASE apertado para a medição final 57229 → 56909 (FULL 65765), nota em `test-carga.sh:7`.
+  - (execute) T6: gate antes do commit reprovou só por "arquivo de teste apagado: tests/test-relatorio-entrega.sh" (anti-fraude sem válvula); humano autorizou o `git rm` (registrado no nó) e o gate re-rodou sobre o HEAD.
 
 ---
 

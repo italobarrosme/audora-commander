@@ -145,4 +145,16 @@ assert_contains "$(flat "$V")" 'branch fora da main → o cartão pergunta o mer
 vb="$(tr -d '\r' < "$V" | wc -c)"
 [ "$vb" -le 6300 ] && ok || ko "entrega-clara/1 validate '$vb' B > 6300"
 
+# --- fechamento LIGHT — o cartão sai igual; decisões da IA só do nó (sem plano) ---
+L=skills/validate/references/fechamento-light.md
+l="$(flat "$L")"
+for s in '**Cartão de entrega**' 'sai igual em LIGHT, no lugar do bloco de fase' 'as Decisões da IA contam só as linhas `(IA` do `## decisoes` do nó'; do
+  assert_contains "$l" "$s" "entrega-clara/1 LIGHT imprime o cartão"
+done
+assert_not_contains "$l" 'Relatório de entrega' "entrega-clara/1 LIGHT sem o relatório velho"
+for s in 'HOTFIX não usa este caminho' 'silêncio sobre o PRD é proibido'; do
+  assert_contains "$l" "$s" "entrega-clara/1 regressão: LIGHT mantém '$s'"
+done
+assert_no_file tests/test-relatorio-entrega.sh "entrega-clara/1 teste do relatório velho saiu"
+
 report

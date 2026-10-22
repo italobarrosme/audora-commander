@@ -26,10 +26,10 @@ revisão, nunca tirar a revisão.
 - **Plano**: LIGHT **não tem plano** para arquivar. Pule a etapa sem listá-la
   como pendência.
 - **PRD**: o `PRD.md` é foto — atualize a foto só se o ajuste mudar o que ela
-  descreve. Não mudando, registre no nó e diga em 1 linha que o PRD não
-  mudou e por quê — silêncio sobre o PRD é proibido.
-- **Relatório de entrega** (bloco de fechamento): sai igual, com todas as
-  seções, em LIGHT; sem plano, as Decisões tomadas pela IA vêm só das linhas
-  `(IA` do `## decisoes` do nó.
+  descreve. Não mudando, registre no nó e diga no rodapé **Memória** do
+  cartão que o PRD não mudou e por quê — silêncio sobre o PRD é proibido.
+- **Cartão de entrega** (bloco de fechamento): sai igual em LIGHT, no lugar
+  do bloco de fase; sem plano, as Decisões da IA contam só as linhas `(IA`
+  do `## decisoes` do nó.
 
 HOTFIX não usa este caminho: tem o dele, com registro retroativo.
