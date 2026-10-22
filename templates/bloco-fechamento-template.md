@@ -181,7 +181,7 @@ O bloco é impresso do mesmo jeito — **nunca omitido**. A fase leva ⛔ ou ❌
 > 3. trocar de lib
 ```
 
-Vale para portão reprovado (❌ `REPROVADO:`), escalada de debug — 3 hipóteses
+Vale para escalada de debug — 3 hipóteses
 refutadas (❌ `REPROVADO: 3 hipóteses refutadas`) — e falha irrecuperável de
 execute (⛔ `BLOQUEADO:`). Quando a decisão humana tem opções, elas vão em
 lista numerada dentro da citação, para o humano responder só com o número.
@@ -279,3 +279,22 @@ cria=$(git log --diff-filter=A --format=%H -- "docs/audora/memory/<id>.md" "docs
 ```
 
    Saída vazia → `[SEM FONTE]`.
+10. **Memória**: só quando o sync rodou — 1 linha: nó arquivado, PRD,
+    CHANGELOG, decisões vivas e as sobras de limpeza se N > 0; nenhum
+    resumo do sync fora do cartão.
+11. **Branch fora da main**: o cartão sai DONE e o Próximo pergunta o merge:
+
+```markdown
+> ⏸️ **Próximo** — fazer o merge na main agora?
+>
+> 1. sim — merge, sync e confirmação em 1 linha
+> 2. não — fica na branch <nome>
+```
+
+    Aceito, o sync roda e confirma em 1 linha, sem segundo cartão.
+12. **Reprovado ou parcial**: o mesmo cartão, título
+    `## ❌ NÃO ENTREGUE — <id>` ou `## ⚠️ PARCIAL — <id>`, sem a palavra
+    DONE; Por critério traz veredito e motivo por critério; o Próximo aponta
+    a decisão humana ou a fase de retorno (scope ou plan).
+13. Dado sem fonte lida nesta sessão (nó, saída de comando, diff) →
+    `[SEM FONTE]` e o critério ligado fica ⏳; nunca preencher de memória.

@@ -68,6 +68,6 @@ senão `memory-validate` bloqueia a próxima escrita.
 5. HOTFIX: regularizar o registro retroativo (nó `hotfix-pending-record`
    → nó completo).
 6. **Sugestão de limpeza**, depois do commit do sync (item sujo não conta):
-   `bash "<raiz do plugin>/hooks/cleanup" contar`. N > 0 → 1 linha ao
-   humano: "Sobras do processo: N — rode a skill cleanup quando quiser."
+   `bash "<raiz do plugin>/hooks/cleanup" contar`. N > 0 → no rodapé **Memória** do cartão de entrega:
+   "Sobras do processo: N — rode a skill cleanup quando quiser."
    N = 0 → nada. Nunca rode `aplicar` daqui: a limpeza é manual.

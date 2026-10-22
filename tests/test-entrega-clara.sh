@@ -105,4 +105,30 @@ assert_eq '2 arquivos · +5 −0' "$(printf '%s\n' "$cmd" | sed 's/<id>/demo/g' 
 assert_eq '' "$(printf '%s\n' "$cmd" | sed 's/<id>/nada/g' | bash 2>&1)" "entrega-clara/10 demanda sem nó: saída vazia, sem erro"
 cd "$ROOT" || exit 1
 
+# --- /11 — rodapé Memória só quando o sync rodou; sync não fala fora do cartão ---
+for s in '**Memória** —' 'só quando o sync rodou' 'nenhum resumo do sync fora do cartão'; do
+  assert_contains "$f" "$s" "entrega-clara/11 rodapé da memória"
+done
+y="$(flat skills/validate/references/sync.md)"
+for s in 'no rodapé **Memória** do cartão de entrega' 'Sobras do processo: N — rode a skill cleanup quando quiser.'; do
+  assert_contains "$y" "$s" "entrega-clara/11 sync manda as sobras ao rodapé"
+done
+assert_not_contains "$y" '1 linha ao humano' "entrega-clara/11 sync sem linha solta ao humano"
+
+# --- /12 — aprovado em branch: DONE e Próximo pergunta o merge ---
+for s in '> ⏸️ **Próximo** — fazer o merge na main agora?' '> 1. sim — merge, sync e confirmação em 1 linha' '> 2. não — fica na branch <nome>' 'sem segundo cartão'; do
+  assert_contains "$f" "$s" "entrega-clara/12 merge perguntado no cartão"
+done
+
+# --- /13 — reprovado ou parcial: mesmo cartão, sem DONE ---
+for s in '## ❌ NÃO ENTREGUE — <id>' '## ⚠️ PARCIAL — <id>' 'veredito e motivo por critério' 'fase de retorno (scope ou plan)' 'sem a palavra DONE'; do
+  assert_contains "$f" "$s" "entrega-clara/13 não entregue e parcial"
+done
+assert_not_contains "$b" 'Vale para portão reprovado' "entrega-clara/13 portão reprovado sai do bloco interrompido"
+
+# --- /14 — dado sem fonte → [SEM FONTE] e critério ⏳ ---
+for s in '[SEM FONTE]' 'o critério ligado fica ⏳' 'nunca preencher de memória'; do
+  assert_contains "$f" "$s" "entrega-clara/14 sem fonte"
+done
+
 report

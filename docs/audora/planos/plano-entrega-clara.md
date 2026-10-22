@@ -51,6 +51,7 @@ comando de arquivos num repo fixture com commits de duas demandas.
   - (execute) `sec` do teste novo ignora `## ` dentro de fence de 4 crases: o título `## 🏁 DONE — <id>` do esqueleto fecharia a seção no awk do teste velho.
   - (execute) header do template ganha 1 linha "Exceção: a validate, decidido o portão, imprime o cartão de entrega no lugar do bloco." — frase numa linha só para casar no flat (citação `> ` quebraria).
   - (execute) T1 derruba a contagem de asserts (23 → 16 nos arquivos tocados): válvula `gate-asserts:` em `## decisoes` do nó, troca aprovada no escopo (substitui relatorio-entrega/1, /4, /8).
+  - (execute) T4 passou do pino BASE 56406 (`test-parada-revisao.sh:59`, `test-leitura-por-secao.sh:129`; o plano só mapeou o teto 58000): pino sobe para a medição real na tarefa que cresce a BASE, com a nota em `test-carga.sh:7` no mesmo commit (padrão das demandas anteriores). T4: 56406 → 57229.
 
 ---
 
