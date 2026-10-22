@@ -269,3 +269,13 @@ Regras:
    de decisões do roteiro.
 8. **Como conferir**: ≥ 1 item, cada um ligado ao critério que confere —
    comando em code block ` ```text ` (botão de copiar) ou tela/rota a abrir.
+9. **Arquivos**: 1 linha, sem tabela de arquivos, somada do
+   `git diff --numstat` real só dos commits da demanda (escopo `(<id>)` ou
+   `(<id>/<n>)`), desde o pai do commit que criou o nó:
+
+```bash
+cria=$(git log --diff-filter=A --format=%H -- "docs/audora/memory/<id>.md" "docs/audora/arquivo/"*"-<id>.md" | tail -1)
+[ -n "$cria" ] && git log --format= --name-only -E --grep='^[a-z]+[(]<id>[/)]' "$cria^..HEAD" | sort -u | xargs -r -d '\n' git diff --numstat "$cria^" HEAD -- | awk '{a+=$1; r+=$2; n++} END {if (n) print n " arquivos · +" a " −" r}'
+```
+
+   Saída vazia → `[SEM FONTE]`.

@@ -81,4 +81,28 @@ for s in '≥ 1 item, cada um ligado ao critério que confere' 'code block ` ```
   assert_contains "$f" "$s" "entrega-clara/9 Como conferir"
 done
 
+# --- /10 — Arquivos: 1 linha somada do numstat real, só dos commits da demanda ---
+for s in '**Arquivos** — <n> arquivos · +<a> −<r>' 'Saída vazia → `[SEM FONTE]`' 'sem tabela de arquivos'; do
+  assert_contains "$f" "$s" "entrega-clara/10 Arquivos em 1 linha"
+done
+# integração: o comando do template roda num repo com commits de duas demandas
+cmd="$(printf '%s\n' "$r" | awk '/^```bash/{f=1;next} /^```/{f=0} f')"
+R="$SP/repo"; mkdir -p "$R" && cd "$R" || exit 1
+git init -q . && git config user.name t && git config user.email t@t &&
+  git config core.autocrlf false && git config core.excludesFile "$SP/nada" &&
+  git config commit.gpgsign false && git config core.hooksPath "$SP/nada"
+c() { git add -A && git commit -qm "$1"; }
+echo r > README; c 'chore: init'
+mkdir -p docs/audora/memory docs/audora/arquivo
+printf '1\n2\n3\n' > docs/audora/memory/demo.md; c 'docs(demo): escopo e plano'
+printf 'a\nb\n' > a.txt; c 'feat(demo/1): a'
+printf '1\n2\n3\n4\n5\n' > b.txt; c 'feat(outra/1): b'
+printf 'a\nB\n' > a.txt; c 'fix(demo/2): a'
+echo c > c.txt; c 'docs(outra): cita demo/1'
+echo d > d.txt; c 'feat(demo-x/1): d'
+git mv docs/audora/memory/demo.md docs/audora/arquivo/2026-10-22-demo.md && git commit -qm 'docs(demo): sync'
+assert_eq '2 arquivos · +5 −0' "$(printf '%s\n' "$cmd" | sed 's/<id>/demo/g' | bash 2>&1)" "entrega-clara/10 comando do template no repo fixture"
+assert_eq '' "$(printf '%s\n' "$cmd" | sed 's/<id>/nada/g' | bash 2>&1)" "entrega-clara/10 demanda sem nó: saída vazia, sem erro"
+cd "$ROOT" || exit 1
+
 report
