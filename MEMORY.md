@@ -100,6 +100,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - status-retomada | planned | Status e retomada | Ver o que está em aberto e retomar sem lembrar o comando; versão sobe a cada entrega com nota de migração. | status, retomada, session-start, versao, release, migracao, brownfield | hooks/session-start, skills/audora-commander/SKILL.md, .claude-plugin/
 - aprendizados-escopo | planned | Aprendizados com escopo | Aprendizado com escopo de arquivo, varredura de obsoleto e promoção do reincidente a hook ou Constituição. | aprendizados, escopo, obsoleto, invalidacao, promocao, erro-repetido | skills/memory/SKILL.md, templates/aprendizados-template.md, hooks/cleanup
 - relatorio-entrega | delivered | Relatório de entrega → docs/audora/arquivo/2026-10-15-relatorio-entrega.md
+- entrega-clara | in-progress | Entrega clara no chat | Fechamento da demanda no chat deixa claro que ela está DONE, o que foi entregue e como foi feito. | entrega, done, relatorio, validate, sync, chat, bloco-fechamento | skills/validate/SKILL.md, templates/bloco-fechamento-template.md
 - review-avulsa | planned | Review avulsa | Skill de review chamável fora do fluxo (pedir e receber review), que usa o revisor e lê os critérios do nó quando há MEMORY. | review, code-review, revisor, avulsa, criterios, disciplina | skills/, agents/revisor.md
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
