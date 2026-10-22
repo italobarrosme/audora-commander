@@ -105,9 +105,9 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - **ler**: `templates/bloco-fechamento-template.md:1-12,183-276`, `tests/test-relatorio-entrega.sh:1-30`, `tests/test-templates.sh:17-27`
 - **done quando**: casos /1 /2 /15 verdes; `bash tests/test-carga.sh` base ≤ 58000; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — criar `tests/test-entrega-clara.sh` com os casos /1 /2 /15 e trocar `tests/test-templates.sh:23-24`; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 template sem a seção` (seção ainda não existe)
-- [ ] **green** — trocar a seção + header, tirar `tests/test-relatorio-entrega.sh:18-86`; `bash tests/test-entrega-clara.sh && bash tests/test-templates.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
-- [ ] **commit** — `git add templates/bloco-fechamento-template.md tests/test-entrega-clara.sh tests/test-templates.sh tests/test-relatorio-entrega.sh && git commit -m "feat(entrega-clara/1): cartao de entrega substitui o relatorio no template - esqueleto, estado e fim de turno"`
+- [x] **red** — criar `tests/test-entrega-clara.sh` com os casos /1 /2 /15 e trocar `tests/test-templates.sh:23-24`; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 template sem a seção` (seção ainda não existe)
+- [x] **green** — trocar a seção + header, tirar `tests/test-relatorio-entrega.sh:18-86`; `bash tests/test-entrega-clara.sh && bash tests/test-templates.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
+- [x] **commit** — `git add templates/bloco-fechamento-template.md tests/test-entrega-clara.sh tests/test-templates.sh tests/test-relatorio-entrega.sh && git commit -m "feat(entrega-clara/1): cartao de entrega substitui o relatorio no template - esqueleto, estado e fim de turno"`
 
 ## Tarefa 2: corpo do cartão — o que mudou, como foi, ressalvas, delta, por critério, evidência, decisões, como conferir
 
@@ -135,9 +135,9 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - **ler**: seção nova do template (inteira), `docs/audora/memory/entrega-clara.md:16-60`
 - **done quando**: casos /3–/9 verdes; base ≤ 58000; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — acrescentar os casos /3–/9; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/4 … não contém 'em ordem cronológica'` (e demais frases)
-- [ ] **green** — escrever as regras; `bash tests/test-entrega-clara.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
-- [ ] **commit** — `git add templates/bloco-fechamento-template.md tests/test-entrega-clara.sh && git commit -m "feat(entrega-clara/3): corpo do cartao - o que mudou, como foi, ressalvas, por criterio, evidencia e decisoes em 1 linha"`
+- [x] **red** — acrescentar os casos /3–/9; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/4 … não contém 'em ordem cronológica'` (e demais frases)
+- [x] **green** — escrever as regras; `bash tests/test-entrega-clara.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
+- [x] **commit** — `git add templates/bloco-fechamento-template.md tests/test-entrega-clara.sh && git commit -m "feat(entrega-clara/3): corpo do cartao - o que mudou, como foi, ressalvas, por criterio, evidencia e decisoes em 1 linha"`
 
 ## Tarefa 3: arquivos da demanda em 1 linha, do diff real
 
@@ -162,9 +162,9 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - **ler**: `skills/validate/references/sync.md:32-46`, seção nova do template
 - **done quando**: caso /10 verde (incluindo o fixture); base ≤ 58000; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — acrescentar o caso /10; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/10 … esperado '2 arquivos · +5 −0', obtido ''` (bloco bash ainda não existe)
-- [ ] **green** — escrever a regra + bloco; `bash tests/test-entrega-clara.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
-- [ ] **commit** — `git add templates/bloco-fechamento-template.md tests/test-entrega-clara.sh && git commit -m "feat(entrega-clara/10): arquivos do cartao em 1 linha, somados do diff real so dos commits da demanda"`
+- [x] **red** — acrescentar o caso /10; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/10 … esperado '2 arquivos · +5 −0', obtido ''` (bloco bash ainda não existe)
+- [x] **green** — escrever a regra + bloco; `bash tests/test-entrega-clara.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
+- [x] **commit** — `git add templates/bloco-fechamento-template.md tests/test-entrega-clara.sh && git commit -m "feat(entrega-clara/10): arquivos do cartao em 1 linha, somados do diff real so dos commits da demanda"`
 
 ## Tarefa 4: rodapé da memória, merge em branch, não entregue/parcial, sem fonte
 
@@ -186,9 +186,9 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - **ler**: seção nova do template, `templates/bloco-fechamento-template.md:155-186`, `skills/validate/references/sync.md:68-73`, `tests/test-skill-cleanup.sh:699-708`
 - **done quando**: casos /11–/14 verdes; `bash tests/test-skill-cleanup.sh` verde; base ≤ 58000, full ≤ 67100; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — acrescentar os casos /11–/14; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/12 … não contém 'sem segundo cartão'` (e demais)
-- [ ] **green** — regras no template, parágrafo 183-186, passo 6 do sync; `bash tests/test-entrega-clara.sh && bash tests/test-skill-cleanup.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
-- [ ] **commit** — `git add templates/bloco-fechamento-template.md skills/validate/references/sync.md tests/test-entrega-clara.sh && git commit -m "feat(entrega-clara/12): cartao pergunta o merge em branch, nao entregue e parcial, rodape da memoria e sem fonte"`
+- [x] **red** — acrescentar os casos /11–/14; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/12 … não contém 'sem segundo cartão'` (e demais)
+- [x] **green** — regras no template, parágrafo 183-186, passo 6 do sync; `bash tests/test-entrega-clara.sh && bash tests/test-skill-cleanup.sh && bash tests/test-carga.sh && bash tests/run.sh` exit 0
+- [x] **commit** — `git add templates/bloco-fechamento-template.md skills/validate/references/sync.md tests/test-entrega-clara.sh && git commit -m "feat(entrega-clara/12): cartao pergunta o merge em branch, nao entregue e parcial, rodape da memoria e sem fonte"`
 
 ## Tarefa 5: validate fecha com o cartão
 
@@ -207,9 +207,9 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - **ler**: `skills/validate/SKILL.md:70-117`, `tests/test-skills.sh:85-95`, `tests/test-relatorio-entrega.sh:89-111`
 - **done quando**: casos verdes; validate ≤ 6300 B; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — casos da validate + `test-skills.sh:93-94`; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 validate … não contém 'fecha o turno com o **cartão de entrega**'`
-- [ ] **green** — reescrever 98-113 e o item 6; tirar `tests/test-relatorio-entrega.sh:89-99`; `bash tests/test-entrega-clara.sh && bash tests/test-skills.sh && bash tests/test-leitura-por-secao.sh && bash tests/test-parada-revisao.sh && bash tests/run.sh` exit 0
-- [ ] **commit** — `git add skills/validate/SKILL.md tests/test-entrega-clara.sh tests/test-skills.sh tests/test-relatorio-entrega.sh && git commit -m "feat(entrega-clara/1): validate fecha o turno com o cartao de entrega e pergunta o merge em branch"`
+- [x] **red** — casos da validate + `test-skills.sh:93-94`; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 validate … não contém 'fecha o turno com o **cartão de entrega**'`
+- [x] **green** — reescrever 98-113 e o item 6; tirar `tests/test-relatorio-entrega.sh:89-99`; `bash tests/test-entrega-clara.sh && bash tests/test-skills.sh && bash tests/test-leitura-por-secao.sh && bash tests/test-parada-revisao.sh && bash tests/run.sh` exit 0
+- [x] **commit** — `git add skills/validate/SKILL.md tests/test-entrega-clara.sh tests/test-skills.sh tests/test-relatorio-entrega.sh && git commit -m "feat(entrega-clara/1): validate fecha o turno com o cartao de entrega e pergunta o merge em branch"`
 
 ## Tarefa 6: LIGHT herda o cartão; teste velho sai; medição de carga
 
@@ -227,6 +227,6 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - **ler**: `skills/validate/references/fechamento-light.md:1-35`, `tests/test-relatorio-entrega.sh:101-111`, `tests/test-carga.sh:1-23`
 - **done quando**: caso verde; `grep -rn 'Relatório de entrega' skills templates tests` vazio fora de comentário histórico em `tests/test-carga.sh`; `bash tests/run.sh` exit 0; `bash hooks/gate entrega-clara` exit 0.
 
-- [ ] **red** — caso LIGHT; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 LIGHT … não contém '**Cartão de entrega**'`
-- [ ] **green** — reescrever 31-33, `git rm tests/test-relatorio-entrega.sh`, medição na linha 7 do test-carga; `bash tests/test-entrega-clara.sh && bash tests/run.sh && bash hooks/gate entrega-clara` exit 0
-- [ ] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-entrega-clara.sh tests/test-carga.sh && git commit -m "feat(entrega-clara/1): fechamento LIGHT imprime o cartao; teste do relatorio velho sai"`
+- [x] **red** — caso LIGHT; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 LIGHT … não contém '**Cartão de entrega**'`
+- [x] **green** — reescrever 31-33, `git rm tests/test-relatorio-entrega.sh`, medição na linha 7 do test-carga; `bash tests/test-entrega-clara.sh && bash tests/run.sh && bash hooks/gate entrega-clara` exit 0
+- [x] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-entrega-clara.sh tests/test-carga.sh && git commit -m "feat(entrega-clara/1): fechamento LIGHT imprime o cartao; teste do relatorio velho sai"`
