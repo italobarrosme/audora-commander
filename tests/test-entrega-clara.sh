@@ -157,4 +157,8 @@ for s in 'HOTFIX não usa este caminho' 'silêncio sobre o PRD é proibido'; do
 done
 assert_no_file tests/test-relatorio-entrega.sh "entrega-clara/1 teste do relatório velho saiu"
 
+# --- debug do e2e (2026-10-22): reprovado em LIGHT emendava o scope; C somou de arquivo lido ---
+assert_contains "$(flat skills/validate/SKILL.md)" 'Reprovado ou parcial, o turno fecha no cartão em toda categoria (LIGHT também): a fase de retorno roda só no turno seguinte.' "entrega-clara/13 validate: turno fecha no cartão em LIGHT"
+assert_contains "$f" 'Rode-o no turno do cartão, em toda decisão do portão — nunca some de arquivo lido.' "entrega-clara/10 comando roda no turno do cartão"
+
 report

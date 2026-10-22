@@ -55,6 +55,7 @@ comando de arquivos num repo fixture com commits de duas demandas.
   - (execute, replanejo da T5) gate reprovou `tests/test-prd-foto.sh:81` (fora do mapa): exigia o bloco Arquivos da validate citar `PRD.md` + `CHANGELOG.md`; o bloco saiu e o comportamento vive no rodapé **Memória** do cartão — assert reapontado para `· PRD atualizado · CHANGELOG +1 ·` no template; item 6 da validate segue guardado pela linha 80.
   - (execute) T6: no LIGHT, a linha "PRD não mudou e por quê" vai para o rodapé **Memória** do cartão (coerente com /11: nenhum resumo do sync fora do cartão). Pino BASE apertado para a medição final 57229 → 56909 (FULL 65765), nota em `test-carga.sh:7`.
   - (execute) T6: gate antes do commit reprovou só por "arquivo de teste apagado: tests/test-relatorio-entrega.sh" (anti-fraude sem válvula); humano autorizou o `git rm` (registrado no nó) e o gate re-rodou sobre o HEAD.
+  - (debug) T7 e T8 num commit só: os dois casos entraram no mesmo RED do teste e commitar um deixaria o outro vermelho. Pino BASE 56909 → 57134 (FULL 65990), nota em `test-carga.sh:7`.
 
 ---
 
@@ -230,3 +231,31 @@ Testes extraem a seção com `flat "$T" '## Cartão de entrega (só a validate, 
 - [x] **red** — caso LIGHT; `bash tests/test-entrega-clara.sh` falha com `FAIL: entrega-clara/1 LIGHT … não contém '**Cartão de entrega**'`
 - [x] **green** — reescrever 31-33, `git rm tests/test-relatorio-entrega.sh`, medição na linha 7 do test-carga; `bash tests/test-entrega-clara.sh && bash tests/run.sh && bash hooks/gate entrega-clara` exit 0
 - [x] **commit** — `git add skills/validate/references/fechamento-light.md tests/test-entrega-clara.sh tests/test-carga.sh && git commit -m "feat(entrega-clara/1): fechamento LIGHT imprime o cartao; teste do relatorio velho sai"`
+
+## Tarefa 7: reprovado em LIGHT fecha no cartão (debug do e2e, /13)
+
+- **depende-de**: [6]
+- **requisito**: `entrega-clara/13` — QUANDO o portão for reprovado ou parcial O SISTEMA DEVE imprimir o mesmo cartão com título `## ❌ NÃO ENTREGUE — <id>` ou `## ⚠️ PARCIAL — <id>`, veredito e motivo por critério e Próximo na decisão humana ou fase de retorno — sem a palavra DONE
+- **decisões relevantes**: causa raiz (debug 2026-10-22): em LIGHT, sem PARADA, o "→ skill scope" do item 5 é executado no mesmo turno (2/3 runs; MEDIUM 0/4) e o bloco do scope substitui o cartão.
+- **ponto de mudança**: `skills/validate/SKILL.md:75-77` (item 5, depois do bullet da aprovação parcial).
+- **teste**: `tests/test-entrega-clara.sh` — caso "entrega-clara/13 validate: turno fecha no cartão em LIGHT".
+- **asserções**: flat de `skills/validate/SKILL.md` contém `Reprovado ou parcial, o turno fecha no cartão em toda categoria (LIGHT também): a fase de retorno roda só no turno seguinte.`
+- **done quando**: caso verde; validate ≤ 6300 B; gate exit 0; e2e cenário E ×3 com o cartão `❌ NÃO ENTREGUE`.
+
+- [x] **red** — `bash tests/test-entrega-clara.sh` falha com `não contém 'Reprovado ou parcial, o turno fecha no cartão…'`
+- [x] **green** — frase no item 5; pino BASE + nota de medição no mesmo commit
+- [x] **commit** — `fix(entrega-clara/13): reprovado ou parcial fecha o turno no cartao, tambem em LIGHT`
+
+## Tarefa 8: comando de arquivos roda no turno do cartão (debug do e2e, /10)
+
+- **depende-de**: [7]
+- **requisito**: `entrega-clara/10` — QUANDO o cartão for impresso O SISTEMA DEVE trazer os arquivos só como 1 linha `<n> arquivos · +<a> −<r>`, somada do `git diff --numstat` real da demanda, sem arquivo de outra demanda
+- **decisões relevantes**: causa (debug 2026-10-22, intermitente 1/3): a regra traz o comando mas não diz quando rodar; no reprovado sem sync, C não rodou Bash nenhum e somou linhas de arquivo lido.
+- **ponto de mudança**: `templates/bloco-fechamento-template.md` — regra 9 (Arquivos), linha depois do bloco bash.
+- **teste**: `tests/test-entrega-clara.sh` — caso "entrega-clara/10 comando roda no turno do cartão".
+- **asserções**: flat da seção contém `Rode-o no turno do cartão, em toda decisão do portão — nunca some de arquivo lido.`; segue contendo ``Saída vazia → `[SEM FONTE]` ``.
+- **done quando**: caso verde; gate exit 0; e2e cenário C ×3 com `5 arquivos · +87 −0`.
+
+- [x] **red** — `bash tests/test-entrega-clara.sh` falha com `não contém 'Rode-o no turno do cartão…'`
+- [x] **green** — frase na regra 9; pino BASE + nota no mesmo commit
+- [x] **commit** — `fix(entrega-clara/10): comando de arquivos roda no turno do cartao em toda decisao do portao`

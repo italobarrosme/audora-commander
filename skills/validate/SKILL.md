@@ -75,6 +75,8 @@ Contexto: carregar-contexto (skill memory) antes de qualquer Read;
      skill plan, replanejar a etapa afetada.
    - **Aprovação parcial** → o aceito segue o item 6; o resto vira etapas
      novas no plano, demanda continua `in-progress`.
+   Reprovado ou parcial, o turno fecha no cartão em toda categoria (LIGHT
+   também): a fase de retorno roda só no turno seguinte.
 6. **Sync pós-aprovação** (quando o trabalho entra na main — merge ou commit
    direto): seguir `references/sync.md`, NA ORDEM — julgamento, estado e
    movimento, `arquivos:` do diff real, PRD + CHANGELOG, HOTFIX. Aprovado

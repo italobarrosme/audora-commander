@@ -278,7 +278,8 @@ cria=$(git log --diff-filter=A --format=%H -- "docs/audora/memory/<id>.md" "docs
 [ -n "$cria" ] && git log --format= --name-only -E --grep='^[a-z]+[(]<id>[/)]' "$cria^..HEAD" | sort -u | xargs -r -d '\n' git diff --numstat "$cria^" HEAD -- | awk '{a+=$1; r+=$2; n++} END {if (n) print n " arquivos · +" a " −" r}'
 ```
 
-   Saída vazia → `[SEM FONTE]`.
+   Rode-o no turno do cartão, em toda decisão do portão — nunca some de
+   arquivo lido. Saída vazia → `[SEM FONTE]`.
 10. **Memória**: só quando o sync rodou — 1 linha: nó arquivado, PRD,
     CHANGELOG, decisões vivas e as sobras de limpeza se N > 0; nenhum
     resumo do sync fora do cartão.
