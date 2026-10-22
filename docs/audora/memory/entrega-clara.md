@@ -94,6 +94,6 @@ formato do cartão; encolher o template em geral (cerimonia-enxuta).
 
 ## e2e
 
-pendente
+relatorio: ../e2e/e2e-entrega-clara.md — 2026-10-22: 13/15 passou; falharam /10 (reprovado MEDIUM não roda o comando de arquivos) e /13 (reprovado LIGHT emenda o scope, sem cartão).
 
 ## feedback-reprovacao
