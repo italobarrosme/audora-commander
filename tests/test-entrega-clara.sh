@@ -46,4 +46,39 @@ for s in 'última parte da resposta do turno' 'nenhuma chamada de ferramenta dep
   assert_contains "$f" "$s" "entrega-clara/15 última parte do turno"
 done
 
+# --- /3 — O que mudou: 1 a 3 bullets em linguagem de usuário ---
+for s in '1 a 3 bullets' 'o sistema agora'; do
+  assert_contains "$f" "$s" "entrega-clara/3 O que mudou"
+done
+
+# --- /4 — Como foi: trilha das fases, em ordem, até 8 palavras, e2e rodado ou pulado ---
+for s in 'em ordem cronológica' 'até 8 palavras' 'e2e marcado `rodado` ou `pulado`' 'fases que a categoria não percorre ficam fora' 'cada resumo vem de fonte lida nesta sessão (nó, plano, `git log`, campo `## e2e` do nó)'; do
+  assert_contains "$f" "$s" "entrega-clara/4 Como foi"
+done
+
+# --- /5 — Ressalvas: 1 linha por ressalva; sem nenhuma, "nenhuma" explícito ---
+for s in '**Ressalvas** — nenhuma' '1 linha por ressalva' 'e2e pulado, prova parcial, ressalva aceita no portão'; do
+  assert_contains "$f" "$s" "entrega-clara/5 Ressalvas"
+done
+
+# --- /6 — Mudanças no caminho: 1 linha por delta; omitida sem delta ---
+for s in '1 linha por entrada de `## delta` do nó' 'Sem delta, a seção não é impressa'; do
+  assert_contains "$f" "$s" "entrega-clara/6 Mudanças no caminho"
+done
+
+# --- /7 — Por critério: todos, endereço, ícone com palavra ---
+for s in 'TODOS os critérios do nó' '✅ entregue' '⏳ pendente' '❌ reprovado' '`<id>/<n>`'; do
+  assert_contains "$f" "$s" "entrega-clara/7 Por critério"
+done
+
+# --- /8 — Evidência e Decisões da IA em 1 linha cada, sem repetir o roteiro ---
+for s in 'detalhe no roteiro do portão' '**Decisões da IA** — <n>, revisadas no portão' 'Sem decisão da IA, a linha não é impressa' 'nunca repete a tabela de evidência nem a lista de decisões do roteiro'; do
+  assert_contains "$f" "$s" "entrega-clara/8 Evidência e Decisões da IA"
+done
+
+# --- /9 — Como conferir: ≥ 1 item ligado a critério; text ou tela/rota ---
+for s in '≥ 1 item, cada um ligado ao critério que confere' 'code block ` ```text `' 'tela/rota a abrir'; do
+  assert_contains "$f" "$s" "entrega-clara/9 Como conferir"
+done
+
 report

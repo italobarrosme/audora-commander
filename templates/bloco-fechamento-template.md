@@ -247,3 +247,25 @@ Regras:
 1. **Título e estado**: `## 🏁 DONE — <id>` com o portão aprovado; logo
    abaixo, 1 linha: categoria (do nó ou do anúncio da porta) · critérios
    entregues/total do nó · `na main` ou `na branch <nome>`.
+2. **O que mudou**: 1 a 3 bullets em linguagem de usuário ("o sistema
+   agora ..."), do objetivo e dos critérios do nó.
+3. **Como foi**: as fases percorridas, em ordem cronológica, 1 linha cada
+   com até 8 palavras; e2e marcado `rodado` ou `pulado`; fases que a
+   categoria não percorre ficam fora. Sem invenção: cada resumo vem de fonte
+   lida nesta sessão (nó, plano, `git log`, campo `## e2e` do nó).
+4. **Ressalvas**: 1 linha por ressalva (e2e pulado, prova parcial, ressalva
+   aceita no portão); sem nenhuma, `**Ressalvas** — nenhuma`.
+5. **Mudanças no caminho**: 1 linha por entrada de `## delta` do nó
+   (ADICIONADO / MODIFICADO antes → depois / REMOVIDO + motivo). Sem delta,
+   a seção não é impressa.
+6. **Por critério**: TODOS os critérios do nó, um por linha, pelo endereço
+   `<id>/<n>`, com ícone e palavra (✅ entregue, ⏳ pendente, ❌ reprovado)
+   e o comportamento em linguagem de usuário.
+7. **Evidência** e **Decisões da IA**: 1 linha cada. Evidência = critérios
+   com evidência / total, a suíte ou o gate rodado nesta sessão com o
+   resultado, e "detalhe no roteiro do portão". Decisões = quantas (lista do
+   plano + linhas `(IA` do `## decisoes` do nó). Sem decisão da IA, a linha
+   não é impressa. O cartão nunca repete a tabela de evidência nem a lista
+   de decisões do roteiro.
+8. **Como conferir**: ≥ 1 item, cada um ligado ao critério que confere —
+   comando em code block ` ```text ` (botão de copiar) ou tela/rota a abrir.
