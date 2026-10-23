@@ -45,3 +45,4 @@ Formato: `- AAAA-MM-DD | <no-de-origem> | <decisão em 1 frase>`
 2. Decisão superada NUNCA é apagada: anexar à linha
    `[invalidado-em: AAAA-MM-DD] [substituido-por: <ref>]`.
 3. Consulta: `grep -i '<termo>' docs/audora/decisoes-vivas.md`. -->
+- 2026-10-23 | entrega-clara | Skill de fase que manda para outra fase depois de decisão humana (reprovação, retorno) diz que o turno fecha antes dela — sem PARADA (LIGHT, HOTFIX) o modelo emenda a fase seguinte e o fechamento da fase atual some.

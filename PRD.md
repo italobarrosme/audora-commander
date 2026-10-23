@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-15
+> Última atualização: 2026-10-23
 
 ## O que é e para que serve
 
@@ -100,10 +100,10 @@ Code.
   nó sem critério numerado copia os da spec antes do `git mv`, sem nenhum
   para sem arquivar; arquiva o nó por movimento, atualiza a foto do `PRD.md`
   e acrescenta 1 linha ao `CHANGELOG.md`, em toda categoria). Decidido o
-  portão, em toda categoria e decisão, fecha o turno com o relatório de
-  entrega — Demanda · Mudanças no caminho · Entregue · Evidência · Como
-  conferir · Decisões tomadas pela IA · Arquivos tocados do numstat real —,
-  `[SEM FONTE]` em dado sem fonte lida na sessão; formato em
+  portão, em toda categoria, fecha o turno com o cartão de entrega no lugar
+  do bloco de fase (`🏁 DONE`, `❌ NÃO ENTREGUE` ou `⚠️ PARCIAL`): estado,
+  o que mudou, trilha, ressalvas, por critério, arquivos em 1 linha do
+  numstat da demanda, rodapé Memória; em branch pergunta o merge; formato em
   `templates/bloco-fechamento-template.md`. O `PRD.md` é foto com até 200
   linhas; histórico de entregas no `CHANGELOG.md`, PRD com histórico
   convertido on-touch no próximo sync. Roteador: fluxo até o portão inline;
@@ -143,7 +143,7 @@ Code.
   é feature futura e fica fora do relatório; repo sem commit não tem alvo
   ausente. O julgamento semântico de planned órfão é da skill (`--orfao`),
   que confere o histórico antes de marcar alvo ausente. O sync da
-  validate só sugere em 1 linha, com a contagem.
+  validate só sugere a contagem no rodapé Memória do cartão de entrega.
 
 Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
 a fase não emenda a seguinte e imprime `/clear` + o comando de retomada

@@ -1,12 +1,12 @@
 ---
 id: entrega-clara
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: [relatorio-entrega]
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, docs/audora/aprendizados.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-entrega-clara.md, docs/audora/planos/arquivo/plano-entrega-clara.md, skills/validate/SKILL.md, skills/validate/references/fechamento-light.md, skills/validate/references/sync.md, templates/bloco-fechamento-template.md, tests/test-carga.sh, tests/test-entrega-clara.sh, tests/test-leitura-por-secao.sh, tests/test-parada-revisao.sh, tests/test-prd-foto.sh, tests/test-relatorio-entrega.sh, tests/test-skills.sh, tests/test-templates.sh]
 keywords: [entrega, done, relatorio, validate, sync, chat, bloco-fechamento]
 resumo: Fechamento da demanda no chat deixa claro que ela está DONE, o que foi entregue e como foi feito.
-atualizado-em: 2026-10-22
+atualizado-em: 2026-10-23
 ---
 
 # entrega-clara
@@ -89,6 +89,7 @@ formato do cartão; encolher o template em geral (cerimonia-enxuta).
 - 2026-10-22 (IA, escopo): substitui relatorio-entrega/1 (ordem de seções), /4 (tabela de evidência) e /8 (tabela de arquivos); /2, /3, /5, /7, /9, /10, /11 seguem em nova forma.
 - 2026-10-22 (IA, execute): gate-asserts: queda aprovada no escopo (substitui relatorio-entrega/1, /4, /8) — asserts do relatório velho saem com a seção; comportamento novo guardado por tests/test-entrega-clara.sh.
 - 2026-10-22 (humano, execute): autoriza apagar tests/test-relatorio-entrega.sh — o que ele guardava foi portado para tests/test-entrega-clara.sh ou trocado pelo cartão.
+- 2026-10-23 (humano, validate): portão aprovado (15/15, gate 2075 asserts, e2e 2 rodadas); promovida a decisão viva "skill de fase com retorno diz que o turno fecha antes dela" (debug do e2e).
 
 ## delta
 
