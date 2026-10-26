@@ -40,4 +40,7 @@ assert_contains "$nt" '`- <id>/<n> · passou|reprovou|não-automatizável · <ev
 assert_not_contains "$nt" '../e2e/e2e-<id>.md' "gitignore-padrao/13 no-template sem link relativo ao relatório"
 [ "$(wc -l < skills/e2e/SKILL.md)" -le 250 ] && ok || ko "gitignore-padrao/11 e2e ≤ 250 linhas"
 
+# ===================== T7 — regra local: no roteador da skill memory =====================
+assert_contains "$(achata skills/memory/SKILL.md)" 'Pastas efêmeras (`docs/audora/specs/`, `planos/`, `e2e/`, `depuracao/`) ficam fora do git: em nó, índice, PRD, CHANGELOG, decisões vivas e aprendizados, cite caminho delas só como texto `local: <caminho>`, nunca link — e nunca no `git add`.' "gitignore-padrao/13 regra local: no roteador"
+
 report

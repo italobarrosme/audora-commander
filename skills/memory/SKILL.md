@@ -20,6 +20,7 @@ invente campos. Os hooks `memory-guard` (tetos de linhas) e
 `memory-validate` (índice↔pasta, enum de estado, estado índice↔nó,
 depende-de, ciclo, seções obrigatórias) devolvem exit 2 em escrita que quebra o schema — sem hook, a
 skill confere o mesmo.
+Pastas efêmeras (`docs/audora/specs/`, `planos/`, `e2e/`, `depuracao/`) ficam fora do git: em nó, índice, PRD, CHANGELOG, decisões vivas e aprendizados, cite caminho delas só como texto `local: <caminho>`, nunca link — e nunca no `git add`.
 
 **Raiz do plugin**: scripts auxiliares ficam dois níveis acima do diretório
 base desta skill (o Skill tool imprime esse diretório ao carregar). Ex.:
