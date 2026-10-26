@@ -1,4 +1,4 @@
-# E2E — gitignore-padrao (2026-10-26, rodada 1)
+# E2E — gitignore-padrao (2026-10-26, 2 rodadas)
 
 Infra: plugin não-web, sem docker. O "produto rodando" é o plugin do repo em
 `7938cab` (main), carregado por `--plugin-dir` numa sessão isolada como os
@@ -47,6 +47,23 @@ H  nó velho delivered com sobras locais + nó vivo in-progress com sobras → t
 | `gitignore-padrao/15` — cleanup lista sobras locais em "sem volta (fora do git)" | H t1 | seção `## sem volta (fora do git)` com caçada, e2e, pasta `e2e/velho/` (2 arquivos), plano arquivado e spec de `velho`; aviso "nem `git revert` traz de volta" | passou |
 | `gitignore-padrao/16` — aprova → apaga do disco respeitando retirada | H t2, H t3 | t2 travou no harness (lote gravado fora do cwd, `dontAsk` bloqueou); t3: `cleanup: 4 sobra(s) local(is) apagada(s) do disco — sem volta`, `specs/velho-escopo.md` mantida, sem commit | passou |
 | `gitignore-padrao/17` — nó vivo nunca listado | H t1, H t3 | spec, plano, e2e e `e2e/vivo/x.png` do nó `vivo` (in-progress) fora do relatório e intactos depois do `aplicar` | passou |
+
+## Rodada 2 (depois do debug, `041892f`)
+
+Causa raiz (debug, modo sintoma): o item 7 da carregar-contexto bastava para
+"ofertar" e citava `references/versionamento.md` só entre parênteses — 0 de 2
+sessões leram a reference, então o `checar` nunca rodou e o contrato da oferta
+(4 pastas + saída do `checar`) não chegou ao humano. Refutadas: modelo leu e
+ignorou (zero leituras no trace); Bash bloqueado (rodou em D t2). Fix: o item 7
+manda ler a reference e rodar o `checar` ANTES de ofertar.
+
+| Critério | Passo executado | Evidência | Veredito |
+|---|---|---|---|
+| `gitignore-padrao/4` | C t1, D t1 (fixtures novas) | as duas leram `versionamento.md` e rodaram `versionamento checar`; C listou `docs/audora/specs/`, `planos/`, `e2e/`, `depuracao/` + `bloco: ausente` / `0 regra(s)…` e perguntou 1 vez | passou |
+| `gitignore-padrao/6` | D t1 | a oferta já avisou "Regra `docs/` na linha 1 do `.gitignore`: esconde `docs/audora/memory/`… Isso quebra o arquivamento…" e perguntou se comenta | passou (na oferta) |
+| `gitignore-padrao/7` | D t1 | "`CHANGELOG.md` está ignorado por `.git/info/exclude:1`, que fica fora do projeto. Não vou editar" | passou |
+
+Resultado final: 17/17.
 
 Observações fora dos critérios:
 - F respondeu o 1º parágrafo em inglês ("Ran grafico end to end…").

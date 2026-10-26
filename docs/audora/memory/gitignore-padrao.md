@@ -63,6 +63,7 @@ Memória versionada = `MEMORY.md`, `PRD.md`, `CHANGELOG.md`,
 - 2026-10-26 (humano): cleanup lista e apaga sobras locais com sim. Descartado: ninguém limpa; validate apagar no sync.
 - 2026-10-26 (IA, confirmada pelo humano no portão): bloco lista o que ignorar (4 pastas), não o que versionar — legado em `docs/audora/` citado pelo índice (`GRAFO-ARQUIVO.md`, `validacao/`, `nos/`) segue no git.
 - 2026-10-26 (IA, confirmada pelo humano no portão): projeto fora do git recebe o bloco mesmo assim (/10).
+- 2026-10-26 (IA, debug do e2e): lacuna de teste — o teste de texto da reference não provava que a oferta a lê; o item 7 passou a mandar ler a reference e rodar o `checar` ANTES de ofertar, e a prova é o e2e (C e D, turno 1).
 
 ## delta
 
@@ -71,9 +72,9 @@ Memória versionada = `MEMORY.md`, `PRD.md`, `CHANGELOG.md`,
 - gitignore-padrao/1 · passou · bootstrap (A, B) escreveu o bloco sem perguntar e gravou `versionamento: aplicado`
 - gitignore-padrao/2 · passou · 2º `aplicar` → `já presente — .gitignore intocado`, md5 igual
 - gitignore-padrao/3 · passou · `git check-ignore` deixa a memória e `validacao/` versionáveis, ignora só as 4 pastas
-- gitignore-padrao/4 · reprovou · oferta (C, D) veio 1 vez sem as 4 pastas e sem o `checar` — a reference não foi lida
+- gitignore-padrao/4 · passou · rodada 2 (depois do fix `041892f`): oferta (C, D) leu a reference, rodou o `checar` e mostrou as 4 pastas + a saída, 1 vez
 - gitignore-padrao/5 · passou · recusa gravou `versionamento: recusado`; sessão nova não reofertou
-- gitignore-padrao/6 · passou · depois do sim, mostrou `regra .gitignore:1 docs/` + `quebra:`; comentou a linha só com sim
+- gitignore-padrao/6 · passou · rodada 2: a própria oferta (D) avisou a regra `docs/` da linha 1 e o que quebra; comentou a linha só com sim (rodada 1, t3)
 - gitignore-padrao/7 · passou · nomeou `.git/info/exclude:1` e não o editou
 - gitignore-padrao/8 · passou · listou 3 versionados; com sim, commit só com `A .gitignore` + `D` dos 3, que seguem no disco
 - gitignore-padrao/9 · passou · pre-commit recusou; remoções desfeitas, HEAD e índice como antes, humano avisado
