@@ -194,14 +194,22 @@ sub criterios_sem_copia {
 
 # Sobra local (fora do git) de nó delivered/discarded ou caçada sem nó vivo → seção sem volta.
 # A evidência em docs/audora/e2e/<id>/ sai como 1 item (a pasta). 1 = tratado aqui.
-my %PASTA_LOCAL;   # pasta → [motivo, nº de arquivos]
+# Pasta "suja" (algum arquivo mantido) sai arquivo a arquivo: remove_tree nunca leva o que fica.
+my %PASTA_LOCAL;   # pasta → { motivo, arqs => [arquivos locais], suja }
+sub pasta_e2e { $_[0] =~ m{^(docs/audora/e2e/[^/]+/)} ? $1 : undef }
 sub classifica_local {
   my ($f, $id, $e, $nos) = @_;
   return 0 if $RASTREADO{$f};
   if (defined $id && ($e eq 'delivered' || $e eq 'discarded') && $f =~ m{^docs/audora/(specs|planos|e2e)/}) {
+    my $pasta = pasta_e2e($f);
+    $PASTA_LOCAL{$pasta} //= { motivo => "nó $id $e", arqs => [], suja => 0 } if defined $pasta;
     my @sem = criterios_sem_copia($f, $id);
-    if (@sem) { push @MANTIDO, "- $f | mantido: cita " . join(', ', @sem) . ' sem cópia no nó arquivado'; return 1; }
-    if ($f =~ m{^(docs/audora/e2e/[^/]+/)}) { $PASTA_LOCAL{$1} //= ["nó $id $e", 0]; $PASTA_LOCAL{$1}[1]++; return 1; }
+    if (@sem) {
+      push @MANTIDO, "- $f | mantido: cita " . join(', ', @sem) . ' sem cópia no nó arquivado';
+      $PASTA_LOCAL{$pasta}{suja} = 1 if defined $pasta;
+      return 1;
+    }
+    if (defined $pasta) { push @{ $PASTA_LOCAL{$pasta}{arqs} }, $f; return 1; }
     item($SEM_VOLTA, $f, "nó $id $e"); return 1;
   }
   if ($f =~ m{^docs/audora/depuracao/}) {
@@ -234,7 +242,11 @@ sub classifica_artefatos {
     }
     item('sem referência', $f, 'nenhum documento vivo o cita') if index($vivo, $b) < 0;
   }
-  for my $d (sort keys %PASTA_LOCAL) { item($SEM_VOLTA, $d, "$PASTA_LOCAL{$d}[0] ($PASTA_LOCAL{$d}[1] arquivo(s))"); }
+  for my $d (sort keys %PASTA_LOCAL) {
+    my $p = $PASTA_LOCAL{$d}; my @a = @{ $p->{arqs} } or next;
+    if ($p->{suja}) { item($SEM_VOLTA, $_, $p->{motivo}) for @a; }
+    else { item($SEM_VOLTA, $d, "$p->{motivo} (" . scalar(@a) . ' arquivo(s))'); }
+  }
 }
 
 # --- links: "[texto](alvo)" local e token docs/audora/…\.md fora de "](…)" ---

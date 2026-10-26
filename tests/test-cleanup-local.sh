@@ -227,4 +227,15 @@ else
   echo "  (pulado: falha ao apagar do disco precisa de PowerShell)"
 fi
 
+# ===================== T12 — B1: pasta de evidência com arquivo mantido sai arquivo a arquivo =====================
+p="$SP/b1"; mkproj "$p"; (cd "$p" && bash "$VS" aplicar >/dev/null); git -C "$p" add .gitignore; git -C "$p" commit -qm bloco
+loc "$p" docs/audora/e2e/d/notas.md 'evidência do critério d/3'; loc "$p" docs/audora/e2e/d/a.png
+runc "$p" varrer; printf '%s\n' "$out" > "$L"
+assert_eq '- docs/audora/e2e/d/a.png | nó d delivered' "$(secao "$out" "$SV")" "gitignore-padrao/16 pasta com mantido sai arquivo a arquivo (B1)"
+assert_line "$(secao "$out" 'mantido')" '- docs/audora/e2e/d/notas.md | mantido: cita d/3 sem cópia no nó arquivado' "gitignore-padrao/16 arquivo da pasta com critério sem cópia fica em mantido (B1)"
+runc "$p" aplicar "$L"
+assert_eq 'cleanup: 1 sobra(s) local(is) apagada(s) do disco — sem volta' "$out" "gitignore-padrao/16 B1 aplicar → 1 apagado"
+assert_no_file "$p/docs/audora/e2e/d/a.png" "gitignore-padrao/16 B1 a.png apagado"
+assert_file "$p/docs/audora/e2e/d/notas.md" "gitignore-padrao/16 B1 arquivo mantido continua no disco"
+
 report
