@@ -68,6 +68,23 @@ Memória versionada = `MEMORY.md`, `PRD.md`, `CHANGELOG.md`,
 
 ## e2e
 
-pendente
+- gitignore-padrao/1 · passou · bootstrap (A, B) escreveu o bloco sem perguntar e gravou `versionamento: aplicado`
+- gitignore-padrao/2 · passou · 2º `aplicar` → `já presente — .gitignore intocado`, md5 igual
+- gitignore-padrao/3 · passou · `git check-ignore` deixa a memória e `validacao/` versionáveis, ignora só as 4 pastas
+- gitignore-padrao/4 · reprovou · oferta (C, D) veio 1 vez sem as 4 pastas e sem o `checar` — a reference não foi lida
+- gitignore-padrao/5 · passou · recusa gravou `versionamento: recusado`; sessão nova não reofertou
+- gitignore-padrao/6 · passou · depois do sim, mostrou `regra .gitignore:1 docs/` + `quebra:`; comentou a linha só com sim
+- gitignore-padrao/7 · passou · nomeou `.git/info/exclude:1` e não o editou
+- gitignore-padrao/8 · passou · listou 3 versionados; com sim, commit só com `A .gitignore` + `D` dos 3, que seguem no disco
+- gitignore-padrao/9 · passou · pre-commit recusou; remoções desfeitas, HEAD e índice como antes, humano avisado
+- gitignore-padrao/10 · passou · sem git: bloco escrito e aviso de 1 linha
+- gitignore-padrao/11 · passou · e2e gravou 1 linha por critério + `relatório: local:` no nó
+- gitignore-padrao/12 · passou · PNG de evidência em `docs/audora/e2e/grafico/`
+- gitignore-padrao/13 · passou · nó, nó arquivado e CHANGELOG sem link para pasta efêmera
+- gitignore-padrao/14 · passou · sync arquivou com `git mv`, plano movido só no disco, cartão `6 arquivos · +51 −2`
+- gitignore-padrao/15 · passou · cleanup listou as 5 sobras locais em `sem volta (fora do git)` com aviso
+- gitignore-padrao/16 · passou · lote sem a spec retirada → 4 apagados do disco, spec mantida, sem commit
+- gitignore-padrao/17 · passou · spec, plano, e2e e evidência do nó in-progress nunca listados nem apagados
+relatório: local: docs/audora/e2e/e2e-gitignore-padrao.md
 
 ## feedback-reprovacao
