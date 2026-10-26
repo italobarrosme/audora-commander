@@ -84,9 +84,33 @@ my @MEMORIA = (
 );
 my @EFEMERAS = ('docs/audora/specs', 'docs/audora/planos', 'docs/audora/e2e', 'docs/audora/depuracao');
 
+# normaliza <caminho relativo> → sem "." e com ".." resolvido onde dá (a/../b → b; ../x fica).
+sub normaliza {
+  my @p;
+  for (split m{/+}, $_[0]) {
+    next if $_ eq '.' || $_ eq '';
+    if ($_ eq '..') { (@p && $p[-1] ne '..') ? pop @p : push @p, '..'; } else { push @p, $_; }
+  }
+  return join '/', @p;
+}
+
+# Fonte do check-ignore vem relativa à raiz do REPO; o projeto pode ser subpasta (monorepo).
+# Converte para relativa ao cwd: dentro do prefixo → tira o prefixo; fora → "../…".
+sub fonte_relativa {
+  my ($f) = @_;
+  return $f if $f =~ m{^/} || $f =~ m{^[A-Za-z]:};
+  my ($pre) = git_z('rev-parse', '--show-prefix'); $pre = ($pre // '') =~ s/\s+$//r;
+  return $f if $pre eq '';
+  return substr($f, length $pre) if index($f, $pre) == 0;
+  my ($cdup) = git_z('rev-parse', '--show-cdup'); $cdup = ($cdup // '') =~ s/\s+$//r;
+  return "$cdup$f";
+}
+
 # Fonte editável = um .gitignore dentro do projeto (caminho relativo, fora de .git/).
 sub fonte_do_projeto {
   my ($f) = @_;
+  return 0 if $f =~ m{^/} || $f =~ m{^[A-Za-z]:};
+  $f = normaliza($f);
   return 0 if $f =~ m{^/} || $f =~ m{^[A-Za-z]:} || $f =~ m{^\.\.(/|$)} || $f =~ m{^\.git/};
   return $f =~ m{(^|/)\.gitignore$} ? 1 : 0;
 }
@@ -104,7 +128,7 @@ sub regras_memoria {
   for my $i (0 .. $#MEMORIA) {
     my ($fonte, $linha, $padrao) = @c[4 * $i .. 4 * $i + 2];
     next if !defined $fonte || $fonte eq '' || $padrao =~ /^!/;
-    push @r, [$MEMORIA[$i][0], $fonte, $linha, $padrao];
+    push @r, [$MEMORIA[$i][0], fonte_relativa($fonte), $linha, $padrao];
   }
   return @r;
 }

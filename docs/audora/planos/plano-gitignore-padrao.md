@@ -336,9 +336,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:193-240`
 - **done quando**: caso verde; `bash tests/test-cleanup-local.sh`, `bash tests/test-skill-cleanup.sh` e gate verdes.
 
-- [ ] **red** — `bash tests/test-cleanup-local.sh` falha (pasta inteira no lote; `notas.md` apagado)
-- [ ] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
-- [ ] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "fix(gitignore-padrao/16): pasta de evidência com arquivo mantido sai arquivo a arquivo"`
+- [x] **red** — `bash tests/test-cleanup-local.sh` falha (pasta inteira no lote; `notas.md` apagado)
+- [x] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
+- [x] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "fix(gitignore-padrao/16): pasta de evidência com arquivo mantido sai arquivo a arquivo"`
 
 ## Tarefa 13: cleanup — pasta de evidência mista (rastreado + local) não trava o lote (bloqueante B2)
 
@@ -352,9 +352,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:193-240,527-545`
 - **done quando**: caso verde; gate verde.
 
-- [ ] **red** — `bash tests/test-cleanup-local.sh` falha (`rastreado no git — use o tipo próprio`, lote desfeito)
-- [ ] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
-- [ ] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "fix(gitignore-padrao/16): pasta de evidência mista não trava o lote da cleanup"`
+- [x] **red** — `bash tests/test-cleanup-local.sh` falha (`rastreado no git — use o tipo próprio`, lote desfeito)
+- [x] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
+- [x] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "fix(gitignore-padrao/16): pasta de evidência mista não trava o lote da cleanup"`
 
 ## Tarefa 14: versionamento — fonte da regra relativa ao projeto (bloqueante B3)
 
@@ -368,6 +368,6 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/versionamento:80-150`
 - **done quando**: casos verdes; gate verde.
 
-- [ ] **red** — `bash tests/test-versionamento.sh` falha (`regra .gitignore:1 PRD.md | ajuste: …`)
-- [ ] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
-- [ ] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "fix(gitignore-padrao/6): fonte da regra relativa ao projeto em monorepo (/7)"`
+- [x] **red** — `bash tests/test-versionamento.sh` falha (`regra .gitignore:1 PRD.md | ajuste: …`)
+- [x] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
+- [x] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "fix(gitignore-padrao/6): fonte da regra relativa ao projeto em monorepo (/7)"`

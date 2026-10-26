@@ -311,4 +311,33 @@ assert_eq 0 "$code" "gitignore-padrao/10 --remover fora do git → exit 0"
 assert_eq "versionamento: .gitignore criado com o bloco do audora
 $FORA" "$out" "gitignore-padrao/10 --remover fora do git → bloco + 1 linha"
 
+# ===================== T14 — B3: projeto em subpasta do repo git (monorepo) =====================
+p="$SP/mono"; mkrepo "$p"; mkdir -p "$p/app/docs"
+printf 'PRD.md\n' > "$p/.gitignore"; printf 'node_modules/\n' > "$p/app/.gitignore"; printf 'audora/memory/\n' > "$p/app/docs/.gitignore"
+antes="$(snap "$p")"
+runv "$p/app" checar
+assert_line "$out" 'memória ignorada: PRD.md | regra ../.gitignore:1 PRD.md | fonte fora do projeto — não edito' "gitignore-padrao/7 monorepo: .gitignore da raiz do repo é fora do projeto (B3)"
+assert_line "$out" 'memória ignorada: docs/audora/memory/ | regra docs/.gitignore:1 audora/memory/ | ajuste: aplicar --desligar docs/.gitignore:1' "gitignore-padrao/6 monorepo: .gitignore do projeto relativo ao projeto (B3)"
+assert_not_contains "$out" 'aplicar --desligar .gitignore:1' "gitignore-padrao/6 monorepo: nunca sugere desligar regra alheia (B3)"
+printf 'CHANGELOG.md\n' > "$p/.git/info/exclude"
+runv "$p/app" checar
+assert_line "$out" 'memória ignorada: CHANGELOG.md | regra ../.git/info/exclude:1 CHANGELOG.md | fonte fora do projeto — não edito' "gitignore-padrao/7 monorepo: exclude nomeado, não editado (B3)"
+runv "$p/app" aplicar --desligar ../.gitignore:1
+assert_eq 1 "$code" "gitignore-padrao/7 monorepo: --desligar ../.gitignore → exit 1"
+assert_eq 'versionamento: ../.gitignore fica fora do projeto — não edito; nada foi alterado' "$out" "gitignore-padrao/7 monorepo: --desligar ../.gitignore recusa"
+runv "$p/app" aplicar --desligar docs/.gitignore:1
+assert_eq 0 "$code" "gitignore-padrao/6 monorepo: --desligar docs/.gitignore → exit 0"
+assert_eq '# desligado pelo audora-commander: audora/memory/' "$(cat "$p/app/docs/.gitignore")" "gitignore-padrao/6 monorepo: comentou a regra do projeto"
+assert_eq 'PRD.md' "$(cat "$p/.gitignore")" "gitignore-padrao/7 monorepo: .gitignore da raiz do repo intocado"
+
+# --- gitignore-padrao/7 --desligar com .. que sai do projeto ---
+p="$SP/escapa"; mkrepo "$p"; mkdir -p "$p/sub"; printf 'docs/\n' > "$p/.gitignore"; antes="$(snap "$p")"
+runv "$p" aplicar --desligar sub/../../.gitignore:1
+assert_eq 1 "$code" "gitignore-padrao/7 --desligar sub/../../ → exit 1"
+assert_eq 'versionamento: sub/../../.gitignore fica fora do projeto — não edito; nada foi alterado' "$out" "gitignore-padrao/7 --desligar sub/../../ recusa"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/7 --desligar sub/../../ → nada alterado"
+runv "$p" aplicar --desligar ./sub/../.gitignore:1
+assert_eq 0 "$code" "gitignore-padrao/6 --desligar ./sub/../.gitignore (dentro do projeto) → exit 0"
+assert_eq '# desligado pelo audora-commander: docs/' "$(head -1 "$p/.gitignore")" "gitignore-padrao/6 caminho normalizado comenta o .gitignore da raiz"
+
 report
