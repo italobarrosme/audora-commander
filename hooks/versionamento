@@ -69,6 +69,66 @@ sub escreve_bloco {
   return 'versionamento: bloco do audora acrescentado ao .gitignore';
 }
 
+# --- leitura do git ---
+sub git_z {
+  local $/ = "\0";
+  open my $fh, '-|', 'git', '--no-optional-locks', @_ or die "git @_ falhou\n";
+  my @r = <$fh>; close $fh; chomp @r; return @r;
+}
+
+# Memória versionada sondada: rótulo → caminho testado.
+my @MEMORIA = (
+  ['MEMORY.md', 'MEMORY.md'], ['PRD.md', 'PRD.md'], ['CHANGELOG.md', 'CHANGELOG.md'],
+  ['docs/audora/memory/', 'docs/audora/memory/x.md'], ['docs/audora/arquivo/', 'docs/audora/arquivo/x.md'],
+  ['docs/audora/decisoes-vivas.md', 'docs/audora/decisoes-vivas.md'], ['docs/audora/aprendizados.md', 'docs/audora/aprendizados.md'],
+);
+my @EFEMERAS = ('docs/audora/specs', 'docs/audora/planos', 'docs/audora/e2e', 'docs/audora/depuracao');
+
+# Fonte editável = um .gitignore dentro do projeto (caminho relativo, fora de .git/).
+sub fonte_do_projeto {
+  my ($f) = @_;
+  return 0 if $f =~ m{^/} || $f =~ m{^[A-Za-z]:} || $f =~ m{^\.\.(/|$)} || $f =~ m{^\.git/};
+  return $f =~ m{(^|/)\.gitignore$} ? 1 : 0;
+}
+
+# Regras que escondem a memória: lista de [rótulo, fonte, linha, padrão]. Negação (!) não esconde.
+use File::Temp ();
+sub regras_memoria {
+  my $in = File::Temp->new(); binmode $in; print $in map { "$_->[1]\0" } @MEMORIA; close $in;
+  open my $velho, '<&', \*STDIN or die "stdin\n";
+  open STDIN, '<', $in->filename or die "stdin\n";
+  # -n: toda entrada sai (campos vazios sem regra) → 4 campos por caminho, na ordem de @MEMORIA.
+  my @c = git_z('check-ignore', '-v', '-n', '-z', '--stdin', '--no-index');
+  open STDIN, '<&', $velho or die "stdin\n";
+  my @r;
+  for my $i (0 .. $#MEMORIA) {
+    my ($fonte, $linha, $padrao) = @c[4 * $i .. 4 * $i + 2];
+    next if !defined $fonte || $fonte eq '' || $padrao =~ /^!/;
+    push @r, [$MEMORIA[$i][0], $fonte, $linha, $padrao];
+  }
+  return @r;
+}
+
+sub efemeros_versionados { git_z('ls-files', '-z', '--', @EFEMERAS); }
+
+sub checar {
+  my @o = ('bloco: ' . (bloco_presente(ler('.gitignore')) ? 'presente' : 'ausente'));
+  sai(0, @o, $FORA) unless dentro_git();
+  my @regras = regras_memoria();
+  for my $r (@regras) {
+    my ($rot, $fonte, $linha, $padrao) = @$r;
+    my $suf = fonte_do_projeto($fonte) ? "ajuste: aplicar --desligar $fonte:$linha" : 'fonte fora do projeto — não edito';
+    push @o, "memória ignorada: $rot | regra $fonte:$linha $padrao | $suf";
+  }
+  push @o, 'quebra: arquivamento do nó, comando de arquivos do cartão e cleanup' if @regras;
+  my @v = efemeros_versionados();
+  push @o, map { "versionado em pasta efêmera: $_" } @v;
+  push @o, 'versionamento: ' . scalar(@regras) . ' regra(s) escondendo a memória · ' . scalar(@v) . ' versionado(s) em pasta efêmera';
+  sai(0, @o);
+}
+
+checar() if $sub eq 'checar';
+
 if ($sub eq 'aplicar') {
   my $git = dentro_git();
   my $msg = escreve_bloco();

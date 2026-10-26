@@ -104,4 +104,72 @@ assert_eq "versionamento: .gitignore criado com o bloco do audora
 $FORA" "$out" "gitignore-padrao/10 fora do git → bloco + 1 linha de aviso"
 assert_eq "$BLOCO" "$(cat "$p/.gitignore" 2>/dev/null)" "gitignore-padrao/10 fora do git → bloco escrito"
 
+# ===================== checar (T2) =====================
+QUEBRA='quebra: arquivamento do nó, comando de arquivos do cartão e cleanup'
+
+# --- gitignore-padrao/6 regra do projeto ---
+p="$SP/c6"; mkrepo "$p"; printf 'docs/\n' > "$p/.gitignore"
+antes="$(snap "$p")"
+runv "$p" checar
+assert_eq 0 "$code" "gitignore-padrao/6 checar → exit 0"
+assert_eq "bloco: ausente
+memória ignorada: docs/audora/memory/ | regra .gitignore:1 docs/ | ajuste: aplicar --desligar .gitignore:1
+memória ignorada: docs/audora/arquivo/ | regra .gitignore:1 docs/ | ajuste: aplicar --desligar .gitignore:1
+memória ignorada: docs/audora/decisoes-vivas.md | regra .gitignore:1 docs/ | ajuste: aplicar --desligar .gitignore:1
+memória ignorada: docs/audora/aprendizados.md | regra .gitignore:1 docs/ | ajuste: aplicar --desligar .gitignore:1
+$QUEBRA
+versionamento: 4 regra(s) escondendo a memória · 0 versionado(s) em pasta efêmera" "$out" "gitignore-padrao/6 checar → regra, arquivo:linha, ajuste e o que quebra"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/6 checar só lê"
+
+# --- gitignore-padrao/6 regra em .gitignore de subpasta ---
+p="$SP/c6sub"; mkrepo "$p"; mkdir -p "$p/docs"; printf 'audora/memory/\n' > "$p/docs/.gitignore"
+runv "$p" checar
+assert_line() { printf '%s\n' "$1" | grep -qxF -- "$2" && ok || ko "$3 — sem a linha '$2'"; }
+assert_line "$out" 'memória ignorada: docs/audora/memory/ | regra docs/.gitignore:1 audora/memory/ | ajuste: aplicar --desligar docs/.gitignore:1' "gitignore-padrao/6 .gitignore de subpasta"
+assert_contains "$out" 'versionamento: 1 regra(s) escondendo a memória' "gitignore-padrao/6 subpasta → 1 regra"
+
+# --- gitignore-padrao/6 negação não conta ---
+p="$SP/c6neg"; mkrepo "$p"; printf '*.md\n!MEMORY.md\n' > "$p/.gitignore"
+runv "$p" checar
+assert_not_contains "$out" 'memória ignorada: MEMORY.md' "gitignore-padrao/6 negação não conta"
+assert_line "$out" 'memória ignorada: PRD.md | regra .gitignore:1 *.md | ajuste: aplicar --desligar .gitignore:1' "gitignore-padrao/6 *.md esconde PRD.md"
+
+# --- gitignore-padrao/7 .git/info/exclude ---
+p="$SP/c7exc"; mkrepo "$p"; printf 'CHANGELOG.md\n' > "$p/.git/info/exclude"
+antes="$(snap "$p")"
+runv "$p" checar
+assert_line "$out" 'memória ignorada: CHANGELOG.md | regra .git/info/exclude:1 CHANGELOG.md | fonte fora do projeto — não edito' "gitignore-padrao/7 .git/info/exclude nomeado, não editado"
+assert_line "$out" "$QUEBRA" "gitignore-padrao/7 exclude → o que quebra"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/7 checar não edita"
+
+# --- gitignore-padrao/7 ignore global ---
+p="$SP/c7glob"; mkrepo "$p"; printf 'PRD.md\n' > "$SP/global-ign"; git -C "$p" config core.excludesFile "$SP/global-ign"
+runv "$p" checar
+l="$(printf '%s\n' "$out" | grep '^memória ignorada: PRD.md | regra ')"
+assert_contains "$l" 'global-ign:1 PRD.md | fonte fora do projeto — não edito' "gitignore-padrao/7 ignore global nomeado, não editado"
+assert_eq 1 "$(printf '%s\n' "$out" | grep -c '^memória ignorada:')" "gitignore-padrao/7 global → 1 caminho só"
+
+# --- gitignore-padrao/8 lista versionados em pasta efêmera ---
+p="$SP/c8"; mkrepo "$p"; mkdir -p "$p/docs/audora/specs" "$p/docs/audora/e2e/a" "$p/docs/audora/memory"
+printf 'x\n' > "$p/docs/audora/specs/a-escopo.md"; printf 'png\n' > "$p/docs/audora/e2e/a/shot.png"; printf 'n\n' > "$p/docs/audora/memory/a.md"
+git -C "$p" add -A; git -C "$p" commit -qm efemeros
+runv "$p" aplicar; runv "$p" checar
+assert_eq "bloco: presente
+versionado em pasta efêmera: docs/audora/e2e/a/shot.png
+versionado em pasta efêmera: docs/audora/specs/a-escopo.md
+versionamento: 0 regra(s) escondendo a memória · 2 versionado(s) em pasta efêmera" "$out" "gitignore-padrao/8 checar lista os versionados"
+
+# --- repo limpo com bloco ---
+p="$SP/climpo"; mkrepo "$p"; runv "$p" aplicar; runv "$p" checar
+assert_eq "bloco: presente
+versionamento: 0 regra(s) escondendo a memória · 0 versionado(s) em pasta efêmera" "$out" "checar repo limpo com bloco"
+
+# --- gitignore-padrao/10 checar fora do git ---
+p="$SP/csemgit"; rm -rf "$p"; mkdir -p "$p"; antes="$(snap "$p")"
+runv "$p" checar
+assert_eq 0 "$code" "gitignore-padrao/10 checar fora do git → exit 0"
+assert_eq "bloco: ausente
+$FORA" "$out" "gitignore-padrao/10 checar fora do git → bloco + 1 linha"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/10 checar fora do git só lê"
+
 report
