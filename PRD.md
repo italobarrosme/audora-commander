@@ -1,6 +1,6 @@
 # PRD — audora-commander
 
-> Última atualização: 2026-10-23
+> Última atualização: 2026-10-26
 
 ## O que é e para que serve
 
@@ -16,8 +16,8 @@ Code.
 
 - Markdown (skills, templates, docs) + JSON (plugin.json, marketplace.json,
   hooks.json) + bash (hooks: `session-start`, `memory-guard`,
-  `memory-validate`; scripts auxiliares `gate` e `cleanup`, este em perl
-  via `perl -x`; sem jq — awk/sed/grep/perl do
+  `memory-validate`; scripts auxiliares `gate`, `cleanup` e `versionamento`,
+  os dois últimos em perl via `perl -x`; sem jq — awk/sed/grep/perl do
   Git for Windows).
 - Suíte de regressão do plugin em bash: `tests/run.sh` + `tests/test-*.sh`
   (fixtures em `mktemp -d`, `tests/lib.sh` com asserts e `run_hook`). O
@@ -27,8 +27,7 @@ Code.
 - Evals de comportamento (manuais, pagos, fora do `run.sh`): `bash tests/evals.sh`
   roda 4 casos com o `claude` real em fixture isolada, teto de custo, modo
   completo com/sem plugin (`--runs`), mutação e `--traces`; em `tests/evals/`.
-- Localização de código pela busca do símbolo do harness, com leitura por
-  trecho.
+- Localização de código pela busca do símbolo do harness, leitura por trecho.
 - Formato de plugin do Claude Code: `.claude-plugin/` + `skills/` + `hooks/`
   + `agents/` (`revisor`: só Read/Grep/Glob/Bash, `model: inherit`, trava do
   shell na própria definição). Versão 0.16.0.
@@ -51,26 +50,37 @@ Code.
   transição; decisões duráveis em `docs/audora/decisoes-vivas.md`;
   aprendizados em `docs/audora/aprendizados.md`, sem teto nem compactação,
   só por grep; arquivamento por `git mv` para `docs/audora/arquivo/`.
-  Operações: carregar-contexto, bootstrap (MEMORY + etapa gate, sem índice
-  de código; Aprendizados só com o ponteiro, arquivo nasce no 1º
-  aprendizado), registrar-no, registrar-delta, registrar-aprendizado (1
-  linha `data | fase | aprendizado` no fim de `docs/audora/aprendizados.md`,
-  na hora, por qualquer fase, nunca no `MEMORY.md`) e compactar. A skill é
-  um **roteador**: `carregar-contexto`, `registrar-delta` e
-  `registrar-aprendizado` ficam inline no `SKILL.md` (138 linhas);
-  `bootstrap`, `registrar-no` e `compactar` vivem em
+  Operações: carregar-contexto, bootstrap (MEMORY + etapa versionamento +
+  etapa gate, sem índice de código; Aprendizados só com o ponteiro),
+  registrar-no, registrar-delta, registrar-aprendizado (1 linha
+  `data | fase | aprendizado` no fim de `docs/audora/aprendizados.md`, na
+  hora, por qualquer fase), compactar e versionamento. A skill é um
+  **roteador**: `carregar-contexto`, `registrar-delta` e
+  `registrar-aprendizado` ficam inline no `SKILL.md`; `bootstrap`,
+  `registrar-no`, `compactar` e `versionamento` vivem em
   `skills/memory/references/`, lidas UMA por operação — reference ausente
   avisa e degrada, sem travar a fase. O `carregar-contexto` lê o
   `MEMORY.md` por seção, nunca inteiro, e as fases o chamam antes de
   qualquer Read:
   - Propósito e Constituição: inteiras, por `offset`/`limit`.
-  - Aprendizados: por `grep` em `docs/audora/aprendizados.md` e no
-    `MEMORY.md` (enquanto ele tiver linha legada) — linhas da fase +
-    keywords e arquivos do nó (porta: termos do pedido); `[invalidado-em:`
-    nunca entra; nada casou ou arquivo ausente → segue sem aprendizados.
+  - Aprendizados: por `grep` (fase + keywords do nó; porta: termos do pedido).
   - Índice de nós: inteiro na porta, scope e plan; execute, e2e, validate e
     debug pegam só a linha do nó e as de `depende-de`.
   - Seção não encontrada → aviso de 1 linha, leitura inteira, a fase segue.
+  - Constituição sem `versionamento:` → lê a reference, roda o `checar` e
+    oferta UMA vez o bloco do `.gitignore` (recusa registrada não volta).
+- **Versionamento** (`.gitignore` padrão): a memória do produto fica no git
+  (`MEMORY.md`, `PRD.md`, `CHANGELOG.md`, `docs/audora/memory/`,
+  `arquivo/`, `decisoes-vivas.md`, `aprendizados.md`); spec, plano, e2e e
+  caçada (`docs/audora/specs/`, `planos/`, `e2e/`, `depuracao/`) ficam só no
+  disco pelo bloco do audora. O mecânico mora em `hooks/versionamento`:
+  `checar` (só lê: bloco, regra que esconde a memória com arquivo:linha
+  relativo ao projeto, versionados nas pastas efêmeras) e `aplicar` (bloco
+  sem duplicar; `--desligar` comenta regra de `.gitignore` do projeto, nunca
+  global nem `.git/info/exclude`; `--remover` tira do git, mantém no disco
+  e commita só isso, desfazendo se o commit falhar). Fora do git: só o
+  bloco. Memória versionada cita pasta efêmera só como `local: <caminho>`,
+  nunca link, e nunca no `git add`.
 - `scope` — fase "O Quê": critérios EARS, marcador [PRECISA-CLARIFICAR].
   Critérios sempre no nó, também em HIGH; spec dedicada, se criada, só
   traz contexto.
@@ -93,13 +103,15 @@ Code.
   - `caminho:linha` desatualizado é relocalizado pelo símbolo;
   - plano no formato antigo é executado como está.
 - `e2e` — levanta o projeto e exercita a demanda de ponta a ponta (opcional,
-  fortemente recomendada).
+  fortemente recomendada). Grava no `## e2e` do nó 1 linha por critério
+  (`<id>/<n> · passou|reprovou · evidência`) e o relatório como `local:`;
+  evidência binária em `docs/audora/e2e/<id>/`.
 - `validate` — portão humano final: evidência 1:1 com critérios, sync
   MEMORY → PRD no merge (consolida delta e decisões vivas, move os
   aprendizados legados do `MEMORY.md` para `docs/audora/aprendizados.md`;
   nó sem critério numerado copia os da spec antes do `git mv`, sem nenhum
-  para sem arquivar; arquiva o nó por movimento, atualiza a foto do `PRD.md`
-  e acrescenta 1 linha ao `CHANGELOG.md`, em toda categoria). Decidido o
+  para sem arquivar; arquiva o nó por movimento e o plano com `git mv` só se
+  rastreado; foto do `PRD.md` + 1 linha no `CHANGELOG.md`, toda categoria). Decidido o
   portão, em toda categoria, fecha o turno com o cartão de entrega no lugar
   do bloco de fase (`🏁 DONE`, `❌ NÃO ENTREGUE` ou `⚠️ PARCIAL`): estado,
   o que mudou, trilha, ressalvas, por critério, arquivos em 1 linha do
@@ -118,32 +130,24 @@ Code.
 - `cleanup` — skill-ferramenta, invocada pelo humano em projeto com
   `MEMORY.md`: varre as sobras do processo (planned órfão, spec, plano
   arquivado e e2e de nó delivered, depuração sem nó vivo, arquivo de
-  `docs/audora/` sem referência viva, link quebrado), apresenta relatório e,
-  com aprovação explícita do lote (com retirada de itens), aplica num
-  commit só. O mecânico mora em `hooks/cleanup` (`varrer`/`contar` só
-  leem; `aplicar` apaga, troca link para arquivo apagado pela nota
-  "removido … recuperável no git" e link quebrado pela nota "já não
-  existia … (link limpo pela cleanup)", apaga a linha do planned aprovado,
-  roda o `memory-validate` e desfaz tudo se algo falhar). Arquivo que sai
-  no lote não recebe troca de link, então item que cita outro item do lote
-  não trava o `git rm`. Link quebrado é só o que aponta caminho que existiu
-  em commit alcançável do HEAD; caminho nunca versionado vira aviso
-  `## nunca existiu`, fora do lote e nunca trocado (o `aplicar` recusa lote
-  à mão que o traga como link quebrado). A seção Aprendizados do
-  `MEMORY.md` e o `docs/audora/aprendizados.md` não são varridos nem
-  reescritos (seguem contando como referência viva). Princípio: só sai o
-  que não é mais usado. Arquivo que o framework lê (nós vivos e
-  arquivados, `decisoes-vivas.md`, `aprendizados.md`) nunca entra no lote,
-  e o `aplicar` recusa lote à mão que o traga. Spec, plano arquivado ou e2e
-  que cita `<id>/<n>` sem a linha `- **<id>/<n>**` no nó arquivado vai para
-  `## mantido`, com o motivo. Fora do git ou sujo fica fora do lote. Pela
-  coluna arquivos-chave, o script só marca "alvo ausente" o caminho que
-  existiu em commit alcançável do HEAD e sumiu do disco (`git
-  --literal-pathspecs log --full-history HEAD`). Caminho que nunca existiu
-  é feature futura e fica fora do relatório; repo sem commit não tem alvo
-  ausente. O julgamento semântico de planned órfão é da skill (`--orfao`),
-  que confere o histórico antes de marcar alvo ausente. O sync da
-  validate só sugere a contagem no rodapé Memória do cartão de entrega.
+  `docs/audora/` sem referência viva, link quebrado) e, com aprovação
+  explícita do lote (com retirada de itens), aplica num commit só, pelo
+  `hooks/cleanup` (`varrer`/`contar` só leem; `aplicar` apaga, troca link
+  para arquivo apagado pela nota "removido … recuperável no git" e link
+  quebrado pela nota "já não existia …", apaga a linha do planned aprovado,
+  roda o `memory-validate` e desfaz tudo se algo falhar). Link quebrado é
+  só o que aponta caminho que existiu em commit alcançável do HEAD; nunca
+  versionado vira aviso `## nunca existiu`; `local: <caminho>` não é link.
+  Princípio: só sai o que não é mais usado — arquivo que o framework lê
+  nunca entra, e spec, plano ou e2e que cita `<id>/<n>` sem cópia no nó
+  arquivado vai para `## mantido`. Sujo fica em `## não tocado`. Sobra
+  local (fora do git) de nó delivered ou discarded e caçada sem nó vivo vai
+  para `## sem volta (fora do git)` — a pasta `e2e/<id>/` sai inteira só se
+  nada nela é mantido ou rastreado — e é apagada do disco só depois do
+  commit da parte versionada; nó vivo nunca é listado. O julgamento de
+  planned órfão é da skill (`--orfao`), que confere o histórico antes de
+  marcar alvo ausente. O sync da validate só sugere a contagem no rodapé
+  Memória do cartão de entrega.
 
 Fronteira de fase: fim de scope, plan ou execute de MEDIUM/HIGH é PARADA —
 a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
@@ -151,23 +155,18 @@ a fase não emenda a seguinte e imprime `/clear` + o comando de retomada
 "Agente" sem `/clear` roda a fase seguinte num subagente de contexto zerado
 (`templates/fase-subagente-template.md`), que nunca aprova portão e devolve
 pergunta humana à sessão principal. Sem parada: entrada → 1ª fase, LIGHT,
-HOTFIX e e2e ↔ validate. Todo portão do meio é humano — não há modo que o
-antecipe. Regra única na seção `## Parada entre
-fases` de `templates/bloco-fechamento-template.md`.
+HOTFIX e e2e ↔ validate. Regra única no `templates/bloco-fechamento-template.md`.
 
 Hook SessionStart injeta ponteiro curto para a porta de entrada. Hooks
 PostToolUse (Edit|Write) validam escritas no MEMORY: `memory-guard` (tetos
 de ~300 linhas no índice e ~100 por nó, e 200 linhas no `PRD.md` irmão de
-um `MEMORY.md` com schema) e `memory-validate` (seções
-obrigatórias do índice, depende-de existente, ciclo, estado dentro do enum
-EN no índice E no frontmatter de cada nó, nó sem `estado:`, e — só na
-escrita do índice — arquivo de nó sem linha e estado índice ≠ nó: arquivo
-do nó primeiro, linha do índice logo depois, sem erro transitório) — erro
-volta ao modelo via exit 2; `docs/audora/aprendizados.md` não tem teto;
-arquivo sem `memory-schema: 1` na linha 1 é ignorado; sem bash, as skills
-seguem sendo a fonte normativa. Hook PreToolUse (Write) `anuncio-guard`
-recusa criar nó novo `in-progress`/`hotfix-pending-record` sem o anúncio da
-porta (texto ou narração) desde a última mensagem do humano; falha passa.
+um `MEMORY.md` com schema) e `memory-validate` (seções obrigatórias do
+índice, depende-de existente, ciclo, estado dentro do enum EN no índice E
+no frontmatter de cada nó, nó sem `estado:`, e — só na escrita do índice —
+arquivo de nó sem linha e estado índice ≠ nó) — erro volta ao modelo via
+exit 2; arquivo sem `memory-schema: 1` na linha 1 é ignorado. Hook
+PreToolUse (Write) `anuncio-guard` recusa nó novo `in-progress`/
+`hotfix-pending-record` sem o anúncio da porta; falha passa.
 
 Documentos de referência: `docs/fundamentos.md` (fundamentos v2 dos princípios)
 e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
@@ -175,26 +174,26 @@ e `docs/specs/2026-08-14-audora-commander-design.md` (spec de design).
 ## Metas futuras de implementação
 
 1. Futuro: porte multi-harness, marketplace público.
-2. Candidato a nó: acabamento da PARADA (`contexto-por-fase`, observações do
-   e2e aceitas no portão) — unificar a pontuação (template com vírgula,
-   skills com dois-pontos), recusa de retomada imprimindo o bloco de fase
-   bloqueada, e folga na carga BASE (12 bytes do teto).
-3. Candidato a nó: ressalvas da revisão adversarial do `corte-sem-uso`
-   (aceitas no portão).
-   - As guardas de ausência de `tests/test-corte-sem-uso.sh` deixam passar
-     variações de texto: "loop engine", "nove skills", `|  \`worktree\`  |`
-     com espaço extra e o bullet `**loop:**`.
-   - `hooks/gate` compara contra HEAD. Por isso, depois do commit, não prova
-     o `gate-asserts:` nem teste apagado.
-4. Candidato a nó: ressalvas do `plano-mapa` aceitas no portão.
-   - /4 (subagente de exploração conferido) e /8 (3ª leitura fora do mapa)
-     só têm guarda de texto. Nenhuma sessão real chegou a esses gatilhos.
-   - O plan ainda pode ler um arquivo grande inteiro. O critério exige só o
-     header por trecho.
-   - Na execute, o custo subiu +3,7% (n=1, demanda pequena). Vale medir de
-     novo numa demanda maior.
-5. Candidato a nó: observações do `evals-comportamento` (2026-10-11; achado
-   de produto restante: `retomada-execute`).
-   - Mutação `scope-lei-de-ferro` "sem efeito" em 1 run — rodar `--runs 3`.
-   - `test-evals.sh`/`test-evals-harness.sh` ~400 s com a máquina carregada,
-     acima do `SUITE_TIMEOUT` padrão (300 s).
+2. Candidato a nó: acabamento da PARADA (`contexto-por-fase`) — pontuação
+   única, recusa de retomada imprimindo o bloco bloqueado, folga na carga BASE.
+3. Candidato a nó: ressalvas da revisão adversarial do `corte-sem-uso`.
+   - Guardas de ausência deixam passar variações ("loop engine", "nove
+     skills", tabela com espaço extra, bullet `**loop:**`).
+   - `hooks/gate` compara contra HEAD: depois do commit não prova
+     `gate-asserts:` nem teste apagado.
+4. Candidato a nó: ressalvas do `plano-mapa`.
+   - /4 e /8 só têm guarda de texto; plan ainda pode ler arquivo grande
+     inteiro; custo da execute +3,7% (n=1) — medir numa demanda maior.
+5. Candidato a nó: observações do `evals-comportamento` (achado restante:
+   `retomada-execute`): mutação `scope-lei-de-ferro` sem efeito em 1 run
+   (`--runs 3`); `test-evals*.sh` ~400 s acima do `SUITE_TIMEOUT` padrão.
+6. Candidato a nó: ressalvas do `gitignore-padrao` aceitas no portão.
+   - `.gitignore` fica modificado no disco quando o commit do `--remover` falha.
+   - Lote à mão com `docs/audora/./decisoes-vivas.md` escapa do `protegido`.
+   - Nó discarded não arquivado deixa plano/e2e sempre em `## mantido`.
+   - Contrato do skill-cleanup/11 no nó arquivado ficou desatualizado.
+   - `contar` inclui sobras locais: quase todo sync sugere a cleanup.
+   - `local:` só na forma exata; `checar` não sonda nó específico.
+   - `--remover` leva edições não staged do `.gitignore`.
+   - /11 aceita `não-automatizável`; "nunca no `git add`" só em texto.
+   - Teto de carga quase cheio: BASE 57885/58000, FULL 67075/67100.

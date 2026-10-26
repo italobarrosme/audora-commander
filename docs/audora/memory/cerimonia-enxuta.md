@@ -5,8 +5,8 @@ origem: humano
 depende-de: []
 arquivos: []
 keywords: [light, cerimonia, plano, e2e, cleanup, bloco-fechamento, carga, guardas]
-resumo: Encolher o processo: LIGHT sem nó, plano e e2e efêmeros, bloco de fechamento curto, guardas com folga.
-atualizado-em: 2026-10-09
+resumo: Encolher o processo: LIGHT sem nó, bloco de fechamento curto, guardas com folga.
+atualizado-em: 2026-10-26
 ---
 
 # cerimonia-enxuta
@@ -35,6 +35,8 @@ Ferro do P1? Aceita perder histórico versionado de plano/e2e?
 ## decisoes
 
 ## delta
+
+- REMOVIDO (2026-10-26): "plano e relatório e2e deixam de ser artefatos versionados" — entregue pelo nó `gitignore-padrao` (spec, plano, e2e e caçada fora do git pelo bloco do `.gitignore`).
 
 ## e2e
 

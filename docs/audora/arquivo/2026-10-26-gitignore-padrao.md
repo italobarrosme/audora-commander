@@ -1,9 +1,9 @@
 ---
 id: gitignore-padrao
-estado: in-progress
+estado: delivered
 origem: humano
 depende-de: []
-arquivos: []
+arquivos: [CHANGELOG.md, MEMORY.md, PRD.md, README.md, README.pt-BR.md, docs/audora/aprendizados.md, docs/audora/decisoes-vivas.md, docs/audora/e2e/e2e-gitignore-padrao.md, docs/audora/planos/arquivo/plano-gitignore-padrao.md, hooks/cleanup, hooks/versionamento, skills/cleanup/SKILL.md, skills/e2e/SKILL.md, skills/memory/SKILL.md, skills/memory/references/bootstrap.md, skills/memory/references/versionamento.md, skills/validate/references/sync.md, templates/MEMORY-template.md, templates/no-template.md, tests/test-carga.sh, tests/test-cleanup-local.sh, tests/test-gitignore-padrao.sh, tests/test-leitura-por-secao.sh, tests/test-parada-revisao.sh, tests/test-skill-cleanup.sh, tests/test-versionamento.sh]
 keywords: [gitignore, versionamento, bootstrap, repo, depuracao, e2e, evidencia]
 resumo: O plugin configura por padrão o .gitignore do projeto para versionar só a memória do produto.
 atualizado-em: 2026-10-26
@@ -54,16 +54,19 @@ Memória versionada = `MEMORY.md`, `PRD.md`, `CHANGELOG.md`,
 
 ## decisoes
 
-- 2026-10-26 (humano): bloco direto no bootstrap; projeto com MEMORY recebe oferta 1x. Descartado: oferta também no bootstrap.
-- 2026-10-26 (humano): regra que esconde a memória → avisa e propõe ajuste com sim. Descartado: modo local (escopo bem maior).
-- 2026-10-26 (humano): spec, plano e relatório e2e fora do git. Descartado: seguir versionados.
-- 2026-10-26 (humano): evidência binária do e2e fora do git. Descartado: versionar (repo cresce).
-- 2026-10-26 (humano): já versionado nas pastas efêmeras sai do git com sim, fica no disco. Descartado: deixar como está.
-- 2026-10-26 (humano): nó guarda veredito e2e por critério. Descartado: só status geral; link para relatório local.
-- 2026-10-26 (humano): cleanup lista e apaga sobras locais com sim. Descartado: ninguém limpa; validate apagar no sync.
-- 2026-10-26 (IA, confirmada pelo humano no portão): bloco lista o que ignorar (4 pastas), não o que versionar — legado em `docs/audora/` citado pelo índice (`GRAFO-ARQUIVO.md`, `validacao/`, `nos/`) segue no git.
-- 2026-10-26 (IA, confirmada pelo humano no portão): projeto fora do git recebe o bloco mesmo assim (/10).
+- Decisões do scope (9, 2026-10-26): em [2026-10-26-gitignore-padrao-historico.md](2026-10-26-gitignore-padrao-historico.md).
 - 2026-10-26 (IA, debug do e2e): lacuna de teste — o teste de texto da reference não provava que a oferta a lê; o item 7 passou a mandar ler a reference e rodar o `checar` ANTES de ofertar, e a prova é o e2e (C e D, turno 1).
+- 2026-10-26 (humano): ressalva aceita — `.gitignore` fica modificado no disco (bloco e linha desligada) quando o commit do /8 falha.
+- 2026-10-26 (humano): ressalva aceita — lote da cleanup montado à mão com `docs/audora/./decisoes-vivas.md` em `sem volta` escapa do `protegido` e apaga do disco.
+- 2026-10-26 (humano): ressalva aceita — nó discarded não arquivado (em `docs/audora/memory/`) deixa plano e e2e sempre em `## mantido`.
+- 2026-10-26 (humano): ressalva aceita — contrato do skill-cleanup/11 no nó arquivado ficou desatualizado (arquivo local de nó entregue agora é `sem volta`).
+- 2026-10-26 (humano): ressalva aceita — `contar` inclui as sobras locais; quase todo sync vai sugerir a cleanup.
+- 2026-10-26 (humano): ressalva aceita — `local:` só é reconhecido na forma exata `local: <caminho>`.
+- 2026-10-26 (humano): ressalva aceita — `checar` sonda só `memory/x.md` e `arquivo/x.md`; regra que esconde um nó específico passa sem aviso.
+- 2026-10-26 (humano): ressalva aceita — `--remover` faz `git add .gitignore` inteiro e leva edições não staged que já estavam nele.
+- 2026-10-26 (humano): ressalva aceita — /11 aceita também `não-automatizável`, além de passou/reprovou.
+- 2026-10-26 (humano): ressalva aceita — "pasta efêmera nunca no `git add`" existe só em texto, sem guarda mecânica.
+- 2026-10-26 (humano): ressalva aceita — teto de carga quase cheio: BASE 57885/58000, FULL 67075/67100.
 
 ## delta
 
