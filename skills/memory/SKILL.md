@@ -40,6 +40,7 @@ operação — nunca a pasta inteira.**
 | registrar-delta | inline |
 | registrar-aprendizado | inline |
 | compactar | references/compactar.md |
+| versionamento | references/versionamento.md |
 
 Uma **reference ausente** ou ilegível não interrompe nada: avise em 1 linha
 qual arquivo faltou e siga a operação pelo que este roteador garante — Lei de
@@ -88,6 +89,7 @@ reler. Depois de `/clear` ou compactação, recarregar.
 6. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
    gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
    só se o humano pedir.
+7. Constituição sem bullet `versionamento:` → ofertar UMA vez aplicar o bloco do `.gitignore` (`references/versionamento.md`); `versionamento: recusado` → não reofertar, só se o humano pedir.
 
 ### 4. registrar-delta (mudança no meio da demanda)
 

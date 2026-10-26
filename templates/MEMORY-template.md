@@ -24,6 +24,7 @@ cumpre, ou documenta exceção no nó.
 - **padroes**: <convenções que o código segue: estilo, nomenclatura, camadas>
 - **como-rodar**: <comando(s) exatos para subir o projeto localmente — usado
   pela skill e2e. Ex.: `npm run dev` na porta 3000>
+- **versionamento**: aplicado | recusado (skill memory, `references/versionamento.md`)
 
 ## Aprendizados [carga: sempre]
 

@@ -15,7 +15,9 @@
    expansão sob demanda).
 3. Nó `inferido` NÃO vale como verdade: demanda tocando nó inferido →
    confirmar com o humano antes de usar; confirmado → `origem: humano`.
-4. **Etapa gate** (sempre, ao fim do bootstrap):
+4. **Etapa versionamento** (sempre, antes da etapa gate): sem perguntar,
+   aplicar o bloco do `.gitignore` e seguir `references/versionamento.md`.
+5. **Etapa gate** (sempre, ao fim do bootstrap):
    a. Constituição já tem bullet `gate:` → pular, não perguntar de novo —
       recusado fica recusado; só reofertar se o humano pedir.
    b. Ausente → perguntar "Gerar o gate mecânico (comando único passou/não
@@ -27,4 +29,4 @@
       raiz; repo com pasta de scripts, usar a dele) e registrar
       `gate: <comando>` na Constituição.
    d. Recusou → registrar `gate: recusado`.
-5. MEMORY parcial desde o dia 1 é o esperado.
+6. MEMORY parcial desde o dia 1 é o esperado.
