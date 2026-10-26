@@ -27,4 +27,17 @@ assert_contains "$b" '**Etapa versionamento** (sempre, antes da etapa gate)' "gi
 assert_contains "$b" 'references/versionamento.md' "gitignore-padrao/1 bootstrap aponta a reference"
 assert_contains "$(achata templates/MEMORY-template.md)" '- **versionamento**: aplicado | recusado (skill memory, `references/versionamento.md`)' "gitignore-padrao/1 template da Constituição"
 
+# ===================== T6 — e2e: veredito por critério no nó, evidência em docs/audora/e2e/ =====================
+e="$(achata skills/e2e/SKILL.md)"
+assert_contains "$e" '`- <id>/<n> · passou · <evidência em 1 frase>`' "gitignore-padrao/11 linha por critério no nó"
+assert_contains "$e" 'no campo `## e2e` do nó' "gitignore-padrao/11 grava no campo ## e2e do nó"
+assert_contains "$e" 'relatório: local: docs/audora/e2e/e2e-<id>.md' "gitignore-padrao/11 relatório como local:"
+assert_contains "$e" 'screenshot, vídeo ou trace em `docs/audora/e2e/<id>/`' "gitignore-padrao/12 evidência binária em docs/audora/e2e/<id>/"
+assert_not_contains "$e" '`falhou`' "gitignore-padrao/11 veredito reprovou, não falhou"
+nt="$(achata templates/no-template.md)"
+assert_contains "$nt" 'relatório: local: docs/audora/e2e/e2e-<id>.md' "gitignore-padrao/11 no-template: relatório local:"
+assert_contains "$nt" '`- <id>/<n> · passou|reprovou|não-automatizável · <evidência em 1 frase>`' "gitignore-padrao/11 no-template: linha por critério"
+assert_not_contains "$nt" '../e2e/e2e-<id>.md' "gitignore-padrao/13 no-template sem link relativo ao relatório"
+[ "$(wc -l < skills/e2e/SKILL.md)" -le 250 ] && ok || ko "gitignore-padrao/11 e2e ≤ 250 linhas"
+
 report

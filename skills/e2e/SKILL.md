@@ -62,15 +62,19 @@ Contexto: carregar-contexto (skill memory) antes de qualquer Read;
    (CLI). Incluir os critérios de ERRO — eles são metade do valor do e2e.
 5. **Executar e coletar evidência** por critério: screenshot ou assert de
    tela (web), resposta crua (API), saída de terminal (CLI). Evidência é o
-   que foi visto, não o que deveria acontecer.
+   que foi visto, não o que deveria acontecer. Evidência binária — screenshot, vídeo ou trace em `docs/audora/e2e/<id>/` (fica fora do git).
 6. **Relatório** em `docs/audora/e2e/e2e-<id>.md`:
 
    | Critério (`<id>/<n>` + EARS) | Passo executado | Evidência | Veredito |
    |---|---|---|---|
 
-   Veredito por critério: `passou` / `falhou` / `não-automatizável` (vai para
-   validação humana manual). Critério `falhou` → skill debug (modo sintoma;
+   Veredito por critério: `passou` / `reprovou` / `não-automatizável` (vai para
+   validação humana manual). Critério `reprovou` → skill debug (modo sintoma;
    o passo do e2e já é a reprodução pronta), fix via execute.
+   No fim, grave no campo `## e2e` do nó 1 linha por critério,
+   `- <id>/<n> · passou · <evidência em 1 frase>` (ou `reprovou`,
+   `não-automatizável`), e feche com `relatório: local: docs/audora/e2e/e2e-<id>.md`
+   — texto, nunca link: o relatório fica fora do git.
 7. **Persistir como regressão — artefatos são versionados**: o compose de
    e2e e as specs geradas ficam commitados no projeto-alvo junto da demanda.
    Demanda futura estende os artefatos existentes em vez de recriar do zero
@@ -108,7 +112,7 @@ de `templates/bloco-fechamento-template.md` (raiz do plugin; já lido nesta sess
 → não reler). Nesta fase:
 
 - **Produzido**: quais critérios foram exercitados e o veredito de cada um
-  (`passou` / `falhou` / `não-automatizável`).
+  (`passou` / `reprovou` / `não-automatizável`).
 - **Arquivos**: `docs/audora/e2e/e2e-<id>.md` e os artefatos versionados.
 - **Próximo**: validate, com o relatório anexado ao roteiro.
 

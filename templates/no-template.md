@@ -60,7 +60,9 @@ login social; recuperação de senha (nó próprio).
 ## e2e
 
 pendente
-<!-- pendente | relatorio: ../e2e/e2e-<id>.md | pulado-pelo-humano -->
+<!-- pendente | pulado-pelo-humano | 1 linha por critério
+     `- <id>/<n> · passou|reprovou|não-automatizável · <evidência em 1 frase>`
+     + `relatório: local: docs/audora/e2e/e2e-<id>.md` (texto, nunca link) -->
 
 ## feedback-reprovacao
 
