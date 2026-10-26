@@ -83,6 +83,12 @@ que foi aprovado.
   - (execute) T9: evidência de nó vivo em `docs/audora/e2e/<id>/` deixou de aparecer em `## não tocado` (a pasta agora liga ao nó).
   - (execute) T10: achado — antes da T10, lote à mão com caminho RASTREADO sob `## sem volta (fora do git)` era commitado como item git; `pre_checa` própria recusa (`rastreado no git — use o tipo próprio`). Falha ao apagar do disco: linhas `cleanup: falhou em: <item> — não consegui apagar do disco` + `cleanup: commit mantido; sobras locais restantes no disco` (o hash já sai na linha do commit), provada com arquivo travado por PowerShell (caso pulado onde não há PowerShell).
   - (execute) T11: skill cleanup ganhou a linha "Nó planned, in-progress ou blocked nunca tem spec, plano ou e2e listado." (/17 dito ao humano).
+  - (debug do e2e) /4 reprovou na rodada 1: item 7 da carregar-contexto não mandava ler a reference → oferta sem pastas e sem `checar`. Fix `041892f`; rodada 2 passou. Pinos BASE 57782 → 57885.
+- **revisão adversarial: passagem 1** (validate, 2026-10-26; agente `revisor`; provas reproduzidas pela validate em repo descartável):
+  - B1 (classe c, /15 e /16) — pasta `docs/audora/e2e/<id>/` com um arquivo em `## mantido` (cita critério sem cópia) entra inteira no lote e o `aplicar` faz `remove_tree`: o arquivo mantido some do disco. Repro: `e2e/d/notas.md` com `d/3` + `e2e/d/a.png` → `varrer`; `aplicar` do relatório → pasta inteira apagada. Causa: `hooks/cleanup:203-204`. → Tarefa 12.
+  - B2 (classe c, /16) — pasta de evidência com 1 arquivo RASTREADO e 1 só no disco: `varrer` lista a pasta em `sem volta`, `aplicar` recusa (`rastreado no git — use o tipo próprio`) e o lote inteiro aborta a cada rodada. → Tarefa 13.
+  - B3 (classe c, /6) — projeto em subpasta de um repo git (monorepo): `check-ignore` devolve a fonte relativa à raiz do REPO e o script a lê a partir do cwd — `checar` sugere `--desligar .gitignore:1` e isso comenta a regra do `.gitignore` do projeto, não a que esconde a memória. Causa: `hooks/versionamento:88-101,120`. → Tarefa 14.
+  - Ressalvas (vão ao portão, 1 linha cada): `.gitignore` fica modificado no disco depois do /9 (decidido no plano); `--desligar sub/../../.gitignore:1` escapa do projeto (a T14 normaliza o caminho e fecha junto); lote à mão com `docs/audora/./decisoes-vivas.md` escapa do `protegido`; nó discarded NÃO arquivado deixa plano/e2e sempre em `mantido`; contrato do skill-cleanup/11 no nó arquivado ficou desatualizado; `contar` passa a contar sobras locais (quase todo sync vai sugerir cleanup); `local:` só na forma exata; `checar` não sonda nó específico; `--remover` leva edições não staged do `.gitignore`; /11 aceita `não-automatizável`; "nunca no `git add`" só em texto; pinos BASE subidos.
 
 ---
 
@@ -317,3 +323,51 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - [x] **red** — `bash tests/test-gitignore-padrao.sh` falha no caso da skill cleanup
 - [x] **green** — passa; `bash tests/run.sh` exit 0; `bash hooks/gate gitignore-padrao` exit 0
 - [x] **commit** — `git add skills/cleanup/SKILL.md README.md README.pt-BR.md tests/test-gitignore-padrao.sh && git commit -m "docs(gitignore-padrao/15): skill cleanup e READMEs explicam as sobras locais (/16)"`
+
+## Tarefa 12: cleanup — pasta de evidência com arquivo mantido não sai inteira (bloqueante B1)
+
+- **depende-de**: []
+- **requisito**: `gitignore-padrao/15` — QUANDO a cleanup varre o projeto O SISTEMA DEVE listar, em seção própria marcada "sem volta (fora do git)", as sobras locais: spec, plano e e2e de nó delivered ou discarded e caçada de `docs/audora/depuracao/` sem nó vivo · `gitignore-padrao/16` — QUANDO o humano aprova o lote com sobras locais O SISTEMA DEVE apagá-las do disco respeitando a retirada de itens; sem aprovação, nada é apagado
+- **decisões relevantes**: princípio da cleanup — critério sem cópia viva nunca sai (`## mantido`).
+- **interfaces**: `%PASTA_LOCAL` passa a guardar os arquivos de cada pasta; pasta "limpa" (todo arquivo local, nenhum mantido, nenhum rastreado) sai como 1 item `- docs/audora/e2e/<id>/ | nó <id> <estado> (<n> arquivo(s))`; pasta "suja" sai arquivo a arquivo `- docs/audora/e2e/<id>/<arq> | nó <id> <estado>` (os mantidos em `## mantido`).
+- **ponto de mudança**: `hooks/cleanup:197-205` (`classifica_local`), `:237` (flush de `%PASTA_LOCAL`).
+- **teste**: `tests/test-cleanup-local.sh` — caso "gitignore-padrao/16 pasta com arquivo mantido sai arquivo a arquivo (B1)".
+- **asserções**: `e2e/d/notas.md` (cita `d/3`) + `e2e/d/a.png`, locais → `sem volta` = `- docs/audora/e2e/d/a.png | nó d delivered`; `## mantido` tem `- docs/audora/e2e/d/notas.md | mantido: cita d/3 sem cópia no nó arquivado`; `aplicar` do relatório inteiro → `cleanup: 1 sobra(s) local(is) apagada(s) do disco — sem volta`, `a.png` some, `notas.md` fica.
+- **ler**: `hooks/cleanup:193-240`
+- **done quando**: caso verde; `bash tests/test-cleanup-local.sh`, `bash tests/test-skill-cleanup.sh` e gate verdes.
+
+- [ ] **red** — `bash tests/test-cleanup-local.sh` falha (pasta inteira no lote; `notas.md` apagado)
+- [ ] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
+- [ ] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "fix(gitignore-padrao/16): pasta de evidência com arquivo mantido sai arquivo a arquivo"`
+
+## Tarefa 13: cleanup — pasta de evidência mista (rastreado + local) não trava o lote (bloqueante B2)
+
+- **depende-de**: [T12]
+- **requisito**: `gitignore-padrao/16` (verbatim na T12)
+- **decisões relevantes**: rastreado segue o tipo próprio (commit revertível); local vai a `sem volta`.
+- **interfaces**: pasta com algum arquivo rastreado = pasta "suja" da T12 → só os arquivos locais dela entram em `sem volta`, um a um.
+- **ponto de mudança**: `hooks/cleanup:197-205,237` (mesma marcação da T12: rastreado suja a pasta).
+- **teste**: `tests/test-cleanup-local.sh` — caso "gitignore-padrao/16 pasta mista não trava o lote (B2)".
+- **asserções**: `e2e/d/old.png` rastreado (`git add -f`) + `e2e/d/new.png` local → `sem volta` tem `- docs/audora/e2e/d/new.png | nó d delivered` e não tem `docs/audora/e2e/d/ |`; `aplicar` do relatório inteiro sai 0, `new.png` some do disco, a saída tem `cleanup: 1 sobra(s) local(is) apagada(s) do disco — sem volta`.
+- **ler**: `hooks/cleanup:193-240,527-545`
+- **done quando**: caso verde; gate verde.
+
+- [ ] **red** — `bash tests/test-cleanup-local.sh` falha (`rastreado no git — use o tipo próprio`, lote desfeito)
+- [ ] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
+- [ ] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "fix(gitignore-padrao/16): pasta de evidência mista não trava o lote da cleanup"`
+
+## Tarefa 14: versionamento — fonte da regra relativa ao projeto (bloqueante B3)
+
+- **depende-de**: []
+- **requisito**: `gitignore-padrao/6` — QUANDO, no bootstrap ou na oferta, algum caminho da memória versionada está ignorado pelo git O SISTEMA DEVE avisar a regra que o esconde (arquivo e linha) e o que quebra (arquivamento do nó, comando de arquivos do cartão, cleanup) e propor o ajuste, aplicado só com sim · `gitignore-padrao/7` — QUANDO a regra que esconde a memória vem de fora do `.gitignore` do projeto (ignore global, `.git/info/exclude`) O SISTEMA DEVE nomear a fonte no aviso e não editá-la
+- **decisões relevantes**: fonte externa nunca editada; `.gitignore` acima da raiz do projeto (monorepo) conta como fora do projeto.
+- **interfaces**: fonte relativa vinda do `check-ignore` (relativa à raiz do repo) vira relativa ao cwd: `git rev-parse --show-cdup` + fonte, normalizada (`a/../b` → `b`); `fonte_do_projeto` recebe o caminho normalizado e recusa o que começa com `../`. `--desligar` normaliza o argumento antes de validar.
+- **ponto de mudança**: `hooks/versionamento:88-101` (`fonte_do_projeto`, `regras_memoria`), `:120`, `:136-144` (`valida_desligar`).
+- **teste**: `tests/test-versionamento.sh` — casos "gitignore-padrao/6 monorepo: regra da raiz do repo é fora do projeto (B3)", "gitignore-padrao/7 --desligar com .. que sai do projeto".
+- **asserções**: repo `r` com `r/.gitignore` = `PRD.md` e `r/app/.gitignore` = `node_modules/`, cwd `r/app` → `checar` tem `memória ignorada: PRD.md | regra ../.gitignore:1 PRD.md | fonte fora do projeto — não edito`; `r/app/docs/.gitignore` = `audora/memory/` → `regra docs/.gitignore:1 audora/memory/ | ajuste: aplicar --desligar docs/.gitignore:1` (inalterado); `aplicar --desligar sub/../../.gitignore:1` → exit 1, `versionamento: sub/../../.gitignore fica fora do projeto — não edito; nada foi alterado`, `snap` igual; casos antigos de T2/T3 seguem verdes.
+- **ler**: `hooks/versionamento:80-150`
+- **done quando**: casos verdes; gate verde.
+
+- [ ] **red** — `bash tests/test-versionamento.sh` falha (`regra .gitignore:1 PRD.md | ajuste: …`)
+- [ ] **green** — passa; `bash hooks/gate gitignore-padrao` exit 0
+- [ ] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "fix(gitignore-padrao/6): fonte da regra relativa ao projeto em monorepo (/7)"`
