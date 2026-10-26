@@ -526,6 +526,14 @@ sub commita {
 # Pré-checagem, antes de tocar qualquer arquivo (undef = item pode ser aplicado).
 sub pre_checa {
   my ($it) = @_; my ($s, $a) = ($it->{sec}, $it->{alvo});
+  if ($s eq $SEM_VOLTA) {   # sobra local: dentro de docs/audora, existe, nada dela no git
+    return 'fora de docs/audora/' unless $a =~ m{^docs/audora/} && $a !~ m{(^|/)\.\.(/|$)};
+    return 'arquivo lido pelo framework nunca é removido' if protegido($a);
+    return 'alvo não existe mais' unless -e $a;
+    (my $sem = $a) =~ s{/$}{};
+    return 'rastreado no git — use o tipo próprio' if $RASTREADO{$sem} || grep { index($_, "$sem/") == 0 } keys %RASTREADO;
+    return undef;
+  }
   if ($s eq 'planned órfão') {
     return 'alvo não existe mais' unless grep { $_->{id} eq $a && $_->{estado} eq 'planned' } @INDICE;
   } else {
@@ -572,20 +580,40 @@ sub aplicar {
   sai(0, 'cleanup: lote vazio — nada aplicado') unless @it;
   carrega_indice(); carrega_git();
   for my $i (@it) { my $m = pre_checa($i); falha($i->{linha}, $m) if defined $m; }
-  for my $i (grep { $_->{sec} ne 'link quebrado' } @it) {
-    $SAI{ $i->{sec} eq 'planned órfão' ? "docs/audora/memory/$i->{alvo}.md" : $i->{alvo} } = 1;
+  # Sobras locais (fora do git) só saem do disco DEPOIS do commit da parte versionada.
+  my @loc = grep { $_->{sec} eq $SEM_VOLTA } @it;
+  @it = grep { $_->{sec} ne $SEM_VOLTA } @it;
+  my @o;
+  if (@it) {
+    for my $i (grep { $_->{sec} ne 'link quebrado' } @it) {
+      $SAI{ $i->{sec} eq 'planned órfão' ? "docs/audora/memory/$i->{alvo}.md" : $i->{alvo} } = 1;
+    }
+    my $onde = '';
+    my $h = eval {
+      for my $i (@it) { $onde = $i->{linha}; aplica_item($i); }
+      $onde = 'MEMORY.md';
+      apaga_linhas_indice(@IDS_APAGAR) if @IDS_APAGAR;
+      valida_memory() if grep { $_ eq 'MEMORY.md' || m{^docs/audora/memory/} } @TOCADO;
+      $onde = 'commit';
+      commita(@it);
+    };
+    falha($onde, $@ || 'erro desconhecido') unless defined $h;
+    push @o, "cleanup: commit $h — " . scalar(@it) . ' item(ns) removido(s)';
   }
-  my $onde = '';
-  my $h = eval {
-    for my $i (@it) { $onde = $i->{linha}; aplica_item($i); }
-    $onde = 'MEMORY.md';
-    apaga_linhas_indice(@IDS_APAGAR) if @IDS_APAGAR;
-    valida_memory() if grep { $_ eq 'MEMORY.md' || m{^docs/audora/memory/} } @TOCADO;
-    $onde = 'commit';
-    commita(@it);
-  };
-  falha($onde, $@ || 'erro desconhecido') unless defined $h;
-  sai(0, "cleanup: commit $h — " . scalar(@it) . ' item(ns) removido(s)');
+  if (@loc) {
+    require File::Path;
+    for my $i (@loc) {
+      my $err;
+      if (-d $i->{alvo}) { File::Path::remove_tree($i->{alvo}, { error => \$err }); }
+      elsif (!unlink $i->{alvo}) { $err = [1]; }
+      if (($err && @$err) || -e $i->{alvo}) {
+        sai(1, @o, "cleanup: falhou em: $i->{linha} — não consegui apagar do disco",
+            @o ? 'cleanup: commit mantido; sobras locais restantes no disco' : 'cleanup: sobras locais restantes no disco');
+      }
+    }
+    push @o, 'cleanup: ' . scalar(@loc) . ' sobra(s) local(is) apagada(s) do disco — sem volta';
+  }
+  sai(0, @o);
 }
 
 if ($sub eq 'aplicar') { aplicar(shift @ARGV); }
