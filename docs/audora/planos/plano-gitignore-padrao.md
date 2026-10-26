@@ -77,6 +77,12 @@ que foi aprovado.
   - (plan) Regra `local:` e "pasta efêmera nunca no `git add`" numa frase só no roteador da skill memory (toda fase carrega; cabe na folga da BASE), em vez de tocar execute/validate.
   - (plan) Cleanup: `total:` passa a contar também os itens `sem volta`; pasta de evidência sai como 1 item (`docs/audora/e2e/<id>/`); a trava `## mantido` (critério sem cópia) vale também para o local.
   - (plan) Asserts de skill-cleanup/11 (`tests/test-skill-cleanup.sh:338,350`) mudam por exigência do /15 (e2e-d de nó delivered fora do git vira `sem volta`): troca de assert, não queda — se a contagem cair, `gate-asserts:` no nó.
+  - (execute) T2: `git check-ignore -v -n -z --stdin --no-index` (o `-z` só funciona com `--stdin`; `-n` alinha a saída por caminho).
+  - (execute) T4: falhou o commit do `--remover` → o script imprime antes as linhas do que já fez (bloco escrito), depois a falha — o humano sabe que o bloco ficou no disco.
+  - (execute) T9: `%RASTREADO` declarado no topo do `hooks/cleanup` e `varre` carrega o git antes de classificar (a sobra local depende de "rastreado"). Asserts trocados em `tests/test-skill-cleanup.sh` 338, 349, 351 e 353 (contagem igual): e2e-d de nó delivered fora do git agora é `sem volta` e entra no `total:`/`contar`.
+  - (execute) T9: evidência de nó vivo em `docs/audora/e2e/<id>/` deixou de aparecer em `## não tocado` (a pasta agora liga ao nó).
+  - (execute) T10: achado — antes da T10, lote à mão com caminho RASTREADO sob `## sem volta (fora do git)` era commitado como item git; `pre_checa` própria recusa (`rastreado no git — use o tipo próprio`). Falha ao apagar do disco: linhas `cleanup: falhou em: <item> — não consegui apagar do disco` + `cleanup: commit mantido; sobras locais restantes no disco` (o hash já sai na linha do commit), provada com arquivo travado por PowerShell (caso pulado onde não há PowerShell).
+  - (execute) T11: skill cleanup ganhou a linha "Nó planned, in-progress ou blocked nunca tem spec, plano ou e2e listado." (/17 dito ao humano).
 
 ---
 
@@ -120,9 +126,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:1-53`
 - **done quando**: `bash tests/test-versionamento.sh` verde e `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-versionamento.sh` falha com `arquivo ausente`/`esperado` por `hooks/versionamento` inexistente
-- [ ] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/1): hooks/versionamento escreve o bloco sem duplicar (/2, /3, /10)"`
+- [x] **red** — `bash tests/test-versionamento.sh` falha com `arquivo ausente`/`esperado` por `hooks/versionamento` inexistente
+- [x] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
+- [x] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/1): hooks/versionamento escreve o bloco sem duplicar (/2, /3, /10)"`
 
 ## Tarefa 2: script — `checar`
 
@@ -144,9 +150,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:295-316`
 - **done quando**: casos verdes e `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-versionamento.sh` falha nos casos de `checar` (saída = linha de uso)
-- [ ] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/6): versionamento checar acha a regra que esconde a memória (/7, /8, /10)"`
+- [x] **red** — `bash tests/test-versionamento.sh` falha nos casos de `checar` (saída = linha de uso)
+- [x] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
+- [x] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/6): versionamento checar acha a regra que esconde a memória (/7, /8, /10)"`
 
 ## Tarefa 3: script — `aplicar --desligar`
 
@@ -163,9 +169,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/versionamento` (T1-T2)
 - **done quando**: casos verdes e `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-versionamento.sh` falha nos casos `--desligar`
-- [ ] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/6): versionamento aplicar --desligar comenta a regra do projeto (/7)"`
+- [x] **red** — `bash tests/test-versionamento.sh` falha nos casos `--desligar`
+- [x] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
+- [x] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/6): versionamento aplicar --desligar comenta a regra do projeto (/7)"`
 
 ## Tarefa 4: script — `aplicar --remover` (tirar do git, manter no disco)
 
@@ -184,9 +190,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:486-498,527-539`
 - **done quando**: casos verdes e `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-versionamento.sh` falha nos casos `--remover`
-- [ ] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/8): versionamento aplicar --remover tira do git e mantém no disco (/9, /10)"`
+- [x] **red** — `bash tests/test-versionamento.sh` falha nos casos `--remover`
+- [x] **green** — `bash tests/test-versionamento.sh` passa e `bash tests/run.sh` exit 0
+- [x] **commit** — `git add hooks/versionamento tests/test-versionamento.sh && git commit -m "feat(gitignore-padrao/8): versionamento aplicar --remover tira do git e mantém no disco (/9, /10)"`
 
 ## Tarefa 5: skill memory — bootstrap, oferta única e reference `versionamento.md`
 
@@ -209,9 +215,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `skills/memory/SKILL.md:30-48,73-90`, `skills/memory/references/bootstrap.md:1-30`, `templates/MEMORY-template.md:16-27`
 - **done quando**: teste verde; `bash tests/run.sh` exit 0; pinos BASE subidos para a medição (`tests/test-parada-revisao.sh:59`, `tests/test-leitura-por-secao.sh:129`) com nota `gitignore-padrao/4 (item 7 + linha da tabela): BASE 57134 → <medição>` em `tests/test-carga.sh:7`; BASE ≤ 58000.
 
-- [ ] **red** — `bash tests/test-gitignore-padrao.sh` falha com `não contém` nas frases
-- [ ] **green** — `bash tests/test-gitignore-padrao.sh` e `bash tests/test-carga.sh` passam; `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add skills/memory/SKILL.md skills/memory/references/bootstrap.md skills/memory/references/versionamento.md templates/MEMORY-template.md tests/test-gitignore-padrao.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(gitignore-padrao/4): bootstrap aplica o bloco e a carga oferta uma vez (/1, /5)"`
+- [x] **red** — `bash tests/test-gitignore-padrao.sh` falha com `não contém` nas frases
+- [x] **green** — `bash tests/test-gitignore-padrao.sh` e `bash tests/test-carga.sh` passam; `bash tests/run.sh` exit 0
+- [x] **commit** — `git add skills/memory/SKILL.md skills/memory/references/bootstrap.md skills/memory/references/versionamento.md templates/MEMORY-template.md tests/test-gitignore-padrao.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(gitignore-padrao/4): bootstrap aplica o bloco e a carga oferta uma vez (/1, /5)"`
 
 ## Tarefa 6: e2e — veredito por critério no nó e evidência em `docs/audora/e2e/`
 
@@ -225,9 +231,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `skills/e2e/SKILL.md:58-80`, `templates/no-template.md:58-64`
 - **done quando**: teste verde; e2e SKILL ≤ 250 linhas; pinos BASE subidos com nota `gitignore-padrao/11 (no-template ## e2e)` em `tests/test-carga.sh:7`; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-gitignore-padrao.sh` falha nos casos /11, /12
-- [ ] **green** — `bash tests/test-gitignore-padrao.sh` e `bash tests/test-carga.sh` passam; `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add skills/e2e/SKILL.md templates/no-template.md tests/test-gitignore-padrao.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(gitignore-padrao/11): e2e grava veredito por critério no nó e evidência em docs/audora/e2e (/12)"`
+- [x] **red** — `bash tests/test-gitignore-padrao.sh` falha nos casos /11, /12
+- [x] **green** — `bash tests/test-gitignore-padrao.sh` e `bash tests/test-carga.sh` passam; `bash tests/run.sh` exit 0
+- [x] **commit** — `git add skills/e2e/SKILL.md templates/no-template.md tests/test-gitignore-padrao.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(gitignore-padrao/11): e2e grava veredito por critério no nó e evidência em docs/audora/e2e (/12)"`
 
 ## Tarefa 7: regra `local:` — memória versionada sem link para pasta efêmera
 
@@ -241,9 +247,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `skills/memory/SKILL.md:14-26`, `hooks/cleanup:214-253`
 - **done quando**: testes verdes; pinos BASE subidos com nota `gitignore-padrao/13 (regra local: no roteador)` em `tests/test-carga.sh:7`; BASE ≤ 58000; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-gitignore-padrao.sh` e `bash tests/test-cleanup-local.sh` falham (frase ausente; `## nunca existiu` presente)
-- [ ] **green** — os dois passam; `bash tests/test-carga.sh` e `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add skills/memory/SKILL.md hooks/cleanup tests/test-gitignore-padrao.sh tests/test-cleanup-local.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(gitignore-padrao/13): memória versionada cita pasta efêmera como local:, nunca link"`
+- [x] **red** — `bash tests/test-gitignore-padrao.sh` e `bash tests/test-cleanup-local.sh` falham (frase ausente; `## nunca existiu` presente)
+- [x] **green** — os dois passam; `bash tests/test-carga.sh` e `bash tests/run.sh` exit 0
+- [x] **commit** — `git add skills/memory/SKILL.md hooks/cleanup tests/test-gitignore-padrao.sh tests/test-cleanup-local.sh tests/test-carga.sh tests/test-parada-revisao.sh tests/test-leitura-por-secao.sh && git commit -m "feat(gitignore-padrao/13): memória versionada cita pasta efêmera como local:, nunca link"`
 
 ## Tarefa 8: sync arquiva com spec, plano e e2e fora do git
 
@@ -260,9 +266,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `skills/validate/references/sync.md:21-46`, `templates/bloco-fechamento-template.md:272-282`, `tests/test-entrega-clara.sh:84-100`
 - **done quando**: teste verde; `bash tests/test-carga.sh` (FULL ≤ 67100) e `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-gitignore-padrao.sh` falha (bloco ```bash do plano ausente no sync)
-- [ ] **green** — passa; `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add skills/validate/references/sync.md tests/test-gitignore-padrao.sh && git commit -m "feat(gitignore-padrao/14): sync arquiva com plano fora do git"`
+- [x] **red** — `bash tests/test-gitignore-padrao.sh` falha (bloco ```bash do plano ausente no sync)
+- [x] **green** — passa; `bash tests/run.sh` exit 0
+- [x] **commit** — `git add skills/validate/references/sync.md tests/test-gitignore-padrao.sh && git commit -m "feat(gitignore-padrao/14): sync arquiva com plano fora do git"`
 
 ## Tarefa 9: cleanup — `varrer` lista sobras locais `sem volta`
 
@@ -276,9 +282,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:83-212,343-372`, `tests/test-skill-cleanup.sh:80-120,318-360`
 - **done quando**: `bash tests/test-cleanup-local.sh` e `bash tests/test-skill-cleanup.sh` verdes; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-cleanup-local.sh` falha (seção `sem volta (fora do git)` ausente; itens em `não tocado`)
-- [ ] **green** — os dois passam; `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh tests/test-skill-cleanup.sh && git commit -m "feat(gitignore-padrao/15): cleanup lista sobras locais em sem volta (fora do git) (/17)"`
+- [x] **red** — `bash tests/test-cleanup-local.sh` falha (seção `sem volta (fora do git)` ausente; itens em `não tocado`)
+- [x] **green** — os dois passam; `bash tests/run.sh` exit 0
+- [x] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh tests/test-skill-cleanup.sh && git commit -m "feat(gitignore-padrao/15): cleanup lista sobras locais em sem volta (fora do git) (/17)"`
 
 ## Tarefa 10: cleanup — `aplicar` apaga sobras locais aprovadas
 
@@ -292,9 +298,9 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `hooks/cleanup:374-563`
 - **done quando**: testes verdes; `bash tests/run.sh` exit 0.
 
-- [ ] **red** — `bash tests/test-cleanup-local.sh` falha nos casos de `aplicar` (`lote vazio` / arquivos ainda no disco)
-- [ ] **green** — passa; `bash tests/test-skill-cleanup.sh` e `bash tests/run.sh` exit 0
-- [ ] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "feat(gitignore-padrao/16): cleanup apaga do disco as sobras locais aprovadas"`
+- [x] **red** — `bash tests/test-cleanup-local.sh` falha nos casos de `aplicar` (`lote vazio` / arquivos ainda no disco)
+- [x] **green** — passa; `bash tests/test-skill-cleanup.sh` e `bash tests/run.sh` exit 0
+- [x] **commit** — `git add hooks/cleanup tests/test-cleanup-local.sh && git commit -m "feat(gitignore-padrao/16): cleanup apaga do disco as sobras locais aprovadas"`
 
 ## Tarefa 11: texto — skill cleanup e READMEs
 
@@ -308,6 +314,6 @@ Memória versionada sondada (rótulo → caminho testado no `check-ignore`): `ME
 - **ler**: `skills/cleanup/SKILL.md:1-107`, `README.md:340-360`, `README.pt-BR.md:340-360`
 - **done quando**: testes verdes; `bash tests/run.sh` exit 0; gate `bash hooks/gate gitignore-padrao` sai 0.
 
-- [ ] **red** — `bash tests/test-gitignore-padrao.sh` falha no caso da skill cleanup
-- [ ] **green** — passa; `bash tests/run.sh` exit 0; `bash hooks/gate gitignore-padrao` exit 0
-- [ ] **commit** — `git add skills/cleanup/SKILL.md README.md README.pt-BR.md tests/test-gitignore-padrao.sh && git commit -m "docs(gitignore-padrao/15): skill cleanup e READMEs explicam as sobras locais (/16)"`
+- [x] **red** — `bash tests/test-gitignore-padrao.sh` falha no caso da skill cleanup
+- [x] **green** — passa; `bash tests/run.sh` exit 0; `bash hooks/gate gitignore-padrao` exit 0
+- [x] **commit** — `git add skills/cleanup/SKILL.md README.md README.pt-BR.md tests/test-gitignore-padrao.sh && git commit -m "docs(gitignore-padrao/15): skill cleanup e READMEs explicam as sobras locais (/16)"`

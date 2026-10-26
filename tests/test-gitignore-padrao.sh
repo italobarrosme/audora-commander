@@ -110,4 +110,16 @@ antes="$(cd "$p" && find docs/audora/planos -type f | sort)"
 ( cd "$p" && printf '%s\n' "$PL" | sed 's/<id>/z/g' | bash ) >/dev/null 2>&1; assert_eq 0 "$?" "gitignore-padrao/14 sem plano → bloco sai 0"
 assert_eq "$antes" "$(cd "$p" && find docs/audora/planos -type f | sort)" "gitignore-padrao/14 sem plano → nada muda"
 
+# ===================== T11 — skill cleanup e READMEs =====================
+cl="$(achata skills/cleanup/SKILL.md)"
+assert_contains "$cl" '| sem volta (fora do git) | spec, plano e e2e (com a pasta de evidência) de nó delivered ou discarded e caçada sem nó vivo, só no disco — apagar não tem volta no git |' "gitignore-padrao/15 skill cleanup: tipo sem volta na tabela"
+assert_contains "$cl" 'cleanup: <M> sobra(s) local(is) apagada(s) do disco — sem volta' "gitignore-padrao/16 skill cleanup: reporta as sobras locais apagadas"
+assert_contains "$cl" 'sem `git revert` para elas' "gitignore-padrao/16 skill cleanup: sem revert para o local"
+[ "$(wc -l < skills/cleanup/SKILL.md)" -le 250 ] && ok || ko "gitignore-padrao/15 skill cleanup ≤ 250 linhas"
+for r in README.md README.pt-BR.md; do
+  assert_contains "$(cat "$r")" 'hooks/versionamento' "gitignore-padrao/1 $r cita hooks/versionamento"
+done
+assert_contains "$(achata README.md)" 'local only (kept out of git by the audora block in `.gitignore`)' "gitignore-padrao/1 README EN: pastas locais"
+assert_contains "$(achata README.pt-BR.md)" 'só locais (fora do git pelo bloco do audora no `.gitignore`)' "gitignore-padrao/1 README PT: pastas locais"
+
 report

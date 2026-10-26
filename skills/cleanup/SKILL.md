@@ -31,6 +31,9 @@ carregar). O julgamento semântico fica aqui. Rode tudo na raiz do projeto.
 | depuração velha | `docs/audora/depuracao/*` sem nó vivo ligado (não citada no índice nem em nó de `docs/audora/memory/`) |
 | sem referência | arquivo de `docs/audora/` que nenhum documento vivo cita (índice, nós vivos, decisões vivas, skills, PRD, READMEs) |
 | link quebrado | link em `MEMORY.md` (fora da seção Aprendizados e de `docs/audora/aprendizados.md`) ou `docs/audora/` para arquivo que existiu no histórico e não existe mais (fora de frontmatter e de bloco de código) |
+| sem volta (fora do git) | spec, plano e e2e (com a pasta de evidência) de nó delivered ou discarded e caçada sem nó vivo, só no disco — apagar não tem volta no git |
+
+Nó planned, in-progress ou blocked nunca tem spec, plano ou e2e listado.
 
 Nunca entram — o framework os lê: `MEMORY.md`, nós (`docs/audora/memory/`,
 `docs/audora/arquivo/`), `docs/audora/decisoes-vivas.md` e
@@ -58,6 +61,7 @@ Nunca entram — o framework os lê: `MEMORY.md`, nós (`docs/audora/memory/`,
    reveja o julgamento.
 4. **Apresentar.** Saída terminando em `cleanup: nada a limpar` → mostre os avisos que vierem antes (`## nunca existiu` e cia.), diga "nada a limpar" ao humano e pare: nada muda, nada é commitado. Senão, mostre o relatório inteiro como saiu, agrupado por tipo,
    e explique `## mantido`, `## não tocado` e `## nunca existiu` (ficam fora do lote).
+   Seção `## sem volta (fora do git)` → avise que esses itens só existem no disco: apagados, não voltam.
 5. **Aprovação.** Espere aprovação explícita do lote. O humano pode tirar itens: apague as linhas dele e mantenha o resto do relatório igual.
    Grave o lote aprovado num arquivo do scratchpad (ex.: `<scratchpad>/lote-cleanup.txt`).
    Humano reprovou ou tirou todos → não rode `aplicar`; nada muda, nada é commitado.
@@ -76,6 +80,8 @@ Nunca entram — o framework os lê: `MEMORY.md`, nós (`docs/audora/memory/`,
 7. **Reportar.**
    - Sucesso (`cleanup: commit <hash> — N item(ns) removido(s)`): diga o
      hash, a contagem e como desfazer: `git revert <hash>`.
+   - Sobras locais (`cleanup: <M> sobra(s) local(is) apagada(s) do disco — sem volta`):
+     o script as apaga só depois do commit; diga a contagem, sem `git revert` para elas.
    - Falha (`cleanup: falhou em: <item> — <motivo>`): o script já desfez
      tudo (árvore volta ao estado de antes do lote, nada commitado). Mostre
      o item e o motivo ao humano; não tente contornar à mão.

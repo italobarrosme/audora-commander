@@ -352,10 +352,15 @@ rely on prose to stop the agent.
   delivered nodes.
 - `docs/audora/arquivo/` — delivered nodes, archived by move.
 - `docs/audora/planos/` — active plans; `arquivo/` for closed ones.
-- `docs/audora/e2e/` — E2E reports per demand.
+- `docs/audora/e2e/` — E2E reports per demand; binary evidence in
+  `docs/audora/e2e/<id>/`.
 - `docs/audora/specs/` — scope context for HIGH demands (criteria live in
   the node).
 - `docs/audora/depuracao/` — defect hunt reports (debug skill).
+
+`planos/`, `e2e/`, `specs/` and `depuracao/` are local only (kept out of git by the audora block in `.gitignore`):
+the memory bootstrap writes the block (script `hooks/versionamento`) and
+projects that already have a MEMORY get a one-time offer.
 
 ## Installation validation checklist
 

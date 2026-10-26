@@ -351,10 +351,15 @@ mais sandbox. Configure o harness — não conte com prosa para segurar o agente
   entregues.
 - `docs/audora/arquivo/` — nós entregues, arquivados por movimento.
 - `docs/audora/planos/` — planos ativos; `arquivo/` para os encerrados.
-- `docs/audora/e2e/` — relatórios E2E por demanda.
+- `docs/audora/e2e/` — relatórios E2E por demanda; evidência binária em
+  `docs/audora/e2e/<id>/`.
 - `docs/audora/specs/` — contexto de escopo de demandas HIGH (critérios
   ficam no nó).
 - `docs/audora/depuracao/` — relatórios de caçada de defeitos (skill debug).
+
+`planos/`, `e2e/`, `specs/` e `depuracao/` são só locais (fora do git pelo bloco do audora no `.gitignore`):
+o bootstrap da memória escreve o bloco (script `hooks/versionamento`) e
+projeto que já tem MEMORY recebe a oferta uma vez.
 
 ## Checklist de validação da instalação
 
