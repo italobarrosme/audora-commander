@@ -231,4 +231,84 @@ runv "$p" aplicar --desligar .gitignore
 assert_eq "$USO" "$out" "--desligar sem :linha → uso"
 assert_eq "$antes" "$(snap "$p")" "flag inválida → nada alterado"
 
+# ===================== aplicar --remover (T4) =====================
+TIT='chore(audora): tira spec, plano, e2e e caçada do git (ficam no disco)'
+EF='docs/audora/specs/a-escopo.md docs/audora/planos/plano-a.md docs/audora/e2e/a/shot.png'
+# mkef <dir> — repo com 3 arquivos versionados nas pastas efêmeras + src/x.txt, sem .gitignore
+mkef() {
+  local d="$1" f; mkrepo "$d"
+  for f in $EF src/x.txt; do mkdir -p "$(dirname "$d/$f")"; printf '%s\n' "$f" > "$d/$f"; done
+  git -C "$d" add -A; git -C "$d" commit -qm efemeros
+}
+md5s() { local d="$1" f; for f in $EF; do md5 "$d/$f"; done; }
+
+# --- gitignore-padrao/8 com sim ---
+p="$SP/r8"; mkef "$p"; h0="$(git -C "$p" rev-parse HEAD)"; m0="$(md5s "$p")"
+runv "$p" aplicar --remover
+assert_eq 0 "$code" "gitignore-padrao/8 --remover → exit 0"
+h="$(git -C "$p" rev-parse --short=7 HEAD)"
+assert_eq "versionamento: .gitignore criado com o bloco do audora
+versionamento: commit $h — 3 arquivo(s) fora do git, mantidos no disco" "$out" "gitignore-padrao/8 --remover → mensagens"
+assert_eq "$h0" "$(git -C "$p" rev-parse HEAD^)" "gitignore-padrao/8 1 commit só"
+assert_empty "$(git -C "$p" ls-files docs/audora/specs docs/audora/planos docs/audora/e2e)" "gitignore-padrao/8 nada efêmero no git"
+assert_eq "$m0" "$(md5s "$p")" "gitignore-padrao/8 os 3 seguem no disco, intactos"
+assert_eq "A	.gitignore
+D	docs/audora/e2e/a/shot.png
+D	docs/audora/planos/plano-a.md
+D	docs/audora/specs/a-escopo.md" "$(git -C "$p" show --name-status --format= HEAD | sort)" "gitignore-padrao/8 commit só com as remoções e o .gitignore"
+assert_eq "$TIT" "$(git -C "$p" log -1 --format=%s)" "gitignore-padrao/8 título do commit"
+assert_eq '3 arquivo(s) fora do git, mantidos no disco' "$(git -C "$p" log -1 --format=%b | tr -d '\r' | sed '/^$/d')" "gitignore-padrao/8 corpo do commit"
+assert_empty "$(git -C "$p" status --porcelain)" "gitignore-padrao/8 árvore limpa depois"
+assert_eq 'src/x.txt' "$(git -C "$p" ls-files src)" "gitignore-padrao/8 o resto segue versionado"
+
+# --- gitignore-padrao/8 com --desligar: o .gitignore desligado entra no mesmo commit ---
+p="$SP/r8d"; mkef "$p"; mkdir -p "$p/docs"; printf 'audora/memory/\n' > "$p/docs/.gitignore"
+git -C "$p" add -A; git -C "$p" commit -qm 'docs ignora memory'
+runv "$p" aplicar --desligar docs/.gitignore:1 --remover
+assert_eq 0 "$code" "gitignore-padrao/8 --desligar + --remover → exit 0"
+assert_eq "A	.gitignore
+D	docs/audora/e2e/a/shot.png
+D	docs/audora/planos/plano-a.md
+D	docs/audora/specs/a-escopo.md
+M	docs/.gitignore" "$(git -C "$p" show --name-status --format= HEAD | sort)" "gitignore-padrao/8 .gitignore desligado no mesmo commit"
+
+# --- gitignore-padrao/8 sem --remover nada sai do git ---
+p="$SP/r8sem"; mkef "$p"; h0="$(git -C "$p" rev-parse HEAD)"
+runv "$p" aplicar
+assert_eq "$h0" "$(git -C "$p" rev-parse HEAD)" "gitignore-padrao/8 sem sim → HEAD intacto"
+assert_eq 3 "$(git -C "$p" ls-files docs/audora | wc -l)" "gitignore-padrao/8 sem sim → os 3 seguem no git"
+
+# --- gitignore-padrao/8 nada versionado ---
+p="$SP/r8nada"; mkrepo "$p"; h0="$(git -C "$p" rev-parse HEAD)"
+runv "$p" aplicar --remover
+assert_eq 0 "$code" "gitignore-padrao/8 nada versionado → exit 0"
+assert_line "$out" 'versionamento: nada versionado nas pastas efêmeras' "gitignore-padrao/8 nada versionado → mensagem"
+assert_eq "$h0" "$(git -C "$p" rev-parse HEAD)" "gitignore-padrao/8 nada versionado → sem commit"
+
+# --- gitignore-padrao/8 staged recusa ---
+p="$SP/r8stg"; mkef "$p"; printf 'y\n' > "$p/src/y.txt"; git -C "$p" add src/y.txt; antes="$(snap "$p")"
+runv "$p" aplicar --remover
+assert_eq 1 "$code" "gitignore-padrao/8 staged → exit 1"
+assert_eq 'versionamento: há mudança staged — remoção não feita; nada foi alterado' "$out" "gitignore-padrao/8 staged → recusa"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/8 staged → nada alterado (nem o bloco)"
+
+# --- gitignore-padrao/9 commit falha ---
+p="$SP/r9"; mkef "$p"; printf '#!/bin/sh\nexit 1\n' > "$p/.git/hooks/pre-commit"; chmod +x "$p/.git/hooks/pre-commit"
+h0="$(git -C "$p" rev-parse HEAD)"; m0="$(md5s "$p")"
+runv "$p" aplicar --remover
+assert_eq 1 "$code" "gitignore-padrao/9 commit falha → exit 1"
+assert_eq 'versionamento: .gitignore criado com o bloco do audora
+versionamento: commit falhou — remoções desfeitas, nada saiu do git' "$out" "gitignore-padrao/9 commit falha → aviso (bloco escrito antes)"
+assert_eq "$h0" "$(git -C "$p" rev-parse HEAD)" "gitignore-padrao/9 HEAD intacto"
+assert_eq 3 "$(git -C "$p" ls-files docs/audora | wc -l)" "gitignore-padrao/9 os 3 seguem no git"
+assert_empty "$(git -C "$p" diff --cached --name-only)" "gitignore-padrao/9 índice como antes"
+assert_eq "$m0" "$(md5s "$p")" "gitignore-padrao/9 os 3 seguem no disco"
+
+# --- gitignore-padrao/10 --remover fora do git ---
+p="$SP/r10"; rm -rf "$p"; mkdir -p "$p"
+runv "$p" aplicar --remover
+assert_eq 0 "$code" "gitignore-padrao/10 --remover fora do git → exit 0"
+assert_eq "versionamento: .gitignore criado com o bloco do audora
+$FORA" "$out" "gitignore-padrao/10 --remover fora do git → bloco + 1 linha"
+
 report

@@ -152,17 +152,54 @@ sub desliga {
   return "versionamento: regra desligada em $f:$n ($orig)";
 }
 
+# Tira do índice os versionados das pastas efêmeras e commita só isso + os .gitignore
+# tocados; commit falhou → índice desses caminhos volta ao HEAD.
+sub remove_versionados {
+  my (@gitignores) = @_;
+  my @v = efemeros_versionados();
+  return 'versionamento: nada versionado nas pastas efêmeras' unless @v;
+  my @tocados = (@v, @gitignores);
+  my $n = scalar @v;
+  my $ok = system('git', 'rm', '-r', '--cached', '-q', '--', @v) == 0
+        && system('git', 'add', '--', @gitignores) == 0;
+  if ($ok) {
+    my $msg = File::Temp->new(); binmode $msg;
+    print $msg "chore(audora): tira spec, plano, e2e e caçada do git (ficam no disco)\n\n$n arquivo(s) fora do git, mantidos no disco\n";
+    close $msg;
+    $ok = system('git', 'commit', '-q', '-F', $msg->filename) == 0;
+  }
+  unless ($ok) {
+    system('git', 'reset', '-q', '--', @tocados);
+    die "versionamento: commit falhou — remoções desfeitas, nada saiu do git\n";
+  }
+  my ($h) = git_z('rev-parse', '--short=7', 'HEAD'); $h =~ s/\s+$//;
+  return "versionamento: commit $h — $n arquivo(s) fora do git, mantidos no disco";
+}
+
 if ($sub eq 'aplicar') {
-  my @desligar;
+  my (@desligar, $remover);
   while (@ARGV) {
     my $a = shift @ARGV;
+    if ($a eq '--remover') { $remover = 1; next; }
     sai(1, $USO) unless $a eq '--desligar' && @ARGV && $ARGV[0] =~ /^(.+):(\d+)$/;
     push @desligar, [$1, $2 + 0]; shift @ARGV;
   }
   my $git = dentro_git();
+  # Fora do git: só o bloco (/10) — regra e remoção são puladas.
+  sai(0, escreve_bloco(), $FORA) unless $git;
   for my $d (@desligar) { my $m = valida_desligar(@$d); sai(1, $m) if defined $m; }
+  if ($remover) {
+    system('git', 'diff', '--cached', '--quiet');
+    sai(1, 'versionamento: há mudança staged — remoção não feita; nada foi alterado') if $? != 0;
+  }
   my @o = map { desliga(@$_) } @desligar;
   push @o, escreve_bloco();
-  sai(0, @o, $git ? () : $FORA);
+  if ($remover) {
+    my %g = ('.gitignore' => 1); $g{ $_->[0] } = 1 for @desligar;
+    my $r = eval { remove_versionados(sort keys %g) };
+    sai(1, @o, $@ =~ s/\n\z//r) unless defined $r;
+    push @o, $r;
+  }
+  sai(0, @o);
 }
 sai(1, $USO);
