@@ -101,6 +101,7 @@ Aprendizados vivem em `docs/audora/aprendizados.md` (1 linha cada, só por grep 
 - aprendizados-escopo | planned | Aprendizados com escopo | Aprendizado com escopo de arquivo, varredura de obsoleto e promoção do reincidente a hook ou Constituição. | aprendizados, escopo, obsoleto, invalidacao, promocao, erro-repetido | skills/memory/SKILL.md, templates/aprendizados-template.md, hooks/cleanup
 - relatorio-entrega | delivered | Relatório de entrega → docs/audora/arquivo/2026-10-15-relatorio-entrega.md
 - entrega-clara | delivered | Entrega clara no chat → docs/audora/arquivo/2026-10-23-entrega-clara.md
+- gitignore-padrao | in-progress | .gitignore padrão | O plugin configura por padrão o .gitignore do projeto para versionar só a memória do produto. | gitignore, versionamento, bootstrap, repo, depuracao, e2e, evidencia | skills/memory/references/bootstrap.md, templates/
 - review-avulsa | planned | Review avulsa | Skill de review chamável fora do fluxo (pedir e receber review), que usa o revisor e lê os critérios do nó quando há MEMORY. | review, code-review, revisor, avulsa, criterios, disciplina | skills/, agents/revisor.md
 
 <!-- Regras de manutenção: ver templates/MEMORY-template.md (skill memory).
