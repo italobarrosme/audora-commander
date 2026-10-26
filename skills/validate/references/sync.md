@@ -28,7 +28,12 @@ senão `memory-validate` bloqueia a próxima escrita.
    `git mv docs/audora/memory/<id>.md docs/audora/arquivo/AAAA-MM-DD-<id>.md`.
    Nó com `<id>-historico.md`: mover os DOIS, mesmo prefixo de data, e
    corrigir o ponteiro relativo no corpo. Plano →
-   `docs/audora/planos/arquivo/` (LIGHT não tem plano).
+   `docs/audora/planos/arquivo/` (LIGHT não tem plano); fora do git, só no disco:
+   ```bash
+   p=docs/audora/planos/plano-<id>.md; a=docs/audora/planos/arquivo
+   if [ ! -f "$p" ]; then :; elif git ls-files --error-unmatch -- "$p" >/dev/null 2>&1; then mkdir -p "$a" && git mv "$p" "$a/"; else mkdir -p "$a" && mv "$p" "$a/"; fi
+   ```
+   O commit do sync leva só a memória versionada.
 3. **`arquivos:` do diff real.** A base da demanda é o **pai do commit que
    CRIOU o arquivo do nó** — nunca por `--grep` na mensagem, que casa
    commit de outra demanda que só CITA o id:
