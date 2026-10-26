@@ -129,9 +129,40 @@ sub checar {
 
 checar() if $sub eq 'checar';
 
+# Linhas de um arquivo com o fim de linha de cada uma: [conteúdo, fim].
+sub linhas { map { /^(.*?)(\r?\n)?\z/s; [$1, $2 // ''] } split /(?<=\n)/, ($_[0] // ''); }
+
+# Por que --desligar <arquivo>:<linha> não pode ser aplicado (undef = pode).
+sub valida_desligar {
+  my ($f, $n) = @_;
+  return "versionamento: $f fica fora do projeto — não edito; nada foi alterado" unless fonte_do_projeto($f);
+  my @l = linhas(ler($f));
+  my $s = ($n >= 1 && $n <= @l) ? $l[$n - 1][0] : '';
+  return "versionamento: $f:$n não é regra ativa — nada foi alterado" if $s =~ /^\s*(#|$)/;
+  return undef;
+}
+
+# Comenta a linha <n> de <f>, preservando o fim de linha → mensagem.
+sub desliga {
+  my ($f, $n) = @_;
+  my @l = linhas(ler($f));
+  my $orig = $l[$n - 1][0];
+  $l[$n - 1][0] = "# desligado pelo audora-commander: $orig";
+  escreve($f, join '', map { $_->[0] . $_->[1] } @l);
+  return "versionamento: regra desligada em $f:$n ($orig)";
+}
+
 if ($sub eq 'aplicar') {
+  my @desligar;
+  while (@ARGV) {
+    my $a = shift @ARGV;
+    sai(1, $USO) unless $a eq '--desligar' && @ARGV && $ARGV[0] =~ /^(.+):(\d+)$/;
+    push @desligar, [$1, $2 + 0]; shift @ARGV;
+  }
   my $git = dentro_git();
-  my $msg = escreve_bloco();
-  sai(0, $msg, $git ? () : $FORA);
+  for my $d (@desligar) { my $m = valida_desligar(@$d); sai(1, $m) if defined $m; }
+  my @o = map { desliga(@$_) } @desligar;
+  push @o, escreve_bloco();
+  sai(0, @o, $git ? () : $FORA);
 }
 sai(1, $USO);

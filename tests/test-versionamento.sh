@@ -172,4 +172,63 @@ assert_eq "bloco: ausente
 $FORA" "$out" "gitignore-padrao/10 checar fora do git → bloco + 1 linha"
 assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/10 checar fora do git só lê"
 
+# ===================== aplicar --desligar (T3) =====================
+# --- gitignore-padrao/6 desligar com sim ---
+p="$SP/d6"; mkrepo "$p"; printf 'docs/\n' > "$p/.gitignore"
+runv "$p" aplicar --desligar .gitignore:1
+assert_eq 0 "$code" "gitignore-padrao/6 desligar → exit 0"
+assert_line "$out" 'versionamento: regra desligada em .gitignore:1 (docs/)' "gitignore-padrao/6 desligar → mensagem"
+assert_line "$out" 'versionamento: bloco do audora acrescentado ao .gitignore' "gitignore-padrao/6 desligar → bloco escrito"
+assert_eq '# desligado pelo audora-commander: docs/' "$(head -1 "$p/.gitignore")" "gitignore-padrao/6 linha comentada"
+runv "$p" checar
+assert_line "$out" 'versionamento: 0 regra(s) escondendo a memória · 0 versionado(s) em pasta efêmera' "gitignore-padrao/6 depois do desligar nada esconde a memória"
+
+# --- gitignore-padrao/6 desligar preserva CRLF e o resto ---
+p="$SP/d6crlf"; mkrepo "$p"; printf 'dist/\r\ndocs/\r\nx/\r\n' > "$p/.gitignore"
+runv "$p" aplicar --desligar .gitignore:2
+assert_eq "$(printf 'dist/\r\n# desligado pelo audora-commander: docs/\r\nx/\r\n' | md5sum | cut -d' ' -f1)" \
+  "$(head -3 "$p/.gitignore" | md5sum | cut -d' ' -f1)" "gitignore-padrao/6 desligar preserva CRLF e as outras linhas"
+
+# --- gitignore-padrao/6 regra em subpasta ---
+p="$SP/d6sub"; mkrepo "$p"; mkdir -p "$p/docs"; printf 'audora/memory/\n' > "$p/docs/.gitignore"
+runv "$p" aplicar --desligar docs/.gitignore:1
+assert_eq 0 "$code" "gitignore-padrao/6 desligar em docs/.gitignore → exit 0"
+assert_eq '# desligado pelo audora-commander: audora/memory/' "$(cat "$p/docs/.gitignore")" "gitignore-padrao/6 docs/.gitignore comentado"
+
+# --- gitignore-padrao/7 recusa .git/info/exclude ---
+p="$SP/d7exc"; mkrepo "$p"; printf 'CHANGELOG.md\n' > "$p/.git/info/exclude"; antes="$(snap "$p")"; excl="$(md5 "$p/.git/info/exclude")"
+runv "$p" aplicar --desligar .git/info/exclude:1
+assert_eq 1 "$code" "gitignore-padrao/7 desligar exclude → exit 1"
+assert_eq 'versionamento: .git/info/exclude fica fora do projeto — não edito; nada foi alterado' "$out" "gitignore-padrao/7 desligar exclude → recusa"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/7 recusa → nada alterado (nem o bloco)"
+assert_eq "$excl" "$(md5 "$p/.git/info/exclude")" "gitignore-padrao/7 exclude intocado"
+
+# --- gitignore-padrao/7 recusa caminho absoluto e fora da raiz ---
+p="$SP/d7abs"; mkrepo "$p"; antes="$(snap "$p")"
+runv "$p" aplicar --desligar "$SP/global-ign:1"
+assert_eq 1 "$code" "gitignore-padrao/7 desligar absoluto → exit 1"
+assert_eq "versionamento: $SP/global-ign fica fora do projeto — não edito; nada foi alterado" "$out" "gitignore-padrao/7 desligar absoluto → recusa"
+runv "$p" aplicar --desligar ../.gitignore:1
+assert_eq 'versionamento: ../.gitignore fica fora do projeto — não edito; nada foi alterado' "$out" "gitignore-padrao/7 desligar ../ → recusa"
+runv "$p" aplicar --desligar README.md:1
+assert_eq 'versionamento: README.md fica fora do projeto — não edito; nada foi alterado' "$out" "gitignore-padrao/7 desligar arquivo que não é .gitignore → recusa"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/7 recusas → nada alterado"
+
+# --- gitignore-padrao/6 linha que não é regra ---
+p="$SP/d6lin"; mkrepo "$p"; printf 'docs/\n# comentario\n\n' > "$p/.gitignore"; antes="$(snap "$p")"
+for a in .gitignore:9 .gitignore:2 .gitignore:3 .gitignore:0; do
+  runv "$p" aplicar --desligar "$a"
+  assert_eq 1 "$code" "gitignore-padrao/6 $a → exit 1"
+  assert_eq "versionamento: $a não é regra ativa — nada foi alterado" "$out" "gitignore-padrao/6 $a → não é regra ativa"
+done
+runv "$p" aplicar --desligar .gitignore:1 --desligar .gitignore:9
+assert_eq 1 "$code" "gitignore-padrao/6 2º --desligar inválido → exit 1"
+assert_eq "$antes" "$(snap "$p")" "gitignore-padrao/6 um --desligar inválido → nada alterado (nem o 1º)"
+runv "$p" aplicar --desligar
+assert_eq 1 "$code" "--desligar sem argumento → exit 1"
+assert_eq "$USO" "$out" "--desligar sem argumento → uso"
+runv "$p" aplicar --desligar .gitignore
+assert_eq "$USO" "$out" "--desligar sem :linha → uso"
+assert_eq "$antes" "$(snap "$p")" "flag inválida → nada alterado"
+
 report
