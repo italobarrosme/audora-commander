@@ -335,7 +335,7 @@ mkdir -p "$p/docs/audora/notas"; printf '[c](../depuracao/cacada-2026-01-01.md)\
 antes="$(snap "$p")"
 runc "$p" varrer; out_v="$out"
 nt="$(secao "$out" 'não tocado')"
-assert_line "$nt" '- docs/audora/e2e/e2e-d.md | não tocado: fora do git' "skill-cleanup/11 untracked → fora do git"
+assert_line "$(secao "$out" 'sem volta (fora do git)')" '- docs/audora/e2e/e2e-d.md | nó d delivered' "skill-cleanup/11 untracked de nó delivered → sem volta (gitignore-padrao/15)"
 assert_not_contains "$(secao "$out" 'relatório e2e')" 'e2e-d.md' "skill-cleanup/11 untracked fora do lote"
 assert_line "$nt" '- docs/audora/tmp/x.md | não tocado: fora do git' "skill-cleanup/11 ignorado → fora do git"
 assert_line "$nt" '- docs/audora/specs/d-escopo.md | não tocado: mudança não commitada' "skill-cleanup/11 candidato sujo"
@@ -346,11 +346,11 @@ assert_line "$(secao "$out" 'depuração velha')" '- docs/audora/depuracao/cacad
 for s in 'spec de nó entregue' 'plano arquivado' 'relatório e2e' 'sem referência' 'link quebrado'; do
   assert_empty "$(secao "$out" "$s")" "skill-cleanup/11 nada de não tocado em '$s'"
 done
-assert_eq 'total: 1 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/11 total não conta os não tocados"
+assert_eq 'total: 2 item(ns) no lote' "$(printf '%s\n' "$out" | tail -1)" "skill-cleanup/11 total não conta os não tocados (conta o sem volta: gitignore-padrao/15)"
 runc "$p" contar
-assert_eq 1 "$out" "skill-cleanup/11 contar não conta os não tocados"
+assert_eq 2 "$out" "skill-cleanup/11 contar não conta os não tocados (conta o sem volta: gitignore-padrao/15)"
 assert_line "$(secao "$out_v" 'nunca existiu')" "- docs/audora/arquivo/2026-01-01-d.md:$LN | aponta ../e2e/nunca.md nunca versionado" "cleanup-link-preciso/4 nunca existiu ao lado de não tocado (arquivo sujo não segura o aviso)"
-assert_eq 1 "$out" "cleanup-link-preciso/3 contar ignora nunca existiu com não tocado"
+assert_eq 2 "$out" "cleanup-link-preciso/3 contar ignora nunca existiu com não tocado (conta o sem volta: gitignore-padrao/15)"
 assert_eq "$antes" "$(snap "$p")" "skill-cleanup/11 varrer com árvore suja não altera nada"
 p="$SP/t6m"; mkt5 "$p"; printf '\n' >> "$p/MEMORY.md"
 runc "$p" varrer --orfao 'p=absorvido por d'

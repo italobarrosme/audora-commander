@@ -41,8 +41,9 @@ sai(1, 'cleanup: sem MEMORY.md — rode o bootstrap da skill memory; nada foi al
 use File::Find ();
 
 # Seções acionáveis do relatório, na ordem do contrato.
+my $SEM_VOLTA = 'sem volta (fora do git)';
 my @SECOES = ('planned órfão', 'spec de nó entregue', 'plano arquivado', 'relatório e2e',
-              'depuração velha', 'sem referência', 'link quebrado');
+              'depuração velha', 'sem referência', 'link quebrado', $SEM_VOLTA);
 my %VIVO = map { $_ => 1 } qw(planned in-progress blocked hotfix-pending-record);
 
 # ler <caminho> → conteúdo bruto ('' se não existir)
@@ -81,6 +82,7 @@ sub arquivos_docs {
 sub texto_nos { join "\n", map { ler($_) } sort { $a cmp $b } glob('docs/audora/memory/*.md'); }
 
 my (%LOTE, @AVISOS, @MANTIDO, @NAO_TOCADO, @NUNCA);
+my (%RASTREADO, %SUJO, %REF);   # estado git (carrega_git), lido também na classificação local
 # Item único por (tipo, alvo, motivo): o mesmo link quebrado 2x na linha é 1 item (o aplicar troca os dois).
 my %ITEM_VISTO;
 sub item {
@@ -163,6 +165,7 @@ sub ligacao {
   return ('plano arquivado', $1)     if $f =~ m{^docs/audora/planos/arquivo/plano-(.+)\.md$};
   return ('', $1)                    if $f =~ m{^docs/audora/planos/plano-(.+)\.md$};
   return ('relatório e2e', $1)       if $f =~ m{^docs/audora/e2e/e2e-(.+)\.md$};
+  return ('', $1)                    if $f =~ m{^docs/audora/e2e/([^/]+)/};   # evidência binária do nó
   return ();
 }
 
@@ -189,6 +192,26 @@ sub criterios_sem_copia {
   return map { "$id/$_" } sort { $a <=> $b } grep { !$tem{$_} } keys %cita;
 }
 
+# Sobra local (fora do git) de nó delivered/discarded ou caçada sem nó vivo → seção sem volta.
+# A evidência em docs/audora/e2e/<id>/ sai como 1 item (a pasta). 1 = tratado aqui.
+my %PASTA_LOCAL;   # pasta → [motivo, nº de arquivos]
+sub classifica_local {
+  my ($f, $id, $e, $nos) = @_;
+  return 0 if $RASTREADO{$f};
+  if (defined $id && ($e eq 'delivered' || $e eq 'discarded') && $f =~ m{^docs/audora/(specs|planos|e2e)/}) {
+    my @sem = criterios_sem_copia($f, $id);
+    if (@sem) { push @MANTIDO, "- $f | mantido: cita " . join(', ', @sem) . ' sem cópia no nó arquivado'; return 1; }
+    if ($f =~ m{^(docs/audora/e2e/[^/]+/)}) { $PASTA_LOCAL{$1} //= ["nó $id $e", 0]; $PASTA_LOCAL{$1}[1]++; return 1; }
+    item($SEM_VOLTA, $f, "nó $id $e"); return 1;
+  }
+  if ($f =~ m{^docs/audora/depuracao/}) {
+    (my $b = $f) =~ s{.*/}{};
+    return 1 if index($TXT_INDICE, $b) >= 0 || index($nos, $b) >= 0;
+    item($SEM_VOLTA, $f, 'caçada sem nó vivo'); return 1;
+  }
+  return 0;
+}
+
 # Artefatos de nó entregue, depuração velha e sem referência.
 sub classifica_artefatos {
   my $nos = texto_nos(); my $vivo = texto_vivo();
@@ -196,6 +219,8 @@ sub classifica_artefatos {
     next if protegido($f);
     my ($tipo, $id) = ligacao($f);
     my $e = defined $id ? ($ESTADO{$id} // '') : '';
+    next if $VIVO{$e};
+    next if classifica_local($f, $id, $e, $nos);
     if ($tipo && $e eq 'delivered') {
       my @sem = criterios_sem_copia($f, $id);
       if (@sem) { push @MANTIDO, "- $f | mantido: cita " . join(', ', @sem) . ' sem cópia no nó arquivado'; next; }
@@ -209,6 +234,7 @@ sub classifica_artefatos {
     }
     item('sem referência', $f, 'nenhum documento vivo o cita') if index($vivo, $b) < 0;
   }
+  for my $d (sort keys %PASTA_LOCAL) { item($SEM_VOLTA, $d, "$PASTA_LOCAL{$d}[0] ($PASTA_LOCAL{$d}[1] arquivo(s))"); }
 }
 
 # --- links: "[texto](alvo)" local e token docs/audora/…\.md fora de "](…)" ---
@@ -294,7 +320,6 @@ sub classifica_links {
 }
 
 # --- estado git: rastreados, sujos (índice ou árvore) e quem linka quem ---
-my (%RASTREADO, %SUJO, %REF);
 sub git_z {
   local $/ = "\0";
   open my $fh, '-|', 'git', '--no-optional-locks', @_ or die "git @_ falhou\n";
@@ -343,7 +368,7 @@ sub impedimento {
 
 # Filtro git final: candidato fora do git ou sujo vira "não tocado" (/11).
 sub filtra_git {
-  for my $s (@SECOES) {
+  for my $s (grep { $_ ne $SEM_VOLTA } @SECOES) {   # sobra local já é fora do git por definição
     my @fica;
     for my $it (@{ $LOTE{$s} // [] }) {
       my $imp = impedimento($s, $it->[0]);
@@ -370,7 +395,7 @@ sub relatorio {
   print "$_\n" for @o;
 }
 
-sub varre { carrega_indice(); classifica_orfaos(); classifica_artefatos(); classifica_links(); carrega_git(); filtra_git(); }
+sub varre { carrega_indice(); carrega_git(); classifica_orfaos(); classifica_artefatos(); classifica_links(); filtra_git(); }
 
 # --- aplicar <lote>: o relatório aprovado (aparado pelo humano) vira 1 commit ---
 use POSIX ();
