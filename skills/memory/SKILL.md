@@ -90,7 +90,7 @@ reler. Depois de `/clear` ou compactação, recarregar.
 6. Constituição sem bullet `gate:` → ofertar UMA vez gerar o gate (etapa
    gate de `references/bootstrap.md`); `gate: recusado` → não reofertar,
    só se o humano pedir.
-7. Constituição sem bullet `versionamento:` → ofertar UMA vez aplicar o bloco do `.gitignore` (`references/versionamento.md`); `versionamento: recusado` → não reofertar, só se o humano pedir.
+7. Constituição sem bullet `versionamento:` → ANTES de ofertar, leia `references/versionamento.md` e rode o `checar`; oferte UMA vez o bloco do `.gitignore` mostrando as 4 pastas que passam a ser ignoradas e a saída do `checar`; `versionamento: recusado` → não reofertar, só se o humano pedir.
 
 ### 4. registrar-delta (mudança no meio da demanda)
 

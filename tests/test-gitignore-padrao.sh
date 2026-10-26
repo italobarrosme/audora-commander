@@ -21,7 +21,7 @@ assert_contains "$v" '`commit falhou` → repasse a linha ao humano: o script j�
 assert_contains "$v" 'Fora do git → repasse em 1 linha a saída do script.' "gitignore-padrao/10 fora do git"
 m="$(achata "$MS")"
 assert_contains "$m" '| versionamento | references/versionamento.md |' "gitignore-padrao/4 tabela do roteador"
-assert_contains "$m" '7. Constituição sem bullet `versionamento:` → ofertar UMA vez aplicar o bloco do `.gitignore` (`references/versionamento.md`); `versionamento: recusado` → não reofertar, só se o humano pedir.' "gitignore-padrao/4,/5 item 7 da carregar-contexto"
+assert_contains "$m" '7. Constituição sem bullet `versionamento:` → ANTES de ofertar, leia `references/versionamento.md` e rode o `checar`; oferte UMA vez o bloco do `.gitignore` mostrando as 4 pastas que passam a ser ignoradas e a saída do `checar`; `versionamento: recusado` → não reofertar, só se o humano pedir.' "gitignore-padrao/4,/5 item 7 manda ler a reference e mostrar pastas + checar (debug do e2e)"
 b="$(achata "$MR/bootstrap.md")"
 assert_contains "$b" '**Etapa versionamento** (sempre, antes da etapa gate)' "gitignore-padrao/1 bootstrap tem a etapa"
 assert_contains "$b" 'references/versionamento.md' "gitignore-padrao/1 bootstrap aponta a reference"
