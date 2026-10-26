@@ -238,4 +238,16 @@ assert_eq 'cleanup: 1 sobra(s) local(is) apagada(s) do disco — sem volta' "$ou
 assert_no_file "$p/docs/audora/e2e/d/a.png" "gitignore-padrao/16 B1 a.png apagado"
 assert_file "$p/docs/audora/e2e/d/notas.md" "gitignore-padrao/16 B1 arquivo mantido continua no disco"
 
+# ===================== T13 — B2: pasta mista (rastreado + local) não trava o lote =====================
+p="$SP/b2"; mkproj "$p"; (cd "$p" && bash "$VS" aplicar >/dev/null); git -C "$p" add .gitignore; git -C "$p" commit -qm bloco
+loc "$p" docs/audora/e2e/d/old.png; git -C "$p" add -f docs/audora/e2e/d/old.png; git -C "$p" commit -qm 'old versionado antes do bloco'
+loc "$p" docs/audora/e2e/d/new.png
+runc "$p" varrer; printf '%s\n' "$out" > "$L"
+assert_eq '- docs/audora/e2e/d/new.png | nó d delivered' "$(secao "$out" "$SV")" "gitignore-padrao/16 pasta mista: só o arquivo local, um a um (B2)"
+assert_not_contains "$out" '- docs/audora/e2e/d/ |' "gitignore-padrao/16 pasta mista não sai inteira (B2)"
+runc "$p" aplicar "$L"
+assert_eq 0 "$code" "gitignore-padrao/16 B2 aplicar → exit 0"
+assert_contains "$out" 'cleanup: 1 sobra(s) local(is) apagada(s) do disco — sem volta' "gitignore-padrao/16 B2 aplicar → local apagado"
+assert_no_file "$p/docs/audora/e2e/d/new.png" "gitignore-padrao/16 B2 new.png apagado"
+
 report
