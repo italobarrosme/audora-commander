@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Script auxiliar da skill memory (chamado via Bash pela skill; NÃO é hook do harness).
+# Uso: versionamento checar | aplicar [--desligar <arquivo>:<linha>]... [--remover]
+# Sempre na raiz do projeto (cwd). checar só lê; aplicar escreve o bloco do audora
+# no .gitignore (sem duplicar).
+# Contrato completo: nó gitignore-padrao / skills/memory/references/versionamento.md.
+set -uo pipefail
+here="${0//\\//}"
+VERS_DIR="$(cd "$(dirname "$here")" && pwd)" || exit 1
+export VERS_DIR
+exec perl -x "$VERS_DIR/$(basename "$here")" "$@"
+
+#!perl
+use strict;
+use warnings;
+
+my $USO = 'uso: versionamento checar | aplicar [--desligar <arquivo>:<linha>]... [--remover]';
+my $FORA = 'versionamento: fora do git — checagem de regra e remoção puladas';
+my @BLOCO = (
+  '# audora-commander: specs, planos, e2e e depuracao ficam so no disco',
+  'docs/audora/specs/',
+  'docs/audora/planos/',
+  'docs/audora/e2e/',
+  'docs/audora/depuracao/',
+  '# fim audora-commander',
+);
+
+sub sai { my ($code, @linhas) = @_; print "$_\n" for @linhas; exit $code; }
+
+# ler <caminho> → conteúdo bruto (undef se não existir)
+sub ler {
+  my ($f) = @_;
+  open my $fh, '<:raw', $f or return undef;
+  local $/; my $c = <$fh>; close $fh; return $c // '';
+}
+sub escreve {
+  my ($f, $c) = @_;
+  open my $fh, '>:raw', $f or die "não consegui escrever $f\n";
+  print $fh $c; close $fh or die "não consegui escrever $f\n";
+}
+
+my $sub = shift @ARGV // '';
+sai(1, $USO) unless $sub =~ /^(checar|aplicar)$/;
+
+sub dentro_git { my $r = `git rev-parse --is-inside-work-tree 2>/dev/null`; return ($r // '') =~ /true/; }
+
+# Bloco presente = alguma linha igual à 1ª linha do bloco (ignorando \r).
+sub bloco_presente {
+  my ($c) = @_;
+  return 0 unless defined $c;
+  for (split /\n/, $c) { s/\r$//; return 1 if $_ eq $BLOCO[0]; }
+  return 0;
+}
+
+# Escreve o bloco no .gitignore da raiz → mensagem do que fez.
+sub escreve_bloco {
+  my $c = ler('.gitignore');
+  return 'versionamento: bloco do audora já presente — .gitignore intocado' if bloco_presente($c);
+  unless (defined $c) {
+    escreve('.gitignore', join('', map { "$_\n" } @BLOCO));
+    return 'versionamento: .gitignore criado com o bloco do audora';
+  }
+  my $nl = $c =~ /\r\n/ ? "\r\n" : "\n";
+  my $novo = $c;
+  $novo .= $nl if length $novo && $novo !~ /\n\z/;
+  $novo .= $nl if length $novo;
+  $novo .= join('', map { "$_$nl" } @BLOCO);
+  escreve('.gitignore', $novo);
+  return 'versionamento: bloco do audora acrescentado ao .gitignore';
+}
+
+if ($sub eq 'aplicar') {
+  my $git = dentro_git();
+  my $msg = escreve_bloco();
+  sai(0, $msg, $git ? () : $FORA);
+}
+sai(1, $USO);
